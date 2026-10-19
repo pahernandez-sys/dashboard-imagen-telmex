@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TELMEX | Control de Avance & Materiales 2026</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            telmex: {
+              DEFAULT: '#0055a5',
+              dark: '#003e7a',
+              light: '#0284c7',
+              50: '#f0f7ff',
+              100: '#e0effe'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- SheetJS (xlsx) for reading/exporting Excel files directly in browser -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 flex flex-col">
+
+  <!-- ==================== HEADER PRINCIPAL ==================== -->
+  <header class="telmex-gradient text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap justify-between items-center gap-3">
+      
+      <!-- Logo y Título -->
+      <div class="flex items-center gap-3">
+        <div class="bg-white text-telmex font-black text-xl px-2.5 py-1 rounded-md tracking-wider shadow-sm">
+          TELMEX
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg sm:text-xl font-bold tracking-tight">Control de Avance & Materiales 2026</h1>
+            <span class="pulse-dot" title="Sistema en línea"></span>
+          </div>
+          <p class="text-xs text-sky-100 hidden sm:block">Mesa de Control • Campaña Nacional de Cajas y Casetas</p>
+        </div>
+      </div>
+
+      <!-- Estado de Sincronización y Acciones Rápidas -->
+      <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+        <div class="text-right hidden md:block text-xs text-sky-100 border-r border-sky-400/40 pr-3">
+          <div>Última actualización: <span id="lastSyncLabel" class="font-semibold text-white">Cargando...</span></div>
+          <div id="recordsLoadedCount" class="text-[11px] opacity-90">0 registros activos</div>
+        </div>
+
+        <!-- Botón Sincronizar Linkaform -->
+        <button type="button" onclick="openSyncModal()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-2 rounded-lg border border-white/20 transition flex items-center gap-1.5 shadow-sm">
+          <span>🔄</span>
+          <span>Sincronizar Linkaform</span>
+        </button>
+
+        <!-- Botón Importar Excel -->
+        <button type="button" onclick="openImportModal()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-2 rounded-lg border border-white/20 transition flex items-center gap-1.5 shadow-sm">
+          <span>📁</span>
+          <span>Cargar Datos</span>
+        </button>
+
+        <!-- Botón Configurar Materiales -->
+        <button type="button" onclick="openMaterialsModal()" class="bg-white text-telmex hover:bg-sky-50 text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm">
+          <span>⚙️</span>
+          <span>Materiales</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ==================== BARRA DE FILTROS ==================== -->
+  <section class="bg-white border-b border-slate-200 shadow-sm filter-bar">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 items-end">
+        
+        <!-- Filtro Estado -->
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Estado:</label>
+          <select id="filterEstado" onchange="onEstadoFilterChange()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
+            <option value="">-- Todos los Estados --</option>
+          </select>
+        </div>
+
+        <!-- Filtro Área de Trabajo -->
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Área de Trabajo:</label>
+          <select id="filterArea" onchange="applyFilters()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
+            <option value="">-- Todas las Áreas --</option>
+          </select>
+        </div>
+
+        <!-- Filtro Contratista -->
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contratista / Socio:</label>
+          <select id="filterContratista" onchange="applyFilters()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
+            <option value="">-- Todos los Contratistas --</option>
+          </select>
+        </div>
+
+        <!-- Filtro Tipo de Activo -->
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tipo de Activo:</label>
+          <select id="filterTipo" onchange="applyFilters()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
+            <option value="">-- Todos (Cajas y Casetas) --</option>
+            <option value="CAJA">📦 Cajas</option>
+            <option value="CASETA">📞 Casetas</option>
+          </select>
+        </div>
+
+        <!-- Filtro Rango de Fechas -->
+        <div>
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Periodo:</label>
+          <select id="filterPresetDate" onchange="onPresetDateChange()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
+            <option value="all">Histórico Completo</option>
+            <option value="today">Hoy</option>
+            <option value="7days">Últimos 7 días</option>
+            <option value="30days">Últimos 30 días</option>
+            <option value="custom">Rango Personalizado...</option>
+          </select>
+        </div>
+
+        <!-- Botón Limpiar Filtros & Exportar -->
+        <div class="flex gap-2">
+          <button type="button" onclick="resetFilters()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs py-2 px-2.5 rounded-lg border border-slate-300 transition flex items-center justify-center gap-1" title="Restablecer todos los filtros">
+            <span>🔄</span>
+            <span>Limpiar</span>
+          </button>
+          <button type="button" onclick="exportDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-3 rounded-lg transition flex items-center justify-center gap-1 shadow-sm" title="Descargar reporte en Excel">
+            <span>📥</span>
+            <span>Excel</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Selector Personalizado de Fechas (Oculto por defecto) -->
+      <div id="customDateContainer" class="hidden mt-2 pt-2 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-slate-500">Desde:</span>
+          <input type="date" id="customDateFrom" onchange="applyFilters()" class="border border-slate-300 rounded-lg p-1.5 text-xs">
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-slate-500">Hasta:</span>
+          <input type="date" id="customDateTo" onchange="applyFilters()" class="border border-slate-300 rounded-lg p-1.5 text-xs">
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== CONTENIDO PRINCIPAL ==================== -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full flex flex-col gap-6">
+
+    <!-- KPI CARDS SUPERIORES -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      
+      <!-- Card 1: Avance Global -->
+      <div class="card-shadow p-4 bg-white border-l-4 border-telmex flex flex-col justify-between">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Avance Global</span>
+            <div id="kpiTotalDone" class="text-2xl font-black text-slate-800 mt-0.5">0</div>
+          </div>
+          <span class="text-xl p-2 bg-blue-50 text-telmex rounded-lg">📊</span>
+        </div>
+        <div class="mt-3">
+          <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+            <span>Meta: <span id="kpiTotalMeta">0</span></span>
+            <span id="kpiTotalPercent" class="text-telmex font-bold">0.0%</span>
+          </div>
+          <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+            <div id="kpiTotalProgressBar" class="progress-bar-fill bg-telmex h-2 rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Cajas Terminadas -->
+      <div class="card-shadow p-4 bg-white border-l-4 border-cyan-500 flex flex-col justify-between">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Cajas Intervenidas</span>
+            <div id="kpiCajasDone" class="text-2xl font-black text-slate-800 mt-0.5">0</div>
+          </div>
+          <span class="text-xl p-2 bg-cyan-50 text-cyan-600 rounded-lg">📦</span>
+        </div>
+        <div class="mt-3">
+          <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+            <span>Meta: <span id="kpiCajasMeta">0</span></span>
+            <span id="kpiCajasPercent" class="text-cyan-600 font-bold">0.0%</span>
+          </div>
+          <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+            <div id="kpiCajasProgressBar" class="progress-bar-fill bg-cyan-500 h-2 rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3: Casetas Terminadas -->
+      <div class="card-shadow p-4 bg-white border-l-4 border-indigo-500 flex flex-col justify-between">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Casetas Intervenidas</span>
+            <div id="kpiCasetasDone" class="text-2xl font-black text-slate-800 mt-0.5">0</div>
+          </div>
+          <span class="text-xl p-2 bg-indigo-50 text-indigo-600 rounded-lg">📞</span>
+        </div>
+        <div class="mt-3">
+          <div class="flex justify-between text-xs font-semibold text-slate-600 mb-1">
+            <span>Meta: <span id="kpiCasetasMeta">0</span></span>
+            <span id="kpiCasetasPercent" class="text-indigo-600 font-bold">0.0%</span>
+          </div>
+          <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+            <div id="kpiCasetasProgressBar" class="progress-bar-fill bg-indigo-500 h-2 rounded-full" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: Ritmo y Productividad -->
+      <div class="card-shadow p-4 bg-white border-l-4 border-emerald-500 flex flex-col justify-between">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Ritmo de Trabajo</span>
+            <div id="kpiAvgPerDay" class="text-2xl font-black text-slate-800 mt-0.5">0 <span class="text-xs font-semibold text-slate-500">activos/día</span></div>
+          </div>
+          <span class="text-xl p-2 bg-emerald-50 text-emerald-600 rounded-lg">⚡</span>
+        </div>
+        <div class="mt-2 text-xs text-slate-600">
+          <div class="flex justify-between">
+            <span>Capturas hoy:</span>
+            <span id="kpiDoneToday" class="font-bold text-emerald-700">0</span>
+          </div>
+          <div class="flex justify-between mt-1">
+            <span>Días activos:</span>
+            <span id="kpiActiveDays" class="font-bold">0 días</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Balance General de Materiales -->
+      <div class="card-shadow p-4 bg-white border-l-4 border-amber-500 flex flex-col justify-between">
+        <div class="flex justify-between items-start">
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Estado de Materiales</span>
+            <div id="kpiMaterialStatus" class="text-lg font-black text-slate-800 mt-0.5">🟢 Abastecido</div>
+          </div>
+          <span class="text-xl p-2 bg-amber-50 text-amber-600 rounded-lg">🧰</span>
+        </div>
+        <div class="mt-2 text-xs text-slate-600">
+          <div class="flex justify-between">
+            <span>Materiales Críticos:</span>
+            <span id="kpiCriticalMaterialsCount" class="font-bold text-amber-700">0 ítems</span>
+          </div>
+          <div class="flex justify-between mt-1">
+            <span>Consumo promedio:</span>
+            <span id="kpiMaterialAvgBurn" class="font-bold text-slate-800">Normal</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- NAVEGACIÓN POR PESTAÑAS (TABS) -->
+    <nav class="flex border-b border-slate-200 bg-white rounded-t-xl px-2 overflow-x-auto shadow-sm">
+      <button type="button" class="tab-btn active" onclick="switchTab('tab-materiales')">
+        <span>📦</span>
+        <span>Control de Materiales (Queda vs Falta)</span>
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab('tab-areas')">
+        <span>📍</span>
+        <span>Avance por Áreas y Estados</span>
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab('tab-fechas')">
+        <span>📅</span>
+        <span>Avance por Fechas & Tendencias</span>
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab('tab-registros')">
+        <span>📋</span>
+        <span>Detalle de Registros</span>
+      </button>
+    </nav>
+
+    <!-- ==================== PESTAÑA 1: CONTROL DE MATERIALES ==================== -->
+    <section id="tab-materiales" class="tab-content flex flex-col gap-6">
+      
+      <!-- Banner Informativo de Materiales -->
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-blue-900 shadow-sm">
+        <div class="flex items-center gap-3">
+          <span class="text-2xl">💡</span>
+          <div>
+            <strong class="font-bold text-sm text-blue-950">Cálculo de Consumo Teórico y Balance de Inventario:</strong>
+            <p class="text-blue-800 mt-0.5">El consumo se calcula multiplicando cada caja y caseta terminada por su receta unitaria de materiales. El stock restante y faltante se actualiza en tiempo real contra la meta total.</p>
+          </div>
+        </div>
+        <button type="button" onclick="openMaterialsModal()" class="bg-telmex hover:bg-telmex-dark text-white font-bold px-3.5 py-2 rounded-lg text-xs whitespace-nowrap transition shadow-sm">
+          ✏️ Editar Receta y Suministros
+        </button>
+      </div>
+
+      <!-- Tabla Principal de Balance de Materiales -->
+      <div class="card-shadow bg-white overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex justify-between items-center flex-wrap gap-2">
+          <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <span>🧰</span>
+            <span>Balance General de Materiales (Entradas, Consumo, Remanente y Déficit)</span>
+          </h2>
+          <span class="text-xs text-slate-500">Cantidades redondeadas a unidades operativas</span>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="bg-slate-100/75 text-slate-600 font-bold border-b border-slate-200 uppercase text-[11px] tracking-wider">
+                <th class="py-3 px-4">Material</th>
+                <th class="py-3 px-3">Unidad</th>
+                <th class="py-3 px-3 text-right">Suministrado (Entradas)</th>
+                <th class="py-3 px-3 text-right text-telmex">Consumido (Real)</th>
+                <th class="py-3 px-3 text-right text-emerald-700 bg-emerald-50/50">Stock Actual (Queda)</th>
+                <th class="py-3 px-3 text-right">Requerido Meta Total</th>
+                <th class="py-3 px-3 text-right text-rose-700 bg-rose-50/50">Falta por Suministrar</th>
+                <th class="py-3 px-4 text-center">Estado de Abasto</th>
+              </tr>
+            </thead>
+            <tbody id="materialsTableBody" class="divide-y divide-slate-100 font-medium">
+              <!-- Renderizado dinámico -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Gráficas de Materiales: Consumo vs Disponible -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- Gráfica de Barras de Materiales -->
+        <div class="card-shadow p-5 bg-white flex flex-col justify-between">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-sm font-bold text-slate-800">📊 Porcentaje de Material Consumido vs Stock</h3>
+            <span class="text-xs text-slate-400">Sobre stock suministrado</span>
+          </div>
+          <div class="h-72 relative">
+            <canvas id="chartMaterials"></canvas>
+          </div>
+        </div>
+
+        <!-- Tarjetas Rápidas de Alerta de Materiales -->
+        <div class="card-shadow p-5 bg-white flex flex-col justify-between">
+          <h3 class="text-sm font-bold text-slate-800 mb-3">⚠️ Alertas de Abasto y Recomendaciones</h3>
+          <div id="materialsAlertList" class="flex flex-col gap-2.5 overflow-y-auto max-h-72 pr-1">
+            <!-- Renderizado dinámico -->
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ==================== PESTAÑA 2: AVANCE POR ÁREAS ==================== -->
+    <section id="tab-areas" class="tab-content hidden flex flex-col gap-6">
+      
+      <!-- Gráfica de Barras Top Áreas -->
+      <div class="card-shadow p-5 bg-white">
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800">📍 Comparativa de Avance por Área de Trabajo</h3>
+            <p class="text-xs text-slate-500">Activos Intervenidos vs Meta del Catálogo</p>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="inline-block w-3 h-3 bg-telmex rounded-sm"></span> <span>Intervenidos</span>
+            <span class="inline-block w-3 h-3 bg-slate-300 rounded-sm ml-2"></span> <span>Meta Total</span>
+          </div>
+        </div>
+        <div class="h-80 relative">
+          <canvas id="chartAreas"></canvas>
+        </div>
+      </div>
+
+      <!-- Tabla Detallada por Área -->
+      <div class="card-shadow bg-white overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex justify-between items-center flex-wrap gap-2">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Desglose Detallado por Estado y Área</h3>
+          <input type="text" id="searchAreaTableInput" oninput="filterAreaTable()" placeholder="Buscar área o estado..." class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-telmex">
+        </div>
+        <div class="overflow-x-auto max-h-96">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm">
+              <tr class="text-slate-600 font-bold border-b border-slate-200 uppercase text-[11px]">
+                <th class="py-2.5 px-4">Estado</th>
+                <th class="py-2.5 px-3">Área de Trabajo</th>
+                <th class="py-2.5 px-3 text-right">Meta Cajas</th>
+                <th class="py-2.5 px-3 text-right text-cyan-600">Cajas Hechas</th>
+                <th class="py-2.5 px-3 text-right">Meta Casetas</th>
+                <th class="py-2.5 px-3 text-right text-indigo-600">Casetas Hechas</th>
+                <th class="py-2.5 px-3 text-right font-bold">Meta Total</th>
+                <th class="py-2.5 px-3 text-right font-black text-telmex">Total Hecho</th>
+                <th class="py-2.5 px-4 text-center">% Avance</th>
+              </tr>
+            </thead>
+            <tbody id="areasTableBody" class="divide-y divide-slate-100 font-medium">
+              <!-- Renderizado dinámico -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== PESTAÑA 3: AVANCE POR FECHAS ==================== -->
+    <section id="tab-fechas" class="tab-content hidden flex flex-col gap-6">
+      
+      <!-- Gráfica de Tendencia Temporal (Diaria y Acumulada) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Gráfica Grande de Avance por Fechas -->
+        <div class="card-shadow p-5 bg-white lg:col-span-2">
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <h3 class="text-sm font-bold text-slate-800">📅 Productividad Diaria e Histórico de Avance</h3>
+              <p class="text-xs text-slate-500">Registros por día de Cajas y Casetas</p>
+            </div>
+            <div class="text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-md">
+              Promedio: <span id="avgTrendLabel" class="text-telmex font-bold">0/día</span>
+            </div>
+          </div>
+          <div class="h-80 relative">
+            <canvas id="chartTrend"></canvas>
+          </div>
+        </div>
+
+        <!-- Proyecciones y Distribución de Tipo -->
+        <div class="flex flex-col gap-6">
+          
+          <!-- Distribución Cajas vs Casetas -->
+          <div class="card-shadow p-5 bg-white flex-1 flex flex-col justify-between">
+            <h3 class="text-sm font-bold text-slate-800 mb-2">Proporción por Tipo de Activo</h3>
+            <div class="h-44 relative flex items-center justify-center">
+              <canvas id="chartTypesDoughnut"></canvas>
+            </div>
+            <div class="flex justify-around text-xs font-semibold pt-3 border-t border-slate-100 mt-2">
+              <div class="text-center text-cyan-600">
+                <span class="block text-base font-black" id="donutCajasCount">0</span>
+                <span>📦 Cajas</span>
+              </div>
+              <div class="text-center text-indigo-600">
+                <span class="block text-base font-black" id="donutCasetasCount">0</span>
+                <span>📞 Casetas</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tarjeta de Velocidad de Entrega -->
+          <div class="card-shadow p-4 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-xl">
+            <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider mb-2">Estimación de Cumplimiento</h4>
+            <div class="text-sm font-medium leading-relaxed text-slate-300">
+              Al ritmo actual de <strong class="text-white font-bold" id="paceCurrentLabel">0 activos/día</strong>, la fecha proyectada de término para el volumen actual es:
+            </div>
+            <div class="text-xl font-black text-amber-400 mt-2" id="paceProjectedDate">
+              Calculando...
+            </div>
+            <p class="text-[11px] text-slate-400 mt-1">Meta programada: 31 de Diciembre de 2026</p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ==================== PESTAÑA 4: DETALLE DE REGISTROS ==================== -->
+    <section id="tab-registros" class="tab-content hidden flex flex-col gap-4">
+      
+      <div class="card-shadow bg-white overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex justify-between items-center flex-wrap gap-2">
+          <div class="flex items-center gap-3">
+            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Registros de Evidencias Capturadas</h3>
+            <span id="filteredRecordsBadge" class="badge badge-info">0 registros</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <input type="text" id="searchRecordsInput" oninput="filterRecordsTable()" placeholder="Buscar por ID, folio o calle..." class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-telmex">
+          </div>
+        </div>
+
+        <div class="overflow-x-auto max-h-[500px]">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm">
+              <tr class="text-slate-600 font-bold border-b border-slate-200 uppercase text-[11px]">
+                <th class="py-2.5 px-4">Folio Linkaform</th>
+                <th class="py-2.5 px-3">Fecha / Hora</th>
+                <th class="py-2.5 px-3">Tipo</th>
+                <th class="py-2.5 px-3">Identificador</th>
+                <th class="py-2.5 px-3">Modelo</th>
+                <th class="py-2.5 px-3">Estado</th>
+                <th class="py-2.5 px-3">Área de Trabajo</th>
+                <th class="py-2.5 px-3">Contratista</th>
+                <th class="py-2.5 px-4 text-center">Estatus</th>
+              </tr>
+            </thead>
+            <tbody id="recordsTableBody" class="divide-y divide-slate-100 font-medium">
+              <!-- Renderizado dinámico -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación Simple -->
+        <div class="px-5 py-3 border-t border-slate-200 bg-slate-50 flex justify-between items-center text-xs text-slate-600">
+          <span id="recordsPaginationInfo">Mostrando 1 - 50 de 0</span>
+          <div class="flex gap-1.5">
+            <button type="button" id="btnPrevPage" onclick="changeRecordsPage(-1)" class="px-2.5 py-1 bg-white border border-slate-300 rounded font-semibold hover:bg-slate-100 disabled:opacity-40">Anterior</button>
+            <button type="button" id="btnNextPage" onclick="changeRecordsPage(1)" class="px-2.5 py-1 bg-white border border-slate-300 rounded font-semibold hover:bg-slate-100 disabled:opacity-40">Siguiente</button>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
+      <div>Campaña de Imagen Telmex 2026 • Sistema de Control y Materiales</div>
+      <div>Compatible con Linkaform API & Exportaciones Excel</div>
+    </div>
+  </footer>
+
+  <!-- ==================== MODALES ==================== -->
+
+  <!-- 1. Modal Sincronización Linkaform -->
+  <div id="syncModal" class="modal-overlay hidden">
+    <div class="modal-container p-6">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-4">
+        <h3 class="text-base font-bold text-telmex flex items-center gap-2">
+          <span>🔄</span> Sincronización en Vivo con Linkaform API
+        </h3>
+        <button type="button" onclick="closeSyncModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+      </div>
+
+      <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+        Ingresa tu <strong>API Token</strong> y los IDs de las formas para descargar los registros de evidencias y materiales directamente a este dashboard.
+      </p>
+
+      <form onsubmit="handleLinkaformSync(event)" class="flex flex-col gap-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">API Token de Linkaform:</label>
+          <input type="password" id="inputApiKey" placeholder="Ej: 9a7b4c6e8d..." class="w-full border border-slate-300 rounded-lg p-2 font-mono text-xs focus:ring-2 focus:ring-telmex focus:outline-none">
+          <span class="text-[10px] text-slate-500">Se guarda de forma segura en tu navegador local (localStorage).</span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">ID Forma de Evidencias:</label>
+            <input type="text" id="inputRecordsFormId" value="142786" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-telmex focus:outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">ID Forma de Materiales (Nueva):</label>
+            <input type="text" id="inputMaterialsFormId" placeholder="Ej: 142990" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-telmex focus:outline-none">
+          </div>
+        </div>
+
+        <div id="syncStatusMsg" class="hidden p-3 rounded-lg text-xs font-semibold"></div>
+
+        <div class="flex justify-end gap-2 mt-4 pt-3 border-t border-slate-200">
+          <button type="button" onclick="closeSyncModal()" class="px-4 py-2 border border-slate-300 rounded-lg font-bold text-slate-600 hover:bg-slate-50">Cancelar</button>
+          <button type="submit" id="btnSubmitSync" class="px-5 py-2 bg-telmex hover:bg-telmex-dark text-white rounded-lg font-bold flex items-center gap-1.5 shadow-sm">
+            <span>🚀 Iniciar Sincronización</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Modal Cargar Archivo (Excel / CSV / JSON) -->
+  <div id="importModal" class="modal-overlay hidden">
+    <div class="modal-container p-6">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-4">
+        <h3 class="text-base font-bold text-telmex flex items-center gap-2">
+          <span>📁</span> Cargar Datos desde Archivo (Excel o JSON)
+        </h3>
+        <button type="button" onclick="closeImportModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+      </div>
+
+      <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+        Si descargaste tus respuestas de Linkaform en <strong>Excel (.xlsx)</strong> o <strong>JSON</strong>, cárgalas aquí para actualizar el dashboard al instante sin necesidad de API Token.
+      </p>
+
+      <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer" onclick="document.getElementById('fileUploadInput').click()">
+        <span class="text-3xl block mb-2">📊</span>
+        <span class="text-xs font-bold text-telmex block">Haz clic para seleccionar tu archivo Excel (.xlsx) o JSON</span>
+        <span class="text-[11px] text-slate-400 mt-1 block">O arrastra y suelta el archivo aquí</span>
+        <input type="file" id="fileUploadInput" accept=".xlsx, .xls, .json, .csv" onchange="handleFileSelected(event)" class="hidden">
+      </div>
+
+      <div id="fileImportStatus" class="hidden mt-3 p-3 rounded-lg text-xs font-semibold"></div>
+
+      <div class="flex justify-between items-center mt-5 pt-3 border-t border-slate-200 text-xs">
+        <button type="button" onclick="restoreDefaultRecords()" class="text-rose-600 hover:underline font-semibold">Restaurar datos de ejemplo</button>
+        <button type="button" onclick="closeImportModal()" class="px-4 py-2 border border-slate-300 rounded-lg font-bold text-slate-600 hover:bg-slate-50">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modal Configuración de Materiales y Receta Unitara -->
+  <div id="materialsModal" class="modal-overlay hidden">
+    <div class="modal-container p-6 max-w-2xl">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-3">
+        <h3 class="text-base font-bold text-telmex flex items-center gap-2">
+          <span>⚙️</span> Configurar Receta de Materiales y Suministros
+        </h3>
+        <button type="button" onclick="closeMaterialsModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+      </div>
+
+      <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+        Edita el <strong>consumo teórico por caja o caseta</strong> y el <strong>stock suministrado total</strong> recibido en almacén. Los cambios recalculan automáticamente todos los balances.
+      </p>
+
+      <div class="overflow-x-auto max-h-[380px] border border-slate-200 rounded-lg mb-4">
+        <table class="w-full text-left text-xs">
+          <thead class="bg-slate-100 sticky top-0 border-b border-slate-200 font-bold text-slate-700">
+            <tr>
+              <th class="py-2 px-3">Material</th>
+              <th class="py-2 px-2">Unidad</th>
+              <th class="py-2 px-2 text-right">Suministrado</th>
+              <th class="py-2 px-2 text-right">Por Caja</th>
+              <th class="py-2 px-2 text-right">Por Caseta</th>
+            </tr>
+          </thead>
+          <tbody id="materialsConfigTableBody" class="divide-y divide-slate-100 font-medium">
+            <!-- Renderizado dinámico de inputs -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex justify-between items-center pt-3 border-t border-slate-200 text-xs">
+        <button type="button" onclick="resetDefaultMaterialsConfig()" class="text-rose-600 hover:underline font-semibold">Restaurar valores por defecto</button>
+        <div class="flex gap-2">
+          <button type="button" onclick="closeMaterialsModal()" class="px-4 py-2 border border-slate-300 rounded-lg font-bold text-slate-600 hover:bg-slate-50">Cancelar</button>
+          <button type="button" onclick="saveMaterialsConfig()" class="px-5 py-2 bg-telmex hover:bg-telmex-dark text-white rounded-lg font-bold shadow-sm">Guardar Cambios</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS DE DATOS Y LÓGICA -->
+  <script src="data/metas_catalogo.js"></script>
+  <script src="data/config.js"></script>
+  <script src="data/sample_records.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
