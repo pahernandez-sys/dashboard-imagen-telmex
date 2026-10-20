@@ -18,7 +18,7 @@ let state = {
 // =========================================================
 // INICIALIZACIÓN
 // =========================================================
-const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v3";
+const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v5";
 
 document.addEventListener("DOMContentLoaded", () => {
   loadConfig();
@@ -151,26 +151,47 @@ function updateSyncLabel() {
 // FILTROS Y SELECTORES
 // =========================================================
 function initFilters() {
-  const estadoSelect = document.getElementById("filterEstado");
-  const contratistaSelect = document.getElementById("filterContratista");
+  populateAreaFilter();
+  initDatePresets();
+}
 
-  // Poblar Estados desde CATALOGO_METAS
+function populateAreaFilter() {
+  const areaSelect = document.getElementById("filterArea");
+  if (!areaSelect) return;
+  const currentVal = areaSelect.value;
+  areaSelect.innerHTML = `<option value="">-- Todas las Áreas --</option>`;
+
+  const areaSet = new Set();
   if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
-    const estados = Object.keys(CATALOGO_METAS.estados).sort();
-    estados.forEach(est => {
-      const opt = document.createElement("option");
-      opt.value = est;
-      opt.innerText = est;
-      estadoSelect.appendChild(opt);
+    Object.keys(CATALOGO_METAS.estados).forEach(est => {
+      Object.keys(CATALOGO_METAS.estados[est]).forEach(ar => {
+        if (ar) areaSet.add(ar.toUpperCase().trim());
+      });
     });
   }
+  (state.records || []).forEach(r => {
+    if (r.area_trabajo) areaSet.add(r.area_trabajo.toUpperCase().trim());
+  });
+  (state.materialsLog || []).forEach(m => {
+    if (m.area) areaSet.add(m.area.toUpperCase().trim());
+  });
 
-  // Poblar Contratistas únicos desde records
-  populateContratistasFilter();
+  const sortedAreas = Array.from(areaSet).filter(Boolean).sort();
+  sortedAreas.forEach(ar => {
+    const opt = document.createElement("option");
+    opt.value = ar;
+    opt.innerText = ar;
+    areaSelect.appendChild(opt);
+  });
+
+  if (currentVal && areaSet.has(currentVal)) {
+    areaSelect.value = currentVal;
+  }
 }
 
 function populateContratistasFilter() {
   const contratistaSelect = document.getElementById("filterContratista");
+  if (!contratistaSelect) return;
   const currentVal = contratistaSelect.value;
   contratistaSelect.innerHTML = `<option value="">-- Todos los Contratistas --</option>`;
 
@@ -185,30 +206,18 @@ function populateContratistasFilter() {
 }
 
 function onEstadoFilterChange() {
-  const estado = document.getElementById("filterEstado").value;
-  const areaSelect = document.getElementById("filterArea");
-  areaSelect.innerHTML = `<option value="">-- Todas las Áreas --</option>`;
-
-  if (estado && typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados[estado]) {
-    const areas = Object.keys(CATALOGO_METAS.estados[estado]).sort();
-    areas.forEach(ar => {
-      const opt = document.createElement("option");
-      opt.value = ar;
-      opt.innerText = ar;
-      areaSelect.appendChild(opt);
-    });
-  }
   applyFilters();
 }
 
 function onPresetDateChange() {
-  const preset = document.getElementById("filterPresetDate").value;
+  const presetEl = document.getElementById("filterPresetDate");
+  const preset = presetEl ? presetEl.value : "all";
   const customContainer = document.getElementById("customDateContainer");
 
   if (preset === "custom") {
-    customContainer.classList.remove("hidden");
+    if (customContainer) customContainer.classList.remove("hidden");
   } else {
-    customContainer.classList.add("hidden");
+    if (customContainer) customContainer.classList.add("hidden");
     applyFilters();
   }
 }
@@ -222,12 +231,14 @@ function initDatePresets() {
 }
 
 function resetFilters() {
-  document.getElementById("filterEstado").value = "";
-  document.getElementById("filterArea").innerHTML = `<option value="">-- Todas las Áreas --</option>`;
-  document.getElementById("filterContratista").value = "";
-  document.getElementById("filterTipo").value = "";
-  document.getElementById("filterPresetDate").value = "all";
-  document.getElementById("customDateContainer").classList.add("hidden");
+  const filterArea = document.getElementById("filterArea");
+  if (filterArea) filterArea.value = "";
+  const filterTipo = document.getElementById("filterTipo");
+  if (filterTipo) filterTipo.value = "";
+  const filterPreset = document.getElementById("filterPresetDate");
+  if (filterPreset) filterPreset.value = "all";
+  const customContainer = document.getElementById("customDateContainer");
+  if (customContainer) customContainer.classList.add("hidden");
   applyFilters();
 }
 
@@ -235,11 +246,12 @@ function resetFilters() {
 // APLICACIÓN DE FILTROS & CÁLCULOS
 // =========================================================
 function applyFilters() {
-  const estVal = document.getElementById("filterEstado").value.trim().toUpperCase();
-  const arVal = document.getElementById("filterArea").value.trim().toUpperCase();
-  const contVal = document.getElementById("filterContratista").value.trim();
-  const tipoVal = document.getElementById("filterTipo").value.trim().toUpperCase();
-  const presetVal = document.getElementById("filterPresetDate").value;
+  const arEl = document.getElementById("filterArea");
+  const arVal = arEl ? arEl.value.trim().toUpperCase() : "";
+  const tipoEl = document.getElementById("filterTipo");
+  const tipoVal = tipoEl ? tipoEl.value.trim().toUpperCase() : "";
+  const presetEl = document.getElementById("filterPresetDate");
+  const presetVal = presetEl ? presetEl.value : "all";
 
   // Rango de fechas
   let minDate = null;
@@ -260,14 +272,12 @@ function applyFilters() {
     minDate = d.toISOString().split("T")[0];
     maxDate = today.toISOString().split("T")[0];
   } else if (presetVal === "custom") {
-    minDate = document.getElementById("customDateFrom").value || null;
-    maxDate = document.getElementById("customDateTo").value || null;
+    minDate = document.getElementById("customDateFrom") ? document.getElementById("customDateFrom").value || null : null;
+    maxDate = document.getElementById("customDateTo") ? document.getElementById("customDateTo").value || null : null;
   }
 
   state.filteredRecords = state.records.filter(r => {
-    if (estVal && r.estado && r.estado.toUpperCase() !== estVal) return false;
     if (arVal && r.area_trabajo && r.area_trabajo.toUpperCase() !== arVal) return false;
-    if (contVal && r.contratista !== contVal) return false;
     if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) return false;
     
     if (minDate && r.fecha && r.fecha < minDate) return false;
@@ -291,44 +301,42 @@ function applyFilters() {
 // =========================================================
 function renderKpis() {
   const filtered = state.filteredRecords;
-  const estVal = document.getElementById("filterEstado").value.trim().toUpperCase();
-  const arVal = document.getElementById("filterArea").value.trim().toUpperCase();
+  const arEl = document.getElementById("filterArea");
+  const arVal = arEl ? arEl.value.trim().toUpperCase() : "";
+  const tipoEl = document.getElementById("filterTipo");
+  const tipoVal = tipoEl ? tipoEl.value.trim().toUpperCase() : "";
 
-  // Calcular metas correspondientes al filtro
+  // Calcular metas correspondientes al filtro de Área
   let totalMeta = 0;
   let cajasMeta = 0;
   let casetasMeta = 0;
 
-  if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
-    if (estVal && arVal && CATALOGO_METAS.estados[estVal] && CATALOGO_METAS.estados[estVal][arVal]) {
-      const data = CATALOGO_METAS.estados[estVal][arVal];
-      cajasMeta = data.cajas;
-      casetasMeta = data.casetas;
-      totalMeta = data.total;
-    } else if (estVal && CATALOGO_METAS.estados[estVal]) {
-      Object.values(CATALOGO_METAS.estados[estVal]).forEach(a => {
-        cajasMeta += a.cajas;
-        casetasMeta += a.casetas;
-        totalMeta += a.total;
-      });
-    } else {
-      totalMeta = CATALOGO_METAS.total_general;
-      cajasMeta = CATALOGO_METAS.total_cajas;
-      casetasMeta = CATALOGO_METAS.total_casetas;
-    }
+  if (arVal) {
+    const metaData = getAreaMetas(arVal);
+    cajasMeta = metaData.cajas || 0;
+    casetasMeta = metaData.casetas || 0;
+    totalMeta = metaData.total || (cajasMeta + casetasMeta);
+  } else if (typeof CATALOGO_METAS !== "undefined") {
+    totalMeta = CATALOGO_METAS.total_general;
+    cajasMeta = CATALOGO_METAS.total_cajas;
+    casetasMeta = CATALOGO_METAS.total_casetas;
   }
 
   const cajasDone = filtered.filter(r => r.tipo === "CAJA").length;
   const casetasDone = filtered.filter(r => r.tipo === "CASETA").length;
   const totalDone = filtered.length;
 
-  const totalPercent = totalMeta > 0 ? ((totalDone / totalMeta) * 100).toFixed(1) : "0.0";
+  let activeTargetMeta = totalMeta;
+  if (tipoVal === "CAJA") activeTargetMeta = cajasMeta;
+  else if (tipoVal === "CASETA") activeTargetMeta = casetasMeta;
+
+  const totalPercent = activeTargetMeta > 0 ? ((totalDone / activeTargetMeta) * 100).toFixed(1) : "0.0";
   const cajasPercent = cajasMeta > 0 ? ((cajasDone / cajasMeta) * 100).toFixed(1) : "0.0";
   const casetasPercent = casetasMeta > 0 ? ((casetasDone / casetasMeta) * 100).toFixed(1) : "0.0";
 
   // Actualizar DOM KPIs
   document.getElementById("kpiTotalDone").innerText = totalDone.toLocaleString();
-  document.getElementById("kpiTotalMeta").innerText = totalMeta.toLocaleString();
+  document.getElementById("kpiTotalMeta").innerText = activeTargetMeta.toLocaleString();
   document.getElementById("kpiTotalPercent").innerText = `${totalPercent}%`;
   document.getElementById("kpiTotalProgressBar").style.width = `${Math.min(100, totalPercent)}%`;
 
@@ -1505,6 +1513,7 @@ async function handleLinkaformSync(e) {
 
     localStorage.setItem("telmex_dashboard_last_sync", new Date().toLocaleString("es-MX"));
     updateSyncLabel();
+    populateAreaFilter();
     populateContratistasFilter();
     applyFilters();
     renderMaterialsTab();
@@ -1640,12 +1649,13 @@ function saveAndRefreshImportedRecords(fileName, count, typeLabel = "registros")
   statusEl.innerText = `✅ ¡Éxito! Se cargaron ${count.toLocaleString()} ${typeLabel} correctamente.`;
 
   updateSyncLabel();
+  populateAreaFilter();
   populateContratistasFilter();
   applyFilters();
 }
 
 function restoreDefaultRecords() {
-  const choice = confirm("¿Deseas restaurar los datos en vivo oficiales de Linkaform (99 trabajos y 11 suministros)?\n\nPresiona Aceptar para restaurar los datos oficiales de Linkaform.");
+  const choice = confirm("¿Deseas restaurar los datos en vivo oficiales de Linkaform (107 trabajos y 10 suministros)?\n\nPresiona Aceptar para restaurar los datos oficiales de Linkaform.");
   if (choice) {
     state.records = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS : ((typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : []);
     state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
@@ -1654,6 +1664,7 @@ function restoreDefaultRecords() {
     localStorage.setItem("telmex_dashboard_last_sync", "Datos oficiales Linkaform restaurados");
     recalculateSuministrosFromMaterialsLog();
     updateSyncLabel();
+    populateAreaFilter();
     populateContratistasFilter();
     applyFilters();
     renderMaterialsLogTable();

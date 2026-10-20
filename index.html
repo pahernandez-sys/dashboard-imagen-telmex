@@ -86,46 +86,30 @@
   <!-- ==================== BARRA DE FILTROS ==================== -->
   <section class="bg-white border-b border-slate-200 shadow-sm filter-bar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 items-end">
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
         
-        <!-- Filtro Estado -->
-        <div>
-          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Estado:</label>
-          <select id="filterEstado" onchange="onEstadoFilterChange()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
-            <option value="">-- Todos los Estados --</option>
-          </select>
-        </div>
-
         <!-- Filtro Área de Trabajo -->
         <div>
-          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Área de Trabajo:</label>
-          <select id="filterArea" onchange="applyFilters()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">📍 Área de Trabajo:</label>
+          <select id="filterArea" onchange="applyFilters()" class="w-full text-xs font-semibold bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
             <option value="">-- Todas las Áreas --</option>
-          </select>
-        </div>
-
-        <!-- Filtro Contratista -->
-        <div>
-          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Contratista / Socio:</label>
-          <select id="filterContratista" onchange="applyFilters()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
-            <option value="">-- Todos los Contratistas --</option>
           </select>
         </div>
 
         <!-- Filtro Tipo de Activo -->
         <div>
-          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tipo de Activo:</label>
-          <select id="filterTipo" onchange="applyFilters()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">🏷️ Tipo de Activo:</label>
+          <select id="filterTipo" onchange="applyFilters()" class="w-full text-xs font-semibold bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
             <option value="">-- Todos (Cajas y Casetas) --</option>
             <option value="CAJA">📦 Cajas</option>
             <option value="CASETA">📞 Casetas</option>
           </select>
         </div>
 
-        <!-- Filtro Rango de Fechas -->
+        <!-- Filtro Rango de Fechas / Periodo -->
         <div>
-          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">Periodo:</label>
-          <select id="filterPresetDate" onchange="onPresetDateChange()" class="w-full text-xs bg-slate-50 border border-slate-300 rounded-lg p-2 font-medium text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
+          <label class="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1">📅 Periodo:</label>
+          <select id="filterPresetDate" onchange="onPresetDateChange()" class="w-full text-xs font-semibold bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-700 focus:ring-2 focus:ring-telmex focus:outline-none">
             <option value="all">Histórico Completo</option>
             <option value="today">Hoy</option>
             <option value="7days">Últimos 7 días</option>
@@ -136,7 +120,7 @@
 
         <!-- Botón Limpiar Filtros & Exportar -->
         <div class="flex gap-2">
-          <button type="button" onclick="resetFilters()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs py-2 px-2.5 rounded-lg border border-slate-300 transition flex items-center justify-center gap-1" title="Restablecer todos los filtros">
+          <button type="button" onclick="resetFilters()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2 px-2.5 rounded-lg border border-slate-300 transition flex items-center justify-center gap-1" title="Restablecer todos los filtros">
             <span>🔄</span>
             <span>Limpiar</span>
           </button>
@@ -734,10 +718,10 @@
   </div>
 
   <!-- SCRIPTS DE DATOS Y LÓGICA -->
-  <script src="data/metas_catalogo.js?v=20261019_4"></script>
-  <script src="data/config.js?v=20261019_4"></script>
-  <script src="data/linkaform_live_data.js?v=20261019_4"></script>
-  <script src="data/sample_records.js?v=20261019_4"></script>
-  <script src="app.js?v=20261019_4"></script>
+  <script src="data/metas_catalogo.js?v=20261019_5"></script>
+  <script src="data/config.js?v=20261019_5"></script>
+  <script src="data/linkaform_live_data.js?v=20261019_5"></script>
+  <script src="data/sample_records.js?v=20261019_5"></script>
+  <script src="app.js?v=20261019_5"></script>
 </body>
 </html>
