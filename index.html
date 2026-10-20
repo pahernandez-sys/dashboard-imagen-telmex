@@ -365,6 +365,34 @@
 
       </div>
 
+      <!-- Entradas de Material Registradas en Forma 184350 -->
+      <div class="card-shadow bg-white overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex justify-between items-center flex-wrap gap-2">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <span>📥</span>
+            <span>Bitácora de Suministros por Área (Forma Linkaform 184350)</span>
+          </h3>
+          <span id="materialsLogCount" class="text-xs font-semibold px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full">0 entregas registradas</span>
+        </div>
+        <div class="overflow-x-auto max-h-72 overflow-y-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="sticky top-0 bg-slate-100 z-10 text-slate-600 font-bold border-b border-slate-200 uppercase text-[11px]">
+              <tr>
+                <th class="py-2.5 px-4">Fecha</th>
+                <th class="py-2.5 px-3">Área Operativa</th>
+                <th class="py-2.5 px-3">Material / Vinil</th>
+                <th class="py-2.5 px-3 text-right">Cantidad</th>
+                <th class="py-2.5 px-3">Unidad</th>
+                <th class="py-2.5 px-4 text-center">Evidencia</th>
+              </tr>
+            </thead>
+            <tbody id="materialsLogTableBody" class="divide-y divide-slate-100 font-medium">
+              <!-- Renderizado dinámico -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </section>
 
     <!-- ==================== PESTAÑA 2: AVANCE POR ÁREAS ==================== -->
@@ -554,19 +582,21 @@
 
       <form onsubmit="handleLinkaformSync(event)" class="flex flex-col gap-3 text-xs">
         <div>
-          <label class="block font-bold text-slate-700 mb-1">API Token de Linkaform:</label>
-          <input type="password" id="inputApiKey" placeholder="Ej: 9a7b4c6e8d..." class="w-full border border-slate-300 rounded-lg p-2 font-mono text-xs focus:ring-2 focus:ring-telmex focus:outline-none">
-          <span class="text-[10px] text-slate-500">Se guarda de forma segura en tu navegador local (localStorage).</span>
+          <label class="block font-bold text-slate-700 mb-1">API Token / Llave de API de Linkaform:</label>
+          <input type="password" id="inputApiKey" placeholder="Pega aquí tu API Key de Linkaform..." class="w-full border border-slate-300 rounded-lg p-2 font-mono text-xs focus:ring-2 focus:ring-telmex focus:outline-none">
+          <span class="text-[10px] text-slate-500 block mt-0.5">ℹ️ Se obtiene en Linkaform ➔ Foto de perfil ➔ Mi Perfil / Configuración ➔ API Keys. Se guarda en tu navegador.</span>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block font-bold text-slate-700 mb-1">ID Forma de Evidencias:</label>
+            <label class="block font-bold text-slate-700 mb-1">Forma de Trabajos Realizados:</label>
             <input type="text" id="inputRecordsFormId" value="142786" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-telmex focus:outline-none">
+            <span class="text-[10px] text-slate-400">ID 142786 (Cajas y Casetas)</span>
           </div>
           <div>
-            <label class="block font-bold text-slate-700 mb-1">ID Forma de Materiales (Nueva):</label>
-            <input type="text" id="inputMaterialsFormId" placeholder="Ej: 142990" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-telmex focus:outline-none">
+            <label class="block font-bold text-slate-700 mb-1">Forma de Materiales:</label>
+            <input type="text" id="inputMaterialsFormId" value="184350" class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-telmex focus:outline-none">
+            <span class="text-[10px] text-slate-400">ID 184350 (Control de Materiales)</span>
           </div>
         </div>
 

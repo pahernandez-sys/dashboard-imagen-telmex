@@ -8,6 +8,7 @@ let state = {
   config: null,
   records: [],
   filteredRecords: [],
+  materialsLog: [],
   charts: {},
   currentPage: 1,
   pageSize: 50
@@ -19,10 +20,13 @@ let state = {
 document.addEventListener("DOMContentLoaded", () => {
   loadConfig();
   loadRecords();
+  loadMaterialsLog();
+  recalculateSuministrosFromMaterialsLog();
   initFilters();
   initDatePresets();
   applyFilters();
   renderMaterialsConfigTable();
+  renderMaterialsLogTable();
   updateSyncLabel();
 });
 
@@ -52,6 +56,48 @@ function loadRecords() {
   } else {
     state.records = (typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : [];
   }
+}
+
+// Cargar Bitácora de Suministros de Materiales (Forma 184350)
+function loadMaterialsLog() {
+  const saved = localStorage.getItem("telmex_dashboard_materials_log");
+  if (saved) {
+    try {
+      state.materialsLog = JSON.parse(saved);
+    } catch (e) {
+      state.materialsLog = [];
+    }
+  } else {
+    state.materialsLog = [];
+  }
+}
+
+// Recalcular Suministros de Materiales a partir de las entregas reales registradas
+function recalculateSuministrosFromMaterialsLog() {
+  if (!state.materialsLog || state.materialsLog.length === 0) return;
+
+  const totalsByDesc = {};
+  state.materialsLog.forEach(item => {
+    const desc = (item.descripcion || "").toLowerCase().trim();
+    const qty = parseFloat(item.cantidad) || 0;
+    totalsByDesc[desc] = (totalsByDesc[desc] || 0) + qty;
+  });
+
+  state.config.materiales.forEach(mat => {
+    const matId = mat.id.toLowerCase().replace(/_/g, " ");
+    const matName = mat.nombre.toLowerCase();
+    let matchedQty = 0;
+
+    for (let desc in totalsByDesc) {
+      if (desc === mat.id || desc.includes(matId) || matName.includes(desc) || desc.includes(matName)) {
+        matchedQty += totalsByDesc[desc];
+      }
+    }
+
+    if (matchedQty > 0) {
+      mat.suministrado = matchedQty;
+    }
+  });
 }
 
 function updateSyncLabel() {
@@ -395,6 +441,50 @@ function renderMaterialsTab() {
 
   // Renderizar Gráfica de Materiales
   renderChartMaterials(chartLabels, chartConsumidoData, chartStockQuedaData);
+
+  // Renderizar Bitácora de Suministros (Forma 184350)
+  renderMaterialsLogTable();
+}
+
+function renderMaterialsLogTable() {
+  const tbody = document.getElementById("materialsLogTableBody");
+  const countEl = document.getElementById("materialsLogCount");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+  const log = state.materialsLog || [];
+  if (countEl) {
+    countEl.innerText = `${log.length} entregas registradas`;
+  }
+
+  if (log.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="py-6 text-center text-slate-400 italic">
+          No hay registros de suministros aún. Sincroniza con Linkaform (Forma 184350) o importa un archivo Excel.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  log.forEach(item => {
+    const row = document.createElement("tr");
+    row.className = "hover:bg-slate-50 transition border-b border-slate-100";
+    const fotoHtml = item.foto 
+      ? `<a href="${item.foto}" target="_blank" class="inline-flex items-center gap-1 text-telmex hover:text-telmex-dark font-bold underline"><span>📷</span> Ver Foto</a>`
+      : `<span class="text-slate-400">Sin foto</span>`;
+
+    row.innerHTML = `
+      <td class="py-2.5 px-4 font-mono text-slate-600">${item.fecha || "S/F"}</td>
+      <td class="py-2.5 px-3 font-bold text-slate-800">${item.area || "GENERAL"}</td>
+      <td class="py-2.5 px-3 text-slate-700 font-semibold">${item.descripcion}</td>
+      <td class="py-2.5 px-3 text-right font-black text-emerald-700">${formatNumber(item.cantidad)}</td>
+      <td class="py-2.5 px-3 text-slate-500">${item.unidad || "Pzas"}</td>
+      <td class="py-2.5 px-4 text-center">${fotoHtml}</td>
+    `;
+    tbody.appendChild(row);
+  });
 }
 
 function renderChartMaterials(labels, consumido, queda) {
@@ -908,7 +998,7 @@ function openSyncModal() {
   // Cargar valores guardados
   document.getElementById("inputApiKey").value = state.config.linkaform.apiKey || "";
   document.getElementById("inputRecordsFormId").value = state.config.linkaform.recordsFormId || "142786";
-  document.getElementById("inputMaterialsFormId").value = state.config.linkaform.materialsFormId || "";
+  document.getElementById("inputMaterialsFormId").value = state.config.linkaform.materialsFormId || "184350";
   
   const statusMsg = document.getElementById("syncStatusMsg");
   statusMsg.classList.add("hidden");
@@ -921,14 +1011,14 @@ function closeSyncModal() {
 async function handleLinkaformSync(e) {
   e.preventDefault();
   const apiKey = document.getElementById("inputApiKey").value.trim();
-  const recordsFormId = document.getElementById("inputRecordsFormId").value.trim();
-  const materialsFormId = document.getElementById("inputMaterialsFormId").value.trim();
+  const recordsFormId = document.getElementById("inputRecordsFormId").value.trim() || "142786";
+  const materialsFormId = document.getElementById("inputMaterialsFormId").value.trim() || "184350";
   const statusMsg = document.getElementById("syncStatusMsg");
   const btn = document.getElementById("btnSubmitSync");
 
   if (!apiKey) {
     statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-rose-100 text-rose-800 block";
-    statusMsg.innerText = "Por favor ingresa tu API Token de Linkaform.";
+    statusMsg.innerText = "Por favor ingresa tu API Token / Llave de API de Linkaform.";
     return;
   }
 
@@ -941,60 +1031,101 @@ async function handleLinkaformSync(e) {
   btn.disabled = true;
   btn.innerHTML = `<span>⏳</span> <span>Conectando a Linkaform...</span>`;
   statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-blue-100 text-blue-800 block";
-  statusMsg.innerText = "Consultando respuestas de la forma de evidencias...";
+  statusMsg.innerText = "Consultando respuestas de Linkaform...";
 
   try {
-    const url = `https://app.linkaform.com/api/infosync/form_answer/?form_id=${recordsFormId}&limit=500`;
-    const resp = await fetch(url, {
-      headers: {
-        "Authorization": `Token ${apiKey}`,
-        "Content-Type": "application/json"
+    const authHeaders = {
+      "Authorization": `Token ${apiKey}`,
+      "Content-Type": "application/json"
+    };
+
+    // 1. Descargar Trabajos Realizados (Forma 142786)
+    let recordsCount = 0;
+    if (recordsFormId) {
+      statusMsg.innerText = `Descargando trabajos realizados (Forma ${recordsFormId})...`;
+      const url = `https://app.linkaform.com/api/infosync/form_answer/?form_id=${recordsFormId}&limit=1000`;
+      const resp = await fetch(url, { headers: authHeaders });
+
+      if (!resp.ok) {
+        throw new Error(`Error en API Linkaform Forma ${recordsFormId} (HTTP ${resp.status}): Verifique el Token y permisos.`);
       }
-    });
 
-    if (!resp.ok) {
-      throw new Error(`Error en API Linkaform (HTTP ${resp.status}): Verifique token y permisos.`);
+      const data = await resp.json();
+      const answers = data.data || data.results || data.objects || [];
+      
+      const mappedRecords = answers.map(item => {
+        const answersObj = item.answers || {};
+        const createdAt = item.created_at || '';
+        const datePart = createdAt ? createdAt.split("T")[0] : new Date().toISOString().split("T")[0];
+        const timePart = createdAt && createdAt.includes("T") ? createdAt.split("T")[1].substring(0, 5) : "";
+
+        return {
+          folio: item.folio || `LF-${item.id || Math.floor(Math.random()*10000)}`,
+          fecha: datePart,
+          hora: timePart,
+          tipo: answersObj["6ad52fc6bc424ea79992eabe"] || answersObj.tipo || "CAJA",
+          identificador: answersObj["6ad52fc6bc424ea79992eabf"] || answersObj.distrito_telefono || "S/ID",
+          estado: answersObj["6ad52fc6bc424ea79992eac0"] || answersObj.estado || "GUANAJUATO",
+          area_trabajo: answersObj["6ad52fc6bc424ea79992eac1"] || answersObj.area_trabajo || "CELAYA",
+          contratista: answersObj["6abe9357bef08742fcf94020"] || answersObj["6ad4db82b3d17c91ad1cf387"] || answersObj.contratista || "Lucina Villanueva Hernández",
+          modelo: answersObj["6ab9d647dba7a0c191e6a0f6"] || answersObj["6ad4db82b3d17c91ad1cf389"] || "Sencilla",
+          oferta: answersObj["6a99eb8af9c750d6db214c5d"] || answersObj["6ad4db82b3d17c91ad1cf388"] || "120 MB",
+          estatus: item.status || "Aprobada"
+        };
+      });
+
+      if (mappedRecords.length > 0) {
+        state.records = mappedRecords;
+        localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+        recordsCount = mappedRecords.length;
+      }
     }
 
-    const data = await resp.json();
-    const answers = data.data || data.results || [];
-    
-    // Mapear respuestas de Linkaform
-    const mappedRecords = answers.map(item => {
-      const answersObj = item.answers || {};
-      const createdAt = item.created_at || '';
-      const datePart = createdAt ? createdAt.split("T")[0] : new Date().toISOString().split("T")[0];
-      const timePart = createdAt && createdAt.includes("T") ? createdAt.split("T")[1].substring(0, 5) : "";
+    // 2. Descargar Control de Materiales (Forma 184350)
+    let matCount = 0;
+    if (materialsFormId) {
+      statusMsg.innerText = `Descargando movimientos de materiales (Forma ${materialsFormId})...`;
+      try {
+        const matUrl = `https://app.linkaform.com/api/infosync/form_answer/?form_id=${materialsFormId}&limit=1000`;
+        const matResp = await fetch(matUrl, { headers: authHeaders });
 
-      return {
-        folio: item.folio || `LF-${item.id || Math.floor(Math.random()*10000)}`,
-        fecha: datePart,
-        hora: timePart,
-        tipo: answersObj["6ad52fc6bc424ea79992eabe"] || "CAJA",
-        identificador: answersObj["6ad52fc6bc424ea79992eabf"] || "S/ID",
-        estado: answersObj["6ad52fc6bc424ea79992eac0"] || "GUANAJUATO",
-        area_trabajo: answersObj["6ad52fc6bc424ea79992eac1"] || "CELAYA",
-        contratista: answersObj["6ad4db82b3d17c91ad1cf387"] || "Lucina Villanueva Hernández",
-        modelo: answersObj["6ad4db82b3d17c91ad1cf389"] || "Sencilla",
-        oferta: answersObj["6ad4db82b3d17c91ad1cf388"] || "120 MB",
-        estatus: item.status || "Aprobada"
-      };
-    });
+        if (matResp.ok) {
+          const matData = await matResp.json();
+          const matAnswers = matData.data || matData.results || matData.objects || [];
+          
+          state.materialsLog = matAnswers.map(item => {
+            const a = item.answers || {};
+            const photoArr = a["6ad69fb41583192abb37cdaa"] || a.evidencia || [];
+            const photoUrl = Array.isArray(photoArr) && photoArr.length > 0 ? (photoArr[0].file_url || photoArr[0].url || "") : "";
 
-    if (mappedRecords.length > 0) {
-      state.records = mappedRecords;
-      localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-      localStorage.setItem("telmex_dashboard_last_sync", new Date().toLocaleString("es-MX"));
-      updateSyncLabel();
-      populateContratistasFilter();
-      applyFilters();
+            return {
+              id: item.id || item.folio,
+              area: (a["6ad695943f0d28deb4a6c9a3"] || a.area || "GENERAL").toUpperCase(),
+              descripcion: (a["6ad692011583192abb37cd8f"] || a.descripcion || "MATERIAL").toUpperCase(),
+              cantidad: parseFloat(a["6ad65b0b1b305d8b534b1e13"] || a.cantidad || 0),
+              unidad: (a["6ad695943f0d28deb4a6c9a4"] || a.unidad || "PZAS.").toUpperCase(),
+              fecha: a["6ad65b0b1b305d8b534b1e11"] || (item.created_at ? item.created_at.split("T")[0] : ""),
+              foto: photoUrl
+            };
+          });
 
-      statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-800 block";
-      statusMsg.innerText = `✅ ¡Sincronización exitosa! Se descargaron ${mappedRecords.length} registros.`;
-    } else {
-      statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-amber-100 text-amber-800 block";
-      statusMsg.innerText = `La forma no contiene respuestas registradas aún.`;
+          localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+          recalculateSuministrosFromMaterialsLog();
+          matCount = state.materialsLog.length;
+        }
+      } catch (matErr) {
+        console.warn("Advertencia al sincronizar materiales:", matErr);
+      }
     }
+
+    localStorage.setItem("telmex_dashboard_last_sync", new Date().toLocaleString("es-MX"));
+    updateSyncLabel();
+    populateContratistasFilter();
+    applyFilters();
+    renderMaterialsLogTable();
+
+    statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-800 block";
+    statusMsg.innerText = `✅ ¡Sincronización exitosa! Se descargaron ${recordsCount} trabajos (Forma ${recordsFormId}) y ${matCount} movimientos de materiales (Forma ${materialsFormId}).`;
 
   } catch (err) {
     statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-rose-100 text-rose-800 block";
@@ -1057,7 +1188,29 @@ function handleFileSelected(e) {
           throw new Error("La hoja de cálculo está vacía.");
         }
 
-        // Mapeo flexible de columnas
+        const firstRow = rawJson[0] || {};
+        const isMaterialsSheet = ("Descripcion" in firstRow || "descripcion" in firstRow || "Cantidad" in firstRow || "cantidad" in firstRow) && !("Tipo" in firstRow || "tipo" in firstRow || "identificador" in firstRow);
+
+        if (isMaterialsSheet) {
+          state.materialsLog = rawJson.map(r => ({
+            id: r["Folio"] || r["folio"] || r["ID"] || "",
+            area: (r["Area"] || r["area"] || r["Área"] || "GENERAL").toUpperCase(),
+            descripcion: (r["Descripcion"] || r["descripcion"] || r["Descripción"] || "MATERIAL").toUpperCase(),
+            cantidad: parseFloat(r["Cantidad"] || r["cantidad"] || 0),
+            unidad: (r["Unidad"] || r["unidad"] || r["Título de la pregunta"] || "PZAS.").toUpperCase(),
+            fecha: r["Fecha"] || r["fecha"] || "",
+            foto: r["Evidencia Fotografica"] || r["Foto"] || ""
+          }));
+
+          localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+          recalculateSuministrosFromMaterialsLog();
+          renderMaterialsTab();
+          renderMaterialsLogTable();
+          saveAndRefreshImportedRecords(file.name, state.materialsLog.length, "entregas de materiales (Forma 184350)");
+          return;
+        }
+
+        // Mapeo flexible de columnas para evidencias (Forma 142786)
         const mapped = rawJson.map((r, i) => {
           return {
             folio: r["Folio"] || r["folio"] || r["ID"] || `LF-${i + 1}`,
@@ -1074,7 +1227,7 @@ function handleFileSelected(e) {
         });
 
         state.records = mapped;
-        saveAndRefreshImportedRecords(file.name, mapped.length);
+        saveAndRefreshImportedRecords(file.name, mapped.length, "trabajos de campo");
 
       } catch (err) {
         statusEl.className = "mt-3 p-3 rounded-lg text-xs font-semibold bg-rose-100 text-rose-800 block";
@@ -1085,13 +1238,13 @@ function handleFileSelected(e) {
   }
 }
 
-function saveAndRefreshImportedRecords(fileName, count) {
+function saveAndRefreshImportedRecords(fileName, count, typeLabel = "registros") {
   localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
   localStorage.setItem("telmex_dashboard_last_sync", `Archivo: ${fileName} (${new Date().toLocaleTimeString("es-MX")})`);
   
   const statusEl = document.getElementById("fileImportStatus");
   statusEl.className = "mt-3 p-3 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-800 block";
-  statusEl.innerText = `✅ ¡Éxito! Se cargaron ${count.toLocaleString()} registros correctamente.`;
+  statusEl.innerText = `✅ ¡Éxito! Se cargaron ${count.toLocaleString()} ${typeLabel} correctamente.`;
 
   updateSyncLabel();
   populateContratistasFilter();
