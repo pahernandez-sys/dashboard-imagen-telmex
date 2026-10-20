@@ -1207,29 +1207,12 @@ function renderFechasTab() {
   const totalCasetas = filtered.filter(r => r.tipo === 'CASETA').length;
   renderChartDoughnut(totalCajas, totalCasetas);
 
-  // Promedios y Proyección
+  // Promedio Diario
   const activeDays = Math.max(1, sortedDates.length);
   const avgPace = Math.round(filtered.length / activeDays);
   
   const avgLabel = document.getElementById("avgTrendLabel");
-  const paceLabel = document.getElementById("paceCurrentLabel");
-  const projDateLabel = document.getElementById("paceProjectedDate");
-
   if (avgLabel) avgLabel.innerText = `${avgPace} activos/día`;
-  if (paceLabel) paceLabel.innerText = `${avgPace} activos/día`;
-
-  if (projDateLabel) {
-    const totalMeta = (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_general : 138720;
-    const remaining = Math.max(0, totalMeta - filtered.length);
-    if (avgPace > 0) {
-      const daysNeeded = Math.ceil(remaining / avgPace);
-      const estDate = new Date();
-      estDate.setDate(estDate.getDate() + daysNeeded);
-      projDateLabel.innerText = estDate.toLocaleDateString("es-MX", { year: "numeric", month: "long", day: "numeric" });
-    } else {
-      projDateLabel.innerText = "Sin datos suficientes";
-    }
-  }
 }
 
 function renderChartTrend(dates, cajas, casetas, acumulado) {
