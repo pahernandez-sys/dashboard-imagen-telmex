@@ -18,7 +18,7 @@ let state = {
 // =========================================================
 // INICIALIZACIÓN
 // =========================================================
-const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v6";
+const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v7";
 
 // Obtener fecha local en formato YYYY-MM-DD evitando el desfase de zona horaria UTC
 function getLocalDateStr(date = new Date()) {
@@ -1817,6 +1817,19 @@ function exportDataToExcel() {
   // Descargar
   const dateStr = getLocalDateStr();
   XLSX.writeFile(wb, `Reporte_Materiales_Telmex_Por_Area_${dateStr}.xlsx`);
+}
+
+// Descargar Réplica Oficial del Reporte Diario de Casetas y Cajas (con formato y fórmulas intactas)
+function exportReporteDiarioExcel() {
+  const dateStr = getLocalDateStr();
+  const fileUrl = `data/Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx?v=${new Date().getTime()}`;
+  
+  const a = document.createElement("a");
+  a.href = fileUrl;
+  a.download = `Reporte_diarios_Casetas_y_Cajas_Contratistas_2026_${dateStr}.xlsx`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
 
 // Utilidad Formato de Números

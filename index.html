@@ -118,13 +118,17 @@
           </select>
         </div>
 
-        <!-- Botón Limpiar Filtros & Exportar -->
-        <div class="flex gap-2">
-          <button type="button" onclick="resetFilters()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2 px-2.5 rounded-lg border border-slate-300 transition flex items-center justify-center gap-1" title="Restablecer todos los filtros">
+        <!-- Botones de Acción -->
+        <div class="flex gap-1.5">
+          <button type="button" onclick="resetFilters()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2 px-2 rounded-lg border border-slate-300 transition flex items-center justify-center gap-1" title="Restablecer todos los filtros">
             <span>🔄</span>
-            <span>Limpiar</span>
+            <span class="hidden sm:inline">Limpiar</span>
           </button>
-          <button type="button" onclick="exportDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-3 rounded-lg transition flex items-center justify-center gap-1 shadow-sm" title="Descargar reporte en Excel">
+          <button type="button" onclick="exportReporteDiarioExcel()" class="flex-1 bg-telmex hover:bg-telmex-dark text-white font-bold text-xs py-2 px-2.5 rounded-lg transition flex items-center justify-center gap-1 shadow-sm" title="Descargar Reporte Diario Casetas y Cajas Oficial Actualizado (Réplica con formatos y fórmulas)">
+            <span>📊</span>
+            <span>Reporte Diario</span>
+          </button>
+          <button type="button" onclick="exportDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2 px-2.5 rounded-lg transition flex items-center justify-center gap-1 shadow-sm" title="Descargar balance de materiales y base de datos en Excel">
             <span>📥</span>
             <span>Excel</span>
           </button>
@@ -697,10 +701,10 @@
   </div>
 
   <!-- SCRIPTS DE DATOS Y LÓGICA -->
-  <script src="data/metas_catalogo.js?v=20261019_6"></script>
-  <script src="data/config.js?v=20261019_6"></script>
-  <script src="data/linkaform_live_data.js?v=20261019_6"></script>
-  <script src="data/sample_records.js?v=20261019_6"></script>
-  <script src="app.js?v=20261019_6"></script>
+  <script src="data/metas_catalogo.js?v=20261019_7"></script>
+  <script src="data/config.js?v=20261019_7"></script>
+  <script src="data/linkaform_live_data.js?v=20261019_7"></script>
+  <script src="data/sample_records.js?v=20261019_7"></script>
+  <script src="app.js?v=20261019_7"></script>
 </body>
 </html>

@@ -214,6 +214,13 @@ def main():
 
     process_and_save_data(raw_records, raw_materials, output_dir)
 
+    try:
+        from build_reporte_diario import build_reporte_diario
+        print("\n[Generando Reporte Diario Excel actualizado...]")
+        build_reporte_diario()
+    except Exception as e:
+        print(f"  [Aviso] No se pudo generar el Reporte Diario Excel: {e}")
+
     print("\n" + "=" * 65)
     print("SINCRONIZACION COMPLETADA EXITOSAMENTE")
     print("=" * 65)
