@@ -160,6 +160,19 @@ def build_reporte_diario():
             ws_casetas.cell(r, c).border = copy(ws_casetas.cell(25, c).border)
     print("  [Bordes] Normalizados bordes de filas 26-28 en Casetas.")
 
+    # Normalizar fuentes en área de materiales y resumen (quitar negrita)
+    for r in range(14, 79):
+        for c in range(94, 102):
+            cell = ws_casetas.cell(r, c)
+            if cell.font and cell.font.bold:
+                cell.font = openpyxl.styles.Font(
+                    name=cell.font.name or "Calibri",
+                    size=cell.font.size or 11,
+                    bold=False,
+                    color=cell.font.color
+                )
+    print("  [Fuentes] Normalizadas fuentes (sin negrita) en área de materiales de Casetas.")
+
     # =========================================================
     # HOJA 2: Programa CAJAS REPORTE DIARIO
     # =========================================================
@@ -232,9 +245,29 @@ def build_reporte_diario():
     for r in [27, 28, 29]:
         for c in range(1, ws_cajas.max_column + 1):
             ws_cajas.cell(r, c).border = copy(ws_cajas.cell(26, c).border)
+    print("  [Bordes] Normalizados bordes de filas 27-29 en Cajas.")
+
+    # Normalizar fuentes en área de materiales y resumen (quitar negrita)
+    for r in range(14, 77):
+        for c in range(88, 96):
+            cell = ws_cajas.cell(r, c)
+            if cell.font and cell.font.bold:
+                cell.font = openpyxl.styles.Font(
+                    name=cell.font.name or "Calibri",
+                    size=cell.font.size or 11,
+                    bold=False,
+                    color=cell.font.color
+                )
+    print("  [Fuentes] Normalizadas fuentes (sin negrita) en área de materiales de Cajas.")
+
+    # Vaciar completamente la fila 78 en Cajas (quitar MORELOS y cualquier formato)
     for c in range(1, ws_cajas.max_column + 1):
-        ws_cajas.cell(78, c).border = openpyxl.styles.Border()
-    print("  [Bordes] Normalizados bordes de filas 27-29 y 78 en Cajas.")
+        cell = ws_cajas.cell(78, c)
+        cell.value = None
+        cell.border = openpyxl.styles.Border()
+        cell.fill = openpyxl.styles.PatternFill(fill_type=None)
+        cell.font = openpyxl.styles.Font()
+    print("  [Fila 78] Fila 78 en Cajas vaciada al 100%.")
 
     # Guardar en local del repositorio para descarga en GitHub Pages
     os.makedirs(os.path.dirname(LOCAL_TEMPLATE_PATH), exist_ok=True)
