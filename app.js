@@ -506,18 +506,17 @@ function renderMaterialsTab() {
   const selectedArea = state.selectedMaterialArea || "";
   const tbody = document.getElementById("materialsTableBody");
   const alertList = document.getElementById("materialsAlertList");
-  if (!tbody) return;
 
-  tbody.innerHTML = "";
+  if (tbody) tbody.innerHTML = "";
   if (alertList) alertList.innerHTML = "";
 
-  // 1. Actualizar Encabezados y Badges
+  // 1. Actualizar Encabezados y Badges si existen
   const badgeEl = document.getElementById("activeMaterialAreaBadge");
   const titleEl = document.getElementById("materialsTableTitle");
   const subEl = document.getElementById("materialsAreaSubtitle");
 
   if (badgeEl) {
-    badgeEl.innerText = selectedArea ? `PLAZA: ${selectedArea}` : "TODAS LAS ÁREAS (CONSOLIDADO)";
+    badgeEl.innerText = selectedArea ? `PLAZA: ${selectedArea}` : "TODAS LAS ÁREAS";
     badgeEl.className = selectedArea 
       ? "bg-amber-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm" 
       : "bg-telmex text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm";
@@ -627,7 +626,7 @@ function renderMaterialsTab() {
       <td class="py-3 px-3 text-right font-black text-rose-700 bg-rose-50/40">${formatNumber(falta)}</td>
       <td class="py-3 px-4 text-center">${statusBadge}</td>
     `;
-    tbody.appendChild(row);
+    if (tbody) tbody.appendChild(row);
 
     // Datos para gráfica
     if (suministrado > 0 || consumido > 0) {
@@ -697,9 +696,11 @@ function renderMaterialsAreaMatrix() {
     if (r.area_trabajo) areaSet.add(r.area_trabajo.toUpperCase().trim());
   });
 
-  const areas = Array.from(areaSet).sort();
+  const selectedArea = state.selectedMaterialArea || "";
+  const allAreas = Array.from(areaSet).sort();
+  const areas = selectedArea ? allAreas.filter(a => a === selectedArea) : allAreas;
   if (areas.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-slate-400 italic">No hay registros de materiales ni trabajos aún.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-slate-400 italic">No hay registros de materiales ni trabajos para esta plaza aún.</td></tr>`;
     return;
   }
 
@@ -1274,12 +1275,15 @@ function switchTab(tabId) {
 // MODAL: CONFIGURAR MATERIALES
 // =========================================================
 function openMaterialsModal() {
+  const modal = document.getElementById("materialsModal");
+  if (!modal) return;
   renderMaterialsConfigTable();
-  document.getElementById("materialsModal").classList.remove("hidden");
+  modal.classList.remove("hidden");
 }
 
 function closeMaterialsModal() {
-  document.getElementById("materialsModal").classList.add("hidden");
+  const modal = document.getElementById("materialsModal");
+  if (modal) modal.classList.add("hidden");
 }
 
 function renderMaterialsConfigTable() {

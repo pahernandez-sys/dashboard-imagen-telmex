@@ -72,12 +72,6 @@
           <span>📁</span>
           <span>Cargar Datos</span>
         </button>
-
-        <!-- Botón Configurar Materiales -->
-        <button type="button" onclick="openMaterialsModal()" class="bg-white text-telmex hover:bg-sky-50 text-xs font-bold px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow-sm">
-          <span>⚙️</span>
-          <span>Materiales</span>
-        </button>
       </div>
 
     </div>
@@ -286,65 +280,18 @@
             </select>
           </div>
 
-          <button type="button" onclick="openMaterialsModal()" class="mt-4 md:mt-0 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-2 rounded-lg text-xs whitespace-nowrap transition border border-slate-300 flex items-center gap-1.5 shadow-sm">
-            <span>⚙️</span> Receta
-          </button>
         </div>
       </div>
 
-      <!-- Tabla Principal de Balance de Materiales -->
-      <div class="card-shadow bg-white overflow-hidden">
-        <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex justify-between items-center flex-wrap gap-2">
-          <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-            <span>🧰</span>
-            <span id="materialsTableTitle">Balance de Materiales (Entradas vs Viniles Instalados)</span>
-          </h2>
-          <span id="materialsAreaSubtitle" class="text-xs text-slate-500 font-medium">Contabilización directa por número de viniles instalados</span>
+      <!-- Gráfica de Barras de Materiales -->
+      <div class="card-shadow p-5 bg-white">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-sm font-bold text-slate-800">📊 Porcentaje de Material Consumido vs Stock</h3>
+          <span class="text-xs text-slate-400">Sobre stock suministrado por plaza</span>
         </div>
-        
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr class="bg-slate-100/75 text-slate-600 font-bold border-b border-slate-200 uppercase text-[11px] tracking-wider">
-                <th class="py-3 px-4">Material / Tipo</th>
-                <th class="py-3 px-3">Unidad</th>
-                <th class="py-3 px-3 text-right">Suministrado (Entradas)</th>
-                <th class="py-3 px-3 text-right text-telmex">Viniles Instalados</th>
-                <th class="py-3 px-3 text-right text-emerald-700 bg-emerald-50/50">Stock Disponible (Sobran)</th>
-                <th class="py-3 px-3 text-right">Meta Área</th>
-                <th class="py-3 px-3 text-right text-rose-700 bg-rose-50/50">Falta por Surtir</th>
-                <th class="py-3 px-4 text-center">Estado de Abasto</th>
-              </tr>
-            </thead>
-            <tbody id="materialsTableBody" class="divide-y divide-slate-100 font-medium">
-              <!-- Renderizado dinámico -->
-            </tbody>
-          </table>
+        <div class="h-72 relative">
+          <canvas id="chartMaterials"></canvas>
         </div>
-      </div>
-
-      <!-- Gráficas de Materiales: Consumo vs Disponible -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        <!-- Gráfica de Barras de Materiales -->
-        <div class="card-shadow p-5 bg-white flex flex-col justify-between">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-sm font-bold text-slate-800">📊 Porcentaje de Material Consumido vs Stock</h3>
-            <span class="text-xs text-slate-400">Sobre stock suministrado</span>
-          </div>
-          <div class="h-72 relative">
-            <canvas id="chartMaterials"></canvas>
-          </div>
-        </div>
-
-        <!-- Tarjetas Rápidas de Alerta de Materiales -->
-        <div class="card-shadow p-5 bg-white flex flex-col justify-between">
-          <h3 class="text-sm font-bold text-slate-800 mb-3">⚠️ Alertas de Abasto y Recomendaciones</h3>
-          <div id="materialsAlertList" class="flex flex-col gap-2.5 overflow-y-auto max-h-72 pr-1">
-            <!-- Renderizado dinámico -->
-          </div>
-        </div>
-
       </div>
 
       <!-- Matriz Comparativa de Balance de Materiales por Área -->
@@ -659,52 +606,11 @@
     </div>
   </div>
 
-  <!-- 3. Modal Configuración de Materiales y Receta Unitara -->
-  <div id="materialsModal" class="modal-overlay hidden">
-    <div class="modal-container p-6 max-w-2xl">
-      <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-3">
-        <h3 class="text-base font-bold text-telmex flex items-center gap-2">
-          <span>⚙️</span> Configurar Receta de Materiales y Suministros
-        </h3>
-        <button type="button" onclick="closeMaterialsModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
-      </div>
-
-      <p class="text-xs text-slate-600 mb-4 leading-relaxed">
-        Edita el <strong>consumo teórico por caja o caseta</strong> y el <strong>stock suministrado total</strong> recibido en almacén. Los cambios recalculan automáticamente todos los balances.
-      </p>
-
-      <div class="overflow-x-auto max-h-[380px] border border-slate-200 rounded-lg mb-4">
-        <table class="w-full text-left text-xs">
-          <thead class="bg-slate-100 sticky top-0 border-b border-slate-200 font-bold text-slate-700">
-            <tr>
-              <th class="py-2 px-3">Material</th>
-              <th class="py-2 px-2">Unidad</th>
-              <th class="py-2 px-2 text-right">Suministrado</th>
-              <th class="py-2 px-2 text-right">Por Caja</th>
-              <th class="py-2 px-2 text-right">Por Caseta</th>
-            </tr>
-          </thead>
-          <tbody id="materialsConfigTableBody" class="divide-y divide-slate-100 font-medium">
-            <!-- Renderizado dinámico de inputs -->
-          </tbody>
-        </table>
-      </div>
-
-      <div class="flex justify-between items-center pt-3 border-t border-slate-200 text-xs">
-        <button type="button" onclick="resetDefaultMaterialsConfig()" class="text-rose-600 hover:underline font-semibold">Restaurar valores por defecto</button>
-        <div class="flex gap-2">
-          <button type="button" onclick="closeMaterialsModal()" class="px-4 py-2 border border-slate-300 rounded-lg font-bold text-slate-600 hover:bg-slate-50">Cancelar</button>
-          <button type="button" onclick="saveMaterialsConfig()" class="px-5 py-2 bg-telmex hover:bg-telmex-dark text-white rounded-lg font-bold shadow-sm">Guardar Cambios</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- SCRIPTS DE DATOS Y LÓGICA -->
-  <script src="data/metas_catalogo.js?v=20261019_7"></script>
-  <script src="data/config.js?v=20261019_7"></script>
-  <script src="data/linkaform_live_data.js?v=20261019_7"></script>
-  <script src="data/sample_records.js?v=20261019_7"></script>
-  <script src="app.js?v=20261019_7"></script>
+  <script src="data/metas_catalogo.js?v=20261019_8"></script>
+  <script src="data/config.js?v=20261019_8"></script>
+  <script src="data/linkaform_live_data.js?v=20261019_8"></script>
+  <script src="data/sample_records.js?v=20261019_8"></script>
+  <script src="app.js?v=20261019_8"></script>
 </body>
 </html>
