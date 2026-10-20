@@ -1,4 +1,4 @@
-const INITIAL_RECORDS = [
+const SAMPLE_DEMO_RECORDS = [
   {
     "folio": "LF-1001",
     "fecha": "2026-10-01",
@@ -20622,3 +20622,8 @@ const INITIAL_RECORDS = [
     "estatus": "Aprobada"
   }
 ];
+
+// Por defecto se cargan los datos reales sincronizados en vivo desde Linkaform (99 registros y 11 materiales)
+const INITIAL_RECORDS = (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && LINKAFORM_LIVE_RECORDS.length > 0)
+  ? LINKAFORM_LIVE_RECORDS
+  : SAMPLE_DEMO_RECORDS;

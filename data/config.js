@@ -9,7 +9,8 @@ const DEFAULT_CONFIG = {
     apiUrl: "https://app.linkaform.com/api/infosync/",
     recordsFormId: "142786",  // Forma de Trabajos Realizados (Cajas y Casetas)
     materialsFormId: "184350", // Forma Oficial de Recepción y Control de Materiales
-    apiKey: ""                // Token de usuario / API Key para consultas en vivo
+    username: "pahernandez@operacionpci.com.mx", // Usuario Linkaform
+    apiKey: "003ab07a66c6795f8d3fcca2a3b6f94a7f06258e" // Token de usuario / API Key para consultas en vivo
   },
 
   // Mapeo Oficial de Campos Linkaform
@@ -52,11 +53,23 @@ const DEFAULT_CONFIG = {
       nombre: "Vinil Tradicional Sencilla 200 MB",
       categoria: "Viniles Cajas",
       unidad: "Pzas",
-      suministrado: 5000,
+      suministrado: 448,
       consumo_por_caja: 0.60,
       consumo_por_caseta: 0.0,
-      stock_minimo_alerta: 300,
+      stock_minimo_alerta: 100,
       icono: "🏷️"
+    },
+    {
+      id: "envolvelte_secillo_200_mb",
+      alias: ["envolvente_sencillo_200_mb", "envolvelte secillo 200 mb", "envolvente sencillo 200 mb"],
+      nombre: "Vinil Envolvente Sencillo 200 MB",
+      categoria: "Viniles Cajas",
+      unidad: "Pzas",
+      suministrado: 62,
+      consumo_por_caja: 0.15,
+      consumo_por_caseta: 0.0,
+      stock_minimo_alerta: 30,
+      icono: "📦"
     },
     {
       id: "tradicional_doble_200_mb",
@@ -104,46 +117,50 @@ const DEFAULT_CONFIG = {
     },
     {
       id: "deplasamiento_sencilla_200_mb",
+      alias: ["desplazamiento_sencilla_200_mb", "deplasamiento sencilla 200 mb", "desplazamiento sencilla 200 mb"],
       nombre: "Vinil Desplazamiento Sencilla 200 MB",
       categoria: "Viniles Cajas",
       unidad: "Pzas",
-      suministrado: 600,
+      suministrado: 93,
       consumo_por_caja: 0.03,
       consumo_por_caseta: 0.0,
-      stock_minimo_alerta: 50,
+      stock_minimo_alerta: 20,
       icono: "🏷️"
     },
     {
       id: "deplasamiento_doble_200_mb",
+      alias: ["desplazamiento_doble_200_mb", "deplasamiento doble 200 mb", "desplazamiento doble 200 mb"],
       nombre: "Vinil Desplazamiento Doble 200 MB",
       categoria: "Viniles Cajas",
       unidad: "Pzas",
-      suministrado: 400,
+      suministrado: 15,
       consumo_por_caja: 0.02,
       consumo_por_caseta: 0.0,
-      stock_minimo_alerta: 30,
+      stock_minimo_alerta: 10,
       icono: "🏷️"
     },
     {
       id: "lateral_caseta_normal_200_mb",
+      alias: ["lateral caseta normal 200 mb"],
       nombre: "Lateral Caseta Normal 200 MB",
       categoria: "Viniles Casetas",
       unidad: "Juegos",
-      suministrado: 2500,
+      suministrado: 602,
       consumo_por_caja: 0.0,
       consumo_por_caseta: 1.0,
-      stock_minimo_alerta: 200,
+      stock_minimo_alerta: 50,
       icono: "📞"
     },
     {
       id: "lateral_caseta_mini_200_mb",
+      alias: ["lateral caseta mini 200 mb"],
       nombre: "Lateral Caseta Mini 200 MB",
       categoria: "Viniles Casetas",
       unidad: "Juegos",
-      suministrado: 1200,
+      suministrado: 64,
       consumo_por_caja: 0.0,
       consumo_por_caseta: 0.3,
-      stock_minimo_alerta: 100,
+      stock_minimo_alerta: 20,
       icono: "📞"
     },
     {

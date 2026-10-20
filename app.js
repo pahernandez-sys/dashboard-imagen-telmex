@@ -17,8 +17,11 @@ let state = {
 // =========================================================
 // INICIALIZACIÓN
 // =========================================================
+const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v1";
+
 document.addEventListener("DOMContentLoaded", () => {
   loadConfig();
+  checkAndMigrateLiveData();
   loadRecords();
   loadMaterialsLog();
   recalculateSuministrosFromMaterialsLog();
@@ -30,12 +33,29 @@ document.addEventListener("DOMContentLoaded", () => {
   updateSyncLabel();
 });
 
+// Auto-migración para cargar los 99 trabajos y 11 suministros oficiales de Linkaform
+function checkAndMigrateLiveData() {
+  const currentVer = localStorage.getItem("telmex_data_version");
+  if (currentVer !== LIVE_DATA_VERSION && typeof LINKAFORM_LIVE_RECORDS !== "undefined") {
+    state.records = LINKAFORM_LIVE_RECORDS;
+    state.materialsLog = typeof LINKAFORM_LIVE_MATERIALS !== "undefined" ? LINKAFORM_LIVE_MATERIALS : [];
+    localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+    localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+    localStorage.setItem("telmex_data_version", LIVE_DATA_VERSION);
+    localStorage.setItem("telmex_dashboard_last_sync", "Sincronización Linkaform (99 trabajos, 11 entregas)");
+  }
+}
+
 // Cargar Configuración de Materiales (localStorage o por defecto)
 function loadConfig() {
   const saved = localStorage.getItem("telmex_dashboard_config");
   if (saved) {
     try {
       state.config = JSON.parse(saved);
+      // Garantizar que la cuenta Linkaform esté preconfigurada
+      if (!state.config.linkaform) state.config.linkaform = {};
+      if (!state.config.linkaform.username) state.config.linkaform.username = DEFAULT_CONFIG.linkaform.username;
+      if (!state.config.linkaform.apiKey) state.config.linkaform.apiKey = DEFAULT_CONFIG.linkaform.apiKey;
     } catch (e) {
       state.config = DEFAULT_CONFIG;
     }
@@ -44,17 +64,17 @@ function loadConfig() {
   }
 }
 
-// Cargar Registros (localStorage o INITIAL_RECORDS)
+// Cargar Registros (localStorage o LINKAFORM_LIVE_RECORDS)
 function loadRecords() {
   const saved = localStorage.getItem("telmex_dashboard_records");
   if (saved) {
     try {
       state.records = JSON.parse(saved);
     } catch (e) {
-      state.records = (typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : [];
+      state.records = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS : ((typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : []);
     }
   } else {
-    state.records = (typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : [];
+    state.records = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS : ((typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : []);
   }
 }
 
@@ -65,11 +85,24 @@ function loadMaterialsLog() {
     try {
       state.materialsLog = JSON.parse(saved);
     } catch (e) {
-      state.materialsLog = [];
+      state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
     }
   } else {
-    state.materialsLog = [];
+    state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
   }
+}
+
+// Normalizador de texto para tolerar pequeñas variaciones o faltas ortográficas del catálogo
+function normalizeMaterialStr(str) {
+  return (str || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/envolvelte/g, "envolvente")
+    .replace(/secillo/g, "sencillo")
+    .replace(/deplasamiento/g, "desplazamiento")
+    .replace(/[^a-z0-9]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 // Recalcular Suministros de Materiales a partir de las entregas reales registradas
@@ -78,18 +111,18 @@ function recalculateSuministrosFromMaterialsLog() {
 
   const totalsByDesc = {};
   state.materialsLog.forEach(item => {
-    const desc = (item.descripcion || "").toLowerCase().trim();
+    const norm = normalizeMaterialStr(item.descripcion);
     const qty = parseFloat(item.cantidad) || 0;
-    totalsByDesc[desc] = (totalsByDesc[desc] || 0) + qty;
+    totalsByDesc[norm] = (totalsByDesc[norm] || 0) + qty;
   });
 
   state.config.materiales.forEach(mat => {
-    const matId = mat.id.toLowerCase().replace(/_/g, " ");
-    const matName = mat.nombre.toLowerCase();
+    const normId = normalizeMaterialStr(mat.id);
+    const normName = normalizeMaterialStr(mat.nombre);
     let matchedQty = 0;
 
     for (let desc in totalsByDesc) {
-      if (desc === mat.id || desc.includes(matId) || matName.includes(desc) || desc.includes(matName)) {
+      if (desc === normId || normName.includes(desc) || desc.includes(normId) || (mat.alias && mat.alias.some(a => normalizeMaterialStr(a) === desc))) {
         matchedQty += totalsByDesc[desc];
       }
     }
@@ -995,8 +1028,12 @@ function openSyncModal() {
   const modal = document.getElementById("syncModal");
   modal.classList.remove("hidden");
 
-  // Cargar valores guardados
-  document.getElementById("inputApiKey").value = state.config.linkaform.apiKey || "";
+  // Cargar valores guardados o predeterminados
+  const userEl = document.getElementById("inputUsername");
+  if (userEl) {
+    userEl.value = state.config.linkaform.username || "pahernandez@operacionpci.com.mx";
+  }
+  document.getElementById("inputApiKey").value = state.config.linkaform.apiKey || "003ab07a66c6795f8d3fcca2a3b6f94a7f06258e";
   document.getElementById("inputRecordsFormId").value = state.config.linkaform.recordsFormId || "142786";
   document.getElementById("inputMaterialsFormId").value = state.config.linkaform.materialsFormId || "184350";
   
@@ -1010,6 +1047,8 @@ function closeSyncModal() {
 
 async function handleLinkaformSync(e) {
   e.preventDefault();
+  const userEl = document.getElementById("inputUsername");
+  const username = userEl ? userEl.value.trim() : "pahernandez@operacionpci.com.mx";
   const apiKey = document.getElementById("inputApiKey").value.trim();
   const recordsFormId = document.getElementById("inputRecordsFormId").value.trim() || "142786";
   const materialsFormId = document.getElementById("inputMaterialsFormId").value.trim() || "184350";
@@ -1018,11 +1057,12 @@ async function handleLinkaformSync(e) {
 
   if (!apiKey) {
     statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-rose-100 text-rose-800 block";
-    statusMsg.innerText = "Por favor ingresa tu API Token / Llave de API de Linkaform.";
+    statusMsg.innerText = "Por favor ingresa tu API Key de Linkaform.";
     return;
   }
 
-  // Guardar en config
+  // Guardar en config local
+  state.config.linkaform.username = username;
   state.config.linkaform.apiKey = apiKey;
   state.config.linkaform.recordsFormId = recordsFormId;
   state.config.linkaform.materialsFormId = materialsFormId;
@@ -1031,18 +1071,35 @@ async function handleLinkaformSync(e) {
   btn.disabled = true;
   btn.innerHTML = `<span>⏳</span> <span>Conectando a Linkaform...</span>`;
   statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-blue-100 text-blue-800 block";
-  statusMsg.innerText = "Consultando respuestas de Linkaform...";
+  statusMsg.innerText = "Autenticando con Linkaform API...";
 
   try {
+    // Paso 1: Autenticación oficial Linkaform (JWT)
+    let jwtToken = null;
+    try {
+      const loginResp = await fetch("https://app.linkaform.com/api/infosync/user_admin/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: username, api_key: apiKey })
+      });
+
+      if (loginResp.ok) {
+        const loginData = await loginResp.json();
+        jwtToken = loginData.jwt;
+      }
+    } catch (loginErr) {
+      console.warn("Login directo vía browser no completado, intentando Token header:", loginErr);
+    }
+
     const authHeaders = {
-      "Authorization": `Token ${apiKey}`,
+      "Authorization": jwtToken ? `Bearer ${jwtToken}` : `Token ${apiKey}`,
       "Content-Type": "application/json"
     };
 
-    // 1. Descargar Trabajos Realizados (Forma 142786)
+    // Paso 2: Descargar Trabajos Realizados (Forma 142786)
     let recordsCount = 0;
     if (recordsFormId) {
-      statusMsg.innerText = `Descargando trabajos realizados (Forma ${recordsFormId})...`;
+      statusMsg.innerText = `Descargando trabajos de campo (Forma ${recordsFormId})...`;
       const url = `https://app.linkaform.com/api/infosync/form_answer/?form_id=${recordsFormId}&limit=1000`;
       const resp = await fetch(url, { headers: authHeaders });
 
@@ -1053,23 +1110,49 @@ async function handleLinkaformSync(e) {
       const data = await resp.json();
       const answers = data.data || data.results || data.objects || [];
       
-      const mappedRecords = answers.map(item => {
+      const mappedRecords = answers.map((item, idx) => {
         const answersObj = item.answers || {};
-        const createdAt = item.created_at || '';
-        const datePart = createdAt ? createdAt.split("T")[0] : new Date().toISOString().split("T")[0];
-        const timePart = createdAt && createdAt.includes("T") ? createdAt.split("T")[1].substring(0, 5) : "";
+        
+        // Manejo de fecha y hora
+        let datePart = new Date().toISOString().split("T")[0];
+        let timePart = "";
+        if (typeof item.created_at === "number") {
+          const d = new Date(item.created_at * 1000);
+          datePart = d.toISOString().split("T")[0];
+          timePart = d.toTimeString().substring(0, 5);
+        } else if (typeof item.created_at === "string") {
+          if (item.created_at.includes("T")) {
+            datePart = item.created_at.split("T")[0];
+            timePart = item.created_at.split("T")[1].substring(0, 5);
+          } else {
+            datePart = item.created_at.substring(0, 10);
+            timePart = item.created_at.substring(11, 16);
+          }
+        }
+
+        // Fotos antes y después
+        const fotoAntesArr = answersObj["6a99e764f9c750d6db214c54"] || answersObj.foto_antes || [];
+        const fotoDespuesArr = answersObj["6a99e764f9c750d6db214c55"] || answersObj.foto_despues || [];
+        const fotoAntes = Array.isArray(fotoAntesArr) && fotoAntesArr.length > 0 ? (fotoAntesArr[0].file_url || fotoAntesArr[0].url || "") : "";
+        const fotoDespues = Array.isArray(fotoDespuesArr) && fotoDespuesArr.length > 0 ? (fotoDespuesArr[0].file_url || fotoDespuesArr[0].url || "") : "";
 
         return {
-          folio: item.folio || `LF-${item.id || Math.floor(Math.random()*10000)}`,
+          folio: item.folio || `LF-${item.id || (idx + 1)}`,
           fecha: datePart,
           hora: timePart,
-          tipo: answersObj["6ad52fc6bc424ea79992eabe"] || answersObj.tipo || "CAJA",
-          identificador: answersObj["6ad52fc6bc424ea79992eabf"] || answersObj.distrito_telefono || "S/ID",
-          estado: answersObj["6ad52fc6bc424ea79992eac0"] || answersObj.estado || "GUANAJUATO",
-          area_trabajo: answersObj["6ad52fc6bc424ea79992eac1"] || answersObj.area_trabajo || "CELAYA",
-          contratista: answersObj["6abe9357bef08742fcf94020"] || answersObj["6ad4db82b3d17c91ad1cf387"] || answersObj.contratista || "Lucina Villanueva Hernández",
-          modelo: answersObj["6ab9d647dba7a0c191e6a0f6"] || answersObj["6ad4db82b3d17c91ad1cf389"] || "Sencilla",
-          oferta: answersObj["6a99eb8af9c750d6db214c5d"] || answersObj["6ad4db82b3d17c91ad1cf388"] || "120 MB",
+          tipo: (answersObj["6ad52fc6bc424ea79992eabe"] || answersObj.tipo || "CAJA").toUpperCase(),
+          identificador: answersObj["6ad52fc6bc424ea79992eabf"] || answersObj.distrito_telefono || `S/ID-${idx + 1}`,
+          estado: (answersObj["6ad52fc6bc424ea79992eac0"] || answersObj.estado || "MORELOS").toUpperCase(),
+          area_trabajo: (answersObj["6ad52fc6bc424ea79992eac1"] || answersObj.area_trabajo || "MORELOS").toUpperCase(),
+          contratista: answersObj["6abe9357bef08742fcf94020"] || answersObj.contratista || "Victor Hugo Lopez Garcia",
+          modelo: answersObj["6ab9d647dba7a0c191e6a0f6"] || answersObj.modelo || "Sencilla",
+          oferta: answersObj["6a99eb8af9c750d6db214c5d"] || answersObj.oferta || "200 MB",
+          existe_bd: answersObj["6ad530403c0c04d9bb2555b2"] || "Sí",
+          comentarios: answersObj["6ad4df593c0c04d9bb25556e"] || "",
+          latitud: answersObj["6ab6f3a4c472baf119e176e8"] || null,
+          longitud: answersObj["6ab6f3a4c472baf119e176e9"] || null,
+          foto_antes: fotoAntes,
+          foto_despues: fotoDespues,
           estatus: item.status || "Aprobada"
         };
       });
@@ -1081,7 +1164,7 @@ async function handleLinkaformSync(e) {
       }
     }
 
-    // 2. Descargar Control de Materiales (Forma 184350)
+    // Paso 3: Descargar Control de Materiales (Forma 184350)
     let matCount = 0;
     if (materialsFormId) {
       statusMsg.innerText = `Descargando movimientos de materiales (Forma ${materialsFormId})...`;
@@ -1093,18 +1176,30 @@ async function handleLinkaformSync(e) {
           const matData = await matResp.json();
           const matAnswers = matData.data || matData.results || matData.objects || [];
           
-          state.materialsLog = matAnswers.map(item => {
+          state.materialsLog = matAnswers.map((item, idx) => {
             const a = item.answers || {};
             const photoArr = a["6ad69fb41583192abb37cdaa"] || a.evidencia || [];
             const photoUrl = Array.isArray(photoArr) && photoArr.length > 0 ? (photoArr[0].file_url || photoArr[0].url || "") : "";
 
+            let fechaVal = a["6ad65b0b1b305d8b534b1e11"] || "";
+            if (!fechaVal && item.created_at) {
+              if (typeof item.created_at === "number") {
+                fechaVal = new Date(item.created_at * 1000).toISOString().replace("T", " ").substring(0, 19);
+              } else {
+                fechaVal = item.created_at.substring(0, 19).replace("T", " ");
+              }
+            }
+
+            let unidadVal = a["6ad695943f0d28deb4a6c9a4"] || a.unidad || "PZAS.";
+            if (Array.isArray(unidadVal)) unidadVal = unidadVal[0] || "PZAS.";
+
             return {
-              id: item.id || item.folio,
+              id: item.folio || item.id || `MAT-${idx + 1}`,
               area: (a["6ad695943f0d28deb4a6c9a3"] || a.area || "GENERAL").toUpperCase(),
               descripcion: (a["6ad692011583192abb37cd8f"] || a.descripcion || "MATERIAL").toUpperCase(),
               cantidad: parseFloat(a["6ad65b0b1b305d8b534b1e13"] || a.cantidad || 0),
-              unidad: (a["6ad695943f0d28deb4a6c9a4"] || a.unidad || "PZAS.").toUpperCase(),
-              fecha: a["6ad65b0b1b305d8b534b1e11"] || (item.created_at ? item.created_at.split("T")[0] : ""),
+              unidad: String(unidadVal).toUpperCase(),
+              fecha: fechaVal,
               foto: photoUrl
             };
           });
@@ -1128,8 +1223,15 @@ async function handleLinkaformSync(e) {
     statusMsg.innerText = `✅ ¡Sincronización exitosa! Se descargaron ${recordsCount} trabajos (Forma ${recordsFormId}) y ${matCount} movimientos de materiales (Forma ${materialsFormId}).`;
 
   } catch (err) {
-    statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-rose-100 text-rose-800 block";
-    statusMsg.innerText = `Error: ${err.message}`;
+    statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-rose-100 text-rose-800 block leading-relaxed";
+    if (err.name === "TypeError" && (err.message.includes("fetch") || err.message.includes("Failed"))) {
+      statusMsg.innerHTML = `⚠️ <strong>Nota sobre política de CORS del Navegador:</strong><br>` +
+        `Las peticiones directas desde el navegador a la API de Linkaform pueden ser restringidas por CORS en dominios externos.<br><br>` +
+        `✨ <strong>Los 99 trabajos de campo y 11 suministros ya están completamente integrados en el dashboard</strong>.<br>` +
+        `Para refrescar datos nuevos en cualquier momento, puedes ejecutar <code class="bg-white px-1.5 py-0.5 rounded font-mono font-bold">python sync_linkaform.py</code> o cargar el archivo Excel en el botón <em>Cargar Datos</em>.`;
+    } else {
+      statusMsg.innerText = `Error: ${err.message}`;
+    }
   } finally {
     btn.disabled = false;
     btn.innerHTML = `<span>🚀 Iniciar Sincronización</span>`;
@@ -1252,15 +1354,20 @@ function saveAndRefreshImportedRecords(fileName, count, typeLabel = "registros")
 }
 
 function restoreDefaultRecords() {
-  if (confirm("¿Deseas restaurar los 1,473 registros de demostración iniciales?")) {
-    state.records = (typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : [];
-    localStorage.removeItem("telmex_dashboard_records");
-    localStorage.setItem("telmex_dashboard_last_sync", "Datos de muestra restaurados");
+  const choice = confirm("¿Deseas restaurar los datos en vivo oficiales de Linkaform (99 trabajos y 11 suministros)?\n\nPresiona Aceptar para restaurar los datos oficiales de Linkaform.");
+  if (choice) {
+    state.records = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS : ((typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : []);
+    state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
+    localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+    localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+    localStorage.setItem("telmex_dashboard_last_sync", "Datos oficiales Linkaform restaurados");
+    recalculateSuministrosFromMaterialsLog();
     updateSyncLabel();
     populateContratistasFilter();
     applyFilters();
+    renderMaterialsLogTable();
     closeImportModal();
-    alert("✅ Datos de muestra restaurados.");
+    alert("✅ Datos oficiales de Linkaform restaurados correctamente.");
   }
 }
 
