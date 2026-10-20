@@ -296,18 +296,33 @@
     <!-- ==================== PESTAÑA 1: CONTROL DE MATERIALES ==================== -->
     <section id="tab-materiales" class="tab-content flex flex-col gap-6">
       
-      <!-- Banner Informativo de Materiales -->
-      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-blue-900 shadow-sm">
+      <!-- Selector de Área para Control de Materiales Independiente -->
+      <div class="bg-white border border-slate-200 rounded-xl p-4 card-shadow flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-          <span class="text-2xl">💡</span>
+          <div class="p-2.5 bg-blue-100 text-telmex rounded-xl text-xl">📍</div>
           <div>
-            <strong class="font-bold text-sm text-blue-950">Cálculo de Consumo Teórico y Balance de Inventario:</strong>
-            <p class="text-blue-800 mt-0.5">El consumo se calcula multiplicando cada caja y caseta terminada por su receta unitaria de materiales. El stock restante y faltante se actualiza en tiempo real contra la meta total.</p>
+            <div class="flex items-center gap-2">
+              <h3 class="font-bold text-sm text-slate-800">Control de Inventario por Plaza Operativa</h3>
+              <span id="activeMaterialAreaBadge" class="bg-telmex text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full">TODAS LAS ÁREAS</span>
+            </div>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Cálculo por área: Las entradas recibidas y los viniles instalados se contabilizan exclusivamente por plaza, sin juntar inventario entre áreas.
+            </p>
           </div>
         </div>
-        <button type="button" onclick="openMaterialsModal()" class="bg-telmex hover:bg-telmex-dark text-white font-bold px-3.5 py-2 rounded-lg text-xs whitespace-nowrap transition shadow-sm">
-          ✏️ Editar Receta y Suministros
-        </button>
+
+        <div class="flex items-center gap-3 w-full md:w-auto">
+          <div class="flex-1 md:w-64">
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Filtrar Plaza / Área:</label>
+            <select id="materialAreaSelect" onchange="onMaterialAreaSelectChange()" class="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-telmex focus:outline-none shadow-sm">
+              <option value="">-- Todas las Áreas (Consolidado) --</option>
+            </select>
+          </div>
+
+          <button type="button" onclick="openMaterialsModal()" class="mt-4 md:mt-0 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-2 rounded-lg text-xs whitespace-nowrap transition border border-slate-300 flex items-center gap-1.5 shadow-sm">
+            <span>⚙️</span> Receta
+          </button>
+        </div>
       </div>
 
       <!-- Tabla Principal de Balance de Materiales -->
@@ -315,22 +330,22 @@
         <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex justify-between items-center flex-wrap gap-2">
           <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
             <span>🧰</span>
-            <span>Balance General de Materiales (Entradas, Consumo, Remanente y Déficit)</span>
+            <span id="materialsTableTitle">Balance de Materiales (Entradas vs Viniles Instalados)</span>
           </h2>
-          <span class="text-xs text-slate-500">Cantidades redondeadas a unidades operativas</span>
+          <span id="materialsAreaSubtitle" class="text-xs text-slate-500 font-medium">Contabilización directa por número de viniles instalados</span>
         </div>
         
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
               <tr class="bg-slate-100/75 text-slate-600 font-bold border-b border-slate-200 uppercase text-[11px] tracking-wider">
-                <th class="py-3 px-4">Material</th>
+                <th class="py-3 px-4">Material / Tipo</th>
                 <th class="py-3 px-3">Unidad</th>
                 <th class="py-3 px-3 text-right">Suministrado (Entradas)</th>
-                <th class="py-3 px-3 text-right text-telmex">Consumido (Real)</th>
-                <th class="py-3 px-3 text-right text-emerald-700 bg-emerald-50/50">Stock Actual (Queda)</th>
-                <th class="py-3 px-3 text-right">Requerido Meta Total</th>
-                <th class="py-3 px-3 text-right text-rose-700 bg-rose-50/50">Falta por Suministrar</th>
+                <th class="py-3 px-3 text-right text-telmex">Viniles Instalados</th>
+                <th class="py-3 px-3 text-right text-emerald-700 bg-emerald-50/50">Stock Disponible (Sobran)</th>
+                <th class="py-3 px-3 text-right">Meta Área</th>
+                <th class="py-3 px-3 text-right text-rose-700 bg-rose-50/50">Falta por Surtir</th>
                 <th class="py-3 px-4 text-center">Estado de Abasto</th>
               </tr>
             </thead>
@@ -363,6 +378,36 @@
           </div>
         </div>
 
+      </div>
+
+      <!-- Matriz Comparativa de Balance de Materiales por Área -->
+      <div class="card-shadow bg-white overflow-hidden">
+        <div class="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex justify-between items-center flex-wrap gap-2">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <span>📊</span>
+            <span>Matriz de Inventario por Plaza (Suministrado vs Viniles Instalados vs Sobrantes)</span>
+          </h3>
+          <span class="text-xs text-slate-500 font-medium">Desglose exacto independiente por cada plaza operativa</span>
+        </div>
+        <div class="overflow-x-auto max-h-96">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="sticky top-0 bg-slate-100 z-10 text-slate-600 font-bold border-b border-slate-200 uppercase text-[11px]">
+              <tr>
+                <th class="py-2.5 px-4">Área Operativa</th>
+                <th class="py-2.5 px-3">Material / Tipo</th>
+                <th class="py-2.5 px-3 text-right">Suministrado</th>
+                <th class="py-2.5 px-3 text-right text-telmex">Viniles Instalados</th>
+                <th class="py-2.5 px-3 text-right text-emerald-700 bg-emerald-50/50 font-bold">Sobran (Queda)</th>
+                <th class="py-2.5 px-3 text-right">Meta Área</th>
+                <th class="py-2.5 px-3 text-right text-rose-700 bg-rose-50/50">Faltante por Surtir</th>
+                <th class="py-2.5 px-4 text-center">Estatus</th>
+              </tr>
+            </thead>
+            <tbody id="materialsAreaMatrixTableBody" class="divide-y divide-slate-100 font-medium">
+              <!-- Renderizado dinámico -->
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- Entradas de Material Registradas en Forma 184350 -->
@@ -689,10 +734,10 @@
   </div>
 
   <!-- SCRIPTS DE DATOS Y LÓGICA -->
-  <script src="data/metas_catalogo.js?v=20261019_3"></script>
-  <script src="data/config.js?v=20261019_3"></script>
-  <script src="data/linkaform_live_data.js?v=20261019_3"></script>
-  <script src="data/sample_records.js?v=20261019_3"></script>
-  <script src="app.js?v=20261019_3"></script>
+  <script src="data/metas_catalogo.js?v=20261019_4"></script>
+  <script src="data/config.js?v=20261019_4"></script>
+  <script src="data/linkaform_live_data.js?v=20261019_4"></script>
+  <script src="data/sample_records.js?v=20261019_4"></script>
+  <script src="app.js?v=20261019_4"></script>
 </body>
 </html>

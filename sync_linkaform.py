@@ -102,6 +102,13 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
         foto_antes = foto_antes_arr[0].get("file_url") if (isinstance(foto_antes_arr, list) and len(foto_antes_arr) > 0) else ""
         foto_despues = foto_despues_arr[0].get("file_url") if (isinstance(foto_despues_arr, list) and len(foto_despues_arr) > 0) else ""
 
+        # Cantidad de viniles colocados
+        num_viniles_raw = ans.get("6a99eb60a20e4f1d25581b72")
+        try:
+            num_viniles = float(num_viniles_raw) if (num_viniles_raw is not None and str(num_viniles_raw).strip() != "") else (2.0 if tipo == "CASETA" else 1.0)
+        except (ValueError, TypeError):
+            num_viniles = 2.0 if tipo == "CASETA" else 1.0
+
         mapped_records.append({
             "folio": folio,
             "fecha": date_str,
@@ -115,6 +122,7 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
             "oferta": oferta,
             "existe_bd": existe_bd,
             "comentarios": comentarios,
+            "num_viniles": num_viniles,
             "latitud": lat,
             "longitud": lng,
             "foto_antes": foto_antes,

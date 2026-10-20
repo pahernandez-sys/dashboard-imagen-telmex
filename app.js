@@ -10,6 +10,7 @@ let state = {
   filteredRecords: [],
   materialsLog: [],
   charts: {},
+  selectedMaterialArea: "",
   currentPage: 1,
   pageSize: 50
 };
@@ -17,7 +18,7 @@ let state = {
 // =========================================================
 // INICIALIZACIÓN
 // =========================================================
-const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v1";
+const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v3";
 
 document.addEventListener("DOMContentLoaded", () => {
   loadConfig();
@@ -355,60 +356,226 @@ function renderKpis() {
 }
 
 // =========================================================
-// PESTAÑA 1: BALANCE DE MATERIALES (QUEDA VS FALTA)
+// PESTAÑA 1: BALANCE DE MATERIALES (QUEDA VS FALTA POR ÁREA)
 // =========================================================
+
+// Mapeo exacto entre el registro de trabajo de campo (Forma 142786) y el catálogo de materiales
+function mapRecordToMaterialId(rec) {
+  const tipo = (rec.tipo || "").toUpperCase().trim();
+  const modelo = (rec.modelo || "").toUpperCase().trim();
+
+  if (tipo === "CASETA") {
+    if (modelo.includes("MINI")) return "lateral_caseta_mini_200_mb";
+    if (modelo.includes("SEMICIRCULAR")) return "semicircular_200_mb";
+    return "lateral_caseta_normal_200_mb";
+  } else {
+    // CAJA
+    if (modelo.includes("TRADICIONAL DOBLE")) return "tradicional_doble_200_mb";
+    if (modelo.includes("SIECOR SENCILLA 1") || modelo.includes("SIECOR 1")) return "siecor_sencilla_1_pta._200_mb";
+    if (modelo.includes("SIECOR SENCILLA 2") || modelo.includes("SIECOR 2")) return "siecor_sencilla_2_ptas._200_mb";
+    if (modelo.includes("SIECOR DOBLE") || modelo.includes("SIECOR")) return "siecor_doble_2_ptas._200_mb";
+    if (modelo.includes("ENVOLVENTE") || modelo.includes("ENVOLVELTE")) return "envolvelte_secillo_200_mb";
+    if (modelo.includes("DESPLAZAMIENTO DOBLE") || modelo.includes("DEPLASAMIENTO DOBLE")) return "deplasamiento_doble_200_mb";
+    if (modelo.includes("DESPLAZAMIENTO") || modelo.includes("DEPLASAMIENTO")) return "deplasamiento_sencilla_200_mb";
+    return "tradicional_sencilla_200_mb"; // Tradicional sencilla / Krone / Estándar
+  }
+}
+
+// Obtener cantidad real de viniles instalados en el activo reportado
+function getRecordVinilCount(rec) {
+  if (rec.num_viniles !== undefined && rec.num_viniles !== null && rec.num_viniles !== "") {
+    const val = parseFloat(rec.num_viniles);
+    if (!isNaN(val)) return val;
+  }
+  // Valor por defecto en campo si no fue capturado
+  return (rec.tipo || "").toUpperCase().trim() === "CASETA" ? 2 : 1;
+}
+
+// Mapeo normalizado de la descripción de entrega (Forma 184350) al ID de material
+function mapMaterialDescToId(desc) {
+  const d = normalizeMaterialStr(desc);
+  if (d.includes("lateral") && d.includes("mini")) return "lateral_caseta_mini_200_mb";
+  if (d.includes("lateral")) return "lateral_caseta_normal_200_mb";
+  if (d.includes("semicircular")) return "semicircular_200_mb";
+  if (d.includes("tradicional") && d.includes("doble")) return "tradicional_doble_200_mb";
+  if (d.includes("tradicional")) return "tradicional_sencilla_200_mb";
+  if (d.includes("siecor") && d.includes("1")) return "siecor_sencilla_1_pta._200_mb";
+  if (d.includes("siecor") && d.includes("2") && !d.includes("doble")) return "siecor_sencilla_2_ptas._200_mb";
+  if (d.includes("siecor") && d.includes("doble")) return "siecor_doble_2_ptas._200_mb";
+  if (d.includes("envolvente") || d.includes("envolvelte")) return "envolvelte_secillo_200_mb";
+  if (d.includes("desplazamiento") && d.includes("doble")) return "deplasamiento_doble_200_mb";
+  if (d.includes("desplazamiento")) return "deplasamiento_sencilla_200_mb";
+  if (d.includes("pintura") && d.includes("azul")) return "pintura_azul";
+  if (d.includes("pintura") && d.includes("gris")) return "pintura_gris";
+  if (d.includes("thinner")) return "thinner";
+  if (d.includes("sellador")) return "sellador";
+  return d;
+}
+
+// Metas del Área
+function getAreaMetas(areaName) {
+  if (!areaName || typeof CATALOGO_METAS === "undefined" || !CATALOGO_METAS.estados) {
+    return {
+      cajas: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_cajas : 92844,
+      casetas: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_casetas : 45876,
+      total: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_general : 138720
+    };
+  }
+
+  const normArea = areaName.toUpperCase().trim();
+  for (let edo in CATALOGO_METAS.estados) {
+    for (let ar in CATALOGO_METAS.estados[edo]) {
+      if (ar.toUpperCase().trim() === normArea || edo.toUpperCase().trim() === normArea) {
+        return CATALOGO_METAS.estados[edo][ar];
+      }
+    }
+  }
+
+  return { cajas: 1000, casetas: 500, total: 1500 };
+}
+
+// Inicializar selector de áreas de materiales
+function initMaterialAreaFilter() {
+  const select = document.getElementById("materialAreaSelect");
+  if (!select) return;
+
+  const currentVal = state.selectedMaterialArea || select.value || "";
+  select.innerHTML = `<option value="">-- Todas las Áreas (Consolidado) --</option>`;
+
+  const areaSet = new Set();
+  (state.materialsLog || []).forEach(m => {
+    if (m.area) areaSet.add(m.area.toUpperCase().trim());
+  });
+  (state.records || []).forEach(r => {
+    if (r.area_trabajo) areaSet.add(r.area_trabajo.toUpperCase().trim());
+  });
+
+  Array.from(areaSet).sort().forEach(ar => {
+    const opt = document.createElement("option");
+    opt.value = ar;
+    opt.innerText = ar;
+    select.appendChild(opt);
+  });
+
+  select.value = currentVal;
+}
+
+function onMaterialAreaSelectChange() {
+  const select = document.getElementById("materialAreaSelect");
+  state.selectedMaterialArea = select ? select.value : "";
+  renderMaterialsTab();
+}
+
+// Renderizado principal del Balance de Materiales
 function renderMaterialsTab() {
-  const filtered = state.filteredRecords;
+  initMaterialAreaFilter();
+
+  const selectedArea = state.selectedMaterialArea || "";
   const tbody = document.getElementById("materialsTableBody");
   const alertList = document.getElementById("materialsAlertList");
+  if (!tbody) return;
+
   tbody.innerHTML = "";
-  alertList.innerHTML = "";
+  if (alertList) alertList.innerHTML = "";
 
-  const cajasDone = filtered.filter(r => r.tipo === "CAJA").length;
-  const casetasDone = filtered.filter(r => r.tipo === "CASETA").length;
+  // 1. Actualizar Encabezados y Badges
+  const badgeEl = document.getElementById("activeMaterialAreaBadge");
+  const titleEl = document.getElementById("materialsTableTitle");
+  const subEl = document.getElementById("materialsAreaSubtitle");
 
-  // Metas restantes
-  let totalMetaCajas = (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_cajas : 92844;
-  let totalMetaCasetas = (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_casetas : 45876;
-  
-  const cajasFaltantes = Math.max(0, totalMetaCajas - cajasDone);
-  const casetasFaltantes = Math.max(0, totalMetaCasetas - casetasDone);
+  if (badgeEl) {
+    badgeEl.innerText = selectedArea ? `PLAZA: ${selectedArea}` : "TODAS LAS ÁREAS (CONSOLIDADO)";
+    badgeEl.className = selectedArea 
+      ? "bg-amber-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm" 
+      : "bg-telmex text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm";
+  }
+  if (titleEl) {
+    titleEl.innerText = selectedArea 
+      ? `Balance de Materiales - Plaza ${selectedArea}` 
+      : "Balance General de Materiales (Consolidado Nacional)";
+  }
+  if (subEl) {
+    subEl.innerText = selectedArea 
+      ? `Suministros recibidos en ${selectedArea} vs Viniles instalados en ${selectedArea} (inventario independiente)` 
+      : "Contabilización directa por número de viniles instalados en campo";
+  }
+
+  // 2. Filtrar Registros y Bitácora exclusivamente para el área activa
+  const activeRecords = selectedArea 
+    ? state.records.filter(r => (r.area_trabajo || "").toUpperCase().trim() === selectedArea)
+    : state.records;
+
+  const activeLog = selectedArea 
+    ? state.materialsLog.filter(m => (m.area || "").toUpperCase().trim() === selectedArea)
+    : state.materialsLog;
+
+  // 3. Suministros por Material en el Área activa
+  const suministrosByMat = {};
+  activeLog.forEach(m => {
+    const matId = mapMaterialDescToId(m.descripcion);
+    const qty = parseFloat(m.cantidad) || 0;
+    suministrosByMat[matId] = (suministrosByMat[matId] || 0) + qty;
+  });
+
+  // 4. Consumo Real en base a NUM_VINILES colocados en campo
+  const consumidoByMat = {};
+  activeRecords.forEach(r => {
+    const matId = mapRecordToMaterialId(r);
+    const viniles = getRecordVinilCount(r);
+    consumidoByMat[matId] = (consumidoByMat[matId] || 0) + viniles;
+  });
+
+  // 5. Metas correspondientes
+  const metas = getAreaMetas(selectedArea);
+  const cajasMeta = metas.cajas || 0;
+  const casetasMeta = metas.casetas || 0;
 
   let criticalCount = 0;
   const chartLabels = [];
   const chartConsumidoData = [];
   const chartStockQuedaData = [];
 
+  // 6. Recorrer cada material del catálogo
   state.config.materiales.forEach(mat => {
-    // Consumo realizado
-    const consumido = (cajasDone * mat.consumo_por_caja) + (casetasDone * mat.consumo_por_caseta);
-    const suministrado = mat.suministrado || 0;
-    
-    // Stock que queda actualmente
-    const queda = Math.max(0, suministrado - consumido);
-    
-    // Total requerido para la meta global
-    const requeridoMetaTotal = (totalMetaCajas * mat.consumo_por_caja) + (totalMetaCasetas * mat.consumo_por_caseta);
-    
-    // Material faltante por surtir para completar toda la campaña
-    const necesarioRestante = (cajasFaltantes * mat.consumo_por_caja) + (casetasFaltantes * mat.consumo_por_caseta);
-    const falta = Math.max(0, necesarioRestante - queda);
+    const suministrado = suministrosByMat[mat.id] || 0;
 
-    // Estado del material
-    let statusBadge = '';
-    let isCritical = false;
-
-    if (queda <= (mat.stock_minimo_alerta || 50) || (suministrado > 0 && (consumido / suministrado) > 0.85)) {
-      statusBadge = `<span class="badge badge-danger">🔴 Déficit / Reorden</span>`;
-      criticalCount++;
-      isCritical = true;
-    } else if (suministrado > 0 && (consumido / suministrado) > 0.65) {
-      statusBadge = `<span class="badge badge-warning">🟡 Precaución</span>`;
+    let consumido = 0;
+    if (mat.categoria.includes("Vinil") || mat.id.includes("vinil") || mat.id.includes("caseta") || mat.id.includes("sencilla") || mat.id.includes("doble")) {
+      consumido = consumidoByMat[mat.id] || 0;
     } else {
-      statusBadge = `<span class="badge badge-success">🟢 Abastecido</span>`;
+      const cajasCount = activeRecords.filter(r => r.tipo === "CAJA").length;
+      const casetasCount = activeRecords.filter(r => r.tipo === "CASETA").length;
+      consumido = Math.round((cajasCount * (mat.consumo_por_caja || 0)) + (casetasCount * (mat.consumo_por_caseta || 0)));
     }
 
-    // Fila de la tabla
+    // Sobran / Queda = Suministrado - Consumido
+    const queda = suministrado - consumido;
+    const quedaVisual = Math.max(0, queda);
+
+    // Requerido según la meta del área y faltante por suministrar
+    const requeridoMeta = Math.round((cajasMeta * (mat.consumo_por_caja || 0)) + (casetasMeta * (mat.consumo_por_caseta || 0)));
+    const falta = Math.max(0, requeridoMeta - suministrado);
+
+    // Badges de estatus
+    let statusBadge = "";
+    let isCritical = false;
+
+    if (suministrado === 0 && consumido > 0) {
+      statusBadge = `<span class="badge badge-danger">🔴 Sin Surtido (-${consumido} viniles)</span>`;
+      criticalCount++;
+      isCritical = true;
+    } else if (queda < 0) {
+      statusBadge = `<span class="badge badge-danger">🔴 Déficit (${queda} viniles)</span>`;
+      criticalCount++;
+      isCritical = true;
+    } else if (suministrado > 0 && queda <= (mat.stock_minimo_alerta || 20)) {
+      statusBadge = `<span class="badge badge-warning">🟡 Stock Bajo (${queda} disponibles)</span>`;
+    } else if (suministrado === 0 && consumido === 0) {
+      statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-500">⚪ Sin Movimiento</span>`;
+    } else {
+      statusBadge = `<span class="badge badge-success">🟢 Sobran ${formatNumber(queda)} ${mat.unidad}</span>`;
+    }
+
     const row = document.createElement("tr");
     row.className = "hover:bg-slate-50 transition border-b border-slate-100";
     row.innerHTML = `
@@ -422,38 +589,39 @@ function renderMaterialsTab() {
       <td class="py-3 px-3 text-slate-500">${mat.unidad}</td>
       <td class="py-3 px-3 text-right font-semibold text-slate-700">${formatNumber(suministrado)}</td>
       <td class="py-3 px-3 text-right font-black text-telmex">${formatNumber(consumido)}</td>
-      <td class="py-3 px-3 text-right font-black text-emerald-700 bg-emerald-50/40">${formatNumber(queda)}</td>
-      <td class="py-3 px-3 text-right text-slate-500">${formatNumber(requeridoMetaTotal)}</td>
+      <td class="py-3 px-3 text-right font-black ${queda < 0 ? 'text-rose-700 bg-rose-50/50' : 'text-emerald-700 bg-emerald-50/40'}">${formatNumber(quedaVisual)}</td>
+      <td class="py-3 px-3 text-right text-slate-500">${formatNumber(requeridoMeta)}</td>
       <td class="py-3 px-3 text-right font-black text-rose-700 bg-rose-50/40">${formatNumber(falta)}</td>
       <td class="py-3 px-4 text-center">${statusBadge}</td>
     `;
     tbody.appendChild(row);
 
-    // Datos para la gráfica
-    chartLabels.push(mat.nombre.length > 18 ? mat.nombre.substring(0, 16) + '...' : mat.nombre);
-    chartConsumidoData.push(Math.round(consumido));
-    chartStockQuedaData.push(Math.round(queda));
+    // Datos para gráfica
+    if (suministrado > 0 || consumido > 0) {
+      chartLabels.push(mat.nombre.length > 18 ? mat.nombre.substring(0, 16) + '...' : mat.nombre);
+      chartConsumidoData.push(Math.round(consumido));
+      chartStockQuedaData.push(Math.round(quedaVisual));
+    }
 
-    // Agregar a lista de alertas si es crítico o de precaución
-    if (isCritical) {
+    if (isCritical && alertList) {
       const alertItem = document.createElement("div");
       alertItem.className = "p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs flex items-start gap-2.5";
       alertItem.innerHTML = `
         <span class="text-lg">⚠️</span>
         <div>
-          <strong class="font-bold text-rose-900">${mat.nombre}:</strong>
-          <p class="text-rose-800 mt-0.5">Quedan <strong>${formatNumber(queda)} ${mat.unidad}</strong> en almacén. Se necesitan <strong>${formatNumber(falta)} ${mat.unidad}</strong> adicionales para alcanzar la meta total.</p>
+          <strong class="font-bold text-rose-900">${mat.nombre} (${selectedArea || 'Consolidado'}):</strong>
+          <p class="text-rose-800 mt-0.5">Se han instalado <strong>${formatNumber(consumido)} viniles</strong> en campo, pero en almacén ${suministrado === 0 ? 'no se tiene registro de remisión' : `solo se recibieron ${formatNumber(suministrado)}`}.</p>
         </div>
       `;
       alertList.appendChild(alertItem);
     }
   });
 
-  if (criticalCount === 0) {
+  if (criticalCount === 0 && alertList) {
     alertList.innerHTML = `
       <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center gap-2">
         <span>✅</span>
-        <span>Todos los materiales cuentan con inventario suficiente para el ritmo de avance actual.</span>
+        <span>${selectedArea ? `La plaza ${selectedArea} cuenta con balance positivo de inventario.` : 'Todas las plazas cuentan con inventario suficiente para su ritmo actual.'}</span>
       </div>
     `;
   }
@@ -472,29 +640,143 @@ function renderMaterialsTab() {
     matCriticalCountEl.innerText = `${criticalCount} ítems con alerta`;
   }
 
-  // Renderizar Gráfica de Materiales
+  // Gráfica
   renderChartMaterials(chartLabels, chartConsumidoData, chartStockQuedaData);
 
-  // Renderizar Bitácora de Suministros (Forma 184350)
-  renderMaterialsLogTable();
+  // Renderizar Matriz Comparativa por Área
+  renderMaterialsAreaMatrix();
+
+  // Renderizar Bitácora filtrada
+  renderMaterialsLogTable(selectedArea);
 }
 
-function renderMaterialsLogTable() {
+// Matriz Comparativa de Materiales por Plaza Operativa
+function renderMaterialsAreaMatrix() {
+  const tbody = document.getElementById("materialsAreaMatrixTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const areaSet = new Set();
+  (state.materialsLog || []).forEach(m => {
+    if (m.area) areaSet.add(m.area.toUpperCase().trim());
+  });
+  (state.records || []).forEach(r => {
+    if (r.area_trabajo) areaSet.add(r.area_trabajo.toUpperCase().trim());
+  });
+
+  const areas = Array.from(areaSet).sort();
+  if (areas.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-slate-400 italic">No hay registros de materiales ni trabajos aún.</td></tr>`;
+    return;
+  }
+
+  // Suministros por Área y Material
+  const sumByAreaMat = {};
+  (state.materialsLog || []).forEach(m => {
+    const area = (m.area || "GENERAL").toUpperCase().trim();
+    const matId = mapMaterialDescToId(m.descripcion);
+    const qty = parseFloat(m.cantidad) || 0;
+    if (!sumByAreaMat[area]) sumByAreaMat[area] = {};
+    sumByAreaMat[area][matId] = (sumByAreaMat[area][matId] || 0) + qty;
+  });
+
+  // Consumo por Área y Material
+  const conByAreaMat = {};
+  (state.records || []).forEach(r => {
+    const area = (r.area_trabajo || "GENERAL").toUpperCase().trim();
+    const matId = mapRecordToMaterialId(r);
+    const viniles = getRecordVinilCount(r);
+    if (!conByAreaMat[area]) conByAreaMat[area] = {};
+    conByAreaMat[area][matId] = (conByAreaMat[area][matId] || 0) + viniles;
+  });
+
+  areas.forEach(area => {
+    const metas = getAreaMetas(area);
+    const cajasMeta = metas.cajas || 0;
+    const casetasMeta = metas.casetas || 0;
+
+    const activeMatIds = new Set();
+    if (sumByAreaMat[area]) {
+      Object.keys(sumByAreaMat[area]).forEach(id => activeMatIds.add(id));
+    }
+    if (conByAreaMat[area]) {
+      Object.keys(conByAreaMat[area]).forEach(id => activeMatIds.add(id));
+    }
+
+    if (activeMatIds.size === 0) return;
+
+    activeMatIds.forEach(matId => {
+      const mat = state.config.materiales.find(m => m.id === matId) || {
+        id: matId,
+        nombre: matId.replace(/_/g, " ").toUpperCase(),
+        unidad: "Pzas",
+        consumo_por_caja: 0.1,
+        consumo_por_caseta: 1.0,
+        icono: "🏷️"
+      };
+
+      const suministrado = (sumByAreaMat[area] && sumByAreaMat[area][matId]) || 0;
+      const consumido = (conByAreaMat[area] && conByAreaMat[area][matId]) || 0;
+      const queda = suministrado - consumido;
+      const quedaVisual = Math.max(0, queda);
+      const metaReq = Math.round((cajasMeta * (mat.consumo_por_caja || 0)) + (casetasMeta * (mat.consumo_por_caseta || 0)));
+      const falta = Math.max(0, metaReq - suministrado);
+
+      let statusBadge = "";
+      if (suministrado === 0 && consumido > 0) {
+        statusBadge = `<span class="badge badge-danger">🔴 Sin Suministro (-${consumido})</span>`;
+      } else if (queda < 0) {
+        statusBadge = `<span class="badge badge-danger">🔴 Déficit (${queda})</span>`;
+      } else if (suministrado > 0 && queda <= 20) {
+        statusBadge = `<span class="badge badge-warning">🟡 Stock Bajo (${queda})</span>`;
+      } else {
+        statusBadge = `<span class="badge badge-success">🟢 Sobran ${formatNumber(queda)}</span>`;
+      }
+
+      const row = document.createElement("tr");
+      row.className = "hover:bg-slate-50 transition border-b border-slate-100";
+      row.innerHTML = `
+        <td class="py-2.5 px-4 font-bold text-slate-800">
+          <span class="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[11px]">${area}</span>
+        </td>
+        <td class="py-2.5 px-3 font-semibold text-slate-700 flex items-center gap-1.5">
+          <span>${mat.icono || '🏷️'}</span>
+          <span>${mat.nombre}</span>
+        </td>
+        <td class="py-2.5 px-3 text-right font-semibold text-slate-800">${formatNumber(suministrado)}</td>
+        <td class="py-2.5 px-3 text-right font-black text-telmex">${formatNumber(consumido)}</td>
+        <td class="py-2.5 px-3 text-right font-black ${queda < 0 ? 'text-rose-700 bg-rose-50/50' : 'text-emerald-700 bg-emerald-50/50'}">${formatNumber(quedaVisual)}</td>
+        <td class="py-2.5 px-3 text-right text-slate-500">${formatNumber(metaReq)}</td>
+        <td class="py-2.5 px-3 text-right font-black text-rose-700 bg-rose-50/50">${formatNumber(falta)}</td>
+        <td class="py-2.5 px-4 text-center">${statusBadge}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  });
+}
+
+function renderMaterialsLogTable(filterArea = "") {
   const tbody = document.getElementById("materialsLogTableBody");
   const countEl = document.getElementById("materialsLogCount");
   if (!tbody) return;
 
   tbody.innerHTML = "";
-  const log = state.materialsLog || [];
+  let log = state.materialsLog || [];
+  if (filterArea) {
+    log = log.filter(m => (m.area || "").toUpperCase().trim() === filterArea.toUpperCase().trim());
+  }
+
   if (countEl) {
-    countEl.innerText = `${log.length} entregas registradas`;
+    countEl.innerText = filterArea 
+      ? `${log.length} entregas en ${filterArea}` 
+      : `${log.length} entregas registradas`;
   }
 
   if (log.length === 0) {
     tbody.innerHTML = `
       <tr>
         <td colspan="6" class="py-6 text-center text-slate-400 italic">
-          No hay registros de suministros aún. Sincroniza con Linkaform (Forma 184350) o importa un archivo Excel.
+          No hay registros de suministros ${filterArea ? `para la plaza ${filterArea}` : ''}.
         </td>
       </tr>
     `;
@@ -1391,46 +1673,114 @@ function exportDataToExcel() {
 
   const wb = XLSX.utils.book_new();
 
-  // Hoja 1: Balance de Materiales
-  const materialsRows = [];
-  const filtered = state.filteredRecords;
-  const cajasDone = filtered.filter(r => r.tipo === "CAJA").length;
-  const casetasDone = filtered.filter(r => r.tipo === "CASETA").length;
-  const totalMetaCajas = (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_cajas : 92844;
-  const totalMetaCasetas = (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_casetas : 45876;
-  const cajasFaltantes = Math.max(0, totalMetaCajas - cajasDone);
-  const casetasFaltantes = Math.max(0, totalMetaCasetas - casetasDone);
+  // Hoja 1: Matriz de Balance de Materiales por Plaza Operativa
+  const matrixRows = [];
+  const areaSet = new Set();
+  (state.materialsLog || []).forEach(m => {
+    if (m.area) areaSet.add(m.area.toUpperCase().trim());
+  });
+  (state.records || []).forEach(r => {
+    if (r.area_trabajo) areaSet.add(r.area_trabajo.toUpperCase().trim());
+  });
 
-  state.config.materiales.forEach(mat => {
-    const consumido = (cajasDone * mat.consumo_por_caja) + (casetasDone * mat.consumo_por_caseta);
-    const suministrado = mat.suministrado || 0;
-    const queda = Math.max(0, suministrado - consumido);
-    const requeridoMetaTotal = (totalMetaCajas * mat.consumo_por_caja) + (totalMetaCasetas * mat.consumo_por_caseta);
-    const necesarioRestante = (cajasFaltantes * mat.consumo_por_caja) + (casetasFaltantes * mat.consumo_por_caseta);
-    const falta = Math.max(0, necesarioRestante - queda);
+  const areas = Array.from(areaSet).sort();
 
-    materialsRows.push({
-      "Material": mat.nombre,
-      "Categoría": mat.categoria,
-      "Unidad": mat.unidad,
-      "Suministrado (Entradas)": suministrado,
-      "Consumido Real": consumido,
-      "Stock Actual (Queda)": queda,
-      "Requerido Meta Total": requeridoMetaTotal,
-      "Faltante por Surtir": falta
+  const sumByAreaMat = {};
+  (state.materialsLog || []).forEach(m => {
+    const area = (m.area || "GENERAL").toUpperCase().trim();
+    const matId = mapMaterialDescToId(m.descripcion);
+    const qty = parseFloat(m.cantidad) || 0;
+    if (!sumByAreaMat[area]) sumByAreaMat[area] = {};
+    sumByAreaMat[area][matId] = (sumByAreaMat[area][matId] || 0) + qty;
+  });
+
+  const conByAreaMat = {};
+  (state.records || []).forEach(r => {
+    const area = (r.area_trabajo || "GENERAL").toUpperCase().trim();
+    const matId = mapRecordToMaterialId(r);
+    const viniles = getRecordVinilCount(r);
+    if (!conByAreaMat[area]) conByAreaMat[area] = {};
+    conByAreaMat[area][matId] = (conByAreaMat[area][matId] || 0) + viniles;
+  });
+
+  areas.forEach(area => {
+    const metas = getAreaMetas(area);
+    const cajasMeta = metas.cajas || 0;
+    const casetasMeta = metas.casetas || 0;
+
+    const activeMatIds = new Set();
+    if (sumByAreaMat[area]) {
+      Object.keys(sumByAreaMat[area]).forEach(id => activeMatIds.add(id));
+    }
+    if (conByAreaMat[area]) {
+      Object.keys(conByAreaMat[area]).forEach(id => activeMatIds.add(id));
+    }
+
+    activeMatIds.forEach(matId => {
+      const mat = state.config.materiales.find(m => m.id === matId) || {
+        id: matId,
+        nombre: matId.replace(/_/g, " ").toUpperCase(),
+        unidad: "Pzas",
+        consumo_por_caja: 0.1,
+        consumo_por_caseta: 1.0
+      };
+
+      const suministrado = (sumByAreaMat[area] && sumByAreaMat[area][matId]) || 0;
+      const consumido = (conByAreaMat[area] && conByAreaMat[area][matId]) || 0;
+      const queda = Math.max(0, suministrado - consumido);
+      const metaReq = Math.round((cajasMeta * (mat.consumo_por_caja || 0)) + (casetasMeta * (mat.consumo_por_caseta || 0)));
+      const falta = Math.max(0, metaReq - suministrado);
+
+      matrixRows.push({
+        "Plaza / Área": area,
+        "Material": mat.nombre,
+        "Unidad": mat.unidad,
+        "Suministrado (Entradas)": suministrado,
+        "Viniles Instalados (Consumo Real)": consumido,
+        "Stock Disponible (Sobran / Queda)": queda,
+        "Meta Requerida Área": metaReq,
+        "Faltante por Surtir": falta,
+        "Estado": suministrado === 0 && consumido > 0 ? "Sin Suministro" : (queda <= 20 ? "Stock Bajo" : "Abastecido")
+      });
     });
   });
 
-  const wsMaterials = XLSX.utils.json_to_sheet(materialsRows);
-  XLSX.utils.book_append_sheet(wb, wsMaterials, "Balance Materiales");
+  const wsMatrix = XLSX.utils.json_to_sheet(matrixRows);
+  XLSX.utils.book_append_sheet(wb, wsMatrix, "Inventario por Plaza");
 
-  // Hoja 2: Registros Filtrados
-  const wsRecords = XLSX.utils.json_to_sheet(state.filteredRecords);
-  XLSX.utils.book_append_sheet(wb, wsRecords, "Registros Filtrados");
+  // Hoja 2: Bitácora de Suministros (Forma 184350)
+  const logRows = (state.materialsLog || []).map(m => ({
+    "Folio": m.id,
+    "Fecha": m.fecha,
+    "Plaza / Área": m.area,
+    "Material": m.descripcion,
+    "Cantidad": m.cantidad,
+    "Unidad": m.unidad,
+    "Enlace Foto": m.foto || "Sin Foto"
+  }));
+  const wsLog = XLSX.utils.json_to_sheet(logRows);
+  XLSX.utils.book_append_sheet(wb, wsLog, "Entradas de Material");
+
+  // Hoja 3: Trabajos de Campo (Forma 142786)
+  const recordsRows = (state.filteredRecords || []).map(r => ({
+    "Folio": r.folio,
+    "Fecha": r.fecha,
+    "Hora": r.hora,
+    "Plaza / Área": r.area_trabajo,
+    "Estado": r.estado,
+    "Tipo": r.tipo,
+    "Identificador": r.identificador,
+    "Modelo": r.modelo,
+    "Viniles Instalados": r.num_viniles !== undefined ? r.num_viniles : (r.tipo === "CASETA" ? 2 : 1),
+    "Contratista": r.contratista,
+    "Estatus": r.estatus
+  }));
+  const wsRecords = XLSX.utils.json_to_sheet(recordsRows);
+  XLSX.utils.book_append_sheet(wb, wsRecords, "Trabajos de Campo");
 
   // Descargar
   const dateStr = new Date().toISOString().split("T")[0];
-  XLSX.writeFile(wb, `Reporte_Avance_Materiales_Telmex_${dateStr}.xlsx`);
+  XLSX.writeFile(wb, `Reporte_Materiales_Telmex_Por_Area_${dateStr}.xlsx`);
 }
 
 // Utilidad Formato de Números
