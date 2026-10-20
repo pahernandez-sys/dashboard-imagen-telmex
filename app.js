@@ -18,7 +18,17 @@ let state = {
 // =========================================================
 // INICIALIZACIÓN
 // =========================================================
-const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v5";
+const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v6";
+
+// Obtener fecha local en formato YYYY-MM-DD evitando el desfase de zona horaria UTC
+function getLocalDateStr(date = new Date()) {
+  const d = (date instanceof Date) ? date : new Date(date);
+  if (isNaN(d.getTime())) return "";
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   loadConfig();
@@ -223,7 +233,7 @@ function onPresetDateChange() {
 }
 
 function initDatePresets() {
-  const today = new Date().toISOString().split("T")[0];
+  const today = getLocalDateStr(new Date());
   const customDateTo = document.getElementById("customDateTo");
   const customDateFrom = document.getElementById("customDateFrom");
   if (customDateTo) customDateTo.value = today;
@@ -259,18 +269,18 @@ function applyFilters() {
   const today = new Date();
 
   if (presetVal === "today") {
-    minDate = today.toISOString().split("T")[0];
+    minDate = getLocalDateStr(today);
     maxDate = minDate;
   } else if (presetVal === "7days") {
     const d = new Date(today);
     d.setDate(d.getDate() - 7);
-    minDate = d.toISOString().split("T")[0];
-    maxDate = today.toISOString().split("T")[0];
+    minDate = getLocalDateStr(d);
+    maxDate = getLocalDateStr(today);
   } else if (presetVal === "30days") {
     const d = new Date(today);
     d.setDate(d.getDate() - 30);
-    minDate = d.toISOString().split("T")[0];
-    maxDate = today.toISOString().split("T")[0];
+    minDate = getLocalDateStr(d);
+    maxDate = getLocalDateStr(today);
   } else if (presetVal === "custom") {
     minDate = document.getElementById("customDateFrom") ? document.getElementById("customDateFrom").value || null : null;
     maxDate = document.getElementById("customDateTo") ? document.getElementById("customDateTo").value || null : null;
@@ -355,12 +365,27 @@ function renderKpis() {
   const activeDays = Math.max(1, uniqueDates.length);
   const avgPerDay = Math.round(totalDone / activeDays);
   
-  const todayStr = new Date().toISOString().split("T")[0];
-  const doneToday = filtered.filter(r => r.fecha === todayStr).length;
+  const todayStr = getLocalDateStr(new Date());
+  const doneToday = filtered.filter(r => {
+    if (!r.fecha) return false;
+    const recDate = String(r.fecha).replace(/\//g, "-").substring(0, 10);
+    return recDate === todayStr;
+  }).length;
 
-  document.getElementById("kpiAvgPerDay").innerHTML = `${avgPerDay.toLocaleString()} <span class="text-xs font-semibold text-slate-500">activos/día</span>`;
-  document.getElementById("kpiDoneToday").innerText = `${doneToday.toLocaleString()} activos`;
-  document.getElementById("kpiActiveDays").innerText = `${activeDays} días registrados`;
+  const kpiAvgPerDay = document.getElementById("kpiAvgPerDay");
+  const kpiDoneToday = document.getElementById("kpiDoneToday");
+  const kpiActiveDays = document.getElementById("kpiActiveDays");
+
+  if (kpiAvgPerDay) {
+    kpiAvgPerDay.innerHTML = `${avgPerDay.toLocaleString()} <span class="text-xs font-semibold text-slate-500">activos/día</span>`;
+  }
+  if (kpiDoneToday) {
+    kpiDoneToday.innerText = `${doneToday.toLocaleString()} activos`;
+    kpiDoneToday.className = doneToday > 0 ? "font-bold text-emerald-700" : "font-bold text-slate-500";
+  }
+  if (kpiActiveDays) {
+    kpiActiveDays.innerText = `${activeDays} días registrados`;
+  }
 }
 
 // =========================================================
@@ -1412,11 +1437,11 @@ async function handleLinkaformSync(e) {
         const answersObj = item.answers || {};
         
         // Manejo de fecha y hora
-        let datePart = new Date().toISOString().split("T")[0];
+        let datePart = getLocalDateStr();
         let timePart = "";
         if (typeof item.created_at === "number") {
           const d = new Date(item.created_at * 1000);
-          datePart = d.toISOString().split("T")[0];
+          datePart = getLocalDateStr(d);
           timePart = d.toTimeString().substring(0, 5);
         } else if (typeof item.created_at === "string") {
           if (item.created_at.includes("T")) {
@@ -1616,7 +1641,7 @@ function handleFileSelected(e) {
         const mapped = rawJson.map((r, i) => {
           return {
             folio: r["Folio"] || r["folio"] || r["ID"] || `LF-${i + 1}`,
-            fecha: r["Fecha"] || r["fecha"] || r["created_at"] || new Date().toISOString().split("T")[0],
+            fecha: r["Fecha"] || r["fecha"] || r["created_at"] || getLocalDateStr(),
             hora: r["Hora"] || r["hora"] || "",
             tipo: (r["Tipo"] || r["tipo"] || r["TIPO"] || "CAJA").toUpperCase(),
             identificador: r["Identificador"] || r["identificador"] || r["DISTRITO / TELEFONO"] || "S/ID",
@@ -1790,7 +1815,7 @@ function exportDataToExcel() {
   XLSX.utils.book_append_sheet(wb, wsRecords, "Trabajos de Campo");
 
   // Descargar
-  const dateStr = new Date().toISOString().split("T")[0];
+  const dateStr = getLocalDateStr();
   XLSX.writeFile(wb, `Reporte_Materiales_Telmex_Por_Area_${dateStr}.xlsx`);
 }
 
