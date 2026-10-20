@@ -11,6 +11,7 @@ Replica oficial del formato Excel con datos actualizados de Linkaform
 import os
 import json
 import openpyxl
+from copy import copy
 from datetime import datetime
 from collections import defaultdict
 
@@ -153,6 +154,12 @@ def build_reporte_diario():
             ws_casetas.cell(row_idx, COL_CP_CASETAS).value = total_area_casetas
             ws_casetas.cell(row_idx, COL_CR_CASETAS).value = total_area_casetas
 
+    # Normalizar bordes eliminando recuadros manuales gruesos (fila 27 MORELOS)
+    for r in [26, 27, 28]:
+        for c in range(1, ws_casetas.max_column + 1):
+            ws_casetas.cell(r, c).border = copy(ws_casetas.cell(25, c).border)
+    print("  [Bordes] Normalizados bordes de filas 26-28 en Casetas.")
+
     # =========================================================
     # HOJA 2: Programa CAJAS REPORTE DIARIO
     # =========================================================
@@ -220,6 +227,14 @@ def build_reporte_diario():
             # Total colocadas
             ws_cajas.cell(row_idx, COL_CJ_CAJAS).value = total_area_cajas
             ws_cajas.cell(row_idx, COL_CL_CAJAS).value = total_area_cajas
+
+    # Normalizar bordes eliminando recuadros manuales gruesos (fila 28 TOLUCA)
+    for r in [27, 28, 29]:
+        for c in range(1, ws_cajas.max_column + 1):
+            ws_cajas.cell(r, c).border = copy(ws_cajas.cell(26, c).border)
+    for c in range(1, ws_cajas.max_column + 1):
+        ws_cajas.cell(78, c).border = openpyxl.styles.Border()
+    print("  [Bordes] Normalizados bordes de filas 27-29 y 78 en Cajas.")
 
     # Guardar en local del repositorio para descarga en GitHub Pages
     os.makedirs(os.path.dirname(LOCAL_TEMPLATE_PATH), exist_ok=True)
