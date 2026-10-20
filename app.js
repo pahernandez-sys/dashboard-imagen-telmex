@@ -127,6 +127,17 @@ function normalizeMaterialStr(str) {
     .trim();
 }
 
+// Normalizador estándar para claves de Áreas Operativas y Estados de Telmex
+function normalizeAreaKey(str) {
+  if (!str) return "";
+  return String(str)
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Z0-9]/g, "")
+    .trim();
+}
+
 // Recalcular Suministros de Materiales a partir de las entregas reales registradas
 function recalculateSuministrosFromMaterialsLog() {
   if (!state.materialsLog || state.materialsLog.length === 0) return;
@@ -185,6 +196,7 @@ function populateAreaFilter() {
   const areaSet = new Set();
   if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
     Object.keys(CATALOGO_METAS.estados).forEach(est => {
+      if (est) areaSet.add(est.toUpperCase().trim());
       Object.keys(CATALOGO_METAS.estados[est]).forEach(ar => {
         if (ar) areaSet.add(ar.toUpperCase().trim());
       });
@@ -263,6 +275,28 @@ function resetFilters() {
   applyFilters();
 }
 
+// Verifica si un registro corresponde a un área o región seleccionada
+function recordMatchesArea(r, selectedArea) {
+  if (!selectedArea) return true;
+  const selNorm = normalizeAreaKey(selectedArea);
+  const rAreaNorm = normalizeAreaKey(r.area_trabajo);
+  const rEstadoNorm = normalizeAreaKey(r.estado);
+
+  if (rAreaNorm === selNorm || rEstadoNorm === selNorm) return true;
+
+  // Si selectedArea es una Región/División (ej. CDMX Y CONURBADA, GUADALAJARA, MONTERREY)
+  if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
+    for (let est in CATALOGO_METAS.estados) {
+      if (normalizeAreaKey(est) === rAreaNorm) {
+        for (let ar in CATALOGO_METAS.estados[est]) {
+          if (normalizeAreaKey(ar) === selNorm) return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 // =========================================================
 // APLICACIÓN DE FILTROS & CÁLCULOS
 // =========================================================
@@ -298,7 +332,7 @@ function applyFilters() {
   }
 
   state.filteredRecords = state.records.filter(r => {
-    if (arVal && r.area_trabajo && r.area_trabajo.toUpperCase() !== arVal) return false;
+    if (arVal && !recordMatchesArea(r, arVal)) return false;
     if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) return false;
     
     if (minDate && r.fecha && r.fecha < minDate) return false;
@@ -466,10 +500,10 @@ function getAreaMetas(areaName) {
     };
   }
 
-  const normArea = areaName.toUpperCase().trim();
+  const normArea = normalizeAreaKey(areaName);
   for (let edo in CATALOGO_METAS.estados) {
     for (let ar in CATALOGO_METAS.estados[edo]) {
-      if (ar.toUpperCase().trim() === normArea || edo.toUpperCase().trim() === normArea) {
+      if (normalizeAreaKey(ar) === normArea || normalizeAreaKey(edo) === normArea) {
         return CATALOGO_METAS.estados[edo][ar];
       }
     }
@@ -907,53 +941,150 @@ function renderChartMaterials(labels, consumido, queda) {
 function renderAreasTab() {
   const filtered = state.filteredRecords;
   const tbody = document.getElementById("areasTableBody");
+  if (!tbody) return;
   tbody.innerHTML = "";
 
-  // Agrupar registros por Estado y Área
-  const areaCounts = {};
-  filtered.forEach(r => {
-    const key = `${r.estado || 'S/E'}|||${r.area_trabajo || 'S/A'}`;
-    if (!areaCounts[key]) {
-      areaCounts[key] = { estado: r.estado || 'S/E', area: r.area_trabajo || 'S/A', cajasDone: 0, casetasDone: 0, totalDone: 0 };
-    }
-    if (r.tipo === 'CASETA') {
-      areaCounts[key].casetasDone++;
-    } else {
-      areaCounts[key].cajasDone++;
-    }
-    areaCounts[key].totalDone++;
-  });
+  // 1. Construir catálogo base de áreas y metas
+  const areaList = [];
+  const areaIndexMap = {}; // Acceso O(1) por clave normalizada
 
-  // Combinar con metas del catálogo
-  const areaRows = [];
   if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
     Object.keys(CATALOGO_METAS.estados).forEach(est => {
       Object.keys(CATALOGO_METAS.estados[est]).forEach(ar => {
         const metaData = CATALOGO_METAS.estados[est][ar];
-        const key = `${est}|||${ar}`;
-        const doneData = areaCounts[key] || { cajasDone: 0, casetasDone: 0, totalDone: 0 };
-        
-        const percent = metaData.total > 0 ? ((doneData.totalDone / metaData.total) * 100) : 0;
+        const entry = {
+          estado: (est === ar) ? est : ar,
+          area: est,
+          estRaw: est,
+          arRaw: ar,
+          normEst: normalizeAreaKey(est),
+          normAr: normalizeAreaKey(ar),
+          metaCajas: metaData.cajas || 0,
+          metaCasetas: metaData.casetas || 0,
+          metaTotal: metaData.total || 0,
+          cajasDone: 0,
+          casetasDone: 0,
+          totalDone: 0
+        };
+        const idx = areaList.length;
+        areaList.push(entry);
 
-        areaRows.push({
-          estado: est,
-          area: ar,
-          metaCajas: metaData.cajas,
-          cajasDone: doneData.cajasDone,
-          metaCasetas: metaData.casetas,
-          casetasDone: doneData.casetasDone,
-          metaTotal: metaData.total,
-          totalDone: doneData.totalDone,
-          percent: percent
-        });
+        if (entry.normEst && areaIndexMap[entry.normEst] === undefined) {
+          areaIndexMap[entry.normEst] = idx;
+        }
+        if (entry.normAr && areaIndexMap[entry.normAr] === undefined) {
+          areaIndexMap[entry.normAr] = idx;
+        }
       });
     });
   }
 
-  // Ordenar por total intervenido descendente
-  areaRows.sort((a, b) => b.totalDone - a.totalDone);
+  // Mapa para filas de registros no encontrados en el catálogo
+  const unmappedRows = {};
 
-  // Renderizar filas
+  // 2. Acumular registros filtrados hacia el área correspondiente
+  filtered.forEach(r => {
+    const rArea = r.area_trabajo || "";
+    const rEstado = r.estado || "";
+    const normA = normalizeAreaKey(rArea);
+    const normE = normalizeAreaKey(rEstado);
+
+    let targetIdx = -1;
+
+    // A) Búsqueda directa por área de trabajo (ej: TOLUCA, MORELOS, BALBUENA)
+    if (normA && areaIndexMap[normA] !== undefined) {
+      targetIdx = areaIndexMap[normA];
+    }
+    // B) Búsqueda directa por estado
+    else if (normE && areaIndexMap[normE] !== undefined) {
+      targetIdx = areaIndexMap[normE];
+    }
+    // C) Búsqueda por contención o subcadena
+    else if (normA || normE) {
+      for (let i = 0; i < areaList.length; i++) {
+        const item = areaList[i];
+        if (normA && (item.normEst.includes(normA) || normA.includes(item.normEst))) {
+          targetIdx = i;
+          break;
+        }
+        if (normA && (item.normAr.includes(normA) || normA.includes(item.normAr))) {
+          targetIdx = i;
+          break;
+        }
+        if (normE && (item.normEst.includes(normE) || item.normAr.includes(normE))) {
+          targetIdx = i;
+          break;
+        }
+      }
+    }
+
+    const isCaseta = (r.tipo === 'CASETA');
+
+    if (targetIdx >= 0) {
+      const target = areaList[targetIdx];
+      if (isCaseta) {
+        target.casetasDone++;
+      } else {
+        target.cajasDone++;
+      }
+      target.totalDone++;
+    } else {
+      // Registrar fila no catalogada para asegurar que el 100% de los trabajos se refleje
+      const unmappedKey = `${rEstado || 'S/E'} - ${rArea || 'S/A'}`;
+      if (!unmappedRows[unmappedKey]) {
+        unmappedRows[unmappedKey] = {
+          estado: rEstado || 'S/E',
+          area: rArea || 'S/A',
+          metaCajas: 0,
+          metaCasetas: 0,
+          metaTotal: 0,
+          cajasDone: 0,
+          casetasDone: 0,
+          totalDone: 0
+        };
+      }
+      if (isCaseta) {
+        unmappedRows[unmappedKey].casetasDone++;
+      } else {
+        unmappedRows[unmappedKey].cajasDone++;
+      }
+      unmappedRows[unmappedKey].totalDone++;
+    }
+  });
+
+  // 3. Consolidar todas las filas y calcular porcentajes
+  const areaRows = areaList.map(item => {
+    const percent = item.metaTotal > 0 ? ((item.totalDone / item.metaTotal) * 100) : 0;
+    return {
+      estado: item.estado,
+      area: item.area,
+      metaCajas: item.metaCajas,
+      cajasDone: item.cajasDone,
+      metaCasetas: item.metaCasetas,
+      casetasDone: item.casetasDone,
+      metaTotal: item.metaTotal,
+      totalDone: item.totalDone,
+      percent: percent
+    };
+  });
+
+  Object.values(unmappedRows).forEach(u => {
+    const percent = u.metaTotal > 0 ? ((u.totalDone / u.metaTotal) * 100) : (u.totalDone > 0 ? 100 : 0);
+    areaRows.push({
+      ...u,
+      percent: percent
+    });
+  });
+
+  // 4. Ordenar: primero áreas con trabajos intervenidos descendente; si empatan en 0, por meta descendente
+  areaRows.sort((a, b) => {
+    if (b.totalDone !== a.totalDone) {
+      return b.totalDone - a.totalDone;
+    }
+    return b.metaTotal - a.metaTotal;
+  });
+
+  // 5. Renderizar filas en la tabla
   areaRows.forEach(item => {
     const pFormatted = item.percent.toFixed(1);
     let pBadgeClass = 'badge-danger';
@@ -962,7 +1093,7 @@ function renderAreasTab() {
 
     const tr = document.createElement("tr");
     tr.className = "hover:bg-slate-50 transition border-b border-slate-100 area-table-row";
-    tr.dataset.text = `${item.estado} ${item.area}`.toLowerCase();
+    tr.dataset.text = `${item.estado} ${item.area} ${item.area === 'TOLUCA' ? 'mexico edomex' : ''}`.toLowerCase();
     tr.innerHTML = `
       <td class="py-2.5 px-4 font-bold text-slate-800">${item.estado}</td>
       <td class="py-2.5 px-3 font-semibold text-slate-700">${item.area}</td>
@@ -979,7 +1110,7 @@ function renderAreasTab() {
     tbody.appendChild(tr);
   });
 
-  // Top 10 áreas para la gráfica
+  // 6. Top 10 áreas para la gráfica
   const top10 = areaRows.slice(0, 10);
   renderChartAreas(top10);
 }
