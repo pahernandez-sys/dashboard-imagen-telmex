@@ -1075,24 +1075,32 @@ async function handleLinkaformSync(e) {
 
   try {
     // Paso 1: Autenticación oficial Linkaform (JWT)
-    let jwtToken = null;
-    try {
-      const loginResp = await fetch("https://app.linkaform.com/api/infosync/user_admin/login/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: username, api_key: apiKey })
-      });
+    statusMsg.innerText = "Paso 1/3: Autenticando usuario en Linkaform...";
+    const loginResp = await fetch("https://app.linkaform.com/api/infosync/user_admin/login/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: username, api_key: apiKey })
+    });
 
-      if (loginResp.ok) {
-        const loginData = await loginResp.json();
-        jwtToken = loginData.jwt;
+    if (!loginResp.ok) {
+      let errDetail = "";
+      try {
+        const errJson = await loginResp.json();
+        errDetail = errJson.error || errJson.detail || JSON.stringify(errJson);
+      } catch (e) {
+        errDetail = await loginResp.text();
       }
-    } catch (loginErr) {
-      console.warn("Login directo vía browser no completado, intentando Token header:", loginErr);
+      throw new Error(`Fallo de autenticación en Linkaform (HTTP ${loginResp.status}): ${errDetail}. Verifique usuario (${username}) y API Key.`);
+    }
+
+    const loginData = await loginResp.json();
+    const jwtToken = loginData.jwt;
+    if (!jwtToken) {
+      throw new Error("Linkaform no generó un token de sesión JWT válido.");
     }
 
     const authHeaders = {
-      "Authorization": jwtToken ? `Bearer ${jwtToken}` : `Token ${apiKey}`,
+      "Authorization": `Bearer ${jwtToken}`,
       "Content-Type": "application/json"
     };
 
@@ -1217,6 +1225,7 @@ async function handleLinkaformSync(e) {
     updateSyncLabel();
     populateContratistasFilter();
     applyFilters();
+    renderMaterialsTab();
     renderMaterialsLogTable();
 
     statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-800 block";
@@ -1227,7 +1236,7 @@ async function handleLinkaformSync(e) {
     if (err.name === "TypeError" && (err.message.includes("fetch") || err.message.includes("Failed"))) {
       statusMsg.innerHTML = `⚠️ <strong>Nota sobre política de CORS del Navegador:</strong><br>` +
         `Las peticiones directas desde el navegador a la API de Linkaform pueden ser restringidas por CORS en dominios externos.<br><br>` +
-        `✨ <strong>Los 99 trabajos de campo y 11 suministros ya están completamente integrados en el dashboard</strong>.<br>` +
+        `✨ <strong>Los ${state.records.length} trabajos de campo y ${state.materialsLog.length} suministros ya están completamente integrados en el dashboard</strong>.<br>` +
         `Para refrescar datos nuevos en cualquier momento, puedes ejecutar <code class="bg-white px-1.5 py-0.5 rounded font-mono font-bold">python sync_linkaform.py</code> o cargar el archivo Excel en el botón <em>Cargar Datos</em>.`;
     } else {
       statusMsg.innerText = `Error: ${err.message}`;
