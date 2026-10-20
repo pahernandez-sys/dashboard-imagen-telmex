@@ -173,50 +173,6 @@ const DEFAULT_CONFIG = {
       consumo_por_caseta: 0.15,
       stock_minimo_alerta: 50,
       icono: "📞"
-    },
-    {
-      id: "pintura_azul",
-      nombre: "Esmalte Azul Telmex Oficial",
-      categoria: "Pintura",
-      unidad: "Litros",
-      suministrado: 1800,
-      consumo_por_caja: 0.05,
-      consumo_por_caseta: 0.80,
-      stock_minimo_alerta: 100,
-      icono: "🎨"
-    },
-    {
-      id: "pintura_gris",
-      nombre: "Esmalte Gris Telmex (Cajas)",
-      categoria: "Pintura",
-      unidad: "Litros",
-      suministrado: 1500,
-      consumo_por_caja: 0.25,
-      consumo_por_caseta: 0.0,
-      stock_minimo_alerta: 100,
-      icono: "🖌️"
-    },
-    {
-      id: "thinner",
-      nombre: "Thinner Estándar / Solvente",
-      categoria: "Químicos",
-      unidad: "Litros",
-      suministrado: 1200,
-      consumo_por_caja: 0.10,
-      consumo_por_caseta: 0.25,
-      stock_minimo_alerta: 80,
-      icono: "🧴"
-    },
-    {
-      id: "sellador",
-      nombre: "Sellador de Poliuretano",
-      categoria: "Fijación",
-      unidad: "Cartuchos",
-      suministrado: 600,
-      consumo_por_caja: 0.05,
-      consumo_por_caseta: 0.15,
-      stock_minimo_alerta: 40,
-      icono: "🧪"
     }
   ],
 

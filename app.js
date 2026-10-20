@@ -19,6 +19,7 @@ let state = {
 // INICIALIZACIÓN
 // =========================================================
 const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v7";
+const EXCLUDED_MATERIALS = ["pintura_azul", "pintura_gris", "thinner", "sellador"];
 
 // Obtener fecha local en formato YYYY-MM-DD evitando el desfase de zona horaria UTC
 function getLocalDateStr(date = new Date()) {
@@ -72,6 +73,16 @@ function loadConfig() {
     }
   } else {
     state.config = DEFAULT_CONFIG;
+  }
+
+  // Eliminar esmalte, thinner y sellador de materiales en cualquier circunstancia
+  if (state.config && state.config.materiales) {
+    state.config.materiales = state.config.materiales.filter(m => {
+      if (EXCLUDED_MATERIALS.includes(m.id)) return false;
+      const lower = (m.nombre || "").toLowerCase();
+      if (lower.includes("esmalte") || lower.includes("thinner") || lower.includes("sellador") || lower.includes("solvente")) return false;
+      return true;
+    });
   }
 }
 
@@ -567,8 +578,12 @@ function renderMaterialsTab() {
   const chartConsumidoData = [];
   const chartStockQuedaData = [];
 
-  // 6. Recorrer cada material del catálogo
+  // 6. Recorrer cada material del catálogo (excluyendo esmalte, thinner y sellador)
   state.config.materiales.forEach(mat => {
+    if (EXCLUDED_MATERIALS.includes(mat.id)) return;
+    const lowerName = (mat.nombre || "").toLowerCase();
+    if (lowerName.includes("esmalte") || lowerName.includes("thinner") || lowerName.includes("sellador") || lowerName.includes("solvente")) return;
+
     const suministrado = suministrosByMat[mat.id] || 0;
 
     let consumido = 0;
@@ -740,6 +755,10 @@ function renderMaterialsAreaMatrix() {
     if (activeMatIds.size === 0) return;
 
     activeMatIds.forEach(matId => {
+      if (EXCLUDED_MATERIALS.includes(matId)) return;
+      const lowerMat = (matId || "").toLowerCase();
+      if (lowerMat.includes("esmalte") || lowerMat.includes("thinner") || lowerMat.includes("sellador") || lowerMat.includes("solvente") || lowerMat.includes("pintura")) return;
+
       const mat = state.config.materiales.find(m => m.id === matId) || {
         id: matId,
         nombre: matId.replace(/_/g, " ").toUpperCase(),
