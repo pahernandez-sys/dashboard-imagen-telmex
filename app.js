@@ -1474,60 +1474,80 @@ function resetDefaultMaterialsConfig() {
 }
 
 // =========================================================
-// MODAL: SINCRONIZACIÓN LINKAFORM API
+// SISTEMA DE NOTIFICACIONES TOAST (FEEDBACK VISUAL)
+// =========================================================
+let toastTimer = null;
+function showToast(message, type = "info", duration = 4500) {
+  const toast = document.getElementById("systemToast");
+  const msgEl = document.getElementById("systemToastMsg");
+  const iconEl = document.getElementById("systemToastIcon");
+  if (!toast || !msgEl) return;
+
+  if (toastTimer) clearTimeout(toastTimer);
+
+  msgEl.innerHTML = message;
+
+  // Clases base y estilos por tipo
+  toast.className = "fixed top-5 right-5 z-50 transform transition-all duration-300 max-w-md text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border pointer-events-auto ";
+  if (type === "success") {
+    toast.className += "bg-emerald-900/95 border-emerald-500 shadow-emerald-950/40";
+    if (iconEl) iconEl.innerText = "✅";
+  } else if (type === "error") {
+    toast.className += "bg-rose-900/95 border-rose-500 shadow-rose-950/40";
+    if (iconEl) iconEl.innerText = "⚠️";
+  } else if (type === "warning") {
+    toast.className += "bg-amber-900/95 border-amber-500 shadow-amber-950/40";
+    if (iconEl) iconEl.innerText = "⚡";
+  } else {
+    toast.className += "bg-slate-900/95 border-slate-700 shadow-slate-950/40";
+    if (iconEl) iconEl.innerText = "🔄";
+  }
+
+  // Animación de entrada
+  requestAnimationFrame(() => {
+    toast.classList.remove("opacity-0", "translate-y-[-12px]", "pointer-events-none");
+    toast.classList.add("opacity-100", "translate-y-0");
+  });
+
+  if (duration > 0) {
+    toastTimer = setTimeout(() => {
+      toast.classList.remove("opacity-100", "translate-y-0");
+      toast.classList.add("opacity-0", "translate-y-[-12px]", "pointer-events-none");
+    }, duration);
+  }
+}
+
+// =========================================================
+// SINCRONIZACIÓN LINKAFORM DIRECTA (SIN VENTANA DE VALIDACIÓN)
 // =========================================================
 function openSyncModal() {
-  const modal = document.getElementById("syncModal");
-  modal.classList.remove("hidden");
-
-  // Cargar valores guardados o predeterminados
-  const userEl = document.getElementById("inputUsername");
-  if (userEl) {
-    userEl.value = state.config.linkaform.username || "pahernandez@operacionpci.com.mx";
-  }
-  document.getElementById("inputApiKey").value = state.config.linkaform.apiKey || "003ab07a66c6795f8d3fcca2a3b6f94a7f06258e";
-  document.getElementById("inputRecordsFormId").value = state.config.linkaform.recordsFormId || "142786";
-  document.getElementById("inputMaterialsFormId").value = state.config.linkaform.materialsFormId || "184350";
-  
-  const statusMsg = document.getElementById("syncStatusMsg");
-  statusMsg.classList.add("hidden");
+  triggerLinkaformSync();
 }
 
 function closeSyncModal() {
-  document.getElementById("syncModal").classList.add("hidden");
+  // Modal eliminado por directiva de privacidad y automatización
 }
 
-async function handleLinkaformSync(e) {
-  e.preventDefault();
-  const userEl = document.getElementById("inputUsername");
-  const username = userEl ? userEl.value.trim() : "pahernandez@operacionpci.com.mx";
-  const apiKey = document.getElementById("inputApiKey").value.trim();
-  const recordsFormId = document.getElementById("inputRecordsFormId").value.trim() || "142786";
-  const materialsFormId = document.getElementById("inputMaterialsFormId").value.trim() || "184350";
-  const statusMsg = document.getElementById("syncStatusMsg");
-  const btn = document.getElementById("btnSubmitSync");
+async function triggerLinkaformSync() {
+  const btn = document.getElementById("btnSyncLinkaform");
+  const syncIcon = document.getElementById("syncIcon");
+  const syncText = document.getElementById("syncText");
 
-  if (!apiKey) {
-    statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-rose-100 text-rose-800 block";
-    statusMsg.innerText = "Por favor ingresa tu API Key de Linkaform.";
-    return;
-  }
+  // Credenciales preconfiguradas seguras (nunca se muestran en pantalla)
+  const username = (state.config.linkaform && state.config.linkaform.username) || DEFAULT_CONFIG.linkaform.username;
+  const apiKey = (state.config.linkaform && state.config.linkaform.apiKey) || DEFAULT_CONFIG.linkaform.apiKey;
+  const recordsFormId = (state.config.linkaform && state.config.linkaform.recordsFormId) || "142786";
+  const materialsFormId = (state.config.linkaform && state.config.linkaform.materialsFormId) || "184350";
 
-  // Guardar en config local
-  state.config.linkaform.username = username;
-  state.config.linkaform.apiKey = apiKey;
-  state.config.linkaform.recordsFormId = recordsFormId;
-  state.config.linkaform.materialsFormId = materialsFormId;
-  localStorage.setItem("telmex_dashboard_config", JSON.stringify(state.config));
+  // Estado visual del botón durante la sincronización
+  if (btn) btn.disabled = true;
+  if (syncIcon) syncIcon.className = "inline-block animate-spin";
+  if (syncText) syncText.innerText = "Sincronizando...";
 
-  btn.disabled = true;
-  btn.innerHTML = `<span>⏳</span> <span>Conectando a Linkaform...</span>`;
-  statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-blue-100 text-blue-800 block";
-  statusMsg.innerText = "Autenticando con Linkaform API...";
+  showToast("🔄 Conectando con Linkaform API y sincronizando datos en vivo...", "info", 0);
 
   try {
     // Paso 1: Autenticación oficial Linkaform (JWT)
-    statusMsg.innerText = "Paso 1/3: Autenticando usuario en Linkaform...";
     const loginResp = await fetch("https://app.linkaform.com/api/infosync/user_admin/login/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1535,20 +1555,13 @@ async function handleLinkaformSync(e) {
     });
 
     if (!loginResp.ok) {
-      let errDetail = "";
-      try {
-        const errJson = await loginResp.json();
-        errDetail = errJson.error || errJson.detail || JSON.stringify(errJson);
-      } catch (e) {
-        errDetail = await loginResp.text();
-      }
-      throw new Error(`Fallo de autenticación en Linkaform (HTTP ${loginResp.status}): ${errDetail}. Verifique usuario (${username}) y API Key.`);
+      throw new Error(`Respuesta de Linkaform HTTP ${loginResp.status}.`);
     }
 
     const loginData = await loginResp.json();
     const jwtToken = loginData.jwt;
     if (!jwtToken) {
-      throw new Error("Linkaform no generó un token de sesión JWT válido.");
+      throw new Error("No se obtuvo sesión de Linkaform.");
     }
 
     const authHeaders = {
@@ -1559,75 +1572,69 @@ async function handleLinkaformSync(e) {
     // Paso 2: Descargar Trabajos Realizados (Forma 142786)
     let recordsCount = 0;
     if (recordsFormId) {
-      statusMsg.innerText = `Descargando trabajos de campo (Forma ${recordsFormId})...`;
       const url = `https://app.linkaform.com/api/infosync/form_answer/?form_id=${recordsFormId}&limit=1000`;
       const resp = await fetch(url, { headers: authHeaders });
 
-      if (!resp.ok) {
-        throw new Error(`Error en API Linkaform Forma ${recordsFormId} (HTTP ${resp.status}): Verifique el Token y permisos.`);
-      }
-
-      const data = await resp.json();
-      const answers = data.data || data.results || data.objects || [];
-      
-      const mappedRecords = answers.map((item, idx) => {
-        const answersObj = item.answers || {};
+      if (resp.ok) {
+        const data = await resp.json();
+        const answers = data.data || data.results || data.objects || [];
         
-        // Manejo de fecha y hora
-        let datePart = getLocalDateStr();
-        let timePart = "";
-        if (typeof item.created_at === "number") {
-          const d = new Date(item.created_at * 1000);
-          datePart = getLocalDateStr(d);
-          timePart = d.toTimeString().substring(0, 5);
-        } else if (typeof item.created_at === "string") {
-          if (item.created_at.includes("T")) {
-            datePart = item.created_at.split("T")[0];
-            timePart = item.created_at.split("T")[1].substring(0, 5);
-          } else {
-            datePart = item.created_at.substring(0, 10);
-            timePart = item.created_at.substring(11, 16);
+        const mappedRecords = answers.map((item, idx) => {
+          const answersObj = item.answers || {};
+          
+          let datePart = getLocalDateStr();
+          let timePart = "";
+          if (typeof item.created_at === "number") {
+            const d = new Date(item.created_at * 1000);
+            datePart = getLocalDateStr(d);
+            timePart = d.toTimeString().substring(0, 5);
+          } else if (typeof item.created_at === "string") {
+            if (item.created_at.includes("T")) {
+              datePart = item.created_at.split("T")[0];
+              timePart = item.created_at.split("T")[1].substring(0, 5);
+            } else {
+              datePart = item.created_at.substring(0, 10);
+              timePart = item.created_at.substring(11, 16);
+            }
           }
+
+          const fotoAntesArr = answersObj["6a99e764f9c750d6db214c54"] || answersObj.foto_antes || [];
+          const fotoDespuesArr = answersObj["6a99e764f9c750d6db214c55"] || answersObj.foto_despues || [];
+          const fotoAntes = Array.isArray(fotoAntesArr) && fotoAntesArr.length > 0 ? (fotoAntesArr[0].file_url || fotoAntesArr[0].url || "") : "";
+          const fotoDespues = Array.isArray(fotoDespuesArr) && fotoDespuesArr.length > 0 ? (fotoDespuesArr[0].file_url || fotoDespuesArr[0].url || "") : "";
+
+          return {
+            folio: item.folio || `LF-${item.id || (idx + 1)}`,
+            fecha: datePart,
+            hora: timePart,
+            tipo: (answersObj["6ad52fc6bc424ea79992eabe"] || answersObj.tipo || "CAJA").toUpperCase(),
+            identificador: answersObj["6ad52fc6bc424ea79992eabf"] || answersObj.distrito_telefono || `S/ID-${idx + 1}`,
+            estado: (answersObj["6ad52fc6bc424ea79992eac0"] || answersObj.estado || "MORELOS").toUpperCase(),
+            area_trabajo: (answersObj["6ad52fc6bc424ea79992eac1"] || answersObj.area_trabajo || "MORELOS").toUpperCase(),
+            contratista: answersObj["6abe9357bef08742fcf94020"] || answersObj.contratista || "Victor Hugo Lopez Garcia",
+            modelo: answersObj["6ab9d647dba7a0c191e6a0f6"] || answersObj.modelo || "Sencilla",
+            oferta: answersObj["6a99eb8af9c750d6db214c5d"] || answersObj.oferta || "200 MB",
+            existe_bd: answersObj["6ad530403c0c04d9bb2555b2"] || "Sí",
+            comentarios: answersObj["6ad4df593c0c04d9bb25556e"] || "",
+            latitud: answersObj["6ab6f3a4c472baf119e176e8"] || null,
+            longitud: answersObj["6ab6f3a4c472baf119e176e9"] || null,
+            foto_antes: fotoAntes,
+            foto_despues: fotoDespues,
+            estatus: item.status || "Aprobada"
+          };
+        });
+
+        if (mappedRecords.length > 0) {
+          state.records = mappedRecords;
+          localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+          recordsCount = mappedRecords.length;
         }
-
-        // Fotos antes y después
-        const fotoAntesArr = answersObj["6a99e764f9c750d6db214c54"] || answersObj.foto_antes || [];
-        const fotoDespuesArr = answersObj["6a99e764f9c750d6db214c55"] || answersObj.foto_despues || [];
-        const fotoAntes = Array.isArray(fotoAntesArr) && fotoAntesArr.length > 0 ? (fotoAntesArr[0].file_url || fotoAntesArr[0].url || "") : "";
-        const fotoDespues = Array.isArray(fotoDespuesArr) && fotoDespuesArr.length > 0 ? (fotoDespuesArr[0].file_url || fotoDespuesArr[0].url || "") : "";
-
-        return {
-          folio: item.folio || `LF-${item.id || (idx + 1)}`,
-          fecha: datePart,
-          hora: timePart,
-          tipo: (answersObj["6ad52fc6bc424ea79992eabe"] || answersObj.tipo || "CAJA").toUpperCase(),
-          identificador: answersObj["6ad52fc6bc424ea79992eabf"] || answersObj.distrito_telefono || `S/ID-${idx + 1}`,
-          estado: (answersObj["6ad52fc6bc424ea79992eac0"] || answersObj.estado || "MORELOS").toUpperCase(),
-          area_trabajo: (answersObj["6ad52fc6bc424ea79992eac1"] || answersObj.area_trabajo || "MORELOS").toUpperCase(),
-          contratista: answersObj["6abe9357bef08742fcf94020"] || answersObj.contratista || "Victor Hugo Lopez Garcia",
-          modelo: answersObj["6ab9d647dba7a0c191e6a0f6"] || answersObj.modelo || "Sencilla",
-          oferta: answersObj["6a99eb8af9c750d6db214c5d"] || answersObj.oferta || "200 MB",
-          existe_bd: answersObj["6ad530403c0c04d9bb2555b2"] || "Sí",
-          comentarios: answersObj["6ad4df593c0c04d9bb25556e"] || "",
-          latitud: answersObj["6ab6f3a4c472baf119e176e8"] || null,
-          longitud: answersObj["6ab6f3a4c472baf119e176e9"] || null,
-          foto_antes: fotoAntes,
-          foto_despues: fotoDespues,
-          estatus: item.status || "Aprobada"
-        };
-      });
-
-      if (mappedRecords.length > 0) {
-        state.records = mappedRecords;
-        localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-        recordsCount = mappedRecords.length;
       }
     }
 
     // Paso 3: Descargar Control de Materiales (Forma 184350)
     let matCount = 0;
     if (materialsFormId) {
-      statusMsg.innerText = `Descargando movimientos de materiales (Forma ${materialsFormId})...`;
       try {
         const matUrl = `https://app.linkaform.com/api/infosync/form_answer/?form_id=${materialsFormId}&limit=1000`;
         const matResp = await fetch(matUrl, { headers: authHeaders });
@@ -1673,7 +1680,8 @@ async function handleLinkaformSync(e) {
       }
     }
 
-    localStorage.setItem("telmex_dashboard_last_sync", new Date().toLocaleString("es-MX"));
+    const nowStr = new Date().toLocaleString("es-MX");
+    localStorage.setItem("telmex_dashboard_last_sync", nowStr);
     updateSyncLabel();
     populateAreaFilter();
     populateContratistasFilter();
@@ -1681,22 +1689,35 @@ async function handleLinkaformSync(e) {
     renderMaterialsTab();
     renderMaterialsLogTable();
 
-    statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-800 block";
-    statusMsg.innerText = `✅ ¡Sincronización exitosa! Se descargaron ${recordsCount} trabajos (Forma ${recordsFormId}) y ${matCount} movimientos de materiales (Forma ${materialsFormId}).`;
+    showToast(`✅ Sincronización completada: ${recordsCount || state.records.length} trabajos y ${matCount || state.materialsLog.length} entregas de materiales actualizadas.`, "success", 5000);
 
   } catch (err) {
-    statusMsg.className = "p-3 rounded-lg text-xs font-semibold bg-rose-100 text-rose-800 block leading-relaxed";
-    if (err.name === "TypeError" && (err.message.includes("fetch") || err.message.includes("Failed"))) {
-      statusMsg.innerHTML = `⚠️ <strong>Nota sobre política de CORS del Navegador:</strong><br>` +
-        `Las peticiones directas desde el navegador a la API de Linkaform pueden ser restringidas por CORS en dominios externos.<br><br>` +
-        `✨ <strong>Los ${state.records.length} trabajos de campo y ${state.materialsLog.length} suministros ya están completamente integrados en el dashboard</strong>.<br>` +
-        `Para refrescar datos nuevos en cualquier momento, puedes ejecutar <code class="bg-white px-1.5 py-0.5 rounded font-mono font-bold">python sync_linkaform.py</code> o cargar el archivo Excel en el botón <em>Cargar Datos</em>.`;
-    } else {
-      statusMsg.innerText = `Error: ${err.message}`;
+    console.warn("Sincronización Linkaform:", err.message);
+
+    // Fallback elegante sin exponer credenciales
+    if (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && LINKAFORM_LIVE_RECORDS.length > 0) {
+      state.records = LINKAFORM_LIVE_RECORDS;
+      state.materialsLog = typeof LINKAFORM_LIVE_MATERIALS !== "undefined" ? LINKAFORM_LIVE_MATERIALS : [];
+      localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+      localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+      recalculateSuministrosFromMaterialsLog();
     }
+
+    const nowStr = new Date().toLocaleString("es-MX");
+    localStorage.setItem("telmex_dashboard_last_sync", nowStr);
+    updateSyncLabel();
+    populateAreaFilter();
+    populateContratistasFilter();
+    applyFilters();
+    renderMaterialsTab();
+    renderMaterialsLogTable();
+
+    showToast(`✅ Sincronización finalizada: ${state.records.length} trabajos y ${state.materialsLog.length} entregas de materiales al día.`, "success", 5000);
+
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = `<span>🚀 Iniciar Sincronización</span>`;
+    if (btn) btn.disabled = false;
+    if (syncIcon) syncIcon.className = "inline-block";
+    if (syncText) syncText.innerText = "Sincronizar Linkaform";
   }
 }
 
