@@ -1,265 +1,248 @@
 """
 Generador de Reporte Diario de Casetas y Cajas Contratistas 2026
 Replica oficial del formato Excel con datos actualizados de Linkaform
-Plantilla base: Reporte diarios Casetas y Cajas Contratistas 2026 - IASA.xlsx
+Plantilla base oficial: Reporte diarios Casetas y Cajas Contratistas 2026 - IASA.xlsx
 
-Regla de actualización:
-- Los números de ayer hacia atrás (<= 2026-10-20) NO se mueven.
-- Solo a partir de hoy (>= 2026-10-21) se actualizan las intervenciones diarias y nuevos materiales.
-- Las fórmulas de totales (=CN... / =CH...) y sumas automáticas se respetan al 100%.
+Reglas de replicación e integridad:
+1. Réplica 100% fiel de la plantilla oficial IASA.
+2. Los números históricos de ayer hacia atrás (<= 2026-10-20) permanecen intactos.
+3. Solo a partir de START_DATE (>= 2026-10-21) se actualizan las intervenciones diarias y entregas de materiales.
+4. Desglose de materiales por tipo en columnas CS:DB (Cajas) y CY:DC (Casetas).
+5. Las fórmulas de totales (=SUM, =DC, =DD, =CN, =CH, etc.) se preservan y calculan automáticamente.
 """
 
 import os
+import re
 import json
+import shutil
 import openpyxl
-from copy import copy
-from datetime import datetime
+import unicodedata
 from collections import defaultdict
+from datetime import datetime
 
-BASE_TEMPLATE_PATH = r"c:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\Reporte diarios Casetas y Cajas Contratistas 2026 - IASA.xlsx"
-LOCAL_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), "data", "Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx")
+# Rutas de plantillas y salidas
+BASE_IASA_WORKSPACE = r"c:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\Reporte diarios Casetas y Cajas Contratistas 2026 - IASA.xlsx"
+CLEAN_BASE_LOCAL = os.path.join(os.path.dirname(__file__), "data", "Reporte_diarios_IASA_BASE.xlsx")
+OUTPUT_EXCEL_DATA = os.path.join(os.path.dirname(__file__), "data", "Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx")
+USER_WORKSPACE_COPY = r"c:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\Reporte diarios Casetas y Cajas Contratistas 2026 - Actualizado.xlsx"
 
 START_DATE = "2026-10-21"
-
-def load_live_data():
-    data_dir = os.path.join(os.path.dirname(__file__), "data")
-    js_path = os.path.join(data_dir, "linkaform_live_data.js")
-    
-    if not os.path.exists(js_path):
-        print(f"[ERROR] No se encontró {js_path}")
-        return [], []
-        
-    with open(js_path, "r", encoding="utf-8") as f:
-        content = f.read()
-        
-    rec_part = content.split("LINKAFORM_LIVE_RECORDS = ")[1].split(";\n\nconst LINKAFORM_LIVE_MATERIALS")[0]
-    mat_part = content.split("const LINKAFORM_LIVE_MATERIALS = ")[1].strip(";\n ")
-    
-    records = json.loads(rec_part)
-    materials = json.loads(mat_part)
-    return records, materials
 
 def normalize_area_str(val):
     if not val:
         return ""
-    import unicodedata
     s = str(val).strip().upper()
     s = "".join(c for c in unicodedata.normalize("NFD", s) if unicodedata.category(c) != "Mn")
     return s.replace("-", " ").replace("  ", " ").strip()
 
+def map_caseta_mat_col(desc):
+    d = (desc or "").upper()
+    if "CUICUILCO" in d: return 107    # DC
+    if "REFORMA" in d: return 106      # DB
+    if "SEMICIRCULAR" in d: return 105 # DA
+    if "MINI" in d: return 104         # CZ
+    if "NORMAL" in d: return 103       # CY
+    return None
+
+def map_caja_mat_col(desc):
+    d = (desc or "").upper()
+    if "SIECOR" in d:
+        if "DOBLE" in d:
+            return 102 # CX
+        if re.search(r"\b2\s*PTA", d) or "DOS PTA" in d:
+            return 104 # CZ
+        if re.search(r"\b1\s*PTA", d) or "UNA PTA" in d or "SENCILLA" in d:
+            return 103 # CY
+        return 102
+    if "KRONE" in d: return 101 # CW
+    if "ENVOLV" in d and "DOBLE" in d: return 99 # CU
+    if "ENVOLV" in d: return 100 # CV
+    if ("DEPLAS" in d or "DESPLAZ" in d) and "DOBLE" in d: return 97 # CS
+    if ("DEPLAS" in d or "DESPLAZ" in d): return 98 # CT
+    if "TRADICIONAL" in d and "DOBLE" in d: return 105 # DA
+    if "TRADICIONAL" in d: return 106 # DB
+    return None
+
+def load_live_data():
+    js_path = os.path.join(os.path.dirname(__file__), "data", "linkaform_live_data.js")
+    if not os.path.exists(js_path):
+        print(f"[ERROR] No se encontró {js_path}")
+        return [], []
+    with open(js_path, "r", encoding="utf-8") as f:
+        content = f.read()
+    rec_part = content.split("LINKAFORM_LIVE_RECORDS = ")[1].split(";\n\nconst LINKAFORM_LIVE_MATERIALS")[0]
+    mat_part = content.split("const LINKAFORM_LIVE_MATERIALS = ")[1].strip(";\n ")
+    return json.loads(rec_part), json.loads(mat_part)
+
 def build_reporte_diario():
-    template_source = BASE_TEMPLATE_PATH if os.path.exists(BASE_TEMPLATE_PATH) else LOCAL_TEMPLATE_PATH
-    if not os.path.exists(template_source):
-        raise FileNotFoundError(f"No se encontró la plantilla base en {template_source}")
-        
-    print(f"Cargando plantilla base: {template_source}...")
-    wb = openpyxl.load_workbook(template_source, data_only=False)
+    # 1. Asegurar copia de la plantilla base oficial IASA
+    if os.path.exists(BASE_IASA_WORKSPACE):
+        shutil.copyfile(BASE_IASA_WORKSPACE, CLEAN_BASE_LOCAL)
+    elif not os.path.exists(CLEAN_BASE_LOCAL):
+        raise FileNotFoundError("No se encontró la plantilla oficial IASA.")
+
+    print(f"Cargando plantilla base limpia: {CLEAN_BASE_LOCAL}...")
+    wb = openpyxl.load_workbook(CLEAN_BASE_LOCAL, data_only=False)
+
     records, materials = load_live_data()
     print(f"Datos cargados: {len(records)} trabajos de campo, {len(materials)} entregas de materiales.")
 
-    # 1. Agrupar Materiales NUEVOS a partir de START_DATE (>= 2026-10-21)
-    caseta_materials_new = defaultdict(float)
-    caja_materials_new = defaultdict(float)
-
-    for m in materials:
-        fecha_m = str(m.get("fecha") or "")[:10]
-        if fecha_m and fecha_m < START_DATE:
-            # Los de ayer hacia atrás ya están validados en la plantilla IASA
-            continue
-            
-        area_norm = normalize_area_str(m.get("area"))
-        desc = (m.get("descripcion") or "").upper().strip()
-        qty = float(m.get("cantidad") or 0)
-        
-        if "CASETA" in desc or "SEMICIRCULAR" in desc:
-            caseta_materials_new[area_norm] += qty
-        else:
-            caja_materials_new[area_norm] += qty
-
-    # 2. Agrupar Trabajos NUEVOS a partir de START_DATE (>= 2026-10-21)
-    caseta_works_new = defaultdict(lambda: defaultdict(int))
-    caja_works_new = defaultdict(lambda: defaultdict(int))
-
-    for r in records:
-        fecha = str(r.get("fecha") or "").replace("/", "-")[:10]
-        if not fecha or fecha < START_DATE:
-            # Los de ayer hacia atrás ya están capturados en la plantilla IASA
-            continue
-
-        tipo = (r.get("tipo") or "CAJA").upper().strip()
-        area_norm = normalize_area_str(r.get("area_trabajo"))
-            
-        if tipo == "CASETA":
-            caseta_works_new[area_norm][fecha] += 1
-        else:
-            caja_works_new[area_norm][fecha] += 1
+    today_limit = datetime.now().strftime("%Y-%m-%d")
 
     # =========================================================
     # HOJA 1: Programa CASETAS REPORTE DIARIO
     # =========================================================
-    ws_casetas = wb["Programa CASETAS REPORTE DIARIO"]
-    print("\nProcesando hoja 'Programa CASETAS REPORTE DIARIO'...")
-    
-    # Mapeo de columnas de fechas (Fila 12)
-    casetas_date_cols = {}
-    for c in range(23, ws_casetas.max_column + 1):
-        v = ws_casetas.cell(12, c).value
-        d_str = ""
-        if isinstance(v, datetime):
-            d_str = v.strftime("%Y-%m-%d")
-        elif isinstance(v, str) and "2026" in v:
-            d_str = v.strip()[:10]
-        if d_str:
-            casetas_date_cols[d_str] = c
+    ws_cas = wb["Programa CASETAS REPORTE DIARIO"]
+    casetas_areas = {}
+    for r in range(14, 79):
+        c3 = normalize_area_str(ws_cas.cell(r, 3).value)
+        c2 = normalize_area_str(ws_cas.cell(r, 2).value)
+        if c3: casetas_areas[c3] = r
+        if c2 and c2 not in casetas_areas: casetas_areas[c2] = r
 
-    # Mapeo de filas de áreas (ignorando totales)
-    casetas_area_rows = {}
-    for r in range(14, ws_casetas.max_row + 1):
-        c3 = ws_casetas.cell(r, 3).value
-        c2 = ws_casetas.cell(r, 2).value
-        if c3 and c3 not in ("Total general", "TELNOR"):
-            a_val = normalize_area_str(c3)
-            if a_val and a_val not in casetas_area_rows:
-                casetas_area_rows[a_val] = r
-        if c2 and c2 not in ("Total general", "TELNOR", "CDMX Y AREA CONURBADA"):
-            at_val = normalize_area_str(c2)
-            if at_val and at_val not in casetas_area_rows:
-                casetas_area_rows[at_val] = r
-
-    def find_caseta_row(area_n):
-        if area_n in casetas_area_rows:
-            return casetas_area_rows[area_n]
-        for k, r_idx in casetas_area_rows.items():
-            if area_n in k or k in area_n:
-                return r_idx
+    def find_caseta_row(a):
+        norm = normalize_area_str(a)
+        if norm in casetas_areas: return casetas_areas[norm]
+        for k, r in casetas_areas.items():
+            if norm in k or k in norm: return r
         return None
 
-    # Actualizar Materiales Casetas nuevos (Col CU: 99)
-    COL_CU_CASETAS = 99
-    for area_norm, qty in caseta_materials_new.items():
-        row_idx = find_caseta_row(area_norm)
-        if row_idx and qty > 0:
-            current_val = ws_casetas.cell(row_idx, COL_CU_CASETAS).value
-            if isinstance(current_val, (int, float)):
-                ws_casetas.cell(row_idx, COL_CU_CASETAS).value = current_val + qty
-            else:
-                ws_casetas.cell(row_idx, COL_CU_CASETAS).value = qty
-            print(f"  [Casetas Material Nuevo] {area_norm} -> Fila {row_idx}, +{qty} en Col CU")
+    cas_date_cols = {}
+    for c in range(23, 92):
+        v = ws_cas.cell(12, c).value
+        d_str = str(v)[:10] if v else ""
+        if "2026" in d_str:
+            cas_date_cols[d_str] = c
 
-    TODAY_LIMIT = datetime.now().strftime("%Y-%m-%d")
-
-    # Actualizar Trabajos Casetas a partir de hoy (START_DATE) y hasta TODAY_LIMIT
-    for area_norm, dates in caseta_works_new.items():
-        row_idx = find_caseta_row(area_norm)
-        if row_idx:
-            for f_str, count in dates.items():
-                if START_DATE <= f_str <= TODAY_LIMIT:
-                    col_idx = casetas_date_cols.get(f_str)
-                    if col_idx:
-                        ws_casetas.cell(row_idx, col_idx).value = count
-                        print(f"  [Casetas Avance Hoy] {area_norm} ({f_str}) -> Fila {row_idx}, Col {openpyxl.utils.get_column_letter(col_idx)}={count}")
-
-    # Limpiar columnas futuras (> TODAY_LIMIT) para evitar cualquier dato en el 22 de octubre o posterior
-    for d_str, col_idx in casetas_date_cols.items():
-        if d_str > TODAY_LIMIT:
-            for r in range(14, ws_casetas.max_row + 1):
-                cell = ws_casetas.cell(r, col_idx)
-                if isinstance(cell.value, (int, float)):
-                    cell.value = None
+    # Materiales históricos Casetas en desglose
+    # Toluca (Row 28): 48 normales
+    ws_cas.cell(28, 103).value = 48
+    ws_cas.cell(28, 99).value = "=DD28"
+    # Morelos (Row 27): 554 normales, 64 mini
+    ws_cas.cell(27, 103).value = 554
+    ws_cas.cell(27, 104).value = 64
+    ws_cas.cell(27, 99).value = "=DD27"
 
     # =========================================================
     # HOJA 2: Programa CAJAS REPORTE DIARIO
     # =========================================================
-    ws_cajas = wb["Programa CAJAS REPORTE DIARIO"]
-    print("\nProcesando hoja 'Programa CAJAS REPORTE DIARIO'...")
-    
-    # Mapeo de columnas de fechas (Fila 12)
-    cajas_date_cols = {}
-    for c in range(29, ws_cajas.max_column + 1):
-        v = ws_cajas.cell(12, c).value
-        d_str = ""
-        if isinstance(v, datetime):
-            d_str = v.strftime("%Y-%m-%d")
-        elif isinstance(v, str) and "2026" in v:
-            d_str = v.strip()[:10]
-        if d_str:
-            cajas_date_cols[d_str] = c
+    ws_caj = wb["Programa CAJAS REPORTE DIARIO"]
+    cajas_areas = {}
+    for r in range(14, 77):
+        c3 = normalize_area_str(ws_caj.cell(r, 3).value)
+        c2 = normalize_area_str(ws_caj.cell(r, 2).value)
+        if c3: cajas_areas[c3] = r
+        if c2 and c2 not in cajas_areas: cajas_areas[c2] = r
 
-    # Mapeo de filas de áreas
-    cajas_area_rows = {}
-    for r in range(14, ws_cajas.max_row + 1):
-        c3 = ws_cajas.cell(r, 3).value
-        c2 = ws_cajas.cell(r, 2).value
-        if c3 and c3 not in ("Total general", "TELNOR"):
-            a_val = normalize_area_str(c3)
-            if a_val and a_val not in cajas_area_rows:
-                cajas_area_rows[a_val] = r
-        if c2 and c2 not in ("Total general", "TELNOR", "CDMX Y AREA CONURBADA"):
-            at_val = normalize_area_str(c2)
-            if at_val and at_val not in cajas_area_rows:
-                cajas_area_rows[at_val] = r
-
-    def find_caja_row(area_n):
-        if area_n in cajas_area_rows:
-            return cajas_area_rows[area_n]
-        for k, r_idx in cajas_area_rows.items():
-            if area_n in k or k in area_n:
-                return r_idx
+    def find_caja_row(a):
+        norm = normalize_area_str(a)
+        if norm in cajas_areas: return cajas_areas[norm]
+        for k, r in cajas_areas.items():
+            if norm in k or k in norm: return r
         return None
 
-    # Actualizar Materiales Cajas nuevos (Col CO: 93)
-    COL_CO_CAJAS = 93
-    for area_norm, qty in caja_materials_new.items():
-        row_idx = find_caja_row(area_norm)
-        if row_idx and qty > 0:
-            current_val = ws_cajas.cell(row_idx, COL_CO_CAJAS).value
-            if isinstance(current_val, (int, float)):
-                ws_cajas.cell(row_idx, COL_CO_CAJAS).value = current_val + qty
-            else:
-                ws_cajas.cell(row_idx, COL_CO_CAJAS).value = qty
-            print(f"  [Cajas Material Nuevo] {area_norm} -> Fila {row_idx}, +{qty} en Col CO")
+    caj_date_cols = {}
+    for c in range(29, 86):
+        v = ws_caj.cell(12, c).value
+        d_str = str(v)[:10] if v else ""
+        if "2026" in d_str:
+            caj_date_cols[d_str] = c
 
-    # Actualizar Trabajos Cajas a partir de hoy (START_DATE) y hasta TODAY_LIMIT
-    for area_norm, dates in caja_works_new.items():
-        row_idx = find_caja_row(area_norm)
-        if row_idx:
-            for f_str, count in dates.items():
-                if START_DATE <= f_str <= TODAY_LIMIT:
-                    col_idx = cajas_date_cols.get(f_str)
-                    if col_idx:
-                        ws_cajas.cell(row_idx, col_idx).value = count
-                        print(f"  [Cajas Avance Hoy] {area_norm} ({f_str}) -> Fila {row_idx}, Col {openpyxl.utils.get_column_letter(col_idx)}={count}")
+    # Materiales históricos Cajas en desglose
+    # Morelos (Row 27): 176 tradicional sencilla
+    ws_caj.cell(27, 106).value = 176
+    ws_caj.cell(27, 93).value = "=DC27"
+    # Toluca (Row 28): 67 desp dob, 38 desp senc, 5 env senc, 8 siecor dob, 16 siecor 1 pta
+    ws_caj.cell(28, 97).value = 67
+    ws_caj.cell(28, 98).value = 38
+    ws_caj.cell(28, 100).value = 5
+    ws_caj.cell(28, 102).value = 8
+    ws_caj.cell(28, 103).value = 16
+    ws_caj.cell(28, 93).value = "=DC28"
+    # Nayarit (Row 41): 2 krone
+    ws_caj.cell(41, 101).value = 2
+    ws_caj.cell(41, 93).value = "=DC41"
 
-    # Limpiar columnas futuras (> TODAY_LIMIT) para evitar cualquier dato en el 22 de octubre o posterior
-    for d_str, col_idx in cajas_date_cols.items():
-        if d_str > TODAY_LIMIT:
-            for r in range(14, ws_cajas.max_row + 1):
-                cell = ws_cajas.cell(r, col_idx)
-                if isinstance(cell.value, (int, float)):
-                    cell.value = None
+    # =========================================================
+    # APLICAR MATERIALES NUEVOS (>= START_DATE)
+    # =========================================================
+    for m in materials:
+        f_m = str(m.get("fecha") or "")[:10]
+        if f_m < START_DATE:
+            continue
+        
+        area = m.get("area") or ""
+        desc = (m.get("descripcion") or "").strip()
+        qty = float(m.get("cantidad") or 0)
+        if qty <= 0:
+            continue
 
-    # Asegurar que fila 78 en Cajas esté completamente vacía
-    for c in range(1, ws_cajas.max_column + 1):
-        cell = ws_cajas.cell(78, c)
-        cell.value = None
-        cell.border = openpyxl.styles.Border()
-        cell.fill = openpyxl.styles.PatternFill(fill_type=None)
-        cell.font = openpyxl.styles.Font()
+        is_cas = "CASETA" in desc.upper() or "SEMICIRCULAR" in desc.upper()
+        if is_cas:
+            r_idx = find_caseta_row(area)
+            c_idx = map_caseta_mat_col(desc)
+            if r_idx and c_idx:
+                curr = ws_cas.cell(r_idx, c_idx).value
+                ws_cas.cell(r_idx, c_idx).value = (curr or 0) + qty
+                ws_cas.cell(r_idx, 99).value = f"=DD{r_idx}"
+                print(f"  [Caseta Mat Nuevo] {area} -> Fila {r_idx}, Col {c_idx} += {qty}")
+        else:
+            r_idx = find_caja_row(area)
+            c_idx = map_caja_mat_col(desc)
+            if r_idx and c_idx:
+                curr = ws_caj.cell(r_idx, c_idx).value
+                ws_caj.cell(r_idx, c_idx).value = (curr or 0) + qty
+                ws_caj.cell(r_idx, 93).value = f"=DC{r_idx}"
+                print(f"  [Caja Mat Nuevo] {area} -> Fila {r_idx}, Col {c_idx} += {qty}")
 
-    # Guardar en local del repositorio para descarga en GitHub Pages
-    os.makedirs(os.path.dirname(LOCAL_TEMPLATE_PATH), exist_ok=True)
-    wb.save(LOCAL_TEMPLATE_PATH)
-    print(f"\n[OK] Archivo generado exitosamente en: {LOCAL_TEMPLATE_PATH}")
+    # =========================================================
+    # APLICAR TRABAJOS DE CAMPO NUEVOS (START_DATE <= fecha <= today)
+    # =========================================================
+    caseta_works = defaultdict(lambda: defaultdict(int))
+    caja_works = defaultdict(lambda: defaultdict(int))
 
-    # Guardar copia en el workspace principal del usuario
-    user_copy_path = os.path.join(r"c:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2", "Reporte diarios Casetas y Cajas Contratistas 2026 - Actualizado.xlsx")
+    for rec in records:
+        f_rec = str(rec.get("fecha") or "").replace("/", "-")[:10]
+        if not f_rec or f_rec < START_DATE or f_rec > today_limit:
+            continue
+        
+        tipo = (rec.get("tipo") or "CAJA").upper().strip()
+        area = rec.get("area_trabajo") or ""
+        if tipo == "CASETA":
+            caseta_works[area][f_rec] += 1
+        else:
+            caja_works[area][f_rec] += 1
+
+    for area, f_map in caseta_works.items():
+        r_idx = find_caseta_row(area)
+        if r_idx:
+            for f_str, count in f_map.items():
+                c_idx = cas_date_cols.get(f_str)
+                if c_idx:
+                    ws_cas.cell(r_idx, c_idx).value = count
+                    print(f"  [Caseta Avance Hoy] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} = {count}")
+
+    for area, f_map in caja_works.items():
+        r_idx = find_caja_row(area)
+        if r_idx:
+            for f_str, count in f_map.items():
+                c_idx = caj_date_cols.get(f_str)
+                if c_idx:
+                    ws_caj.cell(r_idx, c_idx).value = count
+                    print(f"  [Caja Avance Hoy] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} = {count}")
+
+    # Guardar en data del repo y copia del usuario
+    os.makedirs(os.path.dirname(OUTPUT_EXCEL_DATA), exist_ok=True)
+    wb.save(OUTPUT_EXCEL_DATA)
+    print(f"\n[OK] Archivo generado exitosamente en: {OUTPUT_EXCEL_DATA}")
+
     try:
-        wb.save(user_copy_path)
-        print(f"[OK] Copia guardada en workspace del usuario: {user_copy_path}")
+        wb.save(USER_WORKSPACE_COPY)
+        print(f"[OK] Copia guardada en workspace del usuario: {USER_WORKSPACE_COPY}")
     except Exception as e:
         print(f"[Aviso] No se pudo escribir copia en workspace: {e}")
 
-    return LOCAL_TEMPLATE_PATH
+    return OUTPUT_EXCEL_DATA
 
 if __name__ == "__main__":
     build_reporte_diario()

@@ -39,8 +39,12 @@ class SyncHandler(BaseHTTPRequestHandler):
         if self.path == "/sync":
             try:
                 # 1. Ejecutar sincronizacion Linkaform
+                import importlib
                 import sync_linkaform
                 import build_reporte_diario
+
+                importlib.reload(sync_linkaform)
+                importlib.reload(build_reporte_diario)
 
                 username = os.environ.get("LINKAFORM_USERNAME") or sync_linkaform.DEFAULT_USERNAME
                 api_key = os.environ.get("LINKAFORM_API_KEY") or sync_linkaform.DEFAULT_API_KEY
