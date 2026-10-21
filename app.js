@@ -18,7 +18,7 @@ let state = {
 // =========================================================
 // INICIALIZACIÓN
 // =========================================================
-const LIVE_DATA_VERSION = "2026-10-21-linkaform-live-v9";
+const LIVE_DATA_VERSION = "2026-10-21-linkaform-live-v11";
 const EXCLUDED_MATERIALS = ["pintura_azul", "pintura_gris", "thinner", "sellador"];
 
 // Obtener fecha local en formato YYYY-MM-DD evitando el desfase de zona horaria UTC
@@ -1908,6 +1908,7 @@ function normalizeAreaForExcel(val) {
 // Descargar Réplica Oficial del Reporte Diario de Casetas y Cajas (Dinámico en Vivo con Formatos y Fórmulas)
 async function exportReporteDiarioExcel() {
   const dateStr = getLocalDateStr();
+  const START_DATE = "2026-10-21";
   showToast("📊 Generando Reporte Diario Excel actualizado en vivo...", "info", 2500);
 
   try {
@@ -1915,7 +1916,7 @@ async function exportReporteDiarioExcel() {
       throw new Error("Librería ExcelJS no detectada.");
     }
 
-    // 1. Obtener la plantilla oficial base
+    // 1. Obtener la plantilla oficial base (IASA)
     const templateResp = await fetch(`data/Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx?v=${Date.now()}`);
     if (!templateResp.ok) throw new Error("No se pudo cargar la plantilla base de Excel.");
 
@@ -1926,35 +1927,39 @@ async function exportReporteDiarioExcel() {
     const records = state.records || [];
     const materials = state.materialsLog || [];
 
-    // 2. Agrupar Materiales por Tipo (CASETA vs CAJA) y Área
-    const casetaMaterials = {};
-    const cajaMaterials = {};
+    // 2. Agrupar Materiales NUEVOS a partir de START_DATE (>= 2026-10-21)
+    const casetaMaterialsNew = {};
+    const cajaMaterialsNew = {};
     materials.forEach(m => {
+      const fechaM = String(m.fecha || "").substring(0, 10);
+      if (fechaM && fechaM < START_DATE) return; // Conservar históricos intactos de la plantilla
+
       const areaNorm = normalizeAreaForExcel(m.area);
       const desc = (m.descripcion || "").toUpperCase().trim();
       const qty = parseFloat(m.cantidad) || 0;
       if (desc.includes("CASETA") || desc.includes("SEMICIRCULAR")) {
-        casetaMaterials[areaNorm] = (casetaMaterials[areaNorm] || 0) + qty;
+        casetaMaterialsNew[areaNorm] = (casetaMaterialsNew[areaNorm] || 0) + qty;
       } else {
-        cajaMaterials[areaNorm] = (cajaMaterials[areaNorm] || 0) + qty;
+        cajaMaterialsNew[areaNorm] = (cajaMaterialsNew[areaNorm] || 0) + qty;
       }
     });
 
-    // 3. Agrupar Trabajos por Tipo, Área y Fecha
-    const casetaWorks = {};
-    const cajaWorks = {};
+    // 3. Agrupar Trabajos NUEVOS a partir de START_DATE (>= 2026-10-21)
+    const casetaWorksNew = {};
+    const cajaWorksNew = {};
     records.forEach(r => {
+      const fecha = String(r.fecha || "").replace(/\//g, "-").substring(0, 10);
+      if (!fecha || fecha < START_DATE) return; // Conservar históricos intactos de la plantilla
+
       const tipo = (r.tipo || "CAJA").toUpperCase().trim();
       const areaNorm = normalizeAreaForExcel(r.area_trabajo);
-      const fecha = String(r.fecha || "").replace(/\//g, "-").substring(0, 10);
-      if (!fecha) return;
 
       if (tipo === "CASETA") {
-        if (!casetaWorks[areaNorm]) casetaWorks[areaNorm] = {};
-        casetaWorks[areaNorm][fecha] = (casetaWorks[areaNorm][fecha] || 0) + 1;
+        if (!casetaWorksNew[areaNorm]) casetaWorksNew[areaNorm] = {};
+        casetaWorksNew[areaNorm][fecha] = (casetaWorksNew[areaNorm][fecha] || 0) + 1;
       } else {
-        if (!cajaWorks[areaNorm]) cajaWorks[areaNorm] = {};
-        cajaWorks[areaNorm][fecha] = (cajaWorks[areaNorm][fecha] || 0) + 1;
+        if (!cajaWorksNew[areaNorm]) cajaWorksNew[areaNorm] = {};
+        cajaWorksNew[areaNorm][fecha] = (cajaWorksNew[areaNorm][fecha] || 0) + 1;
       }
     });
 
@@ -1977,13 +1982,19 @@ async function exportReporteDiarioExcel() {
         if (dStr) casetasDateCols[dStr] = c;
       }
 
-      // Mapeo filas de áreas (14 a 78)
+      // Mapeo filas de áreas
       const casetasAreaRows = {};
-      for (let r = 14; r <= 78; r++) {
-        const aVal = normalizeAreaForExcel(wsCasetas.getCell(r, 3).value);
-        const atVal = normalizeAreaForExcel(wsCasetas.getCell(r, 2).value);
-        if (aVal && !casetasAreaRows[aVal]) casetasAreaRows[aVal] = r;
-        if (atVal && !casetasAreaRows[atVal]) casetasAreaRows[atVal] = r;
+      for (let r = 14; r <= wsCasetas.rowCount; r++) {
+        const c3 = wsCasetas.getCell(r, 3).value;
+        const c2 = wsCasetas.getCell(r, 2).value;
+        if (c3 && c3 !== "Total general" && c3 !== "TELNOR") {
+          const aVal = normalizeAreaForExcel(c3);
+          if (aVal && !casetasAreaRows[aVal]) casetasAreaRows[aVal] = r;
+        }
+        if (c2 && c2 !== "Total general" && c2 !== "TELNOR" && c2 !== "CDMX Y AREA CONURBADA") {
+          const atVal = normalizeAreaForExcel(c2);
+          if (atVal && !casetasAreaRows[atVal]) casetasAreaRows[atVal] = r;
+        }
       }
 
       function findCasetaRow(area) {
@@ -1995,45 +2006,32 @@ async function exportReporteDiarioExcel() {
       }
 
       const COL_CU_CASETAS = 99; // MATERIAL RECIBIDO
-      const COL_CP_CASETAS = 94; // TOTAL COLOCADAS
-      const COL_CR_CASETAS = 96; // ATENDIDAS
 
-      for (const area in casetaMaterials) {
+      // Actualizar materiales nuevos
+      for (const area in casetaMaterialsNew) {
+        const qty = casetaMaterialsNew[area];
         const row = findCasetaRow(area);
-        if (row) wsCasetas.getCell(row, COL_CU_CASETAS).value = casetaMaterials[area];
+        if (row && qty > 0) {
+          const cell = wsCasetas.getCell(row, COL_CU_CASETAS);
+          const currentVal = cell.value;
+          if (typeof currentVal === "number") {
+            cell.value = currentVal + qty;
+          } else {
+            cell.value = qty;
+          }
+        }
       }
 
-      for (const area in casetaWorks) {
+      // Actualizar intervenciones nuevas a partir de START_DATE
+      for (const area in casetaWorksNew) {
         const row = findCasetaRow(area);
         if (row) {
-          let totalArea = 0;
-          const dates = casetaWorks[area];
+          const dates = casetaWorksNew[area];
           for (const f in dates) {
-            const count = dates[f];
-            totalArea += count;
-            const col = casetasDateCols[f];
-            if (col) wsCasetas.getCell(row, col).value = count;
-          }
-          wsCasetas.getCell(row, COL_CP_CASETAS).value = totalArea;
-          wsCasetas.getCell(row, COL_CR_CASETAS).value = totalArea;
-        }
-      }
-
-      // Normalizar bordes filas 26-28
-      const refBorderRow = 25;
-      for (const r of [26, 27, 28]) {
-        for (let c = 1; c <= maxColCasetas; c++) {
-          const b = wsCasetas.getCell(refBorderRow, c).border;
-          if (b) wsCasetas.getCell(r, c).border = JSON.parse(JSON.stringify(b));
-        }
-      }
-
-      // Quitar negrita en materiales casetas (cols 94-101)
-      for (let r = 14; r <= 78; r++) {
-        for (let c = 94; c <= 101; c++) {
-          const cell = wsCasetas.getCell(r, c);
-          if (cell.font && cell.font.bold) {
-            cell.font = { ...cell.font, bold: false };
+            if (f >= START_DATE) {
+              const col = casetasDateCols[f];
+              if (col) wsCasetas.getCell(row, col).value = dates[f];
+            }
           }
         }
       }
@@ -2058,13 +2056,19 @@ async function exportReporteDiarioExcel() {
         if (dStr) cajasDateCols[dStr] = c;
       }
 
-      // Mapeo filas de áreas (14 a 76)
+      // Mapeo filas de áreas
       const cajasAreaRows = {};
-      for (let r = 14; r <= 76; r++) {
-        const aVal = normalizeAreaForExcel(wsCajas.getCell(r, 3).value);
-        const atVal = normalizeAreaForExcel(wsCajas.getCell(r, 2).value);
-        if (aVal && !cajasAreaRows[aVal]) cajasAreaRows[aVal] = r;
-        if (atVal && !cajasAreaRows[atVal]) cajasAreaRows[atVal] = r;
+      for (let r = 14; r <= wsCajas.rowCount; r++) {
+        const c3 = wsCajas.getCell(r, 3).value;
+        const c2 = wsCajas.getCell(r, 2).value;
+        if (c3 && c3 !== "Total general" && c3 !== "TELNOR") {
+          const aVal = normalizeAreaForExcel(c3);
+          if (aVal && !cajasAreaRows[aVal]) cajasAreaRows[aVal] = r;
+        }
+        if (c2 && c2 !== "Total general" && c2 !== "TELNOR" && c2 !== "CDMX Y AREA CONURBADA") {
+          const atVal = normalizeAreaForExcel(c2);
+          if (atVal && !cajasAreaRows[atVal]) cajasAreaRows[atVal] = r;
+        }
       }
 
       function findCajaRow(area) {
@@ -2076,45 +2080,32 @@ async function exportReporteDiarioExcel() {
       }
 
       const COL_CO_CAJAS = 93; // MATERIAL RECIBIDO
-      const COL_CJ_CAJAS = 88; // TOTAL COLOCADAS
-      const COL_CL_CAJAS = 90; // ATENDIDAS
 
-      for (const area in cajaMaterials) {
+      // Actualizar materiales nuevos
+      for (const area in cajaMaterialsNew) {
+        const qty = cajaMaterialsNew[area];
         const row = findCajaRow(area);
-        if (row) wsCajas.getCell(row, COL_CO_CAJAS).value = cajaMaterials[area];
+        if (row && qty > 0) {
+          const cell = wsCajas.getCell(row, COL_CO_CAJAS);
+          const currentVal = cell.value;
+          if (typeof currentVal === "number") {
+            cell.value = currentVal + qty;
+          } else {
+            cell.value = qty;
+          }
+        }
       }
 
-      for (const area in cajaWorks) {
+      // Actualizar intervenciones nuevas a partir de START_DATE
+      for (const area in cajaWorksNew) {
         const row = findCajaRow(area);
         if (row) {
-          let totalArea = 0;
-          const dates = cajaWorks[area];
+          const dates = cajaWorksNew[area];
           for (const f in dates) {
-            const count = dates[f];
-            totalArea += count;
-            const col = cajasDateCols[f];
-            if (col) wsCajas.getCell(row, col).value = count;
-          }
-          wsCajas.getCell(row, COL_CJ_CAJAS).value = totalArea;
-          wsCajas.getCell(row, COL_CL_CAJAS).value = totalArea;
-        }
-      }
-
-      // Normalizar bordes filas 27-29
-      const refBorderRowCajas = 26;
-      for (const r of [27, 28, 29]) {
-        for (let c = 1; c <= maxColCajas; c++) {
-          const b = wsCajas.getCell(refBorderRowCajas, c).border;
-          if (b) wsCajas.getCell(r, c).border = JSON.parse(JSON.stringify(b));
-        }
-      }
-
-      // Quitar negrita en materiales cajas (cols 88-95)
-      for (let r = 14; r <= 76; r++) {
-        for (let c = 88; c <= 95; c++) {
-          const cell = wsCajas.getCell(r, c);
-          if (cell.font && cell.font.bold) {
-            cell.font = { ...cell.font, bold: false };
+            if (f >= START_DATE) {
+              const col = cajasDateCols[f];
+              if (col) wsCajas.getCell(row, col).value = dates[f];
+            }
           }
         }
       }
