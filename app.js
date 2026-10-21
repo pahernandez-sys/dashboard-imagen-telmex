@@ -18,7 +18,7 @@ let state = {
 // =========================================================
 // INICIALIZACIÓN
 // =========================================================
-const LIVE_DATA_VERSION = "2026-10-19-linkaform-live-v7";
+const LIVE_DATA_VERSION = "2026-10-21-linkaform-live-v9";
 const EXCLUDED_MATERIALS = ["pintura_azul", "pintura_gris", "thinner", "sellador"];
 
 // Obtener fecha local en formato YYYY-MM-DD evitando el desfase de zona horaria UTC
@@ -45,16 +45,30 @@ document.addEventListener("DOMContentLoaded", () => {
   updateSyncLabel();
 });
 
-// Auto-migración para cargar los 99 trabajos y 11 suministros oficiales de Linkaform
+// Auto-migración para cargar los datos en vivo más recientes de Linkaform
 function checkAndMigrateLiveData() {
+  const liveCount = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS.length : 0;
+  const liveMatCount = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS.length : 0;
+  
+  let savedCount = 0;
+  try {
+    const saved = localStorage.getItem("telmex_dashboard_records");
+    if (saved) savedCount = JSON.parse(saved).length;
+  } catch (e) {}
+
   const currentVer = localStorage.getItem("telmex_data_version");
-  if (currentVer !== LIVE_DATA_VERSION && typeof LINKAFORM_LIVE_RECORDS !== "undefined") {
-    state.records = LINKAFORM_LIVE_RECORDS;
-    state.materialsLog = typeof LINKAFORM_LIVE_MATERIALS !== "undefined" ? LINKAFORM_LIVE_MATERIALS : [];
-    localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-    localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
-    localStorage.setItem("telmex_data_version", LIVE_DATA_VERSION);
-    localStorage.setItem("telmex_dashboard_last_sync", "Sincronización Linkaform (99 trabajos, 11 entregas)");
+
+  // Si la versión del código cambió O si el archivo en vivo tiene más registros que el cache local del navegador:
+  if (currentVer !== LIVE_DATA_VERSION || liveCount > savedCount) {
+    if (liveCount > 0) {
+      state.records = LINKAFORM_LIVE_RECORDS;
+      state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
+      localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+      localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+      localStorage.setItem("telmex_data_version", LIVE_DATA_VERSION);
+      const syncText = `Sincronización Linkaform (${liveCount} trabajos, ${liveMatCount} entregas)`;
+      localStorage.setItem("telmex_dashboard_last_sync", syncText);
+    }
   }
 }
 
