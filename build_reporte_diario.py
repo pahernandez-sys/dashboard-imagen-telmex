@@ -146,16 +146,26 @@ def build_reporte_diario():
                 ws_casetas.cell(row_idx, COL_CU_CASETAS).value = qty
             print(f"  [Casetas Material Nuevo] {area_norm} -> Fila {row_idx}, +{qty} en Col CU")
 
-    # Actualizar Trabajos Casetas a partir de hoy (START_DATE)
+    TODAY_LIMIT = datetime.now().strftime("%Y-%m-%d")
+
+    # Actualizar Trabajos Casetas a partir de hoy (START_DATE) y hasta TODAY_LIMIT
     for area_norm, dates in caseta_works_new.items():
         row_idx = find_caseta_row(area_norm)
         if row_idx:
             for f_str, count in dates.items():
-                if f_str >= START_DATE:
+                if START_DATE <= f_str <= TODAY_LIMIT:
                     col_idx = casetas_date_cols.get(f_str)
                     if col_idx:
                         ws_casetas.cell(row_idx, col_idx).value = count
                         print(f"  [Casetas Avance Hoy] {area_norm} ({f_str}) -> Fila {row_idx}, Col {openpyxl.utils.get_column_letter(col_idx)}={count}")
+
+    # Limpiar columnas futuras (> TODAY_LIMIT) para evitar cualquier dato en el 22 de octubre o posterior
+    for d_str, col_idx in casetas_date_cols.items():
+        if d_str > TODAY_LIMIT:
+            for r in range(14, ws_casetas.max_row + 1):
+                cell = ws_casetas.cell(r, col_idx)
+                if isinstance(cell.value, (int, float)):
+                    cell.value = None
 
     # =========================================================
     # HOJA 2: Programa CAJAS REPORTE DIARIO
@@ -209,16 +219,24 @@ def build_reporte_diario():
                 ws_cajas.cell(row_idx, COL_CO_CAJAS).value = qty
             print(f"  [Cajas Material Nuevo] {area_norm} -> Fila {row_idx}, +{qty} en Col CO")
 
-    # Actualizar Trabajos Cajas a partir de hoy (START_DATE)
+    # Actualizar Trabajos Cajas a partir de hoy (START_DATE) y hasta TODAY_LIMIT
     for area_norm, dates in caja_works_new.items():
         row_idx = find_caja_row(area_norm)
         if row_idx:
             for f_str, count in dates.items():
-                if f_str >= START_DATE:
+                if START_DATE <= f_str <= TODAY_LIMIT:
                     col_idx = cajas_date_cols.get(f_str)
                     if col_idx:
                         ws_cajas.cell(row_idx, col_idx).value = count
                         print(f"  [Cajas Avance Hoy] {area_norm} ({f_str}) -> Fila {row_idx}, Col {openpyxl.utils.get_column_letter(col_idx)}={count}")
+
+    # Limpiar columnas futuras (> TODAY_LIMIT) para evitar cualquier dato en el 22 de octubre o posterior
+    for d_str, col_idx in cajas_date_cols.items():
+        if d_str > TODAY_LIMIT:
+            for r in range(14, ws_cajas.max_row + 1):
+                cell = ws_cajas.cell(r, col_idx)
+                if isinstance(cell.value, (int, float)):
+                    cell.value = None
 
     # Asegurar que fila 78 en Cajas esté completamente vacía
     for c in range(1, ws_cajas.max_column + 1):

@@ -1905,10 +1905,26 @@ function normalizeAreaForExcel(val) {
     .trim();
 }
 
+// Obtener fecha YYYY-MM-DD sin desfase horario para encabezados de celdas de Excel (evita desfase UTC a UTC-6)
+function getExcelHeaderDateStr(v) {
+  if (!v) return "";
+  if (v instanceof Date) {
+    const year = v.getUTCFullYear();
+    const month = String(v.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(v.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+  if (typeof v === "string" && v.includes("2026")) {
+    return v.trim().substring(0, 10);
+  }
+  return "";
+}
+
 // Descargar Réplica Oficial del Reporte Diario de Casetas y Cajas (Dinámico en Vivo con Formatos y Fórmulas)
 async function exportReporteDiarioExcel() {
   const dateStr = getLocalDateStr();
   const START_DATE = "2026-10-21";
+  const todayLimit = getLocalDateStr(); // Fecha máxima permitida (hoy)
   showToast("📊 Generando Reporte Diario Excel actualizado en vivo...", "info", 2500);
 
   try {
@@ -1944,12 +1960,12 @@ async function exportReporteDiarioExcel() {
       }
     });
 
-    // 3. Agrupar Trabajos NUEVOS a partir de START_DATE (>= 2026-10-21)
+    // 3. Agrupar Trabajos NUEVOS a partir de START_DATE (>= 2026-10-21) y hasta hoy
     const casetaWorksNew = {};
     const cajaWorksNew = {};
     records.forEach(r => {
       const fecha = String(r.fecha || "").replace(/\//g, "-").substring(0, 10);
-      if (!fecha || fecha < START_DATE) return; // Conservar históricos intactos de la plantilla
+      if (!fecha || fecha < START_DATE || fecha > todayLimit) return; // Solo a partir de hoy y no fechas futuras
 
       const tipo = (r.tipo || "CAJA").toUpperCase().trim();
       const areaNorm = normalizeAreaForExcel(r.area_trabajo);
@@ -1968,17 +1984,12 @@ async function exportReporteDiarioExcel() {
     // =========================================================
     const wsCasetas = workbook.getWorksheet("Programa CASETAS REPORTE DIARIO");
     if (wsCasetas) {
-      // Mapeo columnas de fechas (Fila 12)
+      // Mapeo columnas de fechas usando getExcelHeaderDateStr (evita desfase de huso horario UTC)
       const casetasDateCols = {};
       const maxColCasetas = wsCasetas.columnCount || 120;
       for (let c = 23; c <= maxColCasetas; c++) {
         const v = wsCasetas.getCell(12, c).value;
-        let dStr = "";
-        if (v instanceof Date) {
-          dStr = getLocalDateStr(v);
-        } else if (typeof v === "string" && v.includes("2026")) {
-          dStr = v.trim().substring(0, 10);
-        }
+        const dStr = getExcelHeaderDateStr(v);
         if (dStr) casetasDateCols[dStr] = c;
       }
 
@@ -2022,15 +2033,28 @@ async function exportReporteDiarioExcel() {
         }
       }
 
-      // Actualizar intervenciones nuevas a partir de START_DATE
+      // Actualizar intervenciones nuevas a partir de START_DATE y hasta hoy
       for (const area in casetaWorksNew) {
         const row = findCasetaRow(area);
         if (row) {
           const dates = casetaWorksNew[area];
           for (const f in dates) {
-            if (f >= START_DATE) {
+            if (f >= START_DATE && f <= todayLimit) {
               const col = casetasDateCols[f];
               if (col) wsCasetas.getCell(row, col).value = dates[f];
+            }
+          }
+        }
+      }
+
+      // Limpiar columnas futuras (> todayLimit) para garantizar que el 22 de octubre o días posteriores estén vacíos
+      for (const dStr in casetasDateCols) {
+        if (dStr > todayLimit) {
+          const cIdx = casetasDateCols[dStr];
+          for (let r = 14; r <= wsCasetas.rowCount; r++) {
+            const cell = wsCasetas.getCell(r, cIdx);
+            if (cell.value && typeof cell.value === "number") {
+              cell.value = null;
             }
           }
         }
@@ -2042,17 +2066,12 @@ async function exportReporteDiarioExcel() {
     // =========================================================
     const wsCajas = workbook.getWorksheet("Programa CAJAS REPORTE DIARIO");
     if (wsCajas) {
-      // Mapeo columnas de fechas (Fila 12)
+      // Mapeo columnas de fechas usando getExcelHeaderDateStr (evita desfase de huso horario UTC)
       const cajasDateCols = {};
       const maxColCajas = wsCajas.columnCount || 120;
       for (let c = 29; c <= maxColCajas; c++) {
         const v = wsCajas.getCell(12, c).value;
-        let dStr = "";
-        if (v instanceof Date) {
-          dStr = getLocalDateStr(v);
-        } else if (typeof v === "string" && v.includes("2026")) {
-          dStr = v.trim().substring(0, 10);
-        }
+        const dStr = getExcelHeaderDateStr(v);
         if (dStr) cajasDateCols[dStr] = c;
       }
 
@@ -2096,15 +2115,28 @@ async function exportReporteDiarioExcel() {
         }
       }
 
-      // Actualizar intervenciones nuevas a partir de START_DATE
+      // Actualizar intervenciones nuevas a partir de START_DATE y hasta hoy
       for (const area in cajaWorksNew) {
         const row = findCajaRow(area);
         if (row) {
           const dates = cajaWorksNew[area];
           for (const f in dates) {
-            if (f >= START_DATE) {
+            if (f >= START_DATE && f <= todayLimit) {
               const col = cajasDateCols[f];
               if (col) wsCajas.getCell(row, col).value = dates[f];
+            }
+          }
+        }
+      }
+
+      // Limpiar columnas futuras (> todayLimit) para garantizar que el 22 de octubre o días posteriores estén vacíos
+      for (const dStr in cajasDateCols) {
+        if (dStr > todayLimit) {
+          const cIdx = cajasDateCols[dStr];
+          for (let r = 14; r <= wsCajas.rowCount; r++) {
+            const cell = wsCajas.getCell(r, cIdx);
+            if (cell.value && typeof cell.value === "number") {
+              cell.value = null;
             }
           }
         }
