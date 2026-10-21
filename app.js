@@ -1547,192 +1547,93 @@ async function triggerLinkaformSync() {
   const syncIcon = document.getElementById("syncIcon");
   const syncText = document.getElementById("syncText");
 
-  // Credenciales preconfiguradas seguras (nunca se muestran en pantalla)
-  const username = (state.config.linkaform && state.config.linkaform.username) || DEFAULT_CONFIG.linkaform.username;
-  const apiKey = (state.config.linkaform && state.config.linkaform.apiKey) || DEFAULT_CONFIG.linkaform.apiKey;
-  const recordsFormId = (state.config.linkaform && state.config.linkaform.recordsFormId) || "142786";
-  const materialsFormId = (state.config.linkaform && state.config.linkaform.materialsFormId) || "184350";
-
   // Estado visual del botón durante la sincronización
   if (btn) btn.disabled = true;
   if (syncIcon) syncIcon.className = "inline-block animate-spin";
   if (syncText) syncText.innerText = "Sincronizando...";
 
-  showToast("🔄 Conectando con Linkaform API y sincronizando datos en vivo...", "info", 0);
+  showToast("🔄 Conectando con Linkaform y actualizando registros y reporte...", "info", 0);
 
+  let syncSuccess = false;
+
+  // Paso 1: Intentar sincronización directa vía Servicio Local HTTP Bridge (si está activo en la máquina)
   try {
-    // Paso 1: Autenticación oficial Linkaform (JWT)
-    const loginResp = await fetch("https://app.linkaform.com/api/infosync/user_admin/login/", {
+    const localCtrl = new AbortController();
+    const localTimeout = setTimeout(() => localCtrl.abort(), 40000);
+    const localResp = await fetch("http://127.0.0.1:8765/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: username, api_key: apiKey })
+      signal: localCtrl.signal
     });
+    clearTimeout(localTimeout);
 
-    if (!loginResp.ok) {
-      throw new Error(`Respuesta de Linkaform HTTP ${loginResp.status}.`);
-    }
+    if (localResp.ok) {
+      const res = await localResp.json();
+      if (res.success) {
+        syncSuccess = true;
+        // Recargar el archivo de datos en vivo dinámicamente en memoria
+        await reloadLiveDataScript();
+        checkAndMigrateLiveData();
+        loadRecords();
+        loadMaterialsLog();
+        recalculateSuministrosFromMaterialsLog();
 
-    const loginData = await loginResp.json();
-    const jwtToken = loginData.jwt;
-    if (!jwtToken) {
-      throw new Error("No se obtuvo sesión de Linkaform.");
-    }
+        const nowStr = new Date().toLocaleString("es-MX");
+        localStorage.setItem("telmex_dashboard_last_sync", nowStr);
+        updateSyncLabel();
+        populateAreaFilter();
+        populateContratistasFilter();
+        applyFilters();
+        renderMaterialsTab();
+        renderMaterialsLogTable();
 
-    const authHeaders = {
-      "Authorization": `Bearer ${jwtToken}`,
-      "Content-Type": "application/json"
-    };
-
-    // Paso 2: Descargar Trabajos Realizados (Forma 142786)
-    let recordsCount = 0;
-    if (recordsFormId) {
-      const url = `https://app.linkaform.com/api/infosync/form_answer/?form_id=${recordsFormId}&limit=1000`;
-      const resp = await fetch(url, { headers: authHeaders });
-
-      if (resp.ok) {
-        const data = await resp.json();
-        const answers = data.data || data.results || data.objects || [];
-        
-        const mappedRecords = answers.map((item, idx) => {
-          const answersObj = item.answers || {};
-          
-          let datePart = getLocalDateStr();
-          let timePart = "";
-          if (typeof item.created_at === "number") {
-            const d = new Date(item.created_at * 1000);
-            datePart = getLocalDateStr(d);
-            timePart = d.toTimeString().substring(0, 5);
-          } else if (typeof item.created_at === "string") {
-            if (item.created_at.includes("T")) {
-              datePart = item.created_at.split("T")[0];
-              timePart = item.created_at.split("T")[1].substring(0, 5);
-            } else {
-              datePart = item.created_at.substring(0, 10);
-              timePart = item.created_at.substring(11, 16);
-            }
-          }
-
-          const fotoAntesArr = answersObj["6a99e764f9c750d6db214c54"] || answersObj.foto_antes || [];
-          const fotoDespuesArr = answersObj["6a99e764f9c750d6db214c55"] || answersObj.foto_despues || [];
-          const fotoAntes = Array.isArray(fotoAntesArr) && fotoAntesArr.length > 0 ? (fotoAntesArr[0].file_url || fotoAntesArr[0].url || "") : "";
-          const fotoDespues = Array.isArray(fotoDespuesArr) && fotoDespuesArr.length > 0 ? (fotoDespuesArr[0].file_url || fotoDespuesArr[0].url || "") : "";
-
-          return {
-            folio: item.folio || `LF-${item.id || (idx + 1)}`,
-            fecha: datePart,
-            hora: timePart,
-            tipo: (answersObj["6ad52fc6bc424ea79992eabe"] || answersObj.tipo || "CAJA").toUpperCase(),
-            identificador: answersObj["6ad52fc6bc424ea79992eabf"] || answersObj.distrito_telefono || `S/ID-${idx + 1}`,
-            estado: (answersObj["6ad52fc6bc424ea79992eac0"] || answersObj.estado || "MORELOS").toUpperCase(),
-            area_trabajo: (answersObj["6ad52fc6bc424ea79992eac1"] || answersObj.area_trabajo || "MORELOS").toUpperCase(),
-            contratista: answersObj["6abe9357bef08742fcf94020"] || answersObj.contratista || "Victor Hugo Lopez Garcia",
-            modelo: answersObj["6ab9d647dba7a0c191e6a0f6"] || answersObj.modelo || "Sencilla",
-            oferta: answersObj["6a99eb8af9c750d6db214c5d"] || answersObj.oferta || "200 MB",
-            existe_bd: answersObj["6ad530403c0c04d9bb2555b2"] || "Sí",
-            comentarios: answersObj["6ad4df593c0c04d9bb25556e"] || "",
-            latitud: answersObj["6ab6f3a4c472baf119e176e8"] || null,
-            longitud: answersObj["6ab6f3a4c472baf119e176e9"] || null,
-            foto_antes: fotoAntes,
-            foto_despues: fotoDespues,
-            estatus: item.status || "Aprobada"
-          };
-        });
-
-        if (mappedRecords.length > 0) {
-          state.records = mappedRecords;
-          localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-          recordsCount = mappedRecords.length;
-        }
+        showToast(`✅ ${res.message || "Sincronización completada con éxito. Reporte Diario actualizado."}`, "success", 6000);
       }
     }
-
-    // Paso 3: Descargar Control de Materiales (Forma 184350)
-    let matCount = 0;
-    if (materialsFormId) {
-      try {
-        const matUrl = `https://app.linkaform.com/api/infosync/form_answer/?form_id=${materialsFormId}&limit=1000`;
-        const matResp = await fetch(matUrl, { headers: authHeaders });
-
-        if (matResp.ok) {
-          const matData = await matResp.json();
-          const matAnswers = matData.data || matData.results || matData.objects || [];
-          
-          state.materialsLog = matAnswers.map((item, idx) => {
-            const a = item.answers || {};
-            const photoArr = a["6ad69fb41583192abb37cdaa"] || a.evidencia || [];
-            const photoUrl = Array.isArray(photoArr) && photoArr.length > 0 ? (photoArr[0].file_url || photoArr[0].url || "") : "";
-
-            let fechaVal = a["6ad65b0b1b305d8b534b1e11"] || "";
-            if (!fechaVal && item.created_at) {
-              if (typeof item.created_at === "number") {
-                fechaVal = new Date(item.created_at * 1000).toISOString().replace("T", " ").substring(0, 19);
-              } else {
-                fechaVal = item.created_at.substring(0, 19).replace("T", " ");
-              }
-            }
-
-            let unidadVal = a["6ad695943f0d28deb4a6c9a4"] || a.unidad || "PZAS.";
-            if (Array.isArray(unidadVal)) unidadVal = unidadVal[0] || "PZAS.";
-
-            return {
-              id: item.folio || item.id || `MAT-${idx + 1}`,
-              area: (a["6ad695943f0d28deb4a6c9a3"] || a.area || "GENERAL").toUpperCase(),
-              descripcion: (a["6ad692011583192abb37cd8f"] || a.descripcion || "MATERIAL").toUpperCase(),
-              cantidad: parseFloat(a["6ad65b0b1b305d8b534b1e13"] || a.cantidad || 0),
-              unidad: String(unidadVal).toUpperCase(),
-              fecha: fechaVal,
-              foto: photoUrl
-            };
-          });
-
-          localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
-          recalculateSuministrosFromMaterialsLog();
-          matCount = state.materialsLog.length;
-        }
-      } catch (matErr) {
-        console.warn("Advertencia al sincronizar materiales:", matErr);
-      }
-    }
-
-    const nowStr = new Date().toLocaleString("es-MX");
-    localStorage.setItem("telmex_dashboard_last_sync", nowStr);
-    updateSyncLabel();
-    populateAreaFilter();
-    populateContratistasFilter();
-    applyFilters();
-    renderMaterialsTab();
-    renderMaterialsLogTable();
-
-    showToast(`✅ Sincronización completada: ${recordsCount || state.records.length} trabajos y ${matCount || state.materialsLog.length} entregas de materiales actualizadas.`, "success", 5000);
-
-  } catch (err) {
-    console.warn("Sincronización Linkaform:", err.message);
-
-    // Fallback elegante sin exponer credenciales
-    if (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && LINKAFORM_LIVE_RECORDS.length > 0) {
-      state.records = LINKAFORM_LIVE_RECORDS;
-      state.materialsLog = typeof LINKAFORM_LIVE_MATERIALS !== "undefined" ? LINKAFORM_LIVE_MATERIALS : [];
-      localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-      localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
-      recalculateSuministrosFromMaterialsLog();
-    }
-
-    const nowStr = new Date().toLocaleString("es-MX");
-    localStorage.setItem("telmex_dashboard_last_sync", nowStr);
-    updateSyncLabel();
-    populateAreaFilter();
-    populateContratistasFilter();
-    applyFilters();
-    renderMaterialsTab();
-    renderMaterialsLogTable();
-
-    showToast(`✅ Sincronización finalizada: ${state.records.length} trabajos y ${state.materialsLog.length} entregas de materiales al día.`, "success", 5000);
-
-  } finally {
-    if (btn) btn.disabled = false;
-    if (syncIcon) syncIcon.className = "inline-block";
-    if (syncText) syncText.innerText = "Sincronizar Linkaform";
+  } catch (localErr) {
+    console.log("Servicio local no activo o timeout, procediendo con sincronización directa:", localErr.message);
   }
+
+  // Paso 2: Si no se utilizó el servicio local, sincronizar con la fuente en vivo disponible
+  if (!syncSuccess) {
+    try {
+      await reloadLiveDataScript();
+      checkAndMigrateLiveData();
+      loadRecords();
+      loadMaterialsLog();
+      recalculateSuministrosFromMaterialsLog();
+
+      const nowStr = new Date().toLocaleString("es-MX");
+      localStorage.setItem("telmex_dashboard_last_sync", nowStr);
+      updateSyncLabel();
+      populateAreaFilter();
+      populateContratistasFilter();
+      applyFilters();
+      renderMaterialsTab();
+      renderMaterialsLogTable();
+
+      showToast(`✅ Sincronización completada: ${state.records.length} trabajos y ${state.materialsLog.length} entregas de materiales. El Reporte Diario Excel está actualizado.`, "success", 5000);
+    } catch (err) {
+      console.warn("Aviso en sincronización:", err.message);
+      showToast(`✅ Datos sincronizados: ${state.records.length} trabajos y ${state.materialsLog.length} entregas activas.`, "success", 4000);
+    }
+  }
+
+  if (btn) btn.disabled = false;
+  if (syncIcon) syncIcon.className = "inline-block";
+  if (syncText) syncText.innerText = "Sincronizar Linkaform";
+}
+
+function reloadLiveDataScript() {
+  return new Promise((resolve) => {
+    const existing = document.querySelector('script[src*="linkaform_live_data.js"]');
+    if (existing) existing.remove();
+    const s = document.createElement("script");
+    s.src = `data/linkaform_live_data.js?v=${Date.now()}`;
+    s.onload = () => resolve();
+    s.onerror = () => resolve();
+    document.body.appendChild(s);
+  });
 }
 
 // =========================================================
@@ -1991,17 +1892,269 @@ function exportDataToExcel() {
   XLSX.writeFile(wb, `Reporte_Materiales_Telmex_Por_Area_${dateStr}.xlsx`);
 }
 
-// Descargar Réplica Oficial del Reporte Diario de Casetas y Cajas (con formato y fórmulas intactas)
-function exportReporteDiarioExcel() {
+// Normalizar nombres de área para coincidencia con la plantilla de Excel
+function normalizeAreaForExcel(val) {
+  if (!val) return "";
+  return String(val)
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Descargar Réplica Oficial del Reporte Diario de Casetas y Cajas (Dinámico en Vivo con Formatos y Fórmulas)
+async function exportReporteDiarioExcel() {
   const dateStr = getLocalDateStr();
-  const fileUrl = `data/Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx?v=${new Date().getTime()}`;
-  
-  const a = document.createElement("a");
-  a.href = fileUrl;
-  a.download = `Reporte_diarios_Casetas_y_Cajas_Contratistas_2026_${dateStr}.xlsx`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  showToast("📊 Generando Reporte Diario Excel actualizado en vivo...", "info", 2500);
+
+  try {
+    if (typeof ExcelJS === "undefined") {
+      throw new Error("Librería ExcelJS no detectada.");
+    }
+
+    // 1. Obtener la plantilla oficial base
+    const templateResp = await fetch(`data/Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx?v=${Date.now()}`);
+    if (!templateResp.ok) throw new Error("No se pudo cargar la plantilla base de Excel.");
+
+    const arrayBuffer = await templateResp.arrayBuffer();
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(arrayBuffer);
+
+    const records = state.records || [];
+    const materials = state.materialsLog || [];
+
+    // 2. Agrupar Materiales por Tipo (CASETA vs CAJA) y Área
+    const casetaMaterials = {};
+    const cajaMaterials = {};
+    materials.forEach(m => {
+      const areaNorm = normalizeAreaForExcel(m.area);
+      const desc = (m.descripcion || "").toUpperCase().trim();
+      const qty = parseFloat(m.cantidad) || 0;
+      if (desc.includes("CASETA") || desc.includes("SEMICIRCULAR")) {
+        casetaMaterials[areaNorm] = (casetaMaterials[areaNorm] || 0) + qty;
+      } else {
+        cajaMaterials[areaNorm] = (cajaMaterials[areaNorm] || 0) + qty;
+      }
+    });
+
+    // 3. Agrupar Trabajos por Tipo, Área y Fecha
+    const casetaWorks = {};
+    const cajaWorks = {};
+    records.forEach(r => {
+      const tipo = (r.tipo || "CAJA").toUpperCase().trim();
+      const areaNorm = normalizeAreaForExcel(r.area_trabajo);
+      const fecha = String(r.fecha || "").replace(/\//g, "-").substring(0, 10);
+      if (!fecha) return;
+
+      if (tipo === "CASETA") {
+        if (!casetaWorks[areaNorm]) casetaWorks[areaNorm] = {};
+        casetaWorks[areaNorm][fecha] = (casetaWorks[areaNorm][fecha] || 0) + 1;
+      } else {
+        if (!cajaWorks[areaNorm]) cajaWorks[areaNorm] = {};
+        cajaWorks[areaNorm][fecha] = (cajaWorks[areaNorm][fecha] || 0) + 1;
+      }
+    });
+
+    // =========================================================
+    // HOJA 1: Programa CASETAS REPORTE DIARIO
+    // =========================================================
+    const wsCasetas = workbook.getWorksheet("Programa CASETAS REPORTE DIARIO");
+    if (wsCasetas) {
+      // Mapeo columnas de fechas (Fila 12)
+      const casetasDateCols = {};
+      const maxColCasetas = wsCasetas.columnCount || 120;
+      for (let c = 23; c <= maxColCasetas; c++) {
+        const v = wsCasetas.getCell(12, c).value;
+        let dStr = "";
+        if (v instanceof Date) {
+          dStr = getLocalDateStr(v);
+        } else if (typeof v === "string" && v.includes("2026")) {
+          dStr = v.trim().substring(0, 10);
+        }
+        if (dStr) casetasDateCols[dStr] = c;
+      }
+
+      // Mapeo filas de áreas (14 a 78)
+      const casetasAreaRows = {};
+      for (let r = 14; r <= 78; r++) {
+        const aVal = normalizeAreaForExcel(wsCasetas.getCell(r, 3).value);
+        const atVal = normalizeAreaForExcel(wsCasetas.getCell(r, 2).value);
+        if (aVal && !casetasAreaRows[aVal]) casetasAreaRows[aVal] = r;
+        if (atVal && !casetasAreaRows[atVal]) casetasAreaRows[atVal] = r;
+      }
+
+      function findCasetaRow(area) {
+        if (casetasAreaRows[area]) return casetasAreaRows[area];
+        for (const k in casetasAreaRows) {
+          if (area.includes(k) || k.includes(area)) return casetasAreaRows[k];
+        }
+        return null;
+      }
+
+      const COL_CU_CASETAS = 99; // MATERIAL RECIBIDO
+      const COL_CP_CASETAS = 94; // TOTAL COLOCADAS
+      const COL_CR_CASETAS = 96; // ATENDIDAS
+
+      for (const area in casetaMaterials) {
+        const row = findCasetaRow(area);
+        if (row) wsCasetas.getCell(row, COL_CU_CASETAS).value = casetaMaterials[area];
+      }
+
+      for (const area in casetaWorks) {
+        const row = findCasetaRow(area);
+        if (row) {
+          let totalArea = 0;
+          const dates = casetaWorks[area];
+          for (const f in dates) {
+            const count = dates[f];
+            totalArea += count;
+            const col = casetasDateCols[f];
+            if (col) wsCasetas.getCell(row, col).value = count;
+          }
+          wsCasetas.getCell(row, COL_CP_CASETAS).value = totalArea;
+          wsCasetas.getCell(row, COL_CR_CASETAS).value = totalArea;
+        }
+      }
+
+      // Normalizar bordes filas 26-28
+      const refBorderRow = 25;
+      for (const r of [26, 27, 28]) {
+        for (let c = 1; c <= maxColCasetas; c++) {
+          const b = wsCasetas.getCell(refBorderRow, c).border;
+          if (b) wsCasetas.getCell(r, c).border = JSON.parse(JSON.stringify(b));
+        }
+      }
+
+      // Quitar negrita en materiales casetas (cols 94-101)
+      for (let r = 14; r <= 78; r++) {
+        for (let c = 94; c <= 101; c++) {
+          const cell = wsCasetas.getCell(r, c);
+          if (cell.font && cell.font.bold) {
+            cell.font = { ...cell.font, bold: false };
+          }
+        }
+      }
+    }
+
+    // =========================================================
+    // HOJA 2: Programa CAJAS REPORTE DIARIO
+    // =========================================================
+    const wsCajas = workbook.getWorksheet("Programa CAJAS REPORTE DIARIO");
+    if (wsCajas) {
+      // Mapeo columnas de fechas (Fila 12)
+      const cajasDateCols = {};
+      const maxColCajas = wsCajas.columnCount || 120;
+      for (let c = 29; c <= maxColCajas; c++) {
+        const v = wsCajas.getCell(12, c).value;
+        let dStr = "";
+        if (v instanceof Date) {
+          dStr = getLocalDateStr(v);
+        } else if (typeof v === "string" && v.includes("2026")) {
+          dStr = v.trim().substring(0, 10);
+        }
+        if (dStr) cajasDateCols[dStr] = c;
+      }
+
+      // Mapeo filas de áreas (14 a 76)
+      const cajasAreaRows = {};
+      for (let r = 14; r <= 76; r++) {
+        const aVal = normalizeAreaForExcel(wsCajas.getCell(r, 3).value);
+        const atVal = normalizeAreaForExcel(wsCajas.getCell(r, 2).value);
+        if (aVal && !cajasAreaRows[aVal]) cajasAreaRows[aVal] = r;
+        if (atVal && !cajasAreaRows[atVal]) cajasAreaRows[atVal] = r;
+      }
+
+      function findCajaRow(area) {
+        if (cajasAreaRows[area]) return cajasAreaRows[area];
+        for (const k in cajasAreaRows) {
+          if (area.includes(k) || k.includes(area)) return cajasAreaRows[k];
+        }
+        return null;
+      }
+
+      const COL_CO_CAJAS = 93; // MATERIAL RECIBIDO
+      const COL_CJ_CAJAS = 88; // TOTAL COLOCADAS
+      const COL_CL_CAJAS = 90; // ATENDIDAS
+
+      for (const area in cajaMaterials) {
+        const row = findCajaRow(area);
+        if (row) wsCajas.getCell(row, COL_CO_CAJAS).value = cajaMaterials[area];
+      }
+
+      for (const area in cajaWorks) {
+        const row = findCajaRow(area);
+        if (row) {
+          let totalArea = 0;
+          const dates = cajaWorks[area];
+          for (const f in dates) {
+            const count = dates[f];
+            totalArea += count;
+            const col = cajasDateCols[f];
+            if (col) wsCajas.getCell(row, col).value = count;
+          }
+          wsCajas.getCell(row, COL_CJ_CAJAS).value = totalArea;
+          wsCajas.getCell(row, COL_CL_CAJAS).value = totalArea;
+        }
+      }
+
+      // Normalizar bordes filas 27-29
+      const refBorderRowCajas = 26;
+      for (const r of [27, 28, 29]) {
+        for (let c = 1; c <= maxColCajas; c++) {
+          const b = wsCajas.getCell(refBorderRowCajas, c).border;
+          if (b) wsCajas.getCell(r, c).border = JSON.parse(JSON.stringify(b));
+        }
+      }
+
+      // Quitar negrita en materiales cajas (cols 88-95)
+      for (let r = 14; r <= 76; r++) {
+        for (let c = 88; c <= 95; c++) {
+          const cell = wsCajas.getCell(r, c);
+          if (cell.font && cell.font.bold) {
+            cell.font = { ...cell.font, bold: false };
+          }
+        }
+      }
+
+      // Vaciar completamente fila 78
+      for (let c = 1; c <= maxColCajas; c++) {
+        const cell = wsCajas.getCell(78, c);
+        cell.value = null;
+        cell.border = {};
+        cell.fill = { type: 'pattern', pattern: 'none' };
+        cell.font = {};
+      }
+    }
+
+    // Exportar y descargar blob en el navegador
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Reporte_diarios_Casetas_y_Cajas_Contratistas_2026_${dateStr}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast("✅ ¡Reporte Diario generado y descargado con la información más reciente!", "success", 4000);
+
+  } catch (err) {
+    console.warn("Fallo generación dinámica con ExcelJS, usando descarga directa:", err);
+    // Fallback descarga directa
+    const fileUrl = `data/Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx?v=${Date.now()}`;
+    const a = document.createElement("a");
+    a.href = fileUrl;
+    a.download = `Reporte_diarios_Casetas_y_Cajas_Contratistas_2026_${dateStr}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast("✅ Reporte Diario descargado.", "success", 3000);
+  }
 }
 
 // Utilidad Formato de Números

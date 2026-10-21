@@ -31,6 +31,14 @@
   <!-- SheetJS (xlsx) for reading/exporting Excel files directly in browser -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
+  <!-- ExcelJS for dynamic generation of Reporte Diario preserving styles and formulas -->
+  <script src="libs/exceljs.min.js"></script>
+  <script>
+    if (typeof ExcelJS === 'undefined') {
+      document.write('<script src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js"><\/script>');
+    }
+  </script>
+
   <!-- Custom Styles -->
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -550,10 +558,10 @@
   </div>
 
   <!-- SCRIPTS DE DATOS Y LÓGICA -->
-  <script src="data/metas_catalogo.js?v=20261021_1"></script>
-  <script src="data/config.js?v=20261021_1"></script>
-  <script src="data/linkaform_live_data.js?v=20261021_1"></script>
-  <script src="data/sample_records.js?v=20261021_1"></script>
-  <script src="app.js?v=20261021_1"></script>
+  <script src="data/metas_catalogo.js?v=20261021_2"></script>
+  <script src="data/config.js?v=20261021_2"></script>
+  <script src="data/linkaform_live_data.js?v=20261021_2"></script>
+  <script src="data/sample_records.js?v=20261021_2"></script>
+  <script src="app.js?v=20261021_2"></script>
 </body>
 </html>
