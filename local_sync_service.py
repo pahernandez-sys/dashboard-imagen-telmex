@@ -42,9 +42,11 @@ class SyncHandler(BaseHTTPRequestHandler):
                 import importlib
                 import sync_linkaform
                 import build_reporte_diario
+                import build_materiales_recibidos
 
                 importlib.reload(sync_linkaform)
                 importlib.reload(build_reporte_diario)
+                importlib.reload(build_materiales_recibidos)
 
                 username = os.environ.get("LINKAFORM_USERNAME") or sync_linkaform.DEFAULT_USERNAME
                 api_key = os.environ.get("LINKAFORM_API_KEY") or sync_linkaform.DEFAULT_API_KEY
@@ -60,8 +62,9 @@ class SyncHandler(BaseHTTPRequestHandler):
                 os.makedirs(output_dir, exist_ok=True)
                 sync_linkaform.process_and_save_data(raw_records, raw_materials, output_dir)
 
-                # 2. Reconstruir Reporte Diario Excel
+                # 2. Reconstruir Reportes Excel Oficiales
                 excel_path = build_reporte_diario.build_reporte_diario()
+                mat_excel_path = build_materiales_recibidos.build_materiales_recibidos()
 
                 # 3. Leer los datos sincronizados para devolverlos al navegador
                 live_records, live_materials = build_reporte_diario.load_live_data()
@@ -72,8 +75,8 @@ class SyncHandler(BaseHTTPRequestHandler):
                         git_path = r"C:\Users\PCI\AppData\Local\Programs\Git\cmd\git.exe"
                         repo_dir = os.path.dirname(os.path.abspath(__file__))
                         import subprocess
-                        subprocess.run([git_path, "add", "data/", "app.js", "index.html"], cwd=repo_dir, capture_output=True, timeout=30)
-                        subprocess.run([git_path, "commit", "-m", "[Auto-Sync Web] Actualizar Linkaform y Reporte Diario Excel"], cwd=repo_dir, capture_output=True, timeout=30)
+                        subprocess.run([git_path, "add", "data/", "app.js", "index.html", "build_reporte_diario.py", "build_materiales_recibidos.py"], cwd=repo_dir, capture_output=True, timeout=30)
+                        subprocess.run([git_path, "commit", "-m", "[Auto-Sync Web] Actualizar Linkaform, Reporte Diario y Materiales Recibidos Excel"], cwd=repo_dir, capture_output=True, timeout=30)
                         subprocess.run([git_path, "push", "origin", "main"], cwd=repo_dir, capture_output=True, timeout=60)
                     except Exception as ge:
                         print(f"[Git Sync Aviso] {ge}")
@@ -86,7 +89,7 @@ class SyncHandler(BaseHTTPRequestHandler):
                     "records_count": len(live_records),
                     "materials_count": len(live_materials),
                     "excel_updated": True,
-                    "message": f"Sincronizacion completada: {len(live_records)} trabajos y {len(live_materials)} entregas. Reporte Diario Excel actualizado."
+                    "message": f"Sincronización completada: {len(live_records)} trabajos y {len(live_materials)} entregas. Reportes Excel actualizados."
                 }
                 
                 self.send_response(200)

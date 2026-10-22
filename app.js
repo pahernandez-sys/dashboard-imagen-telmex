@@ -1940,6 +1940,26 @@ async function exportReporteDiarioExcel() {
   }
 }
 
+// Descargar Réplica Oficial de Cantidades de Materiales Recibidos Actualizada
+async function exportMaterialesRecibidosExcel() {
+  const dateStr = getLocalDateStr();
+  showToast("📦 Descargando Réplica Oficial de Cantidades de Materiales Recibidos...", "info", 2000);
+
+  try {
+    const fileUrl = `data/CANTIDADES_MATERIALES_RECIBIDOS_ACTUALIZADO.xlsx?v=${Date.now()}`;
+    const a = document.createElement("a");
+    a.href = fileUrl;
+    a.download = `CANTIDADES_MATERIALES_RECIBIDOS_Actualizado_${dateStr}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast("✅ ¡CANTIDADES MATERIALES RECIBIDOS descargado con éxito con datos en vivo!", "success", 4000);
+  } catch (err) {
+    console.error("Error al descargar materiales recibidos:", err);
+    showToast("❌ No se pudo descargar el archivo de Materiales Recibidos.", "error", 4000);
+  }
+}
+
 // Utilidad Formato de Números
 function formatNumber(num) {
   if (num === null || num === undefined || isNaN(num)) return "0";
