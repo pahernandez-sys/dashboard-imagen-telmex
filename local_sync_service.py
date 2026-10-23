@@ -83,7 +83,8 @@ class SyncHandler(BaseHTTPRequestHandler):
 
                 threading.Thread(target=push_to_git, daemon=True).start()
 
-                cutoff_info = sync_linkaform.get_cutoff_info()
+                cutoff_info = {k: v for k, v in sync_linkaform.get_cutoff_info().items() if k != "max_visible_dt_obj"}
+
 
                 # Responder al navegador
                 resp_payload = {
