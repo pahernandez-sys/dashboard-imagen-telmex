@@ -60,12 +60,14 @@ def get_cutoff_info(current_dt=None):
         "corte_oficial_hora": "22:00",
         "liberacion_matutina_hora": "10:00",
         "active_reporting_date": active_reporting_date,
-        "max_visible_dt": max_visible_dt,
+        "max_visible_dt": max_visible_dt.strftime("%Y-%m-%d %H:%M:%S"),
         "max_visible_datetime_str": max_visible_dt.strftime("%Y-%m-%d %H:%M:%S"),
+        "max_visible_dt_obj": max_visible_dt,
         "is_frozen": is_frozen,
         "badge": badge,
         "description": desc
     }
+
 
 def get_accounting_date(dt):
     """
@@ -131,7 +133,7 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
     print("\n[3/3] Procesando y mapeando registros para el Dashboard...")
     cutoff_info = get_cutoff_info(current_dt)
     print(f"  [Regla de Corte] {cutoff_info['badge']}: {cutoff_info['description']}")
-    max_visible_dt = cutoff_info["max_visible_dt"]
+    max_visible_dt = cutoff_info["max_visible_dt_obj"]
 
     # Mapeo Trabajos (142786)
     mapped_records = []
@@ -291,8 +293,7 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
         json.dump(raw_materials, f, indent=2, ensure_ascii=False)
 
     # 2. Guardar archivo JS listo para browser con metadata de corte
-    json_cutoff = dict(cutoff_info)
-    json_cutoff["max_visible_dt"] = json_cutoff["max_visible_datetime_str"]
+    json_cutoff = {k: v for k, v in cutoff_info.items() if k != "max_visible_dt_obj"}
 
     output_js = os.path.join(output_dir, "linkaform_live_data.js")
     with open(output_js, "w", encoding="utf-8") as f:

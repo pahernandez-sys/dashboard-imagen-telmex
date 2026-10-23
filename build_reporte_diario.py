@@ -114,7 +114,7 @@ def build_reporte_diario(current_dt=None):
         raise FileNotFoundError("No se encontró la plantilla oficial IASA.")
 
     cutoff_info = get_cutoff_info(current_dt)
-    max_visible_dt = cutoff_info["max_visible_dt"]
+    max_visible_dt = cutoff_info["max_visible_dt_obj"]
     active_reporting_date = cutoff_info["active_reporting_date"]
 
     print(f"Cargando plantilla base limpia: {CLEAN_BASE_LOCAL}...")
