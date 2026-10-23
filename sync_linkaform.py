@@ -109,6 +109,8 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
         except (ValueError, TypeError):
             num_viniles = 2.0 if tipo == "CASETA" else 1.0
 
+        version = ans.get("6adaa11601dfe84563e2253b") or "Sin versión"
+
         mapped_records.append({
             "folio": folio,
             "fecha": date_str,
@@ -123,6 +125,7 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
             "existe_bd": existe_bd,
             "comentarios": comentarios,
             "num_viniles": num_viniles,
+            "version": version,
             "latitud": lat,
             "longitud": lng,
             "foto_antes": foto_antes,

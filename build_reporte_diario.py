@@ -197,9 +197,11 @@ def build_reporte_diario():
 
     # =========================================================
     # APLICAR TRABAJOS DE CAMPO NUEVOS (START_DATE <= fecha <= today)
+    # Deduplicación estricta por activo: evita contar 2 veces un elemento si fue enviado doble en Linkaform
     # =========================================================
     caseta_works = defaultdict(lambda: defaultdict(int))
     caja_works = defaultdict(lambda: defaultdict(int))
+    seen_assets = set()
 
     for rec in records:
         f_rec = str(rec.get("fecha") or "").replace("/", "-")[:10]
@@ -208,6 +210,16 @@ def build_reporte_diario():
         
         tipo = (rec.get("tipo") or "CAJA").upper().strip()
         area = rec.get("area_trabajo") or ""
+        identificador = str(rec.get("identificador") or "").strip().upper()
+
+        # Si el activo tiene identificador válido, deduplicar para no inflar avances
+        if identificador and identificador not in ["S/N", "N/A", "0", ""]:
+            asset_key = (tipo, identificador)
+            if asset_key in seen_assets:
+                print(f"  [Deduplicado Linkaform] Omitiendo registro repetido: {tipo} {identificador} (Folio: {rec.get('folio')})")
+                continue
+            seen_assets.add(asset_key)
+
         if tipo == "CASETA":
             caseta_works[area][f_rec] += 1
         else:
