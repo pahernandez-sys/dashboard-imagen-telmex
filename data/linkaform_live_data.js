@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-23 16:57:24
- * Estado de corte: Jornada en vivo activa (23/10/2026, 16:57 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 738 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-23 17:33:18
+ * Estado de corte: Jornada en vivo activa (23/10/2026, 17:33 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 740 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 94 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-23 16:57:24",
+  "now": "2026-10-23 17:33:17",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-23",
-  "max_visible_dt": "2026-10-23 16:57:24",
-  "max_visible_datetime_str": "2026-10-23 16:57:24",
+  "max_visible_dt": "2026-10-23 17:33:17",
+  "max_visible_datetime_str": "2026-10-23 17:33:17",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (23/10/2026, 16:57 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (23/10/2026, 17:33 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16062045-1259",
+    "fecha": "2026-10-23",
+    "fecha_captura": "2026-10-23",
+    "hora": "17:18",
+    "fecha_corte": "2026-10-23",
+    "created_at_iso": "2026-10-23 17:18:26",
+    "timestamp": 1792797506.0,
+    "tipo": "CAJA",
+    "identificador": "ERO0004",
+    "modelo": "Desplazamiento Doble",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 17.0444828,
+    "longitud": -96.6893162,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adbeb3f249bb269568a9d26.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16061758-1259",
+    "fecha": "2026-10-23",
+    "fecha_captura": "2026-10-23",
+    "hora": "16:58",
+    "fecha_corte": "2026-10-23",
+    "created_at_iso": "2026-10-23 16:58:12",
+    "timestamp": 1792796292.0,
+    "tipo": "CAJA",
+    "identificador": "ZAP0189",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 18.9419291,
+    "longitud": -99.2293777,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adbe6825dc3d2b8b191e813.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16061628-1259",
     "fecha": "2026-10-23",
@@ -2803,7 +2853,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-23 13:30:36",
     "timestamp": 1792783836.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-112",
+    "identificador": "S/ID-114",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -2828,7 +2878,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-23 13:30:22",
     "timestamp": 1792783822.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-113",
+    "identificador": "S/ID-115",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
