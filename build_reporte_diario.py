@@ -18,7 +18,39 @@ import shutil
 import openpyxl
 import unicodedata
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
+from sync_linkaform import get_cutoff_info, get_accounting_date
+
+def parse_record_datetime(rec):
+    """Extrae el objeto datetime exacto de un registro."""
+    iso_str = rec.get("created_at_iso")
+    if iso_str:
+        try:
+            return datetime.strptime(str(iso_str)[:19], "%Y-%m-%d %H:%M:%S")
+        except Exception:
+            pass
+
+    ts = rec.get("timestamp")
+    if ts and isinstance(ts, (int, float)):
+        try:
+            return datetime.fromtimestamp(ts)
+        except Exception:
+            pass
+
+    f = str(rec.get("fecha_captura") or rec.get("fecha") or "").replace("/", "-")[:10]
+    h = str(rec.get("hora") or "12:00").strip()
+    if len(h) == 5:
+        h += ":00"
+    try:
+        return datetime.strptime(f"{f} {h[:8]}", "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        pass
+
+    try:
+        return datetime.strptime(f"{f} 12:00:00", "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        return None
+
 
 # Rutas de plantillas y salidas
 BASE_IASA_WORKSPACE = r"c:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\Reporte diarios Casetas y Cajas Contratistas 2026 - IASA.xlsx"
@@ -74,20 +106,24 @@ def load_live_data():
     mat_part = content.split("const LINKAFORM_LIVE_MATERIALS = ")[1].strip(";\n ")
     return json.loads(rec_part), json.loads(mat_part)
 
-def build_reporte_diario():
+def build_reporte_diario(current_dt=None):
     # 1. Asegurar copia de la plantilla base oficial IASA
     if os.path.exists(BASE_IASA_WORKSPACE):
         shutil.copyfile(BASE_IASA_WORKSPACE, CLEAN_BASE_LOCAL)
     elif not os.path.exists(CLEAN_BASE_LOCAL):
         raise FileNotFoundError("No se encontró la plantilla oficial IASA.")
 
+    cutoff_info = get_cutoff_info(current_dt)
+    max_visible_dt = cutoff_info["max_visible_dt"]
+    active_reporting_date = cutoff_info["active_reporting_date"]
+
     print(f"Cargando plantilla base limpia: {CLEAN_BASE_LOCAL}...")
+    print(f"  [Regla de Corte Excel] {cutoff_info['badge']}: {cutoff_info['description']}")
     wb = openpyxl.load_workbook(CLEAN_BASE_LOCAL, data_only=False)
 
     records, materials = load_live_data()
     print(f"Datos cargados: {len(records)} trabajos de campo, {len(materials)} entregas de materiales.")
 
-    today_limit = datetime.now().strftime("%Y-%m-%d")
 
     # =========================================================
     # HOJA 1: Programa CASETAS REPORTE DIARIO
@@ -164,11 +200,15 @@ def build_reporte_diario():
     ws_caj.cell(41, 93).value = "=DC41"
 
     # =========================================================
-    # APLICAR MATERIALES NUEVOS (>= START_DATE)
+    # APLICAR MATERIALES NUEVOS (START_DATE <= fecha_corte <= active_reporting_date)
     # =========================================================
     for m in materials:
-        f_m = str(m.get("fecha") or "")[:10]
-        if f_m < START_DATE:
+        mat_dt = parse_record_datetime(m)
+        if mat_dt and mat_dt > max_visible_dt:
+            continue
+
+        f_m = get_accounting_date(mat_dt) if mat_dt else str(m.get("fecha") or "")[:10]
+        if f_m < START_DATE or f_m > active_reporting_date:
             continue
         
         area = m.get("area") or ""
@@ -196,16 +236,32 @@ def build_reporte_diario():
                 print(f"  [Caja Mat Nuevo] {area} -> Fila {r_idx}, Col {c_idx} += {qty}")
 
     # =========================================================
-    # APLICAR TRABAJOS DE CAMPO NUEVOS (START_DATE <= fecha <= today)
-    # Deduplicación estricta por activo: evita contar 2 veces un elemento si fue enviado doble en Linkaform
+    # APLICAR TRABAJOS DE CAMPO NUEVOS (START_DATE <= fecha_corte <= active_reporting_date)
+    # Deduplicación estricta por activo en orden cronológico
     # =========================================================
     caseta_works = defaultdict(lambda: defaultdict(int))
     caja_works = defaultdict(lambda: defaultdict(int))
     seen_assets = set()
 
+    # Ordenar cronológicamente para mantener el primer folio original de cada activo
+    sorted_records = []
     for rec in records:
-        f_rec = str(rec.get("fecha") or "").replace("/", "-")[:10]
-        if not f_rec or f_rec < START_DATE or f_rec > today_limit:
+        rec_dt = parse_record_datetime(rec)
+        sorted_records.append((rec_dt or datetime.now(), rec))
+    sorted_records.sort(key=lambda x: x[0])
+
+    retained_records = 0
+    for rec_dt, rec in sorted_records:
+        # 1. Regla de corte: si se subió posterior al corte visible actual, se omite
+        if rec_dt > max_visible_dt:
+            retained_records += 1
+            continue
+
+        # 2. Fecha contable: si hora >= 22:00, se contabiliza para el día siguiente
+        accounting_date = get_accounting_date(rec_dt)
+
+        # 3. Validar rango de fechas aplicable al reporte
+        if accounting_date < START_DATE or accounting_date > active_reporting_date:
             continue
         
         tipo = (rec.get("tipo") or "CAJA").upper().strip()
@@ -221,9 +277,12 @@ def build_reporte_diario():
             seen_assets.add(asset_key)
 
         if tipo == "CASETA":
-            caseta_works[area][f_rec] += 1
+            caseta_works[area][accounting_date] += 1
         else:
-            caja_works[area][f_rec] += 1
+            caja_works[area][accounting_date] += 1
+
+    if retained_records > 0:
+        print(f"  [Corte] {retained_records} trabajos retenidos temporalmente (subidos posterior al corte oficial {cutoff_info['max_visible_datetime_str']}).")
 
     for area, f_map in caseta_works.items():
         r_idx = find_caseta_row(area)
@@ -242,6 +301,7 @@ def build_reporte_diario():
                 if c_idx:
                     ws_caj.cell(r_idx, c_idx).value = count
                     print(f"  [Caja Avance Hoy] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} = {count}")
+
 
     # Guardar en data del repo y copia del usuario
     os.makedirs(os.path.dirname(OUTPUT_EXCEL_DATA), exist_ok=True)

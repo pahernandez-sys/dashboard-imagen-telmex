@@ -85,7 +85,33 @@
     </div>
   </header>
 
+  <!-- ==================== BANNER HORARIO DE CORTE OFICIAL ==================== -->
+  <section id="cutoffBanner" class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-b border-slate-700/80 text-white shadow-sm transition-all duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5">
+      <div class="flex items-center gap-2.5 flex-wrap">
+        <span id="cutoffBadge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide shadow-sm bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+          <span id="cutoffBadgeDot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span id="cutoffBadgeText">JORNADA EN VIVO</span>
+        </span>
+        <div class="text-xs">
+          <span id="cutoffMessage" class="font-medium text-slate-100">
+            Corte oficial: 10:00 PM | Los registros posteriores se liberan mañana a las 10:00 AM
+          </span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 text-[11px] text-slate-300 self-end md:self-auto">
+        <span class="bg-white/10 px-2.5 py-0.5 rounded text-sky-200 font-mono font-semibold" id="cutoffActiveDateLabel">Ciclo: 23/10/2026</span>
+        <span class="text-slate-500 hidden sm:inline">•</span>
+        <button type="button" onclick="showCutoffExplanationModal()" class="text-sky-300 hover:text-white underline decoration-sky-400/50 hover:decoration-white transition flex items-center gap-1 font-medium" title="Ver detalle de las reglas del horario de corte">
+          <span>⏱️</span>
+          <span>Reglas de Corte 10 PM - 10 AM</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <!-- ==================== BARRA DE FILTROS ==================== -->
+
   <section class="bg-white border-b border-slate-200 shadow-sm filter-bar">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 items-end">
@@ -564,7 +590,59 @@
     </div>
   </div>
 
+  <!-- Modal Informativo: Reglas del Horario de Corte 10 PM - 10 AM -->
+  <div id="cutoffModal" class="modal-overlay hidden">
+    <div class="modal-container max-w-xl p-6">
+      <div class="flex justify-between items-center border-b border-slate-200 pb-3 mb-4">
+        <h3 class="text-base font-bold text-telmex flex items-center gap-2">
+          <span>⏱️</span> Política Oficial de Horario de Corte (10 PM - 10 AM)
+        </h3>
+        <button type="button" onclick="closeCutoffModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+      </div>
+
+      <div class="space-y-4 text-xs text-slate-700 leading-relaxed">
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3.5 flex items-start gap-3">
+          <span class="text-xl">🌙</span>
+          <div>
+            <h4 class="font-bold text-blue-900 mb-0.5">1. Horario de Corte Oficial: 10:00 PM (22:00 hrs)</h4>
+            <p class="text-blue-800">
+              Todo trabajo de campo y entrega de material capturado antes de las 10:00 PM se contabiliza formalmente para la jornada de ese día.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 flex items-start gap-3">
+          <span class="text-xl">🔒</span>
+          <div>
+            <h4 class="font-bold text-amber-900 mb-0.5">2. Período de Congelamiento & Depuración (10:00 PM - 10:00 AM)</h4>
+            <p class="text-amber-800">
+              Entre las <strong>10:00 PM y las 10:00 AM del día siguiente</strong>, los reportes oficiales y el dashboard permanecen congelados reflejando <em>exclusivamente</em> lo capturado hasta las 10:00 PM. 
+              Durante esta ventana, la Mesa de Control depura registros (duplicados, pruebas) y entrega el reporte oficial matutino con total certeza.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 flex items-start gap-3">
+          <span class="text-xl">☀️</span>
+          <div>
+            <h4 class="font-bold text-emerald-900 mb-0.5">3. Apertura de Nueva Jornada (A partir de las 10:00 AM)</h4>
+            <p class="text-emerald-800">
+              A partir de las <strong>10:00 AM</strong>, se liberan y suman automáticamente los registros cargados después de las 10:00 PM del día anterior más los nuevos avances del día en curso al momento, manteniéndose en vivo hasta el corte de las 10:00 PM.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-5 pt-3 border-t border-slate-200 flex justify-end">
+        <button type="button" onclick="closeCutoffModal()" class="px-5 py-2 bg-telmex hover:bg-telmex-dark text-white text-xs font-bold rounded-lg shadow-sm transition">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- SCRIPTS DE DATOS Y LÓGICA -->
+
   <script src="data/metas_catalogo.js?v=20261021_3"></script>
   <script src="data/config.js?v=20261021_3"></script>
   <script src="data/linkaform_live_data.js?v=20261021_3"></script>

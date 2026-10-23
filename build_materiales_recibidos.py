@@ -72,7 +72,9 @@ def load_live_materials():
     mat_part = content.split("const LINKAFORM_LIVE_MATERIALS = ")[1].strip(";\n ")
     return json.loads(mat_part)
 
-def build_materiales_recibidos():
+from sync_linkaform import get_cutoff_info, get_accounting_date
+
+def build_materiales_recibidos(current_dt=None):
     # 1. Asegurar copia de la plantilla base limpia
     if os.path.exists(BASE_TEMPLATE_PATH):
         os.makedirs(os.path.dirname(CLEAN_BASE_BACKUP), exist_ok=True)
@@ -80,10 +82,13 @@ def build_materiales_recibidos():
     elif not os.path.exists(CLEAN_BASE_BACKUP):
         raise FileNotFoundError(f"No se encontró la plantilla base en {BASE_TEMPLATE_PATH} ni en {CLEAN_BASE_BACKUP}")
 
+    cutoff_info = get_cutoff_info(current_dt)
     print(f"Cargando plantilla base: {CLEAN_BASE_BACKUP}...")
+    print(f"  [Regla de Corte Materiales] {cutoff_info['badge']}: {cutoff_info['description']}")
     wb = openpyxl.load_workbook(CLEAN_BASE_BACKUP, data_only=False)
     materials = load_live_materials()
     print(f"Cargados {len(materials)} registros de entregas de materiales de Linkaform.")
+
 
     # =========================================================
     # 1. HOJA: LATERALES IASA (Casetas)

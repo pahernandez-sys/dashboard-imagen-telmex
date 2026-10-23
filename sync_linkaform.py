@@ -12,7 +12,72 @@ import sys
 import os
 import json
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
+
+def get_cutoff_info(current_dt=None):
+    """
+    Calcula la ventana oficial de corte Telmex 2026.
+    
+    Reglas oficiales:
+    - Horario de corte oficial: 10:00 PM (22:00 hrs).
+    - Todo registro >= 22:00 hrs se contabiliza para la fecha contable siguiente.
+    - Entre las 22:00 hrs (Día D) y las 10:00 AM (Día D+1), el reporte permanece CONGELADO
+      mostrando únicamente los datos oficiales cerrados al Día D a las 22:00 hrs.
+    - A partir de las 10:00 AM (Día D+1), se liberan los registros posteriores a las 22:00 del Día D
+      y los nuevos del Día D+1.
+    """
+    if current_dt is None:
+        current_dt = datetime.now()
+
+    if current_dt.hour < 10:
+        # Mañana antes de las 10:00 AM: muestra corte oficial cerrado de ayer a las 22:00
+        prev_day = (current_dt - timedelta(days=1)).date()
+        max_visible_dt = datetime(prev_day.year, prev_day.month, prev_day.day, 22, 0, 0)
+        active_reporting_date = prev_day.strftime("%Y-%m-%d")
+        is_frozen = True
+        badge = "[CERRADO] REPORTE OFICIAL CERRADO"
+        desc = f"Reporte matutino cerrado al {prev_day.strftime('%d/%m/%Y')} (22:00 hrs). La jornada de hoy se liberará a las 10:00 AM."
+    elif current_dt.hour >= 22:
+        # Noche a partir de las 22:00 hrs: corte cerrado de hoy a las 22:00 para depuración
+        today = current_dt.date()
+        max_visible_dt = datetime(today.year, today.month, today.day, 22, 0, 0)
+        active_reporting_date = today.strftime("%Y-%m-%d")
+        is_frozen = True
+        badge = "[CORTE 22:00] CORTE OFICIAL ACTIVO"
+        desc = f"Corte oficial de las 10:00 PM activo ({today.strftime('%d/%m/%Y')}). Período de depuración. Registros posteriores se liberan mañana a las 10:00 AM."
+    else:
+        # Jornada activa en vivo (10:00 AM a 22:00 PM)
+        today = current_dt.date()
+        max_visible_dt = current_dt
+        active_reporting_date = today.strftime("%Y-%m-%d")
+        is_frozen = False
+        badge = "[EN VIVO] JORNADA EN VIVO"
+        desc = f"Jornada en vivo activa ({today.strftime('%d/%m/%Y')}, {current_dt.strftime('%H:%M')} hrs). Próximo corte oficial hoy a las 10:00 PM."
+
+
+    return {
+        "now": current_dt.strftime("%Y-%m-%d %H:%M:%S"),
+        "corte_oficial_hora": "22:00",
+        "liberacion_matutina_hora": "10:00",
+        "active_reporting_date": active_reporting_date,
+        "max_visible_dt": max_visible_dt,
+        "max_visible_datetime_str": max_visible_dt.strftime("%Y-%m-%d %H:%M:%S"),
+        "is_frozen": is_frozen,
+        "badge": badge,
+        "description": desc
+    }
+
+def get_accounting_date(dt):
+    """
+    Calcula la fecha contable según el corte oficial de las 22:00 hrs:
+    - Si la hora es >= 22:00: pertenece al ciclo del día siguiente.
+    - Si la hora es < 22:00: pertenece al ciclo del día actual.
+    """
+    if dt.hour >= 22:
+        return (dt.date() + timedelta(days=1)).strftime("%Y-%m-%d")
+    else:
+        return dt.strftime("%Y-%m-%d")
+
 
 DEFAULT_USERNAME = "pahernandez@operacionpci.com.mx"
 DEFAULT_API_KEY = "003ab07a66c6795f8d3fcca2a3b6f94a7f06258e"
@@ -62,16 +127,21 @@ def fetch_form_answers(form_id, jwt_token):
         print(f"  [EXCEPCION] Error al consultar Forma {form_id}: {e}")
         return None
 
-def process_and_save_data(raw_records, raw_materials, output_dir):
+def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=None):
     print("\n[3/3] Procesando y mapeando registros para el Dashboard...")
-    
+    cutoff_info = get_cutoff_info(current_dt)
+    print(f"  [Regla de Corte] {cutoff_info['badge']}: {cutoff_info['description']}")
+    max_visible_dt = cutoff_info["max_visible_dt"]
+
     # Mapeo Trabajos (142786)
     mapped_records = []
+    retained_records = 0
     for i, item in enumerate(raw_records or []):
         ans = item.get("answers", {})
         created_at = item.get("created_at")
         date_str = ""
         time_str = ""
+        dt = None
         if isinstance(created_at, (int, float)):
             dt = datetime.fromtimestamp(created_at)
             date_str = dt.strftime("%Y-%m-%d")
@@ -83,6 +153,26 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
             else:
                 date_str = created_at[:10]
                 time_str = created_at[11:16]
+            try:
+                dt = datetime.strptime(created_at.replace("T", " ")[:19], "%Y-%m-%d %H:%M:%S")
+            except Exception:
+                try:
+                    dt = datetime.strptime(f"{date_str} {time_str}:00", "%Y-%m-%d %H:%M:%S")
+                except Exception:
+                    dt = datetime.now()
+        
+        if not dt:
+            dt = datetime.now()
+            date_str = dt.strftime("%Y-%m-%d")
+            time_str = dt.strftime("%H:%M")
+
+        # Regla de corte: si se subió posterior al corte visible actual, se congela hasta las 10:00 AM
+        if dt > max_visible_dt:
+            retained_records += 1
+            continue
+
+        fecha_corte = get_accounting_date(dt)
+        created_at_iso = dt.strftime("%Y-%m-%d %H:%M:%S")
 
         tipo = (ans.get("6ad52fc6bc424ea79992eabe") or "CAJA").upper()
         identificador = ans.get("6ad52fc6bc424ea79992eabf") or f"S/ID-{i+1}"
@@ -113,8 +203,12 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
 
         mapped_records.append({
             "folio": folio,
-            "fecha": date_str,
+            "fecha": fecha_corte,
+            "fecha_captura": date_str,
             "hora": time_str,
+            "fecha_corte": fecha_corte,
+            "created_at_iso": created_at_iso,
+            "timestamp": dt.timestamp(),
             "tipo": tipo,
             "identificador": identificador,
             "modelo": modelo,
@@ -135,6 +229,7 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
 
     # Mapeo Materiales (184350)
     mapped_materials = []
+    retained_materials = 0
     for idx, m in enumerate(raw_materials or []):
         ans = m.get("answers", {})
         area = (ans.get("6ad695943f0d28deb4a6c9a3") or "GENERAL").upper()
@@ -145,10 +240,30 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
             unidad_val = unidad_val[0] if unidad_val else "PZAS."
         
         fecha_val = ans.get("6ad65b0b1b305d8b534b1e11") or ""
-        if not fecha_val and m.get("created_at"):
+        mat_dt = None
+        if fecha_val:
+            try:
+                mat_dt = datetime.strptime(str(fecha_val)[:19].replace("T", " "), "%Y-%m-%d %H:%M:%S")
+            except Exception:
+                try:
+                    mat_dt = datetime.strptime(str(fecha_val)[:10], "%Y-%m-%d")
+                except Exception:
+                    pass
+        if not mat_dt and m.get("created_at"):
             created_at = m.get("created_at")
             if isinstance(created_at, (int, float)):
-                fecha_val = datetime.fromtimestamp(created_at).strftime("%Y-%m-%d %H:%M:%S")
+                mat_dt = datetime.fromtimestamp(created_at)
+
+        if not mat_dt:
+            mat_dt = datetime.now()
+
+        # Regla de corte para materiales
+        if mat_dt > max_visible_dt:
+            retained_materials += 1
+            continue
+
+        mat_fecha_corte = get_accounting_date(mat_dt)
+        fecha_display = mat_dt.strftime("%Y-%m-%d %H:%M:%S")
 
         photo_arr = ans.get("6ad69fb41583192abb37cdaa") or []
         photo_url = photo_arr[0].get("file_url") if (isinstance(photo_arr, list) and len(photo_arr) > 0) else ""
@@ -159,7 +274,10 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
             "descripcion": desc,
             "cantidad": qty,
             "unidad": str(unidad_val).upper(),
-            "fecha": fecha_val,
+            "fecha": mat_fecha_corte,
+            "fecha_captura": mat_dt.strftime("%Y-%m-%d"),
+            "hora": mat_dt.strftime("%H:%M"),
+            "created_at_iso": fecha_display,
             "foto": photo_url
         })
 
@@ -172,15 +290,22 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
     with open(raw_mat_path, "w", encoding="utf-8") as f:
         json.dump(raw_materials, f, indent=2, ensure_ascii=False)
 
-    # 2. Guardar archivo JS listo para browser
+    # 2. Guardar archivo JS listo para browser con metadata de corte
+    json_cutoff = dict(cutoff_info)
+    json_cutoff["max_visible_dt"] = json_cutoff["max_visible_datetime_str"]
+
     output_js = os.path.join(output_dir, "linkaform_live_data.js")
     with open(output_js, "w", encoding="utf-8") as f:
         f.write("/**\n")
         f.write(" * Datos Oficiales Sincronizados en Vivo desde Linkaform API\n")
-        f.write(f" * Fecha y hora: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        f.write(f" * Trabajos de campo (Forma 142786): {len(mapped_records)}\n")
-        f.write(f" * Movimientos de materiales (Forma 184350): {len(mapped_materials)}\n")
+        f.write(f" * Sincronización: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write(f" * Estado de corte: {cutoff_info['description']}\n")
+        f.write(f" * Trabajos de campo visibles: {len(mapped_records)} (Retenidos por corte: {retained_records})\n")
+        f.write(f" * Movimientos de materiales visibles: {len(mapped_materials)} (Retenidos por corte: {retained_materials})\n")
         f.write(" */\n\n")
+        f.write("const LINKAFORM_CUTOFF_INFO = ")
+        json.dump(json_cutoff, f, indent=2, ensure_ascii=False)
+        f.write(";\n\n")
         f.write("const LINKAFORM_LIVE_RECORDS = ")
         json.dump(mapped_records, f, indent=2, ensure_ascii=False)
         f.write(";\n\n")
@@ -189,8 +314,9 @@ def process_and_save_data(raw_records, raw_materials, output_dir):
         f.write(";\n")
 
     print(f"  [OK] Guardado archivo JS: {output_js}")
-    print(f"  [OK] Total Trabajos: {len(mapped_records)}")
-    print(f"  [OK] Total Movimientos de Material: {len(mapped_materials)}")
+    print(f"  [OK] Trabajos Visibles: {len(mapped_records)} (Retenidos por corte: {retained_records})")
+    print(f"  [OK] Materiales Visibles: {len(mapped_materials)} (Retenidos por corte: {retained_materials})")
+
 
 def main():
     username = os.environ.get("LINKAFORM_USERNAME") or DEFAULT_USERNAME

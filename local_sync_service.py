@@ -75,22 +75,26 @@ class SyncHandler(BaseHTTPRequestHandler):
                         git_path = r"C:\Users\PCI\AppData\Local\Programs\Git\cmd\git.exe"
                         repo_dir = os.path.dirname(os.path.abspath(__file__))
                         import subprocess
-                        subprocess.run([git_path, "add", "data/", "app.js", "index.html", "build_reporte_diario.py", "build_materiales_recibidos.py"], cwd=repo_dir, capture_output=True, timeout=30)
-                        subprocess.run([git_path, "commit", "-m", "[Auto-Sync Web] Actualizar Linkaform, Reporte Diario y Materiales Recibidos Excel"], cwd=repo_dir, capture_output=True, timeout=30)
+                        subprocess.run([git_path, "add", "data/", "app.js", "index.html", "build_reporte_diario.py", "build_materiales_recibidos.py", "sync_linkaform.py"], cwd=repo_dir, capture_output=True, timeout=30)
+                        subprocess.run([git_path, "commit", "-m", "[Auto-Sync Web] Actualizar Linkaform con Regla de Corte 10PM - 10AM y Reportes Excel"], cwd=repo_dir, capture_output=True, timeout=30)
                         subprocess.run([git_path, "push", "origin", "main"], cwd=repo_dir, capture_output=True, timeout=60)
                     except Exception as ge:
                         print(f"[Git Sync Aviso] {ge}")
 
                 threading.Thread(target=push_to_git, daemon=True).start()
 
+                cutoff_info = sync_linkaform.get_cutoff_info()
+
                 # Responder al navegador
                 resp_payload = {
                     "success": True,
                     "records_count": len(live_records),
                     "materials_count": len(live_materials),
+                    "cutoff": cutoff_info,
                     "excel_updated": True,
-                    "message": f"Sincronización completada: {len(live_records)} trabajos y {len(live_materials)} entregas. Reportes Excel actualizados."
+                    "message": f"Sincronización completada: {len(live_records)} trabajos y {len(live_materials)} entregas. {cutoff_info['description']}"
                 }
+
                 
                 self.send_response(200)
                 self._send_cors_headers()

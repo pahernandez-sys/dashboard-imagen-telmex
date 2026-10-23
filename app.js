@@ -16,9 +16,7 @@ let state = {
 };
 
 // =========================================================
-// INICIALIZACIÓN
-// =========================================================
-const LIVE_DATA_VERSION = "2026-10-21-linkaform-live-v11";
+const LIVE_DATA_VERSION = "2026-10-23-linkaform-cutoff-v12";
 const EXCLUDED_MATERIALS = ["pintura_azul", "pintura_gris", "thinner", "sellador"];
 
 // Obtener fecha local en formato YYYY-MM-DD evitando el desfase de zona horaria UTC
@@ -31,6 +29,86 @@ function getLocalDateStr(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
+// =========================================================
+// REGLAS OFICIALES DE CORTE TELMEX 2026 (10 PM - 10 AM)
+// =========================================================
+function getCutoffInfo(date = new Date()) {
+  const d = (date instanceof Date) ? date : new Date(date);
+  const hour = d.getHours();
+  
+  if (hour < 10) {
+    // Antes de las 10:00 AM -> Muestra corte oficial cerrado de ayer a las 22:00
+    const prevDate = new Date(d);
+    prevDate.setDate(prevDate.getDate() - 1);
+    const activeDateStr = getLocalDateStr(prevDate);
+    return {
+      activeReportingDate: activeDateStr,
+      maxVisibleDt: `${activeDateStr} 22:00:00`,
+      isFrozen: true,
+      badgeText: "REPORTE OFICIAL CERRADO",
+      badgeClass: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
+      badgeDotClass: "bg-amber-400",
+      statusMessage: `Reporte matutino cerrado al ${activeDateStr} (22:00 hrs). En período de entrega matutina. La jornada de hoy se liberará a las 10:00 AM.`,
+      cycleLabel: `Ciclo Oficial: ${activeDateStr}`
+    };
+  } else if (hour >= 22) {
+    // A partir de las 22:00 hrs (10 PM) -> Corte cerrado de hoy a las 22:00 para depuración
+    const activeDateStr = getLocalDateStr(d);
+    return {
+      activeReportingDate: activeDateStr,
+      maxVisibleDt: `${activeDateStr} 22:00:00`,
+      isFrozen: true,
+      badgeText: "CORTE 22:00 HRS ACTIVO",
+      badgeClass: "bg-sky-500/20 text-sky-300 border border-sky-500/30",
+      badgeDotClass: "bg-sky-400",
+      statusMessage: `Corte de las 10:00 PM activo (${activeDateStr}). Período de depuración. Registros posteriores se liberan mañana a las 10:00 AM.`,
+      cycleLabel: `Ciclo Oficial: ${activeDateStr}`
+    };
+  } else {
+    // Entre 10:00 AM y 22:00 PM -> Jornada activa en vivo
+    const activeDateStr = getLocalDateStr(d);
+    const hourStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    return {
+      activeReportingDate: activeDateStr,
+      maxVisibleDt: `${activeDateStr} ${hourStr}:59`,
+      isFrozen: false,
+      badgeText: "JORNADA EN VIVO",
+      badgeClass: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
+      badgeDotClass: "bg-emerald-400 animate-pulse",
+      statusMessage: `Jornada del ${activeDateStr} en vivo (${hourStr} hrs). Próximo corte oficial hoy a las 10:00 PM.`,
+      cycleLabel: `Jornada Activa: ${activeDateStr}`
+    };
+  }
+}
+
+function renderCutoffBanner(info = null) {
+  const cutoffInfo = info || getCutoffInfo();
+  const banner = document.getElementById("cutoffBanner");
+  const badge = document.getElementById("cutoffBadge");
+  const badgeDot = document.getElementById("cutoffBadgeDot");
+  const badgeText = document.getElementById("cutoffBadgeText");
+  const messageEl = document.getElementById("cutoffMessage");
+  const cycleLabel = document.getElementById("cutoffActiveDateLabel");
+
+  if (!banner || !badge || !badgeText || !messageEl) return;
+
+  badge.className = `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide shadow-sm ${cutoffInfo.badgeClass}`;
+  if (badgeDot) badgeDot.className = `w-2 h-2 rounded-full ${cutoffInfo.badgeDotClass}`;
+  badgeText.innerText = cutoffInfo.badgeText;
+  messageEl.innerText = cutoffInfo.statusMessage;
+  if (cycleLabel) cycleLabel.innerText = cutoffInfo.cycleLabel;
+}
+
+function showCutoffExplanationModal() {
+  const modal = document.getElementById("cutoffModal");
+  if (modal) modal.classList.remove("hidden");
+}
+
+function closeCutoffModal() {
+  const modal = document.getElementById("cutoffModal");
+  if (modal) modal.classList.add("hidden");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   loadConfig();
   checkAndMigrateLiveData();
@@ -39,6 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
   recalculateSuministrosFromMaterialsLog();
   initFilters();
   initDatePresets();
+  renderCutoffBanner();
   applyFilters();
   renderMaterialsConfigTable();
   renderMaterialsLogTable();
@@ -47,28 +126,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Auto-migración para cargar los datos en vivo más recientes de Linkaform
 function checkAndMigrateLiveData() {
-  const liveCount = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS.length : 0;
-  const liveMatCount = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS.length : 0;
-  
-  let savedCount = 0;
-  try {
-    const saved = localStorage.getItem("telmex_dashboard_records");
-    if (saved) savedCount = JSON.parse(saved).length;
-  } catch (e) {}
-
-  const currentVer = localStorage.getItem("telmex_data_version");
-
-  // Si la versión del código cambió O si el archivo en vivo tiene más registros que el cache local del navegador:
-  if (currentVer !== LIVE_DATA_VERSION || liveCount > savedCount) {
-    if (liveCount > 0) {
-      state.records = LINKAFORM_LIVE_RECORDS;
-      state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
-      localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-      localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
-      localStorage.setItem("telmex_data_version", LIVE_DATA_VERSION);
-      const syncText = `Sincronización Linkaform (${liveCount} trabajos, ${liveMatCount} entregas)`;
-      localStorage.setItem("telmex_dashboard_last_sync", syncText);
-    }
+  if (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && Array.isArray(LINKAFORM_LIVE_RECORDS) && LINKAFORM_LIVE_RECORDS.length > 0) {
+    state.records = LINKAFORM_LIVE_RECORDS;
+    state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
+    localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+    localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+    localStorage.setItem("telmex_data_version", LIVE_DATA_VERSION);
+    const syncText = `Sincronización Linkaform (${state.records.length} trabajos, ${state.materialsLog.length} entregas)`;
+    localStorage.setItem("telmex_dashboard_last_sync", syncText);
   }
 }
 
@@ -345,10 +410,23 @@ function applyFilters() {
     maxDate = document.getElementById("customDateTo") ? document.getElementById("customDateTo").value || null : null;
   }
 
+  const cutoffInfo = getCutoffInfo();
+  renderCutoffBanner(cutoffInfo);
+
+  if (presetVal === "today") {
+    minDate = cutoffInfo.activeReportingDate;
+    maxDate = minDate;
+  }
+
   state.filteredRecords = state.records.filter(r => {
     if (arVal && !recordMatchesArea(r, arVal)) return false;
     if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) return false;
     
+    // Regla de corte: si estamos en ventana congelada, ocultar registros capturados después de las 22:00
+    if (cutoffInfo.isFrozen && r.created_at_iso && r.created_at_iso > cutoffInfo.maxVisibleDt) {
+      return false;
+    }
+
     if (minDate && r.fecha && r.fecha < minDate) return false;
     if (maxDate && r.fecha && r.fecha > maxDate) return false;
 
@@ -1355,7 +1433,7 @@ function renderRecordsTable() {
     tr.className = "hover:bg-slate-50 transition border-b border-slate-100 record-row";
     tr.innerHTML = `
       <td class="py-2.5 px-4 font-bold text-slate-800 font-mono text-[11px]">${r.folio || 'N/A'}</td>
-      <td class="py-2.5 px-3 text-slate-600">${r.fecha || 'N/A'} <span class="text-[10px] text-slate-400 font-mono">${r.hora || ''}</span></td>
+      <td class="py-2.5 px-3 text-slate-600">${r.fecha || 'N/A'} <span class="text-[10px] text-slate-400 font-mono">${r.hora || ''}</span> ${r.fecha_captura && r.fecha_captura !== r.fecha ? `<span class="ml-1 text-[9px] bg-sky-100 text-sky-800 font-bold px-1.5 py-0.5 rounded" title="Captura: ${r.fecha_captura} ${r.hora} (después de las 10 PM) -> Contabilizado en ciclo ${r.fecha}">Corte +1</span>` : ''}</td>
       <td class="py-2.5 px-3">
         <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeColor}">
           ${isCaseta ? '📞 CASETA' : '📦 CAJA'}
