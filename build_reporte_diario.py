@@ -284,23 +284,31 @@ def build_reporte_diario(current_dt=None):
     if retained_records > 0:
         print(f"  [Corte] {retained_records} trabajos retenidos temporalmente (subidos posterior al corte oficial {cutoff_info['max_visible_datetime_str']}).")
 
+    cas_cell_totals = defaultdict(int)
     for area, f_map in caseta_works.items():
         r_idx = find_caseta_row(area)
         if r_idx:
             for f_str, count in f_map.items():
                 c_idx = cas_date_cols.get(f_str)
                 if c_idx:
-                    ws_cas.cell(r_idx, c_idx).value = count
-                    print(f"  [Caseta Avance Hoy] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} = {count}")
+                    cas_cell_totals[(r_idx, c_idx)] += count
+                    print(f"  [Caseta Avance] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} += {count}")
 
+    for (r_idx, c_idx), total_count in cas_cell_totals.items():
+        ws_cas.cell(r_idx, c_idx).value = total_count
+
+    caj_cell_totals = defaultdict(int)
     for area, f_map in caja_works.items():
         r_idx = find_caja_row(area)
         if r_idx:
             for f_str, count in f_map.items():
                 c_idx = caj_date_cols.get(f_str)
                 if c_idx:
-                    ws_caj.cell(r_idx, c_idx).value = count
-                    print(f"  [Caja Avance Hoy] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} = {count}")
+                    caj_cell_totals[(r_idx, c_idx)] += count
+                    print(f"  [Caja Avance] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} += {count}")
+
+    for (r_idx, c_idx), total_count in caj_cell_totals.items():
+        ws_caj.cell(r_idx, c_idx).value = total_count
 
 
     # Guardar en data del repo y copia del usuario

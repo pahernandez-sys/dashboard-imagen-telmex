@@ -108,26 +108,38 @@ def get_jwt_token(username, api_key):
         return None
 
 def fetch_form_answers(form_id, jwt_token):
-    print(f"\n[2/3] Descargando respuestas de Forma {form_id}...")
+    print(f"\n[2/3] Descargando respuestas de Forma {form_id} con paginación...")
     headers = {
         "Authorization": f"Bearer {jwt_token}",
         "Content-Type": "application/json"
     }
-    url = f"{ANSWERS_URL}?form_id={form_id}&limit=1000"
-    
-    try:
-        resp = requests.get(url, headers=headers, timeout=30)
-        if resp.status_code == 200:
-            data = resp.json()
-            objects = data.get("data") or data.get("results") or data.get("objects") or []
-            print(f"  [OK] Forma {form_id}: {len(objects)} registros recuperados.")
-            return objects
-        else:
-            print(f"  [ERROR {resp.status_code}] {resp.text[:200]}")
-            return None
-    except Exception as e:
-        print(f"  [EXCEPCION] Error al consultar Forma {form_id}: {e}")
-        return None
+    all_objects = []
+    limit = 1000
+    offset = 0
+
+    while True:
+        url = f"{ANSWERS_URL}?form_id={form_id}&limit={limit}&offset={offset}"
+        try:
+            resp = requests.get(url, headers=headers, timeout=45)
+            if resp.status_code == 200:
+                data = resp.json()
+                objs = data.get("data") or data.get("results") or data.get("objects") or []
+                if not objs or len(objs) == 0:
+                    break
+                all_objects.extend(objs)
+                print(f"  [Pagina offset={offset}] {len(objs)} registros recuperados (Total acumulado: {len(all_objects)}).")
+                if len(objs) < limit:
+                    break
+                offset += limit
+            else:
+                print(f"  [ERROR {resp.status_code}] Fallo en offset={offset}: {resp.text[:200]}")
+                break
+        except Exception as e:
+            print(f"  [EXCEPCION] Error al consultar Forma {form_id} en offset={offset}: {e}")
+            break
+
+    print(f"  [OK] Forma {form_id}: Total de {len(all_objects)} registros recuperados.")
+    return all_objects
 
 def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=None):
     print("\n[3/3] Procesando y mapeando registros para el Dashboard...")
