@@ -56,12 +56,12 @@ def parse_record_datetime(rec):
 
 
 # Rutas de plantillas y salidas
-BASE_IASA_WORKSPACE = r"c:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\Reporte diarios Casetas y Cajas Contratistas 2026 - IASA.xlsx"
+BASE_IASA_WORKSPACE = r"c:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\Reporte_Diario_Casetas_y_Cajas_Contratistas_2026_26102026.xlsx"
 CLEAN_BASE_LOCAL = os.path.join(os.path.dirname(__file__), "data", "Reporte_diarios_IASA_BASE.xlsx")
 OUTPUT_EXCEL_DATA = os.path.join(os.path.dirname(__file__), "data", "Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx")
 USER_WORKSPACE_COPY = r"c:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\Reporte diarios Casetas y Cajas Contratistas 2026 - Actualizado.xlsx"
 
-START_DATE = "2026-10-21"
+START_DATE = "2026-10-26"
 
 def normalize_area_str(val):
     if not val:
@@ -153,14 +153,6 @@ def build_reporte_diario(current_dt=None):
         if "2026" in d_str:
             cas_date_cols[d_str] = c
 
-    # Materiales históricos Casetas en desglose
-    # Toluca (Row 28): 48 normales
-    ws_cas.cell(28, 103).value = 48
-    ws_cas.cell(28, 99).value = "=DD28"
-    # Morelos (Row 27): 554 normales, 64 mini
-    ws_cas.cell(27, 103).value = 554
-    ws_cas.cell(27, 104).value = 64
-    ws_cas.cell(27, 99).value = "=DD27"
 
     # =========================================================
     # HOJA 2: Programa CAJAS REPORTE DIARIO
@@ -187,20 +179,6 @@ def build_reporte_diario(current_dt=None):
         if "2026" in d_str:
             caj_date_cols[d_str] = c
 
-    # Materiales históricos Cajas en desglose
-    # Morelos (Row 27): 176 tradicional sencilla
-    ws_caj.cell(27, 106).value = 176
-    ws_caj.cell(27, 93).value = "=DC27"
-    # Toluca (Row 28): 67 desp dob, 38 desp senc, 5 env senc, 8 siecor dob, 16 siecor 1 pta
-    ws_caj.cell(28, 97).value = 67
-    ws_caj.cell(28, 98).value = 38
-    ws_caj.cell(28, 100).value = 5
-    ws_caj.cell(28, 102).value = 8
-    ws_caj.cell(28, 103).value = 16
-    ws_caj.cell(28, 93).value = "=DC28"
-    # Nayarit (Row 41): 2 krone
-    ws_caj.cell(41, 101).value = 2
-    ws_caj.cell(41, 93).value = "=DC41"
 
     # =========================================================
     # APLICAR MATERIALES NUEVOS (START_DATE <= fecha_corte <= active_reporting_date)
@@ -246,6 +224,19 @@ def build_reporte_diario(current_dt=None):
     caja_works = defaultdict(lambda: defaultdict(int))
     seen_assets = set()
 
+    # Pre-cargar seen_assets con todos los activos completados antes de START_DATE
+    # para que ningún activo ya entregado en la línea base se pueda duplicar
+    for rec in records:
+        rec_dt = parse_record_datetime(rec)
+        acc_date = get_accounting_date(rec_dt) if rec_dt else str(rec.get("fecha") or "")[:10]
+        if acc_date < START_DATE:
+            identificador = str(rec.get("identificador") or "").strip().upper()
+            tipo = (rec.get("tipo") or "CAJA").upper().strip()
+            if identificador and identificador not in ["S/N", "N/A", "0", ""]:
+                seen_assets.add((tipo, identificador))
+
+    print(f"  [Línea Base] {len(seen_assets)} activos únicos registrados en la base entregada.")
+
     # Ordenar cronológicamente para mantener el primer folio original de cada activo
     sorted_records = []
     for rec in records:
@@ -263,7 +254,7 @@ def build_reporte_diario(current_dt=None):
         # 2. Fecha contable: si hora >= 22:00, se contabiliza para el día siguiente
         accounting_date = get_accounting_date(rec_dt)
 
-        # 3. Validar rango de fechas aplicable al reporte
+        # 3. Solo procesar fechas a partir de START_DATE
         if accounting_date < START_DATE or accounting_date > active_reporting_date:
             continue
         
@@ -298,7 +289,8 @@ def build_reporte_diario(current_dt=None):
                     print(f"  [Caseta Avance] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} += {count}")
 
     for (r_idx, c_idx), total_count in cas_cell_totals.items():
-        ws_cas.cell(r_idx, c_idx).value = total_count
+        curr = ws_cas.cell(r_idx, c_idx).value or 0
+        ws_cas.cell(r_idx, c_idx).value = curr + total_count
 
     caj_cell_totals = defaultdict(int)
     for area, f_map in caja_works.items():
@@ -311,7 +303,8 @@ def build_reporte_diario(current_dt=None):
                     print(f"  [Caja Avance] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} += {count}")
 
     for (r_idx, c_idx), total_count in caj_cell_totals.items():
-        ws_caj.cell(r_idx, c_idx).value = total_count
+        curr = ws_caj.cell(r_idx, c_idx).value or 0
+        ws_caj.cell(r_idx, c_idx).value = curr + total_count
 
     # =========================================================
     # INDICADORES SUPERIORES VISIBLES EN CASETAS Y CAJAS

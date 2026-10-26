@@ -159,15 +159,16 @@ def add_resumen_general_sheet(wb, cutoff_info):
 
     # Fechas del reporte oficial
     daily_rows = [
-        ("2026-10-17", "Sábado", "'Programa CASETAS REPORTE DIARIO'!AB79", "'Programa CAJAS REPORTE DIARIO'!AH77", "Base Histórica"),
-        ("2026-10-18", "Domingo", "'Programa CASETAS REPORTE DIARIO'!AC79", "'Programa CAJAS REPORTE DIARIO'!AI77", "Base Histórica"),
-        ("2026-10-19", "Lunes", "'Programa CASETAS REPORTE DIARIO'!AD79", "'Programa CAJAS REPORTE DIARIO'!AJ77", "Base Histórica"),
-        ("2026-10-20", "Martes", "'Programa CASETAS REPORTE DIARIO'!AE79", "'Programa CAJAS REPORTE DIARIO'!AK77", "Base Histórica"),
-        ("2026-10-21", "Miércoles", "'Programa CASETAS REPORTE DIARIO'!AF79", "'Programa CAJAS REPORTE DIARIO'!AL77", "Validado Oficial"),
-        ("2026-10-22", "Jueves", "'Programa CASETAS REPORTE DIARIO'!AG79", "'Programa CAJAS REPORTE DIARIO'!AM77", "Validado Oficial"),
-        ("2026-10-23", "Viernes", "'Programa CASETAS REPORTE DIARIO'!AH79", "'Programa CAJAS REPORTE DIARIO'!AN77", "Validado Oficial"),
-        ("2026-10-24", "Sábado", "'Programa CASETAS REPORTE DIARIO'!AI79", "'Programa CAJAS REPORTE DIARIO'!AO77", "Validado Oficial"),
-        ("2026-10-25", "Domingo", "'Programa CASETAS REPORTE DIARIO'!AJ79", "'Programa CAJAS REPORTE DIARIO'!AP77", "Corte Fin de Semana"),
+        ("2026-10-17", "Sábado", "'Programa CASETAS REPORTE DIARIO'!AB79", "'Programa CAJAS REPORTE DIARIO'!AH77", "Línea Base Entregada"),
+        ("2026-10-18", "Domingo", "'Programa CASETAS REPORTE DIARIO'!AC79", "'Programa CAJAS REPORTE DIARIO'!AI77", "Línea Base Entregada"),
+        ("2026-10-19", "Lunes", "'Programa CASETAS REPORTE DIARIO'!AD79", "'Programa CAJAS REPORTE DIARIO'!AJ77", "Línea Base Entregada"),
+        ("2026-10-20", "Martes", "'Programa CASETAS REPORTE DIARIO'!AE79", "'Programa CAJAS REPORTE DIARIO'!AK77", "Línea Base Entregada"),
+        ("2026-10-21", "Miércoles", "'Programa CASETAS REPORTE DIARIO'!AF79", "'Programa CAJAS REPORTE DIARIO'!AL77", "Línea Base Entregada"),
+        ("2026-10-22", "Jueves", "'Programa CASETAS REPORTE DIARIO'!AG79", "'Programa CAJAS REPORTE DIARIO'!AM77", "Línea Base Entregada"),
+        ("2026-10-23", "Viernes", "'Programa CASETAS REPORTE DIARIO'!AH79", "'Programa CAJAS REPORTE DIARIO'!AN77", "Línea Base Entregada"),
+        ("2026-10-24", "Sábado", "'Programa CASETAS REPORTE DIARIO'!AI79", "'Programa CAJAS REPORTE DIARIO'!AO77", "Línea Base Entregada"),
+        ("2026-10-25", "Domingo", "'Programa CASETAS REPORTE DIARIO'!AJ79", "'Programa CAJAS REPORTE DIARIO'!AP77", "Línea Base Entregada"),
+        ("2026-10-26", "Lunes", "'Programa CASETAS REPORTE DIARIO'!AK79", "'Programa CAJAS REPORTE DIARIO'!AQ77", "En Proceso (7:00 AM)"),
     ]
 
     curr_row = 11
@@ -249,9 +250,9 @@ def add_resumen_general_sheet(wb, cutoff_info):
     ws[f"B{note_start}"].font = Font(name="Calibri", size=11, bold=True, color=c_blue_dark)
 
     notes = [
-        "1. La suma total al momento es de 921 intervenciones oficiales validadas (245 casetas + 676 cajas).",
-        "2. Cero Data Leakage y Deduplicación Estricta: Cada caseta o caja se contabiliza una sola vez por activo en orden cronológico.",
-        "3. Diferencia con Linkaform: Los folios registrados en Linkaform que corresponden a reintentos de captura o activos repetidos se deduplican para evitar duplicidades frente a Telmex.",
+        "1. Línea Base Oficial Entregada: Los datos del 17 al 25 de Octubre corresponden al reporte entregado hoy (263 casetas + 684 cajas = 947 intervenciones validadas), los cuales quedan 100% fijos e inmutables.",
+        "2. Actividad Diaria Normal: A partir del 26 de Octubre, las actividades de campo se suman diariamente en cada corte matutino (7:00 AM) sobre la línea base oficial.",
+        "3. Deduplicación Estricta: Cada activo físico se contabiliza una sola vez por orden cronológico, protegiendo las cifras frente a reintentos de captura en campo.",
         "4. Regla de Horario de Corte: Las capturas realizadas después de las 22:00 hrs se contabilizan oficialmente para el ciclo del día siguiente."
     ]
 
