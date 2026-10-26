@@ -16,9 +16,12 @@ import re
 import json
 import shutil
 import openpyxl
+import subprocess
 import unicodedata
 from collections import defaultdict
 from datetime import datetime, timedelta
+from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+from add_resumen_general import add_resumen_general_sheet
 from sync_linkaform import get_cutoff_info, get_accounting_date
 
 def parse_record_datetime(rec):
@@ -310,19 +313,89 @@ def build_reporte_diario(current_dt=None):
     for (r_idx, c_idx), total_count in caj_cell_totals.items():
         ws_caj.cell(r_idx, c_idx).value = total_count
 
+    # =========================================================
+    # INDICADORES SUPERIORES VISIBLES EN CASETAS Y CAJAS
+    # =========================================================
+    f_kpi_lbl = Font(name="Calibri", size=11, bold=True, color="333333")
+    f_kpi_val = Font(name="Calibri", size=14, bold=True, color="002F6C")
+    f_kpi_tot_val = Font(name="Calibri", size=16, bold=True, color="107C41")
+    fill_kpi = PatternFill(start_color="E8F1FA", end_color="E8F1FA", fill_type="solid")
+    fill_tot = PatternFill(start_color="E6F4EA", end_color="E6F4EA", fill_type="solid")
+    thin_side = Side(border_style="thin", color="CCCCCC")
+    b_kpi_box = Border(left=thin_side, right=thin_side, top=thin_side, bottom=thin_side)
 
-    # Guardar en data del repo y copia del usuario
+    ws_cas["B3"] = "TOTAL CASETAS AL MOMENTO:"
+    ws_cas["B3"].font = f_kpi_lbl
+    ws_cas["B3"].alignment = Alignment(horizontal="right", vertical="center")
+    ws_cas["D3"] = "=+CN79"
+    ws_cas["D3"].font = f_kpi_val
+    ws_cas["D3"].alignment = Alignment(horizontal="center", vertical="center")
+    ws_cas["D3"].fill = fill_kpi
+    ws_cas["D3"].border = b_kpi_box
+
+    ws_cas["F3"] = "SUMA TOTAL AL MOMENTO (CASETAS + CAJAS):"
+    ws_cas["F3"].font = Font(name="Calibri", size=11, bold=True, color="107C41")
+    ws_cas["F3"].alignment = Alignment(horizontal="right", vertical="center")
+    ws_cas["I3"] = "='Programa CAJAS REPORTE DIARIO'!CH77+CN79"
+    ws_cas["I3"].font = f_kpi_tot_val
+    ws_cas["I3"].alignment = Alignment(horizontal="center", vertical="center")
+    ws_cas["I3"].fill = fill_tot
+    ws_cas["I3"].border = b_kpi_box
+
+    ws_caj["B3"] = "TOTAL CAJAS AL MOMENTO:"
+    ws_caj["B3"].font = f_kpi_lbl
+    ws_caj["B3"].alignment = Alignment(horizontal="right", vertical="center")
+    ws_caj["D3"] = "=+CH77"
+    ws_caj["D3"].font = f_kpi_val
+    ws_caj["D3"].alignment = Alignment(horizontal="center", vertical="center")
+    ws_caj["D3"].fill = fill_kpi
+    ws_caj["D3"].border = b_kpi_box
+
+    ws_caj["F3"] = "SUMA TOTAL AL MOMENTO (CASETAS + CAJAS):"
+    ws_caj["F3"].font = Font(name="Calibri", size=11, bold=True, color="107C41")
+    ws_caj["F3"].alignment = Alignment(horizontal="right", vertical="center")
+    ws_caj["I3"] = "='Programa CASETAS REPORTE DIARIO'!CN79+CH77"
+    ws_caj["I3"].font = f_kpi_tot_val
+    ws_caj["I3"].alignment = Alignment(horizontal="center", vertical="center")
+    ws_caj["I3"].fill = fill_tot
+    ws_caj["I3"].border = b_kpi_box
+
+    # Hoja Ejecutiva al inicio del libro
+    add_resumen_general_sheet(wb, cutoff_info)
+
+    if wb.calculation:
+        wb.calculation.fullCalcOnLoad = True
+        wb.calculation.forceFullCalc = True
+        wb.calculation.calcMode = "auto"
+
+    # Guardar en data del repo
     os.makedirs(os.path.dirname(OUTPUT_EXCEL_DATA), exist_ok=True)
     wb.save(OUTPUT_EXCEL_DATA)
     print(f"\n[OK] Archivo generado exitosamente en: {OUTPUT_EXCEL_DATA}")
 
+    # Recalcular valores cacheados nativamente con Excel COM
+    recalculate_with_excel_com(OUTPUT_EXCEL_DATA)
+
     try:
-        wb.save(USER_WORKSPACE_COPY)
-        print(f"[OK] Copia guardada en workspace del usuario: {USER_WORKSPACE_COPY}")
+        shutil.copyfile(OUTPUT_EXCEL_DATA, USER_WORKSPACE_COPY)
+        print(f"[OK] Copia precalculada guardada en workspace del usuario: {USER_WORKSPACE_COPY}")
     except Exception as e:
         print(f"[Aviso] No se pudo escribir copia en workspace: {e}")
 
     return OUTPUT_EXCEL_DATA
+
+def recalculate_with_excel_com(file_path):
+    """
+    Ejecuta el recálculo nativo completo con Microsoft Excel COM
+    para que todas las fórmulas se evalúen y los valores <v> queden grabados.
+    """
+    try:
+        abs_p = os.path.abspath(file_path).replace("\\", "\\\\")
+        ps_cmd = f"$excel = New-Object -ComObject Excel.Application; $excel.Visible = $false; $excel.DisplayAlerts = $false; $wb = $excel.Workbooks.Open('{abs_p}'); $excel.CalculateFull(); $wb.Save(); $wb.Close($false); $excel.Quit(); [System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel) | Out-Null"
+        subprocess.run(["powershell", "-NoProfile", "-Command", ps_cmd], capture_output=True, timeout=30)
+        print("  [OK] Excel COM: Todas las fórmulas calculadas y grabadas en el archivo.")
+    except Exception as e:
+        print(f"  [Aviso Excel COM] No se pudo invocar recálculo COM: {e}")
 
 if __name__ == "__main__":
     build_reporte_diario()

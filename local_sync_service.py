@@ -75,8 +75,8 @@ class SyncHandler(BaseHTTPRequestHandler):
                         git_path = r"C:\Users\PCI\AppData\Local\Programs\Git\cmd\git.exe"
                         repo_dir = os.path.dirname(os.path.abspath(__file__))
                         import subprocess
-                        subprocess.run([git_path, "add", "data/", "app.js", "index.html", "build_reporte_diario.py", "build_materiales_recibidos.py", "sync_linkaform.py"], cwd=repo_dir, capture_output=True, timeout=30)
-                        subprocess.run([git_path, "commit", "-m", "[Auto-Sync Web] Actualizar Linkaform con Regla de Corte 10PM - 10AM y Reportes Excel"], cwd=repo_dir, capture_output=True, timeout=30)
+                        subprocess.run([git_path, "add", "data/", "app.js", "index.html", "build_reporte_diario.py", "build_materiales_recibidos.py", "sync_linkaform.py", "add_resumen_general.py"], cwd=repo_dir, capture_output=True, timeout=30)
+                        subprocess.run([git_path, "commit", "-m", "[Auto-Sync Web] Actualizar Linkaform con Regla de Corte 10PM - 10AM, Resumen Ejecutivo y Reportes Excel"], cwd=repo_dir, capture_output=True, timeout=30)
                         subprocess.run([git_path, "push", "origin", "main"], cwd=repo_dir, capture_output=True, timeout=60)
                     except Exception as ge:
                         print(f"[Git Sync Aviso] {ge}")
