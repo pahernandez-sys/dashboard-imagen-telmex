@@ -86,13 +86,15 @@ class SyncHandler(BaseHTTPRequestHandler):
                 cutoff_info = {k: v for k, v in sync_linkaform.get_cutoff_info().items() if k != "max_visible_dt_obj"}
 
 
-                # Responder al navegador
+                # Responder al navegador con los datos en vivo para renderizado instantáneo
                 resp_payload = {
                     "success": True,
                     "records_count": len(live_records),
                     "materials_count": len(live_materials),
                     "cutoff": cutoff_info,
                     "excel_updated": True,
+                    "records": live_records,
+                    "materials": live_materials,
                     "message": f"Sincronización completada: {len(live_records)} trabajos y {len(live_materials)} entregas. {cutoff_info['description']}"
                 }
 

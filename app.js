@@ -133,71 +133,95 @@ const SUPABASE_CONFIG = {
   anonKey: "sb_publishable_ZlrYYIXOAN_WA6ryCaCNsA_t3zCERLG"
 };
 
+// Función auxiliar para paginar consultas en Supabase PostgREST (supera el límite de 1000 filas)
+async function fetchPagedFromSupabase(table, select = "*", orderBy = "id.desc") {
+  const headers = {
+    "apikey": SUPABASE_CONFIG.anonKey,
+    "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+  };
+  const batchSize = 1000;
+  let offset = 0;
+  let allRows = [];
+  while (true) {
+    const rangeHeaders = {
+      ...headers,
+      "Range": `${offset}-${offset + batchSize - 1}`
+    };
+    try {
+      const resp = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/${table}?select=${select}&order=${orderBy}`, { headers: rangeHeaders });
+      if (!resp.ok) {
+        if (resp.status !== 416) {
+          console.warn(`[Supabase Aviso] Status ${resp.status} al leer ${table}`);
+        }
+        break;
+      }
+      const batch = await resp.json();
+      if (!Array.isArray(batch) || batch.length === 0) break;
+      allRows.push(...batch);
+      if (batch.length < batchSize) break;
+      offset += batchSize;
+    } catch (e) {
+      console.warn(`[Supabase Error Paginación]`, e);
+      break;
+    }
+  }
+  return allRows;
+}
+
 async function loadDataFromSupabase(showNotification = false) {
   try {
-    const headers = {
-      "apikey": SUPABASE_CONFIG.anonKey,
-      "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
-    };
-
-    // 1. Obtener evidencias en vivo ordenadas por fecha de captura
-    const evResp = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/evidencias_telmex?select=*&order=fecha_captura.desc&limit=20000`, { headers });
+    // 1. Obtener todas las evidencias paginadas en vivo desde Supabase Cloud
+    const dbEvs = await fetchPagedFromSupabase("evidencias_telmex", "*", "fecha_captura.desc");
     let evCount = 0;
-    if (evResp.ok) {
-      const dbEvs = await evResp.json();
-      if (Array.isArray(dbEvs) && dbEvs.length > 0) {
-        state.records = dbEvs.map(r => ({
-          folio: r.folio || "",
-          fecha: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
-          fecha_captura: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
-          hora: r.fecha_captura ? r.fecha_captura.slice(11, 16) : "",
-          fecha_corte: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
-          created_at_iso: r.fecha_captura || "",
-          timestamp: r.fecha_captura ? (new Date(r.fecha_captura).getTime() / 1000) : 0,
-          tipo: (r.tipo_elemento || "CASETA").toUpperCase(),
-          identificador: r.asset_id || r.folio || "S/N",
-          modelo: r.modelo || "",
-          estado: r.estado || "",
-          area_trabajo: r.area_trabajo || "",
-          contratista: r.contratista || "",
-          tecnico: r.tecnico || "N/A",
-          oferta: r.oferta_colocada || "120 MB",
-          existe_bd: r.existencia || "Sí",
-          comentarios: r.comentarios || "",
-          num_viniles: r.num_viniles || 1,
-          version: r.version_app || "Sin versión",
-          latitud: r.lat,
-          longitud: r.lon,
-          foto_despues: r.foto_despues_url || "",
-          foto_antes: r.foto_antes_url || "",
-          estatus: "Aprobada"
-        }));
-        evCount = state.records.length;
-        localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-      }
+    if (Array.isArray(dbEvs) && dbEvs.length > 0) {
+      state.records = dbEvs.map(r => ({
+        folio: r.folio || "",
+        fecha: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
+        fecha_captura: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
+        hora: r.fecha_captura ? r.fecha_captura.slice(11, 16) : "",
+        fecha_corte: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
+        created_at_iso: r.fecha_captura || "",
+        timestamp: r.fecha_captura ? (new Date(r.fecha_captura).getTime() / 1000) : 0,
+        tipo: (r.tipo_elemento || "CASETA").toUpperCase(),
+        identificador: r.asset_id || r.folio || "S/N",
+        modelo: r.modelo || "",
+        estado: r.estado || "",
+        area_trabajo: r.area_trabajo || "",
+        contratista: r.contratista || "",
+        tecnico: r.tecnico || "N/A",
+        oferta: r.oferta_colocada || "120 MB",
+        existe_bd: r.existencia || "Sí",
+        comentarios: r.comentarios || "",
+        num_viniles: r.num_viniles || 1,
+        version: r.version_app || "Sin versión",
+        latitud: r.lat,
+        longitud: r.lon,
+        foto_despues: r.foto_despues_url || "",
+        foto_antes: r.foto_antes_url || "",
+        estatus: "Aprobada"
+      }));
+      evCount = state.records.length;
+      localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
     }
 
-    // 2. Obtener entregas de materiales en vivo
-    const matResp = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/materiales_telmex?select=*&order=fecha_entrega.desc&limit=5000`, { headers });
+    // 2. Obtener todas las entregas de materiales en vivo
+    const dbMats = await fetchPagedFromSupabase("materiales_telmex", "*", "fecha_entrega.desc");
     let matCount = 0;
-    if (matResp.ok) {
-      const dbMats = await matResp.json();
-      if (Array.isArray(dbMats) && dbMats.length > 0) {
-        state.materialsLog = dbMats.map(m => ({
-          id: m.folio || "",
-          area: m.area_trabajo || "",
-          descripcion: m.material || "",
-          cantidad: m.cantidad || 0,
-          unidad: "PZAS.",
-          fecha: m.fecha_entrega ? m.fecha_entrega.slice(0, 10) : "",
-          fecha_captura: m.fecha_entrega ? m.fecha_entrega.slice(0, 10) : "",
-          hora: m.fecha_entrega ? m.fecha_entrega.slice(11, 16) : "",
-          created_at_iso: m.fecha_entrega || "",
-          foto: ""
-        }));
-        matCount = state.materialsLog.length;
-        localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
-      }
+    if (Array.isArray(dbMats) && dbMats.length > 0) {
+      state.materialsLog = dbMats.map(m => ({
+        id: m.folio || "",
+        area: m.area_trabajo || "",
+        descripcion: m.material || "",
+        cantidad: m.cantidad || 0,
+        unidad: "PZAS.",
+        fecha: m.fecha_entrega ? m.fecha_entrega.slice(0, 10) : "",
+        fecha_captura: m.fecha_entrega ? m.fecha_entrega.slice(0, 10) : "",
+        hora: m.fecha_entrega ? m.fecha_entrega.slice(11, 16) : "",
+        created_at_iso: m.fecha_entrega || "",
+        foto: ""
+      }));
+      matCount = state.materialsLog.length;
+      localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
     }
 
     if (evCount > 0 || matCount > 0) {
@@ -269,29 +293,41 @@ function loadConfig() {
 // Cargar Registros (localStorage o LINKAFORM_LIVE_RECORDS)
 function loadRecords() {
   const saved = localStorage.getItem("telmex_dashboard_records");
+  let records = [];
   if (saved) {
     try {
-      state.records = JSON.parse(saved);
+      records = JSON.parse(saved);
     } catch (e) {
-      state.records = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS : ((typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : []);
+      records = [];
     }
-  } else {
-    state.records = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS : ((typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : []);
   }
+  const live = (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && Array.isArray(LINKAFORM_LIVE_RECORDS)) ? LINKAFORM_LIVE_RECORDS : [];
+  if (live.length > records.length) {
+    records = live;
+    localStorage.setItem("telmex_dashboard_records", JSON.stringify(records));
+  } else if (records.length === 0) {
+    records = (typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : [];
+  }
+  state.records = records;
 }
 
 // Cargar Bitácora de Suministros de Materiales (Forma 184350)
 function loadMaterialsLog() {
   const saved = localStorage.getItem("telmex_dashboard_materials_log");
+  let mats = [];
   if (saved) {
     try {
-      state.materialsLog = JSON.parse(saved);
+      mats = JSON.parse(saved);
     } catch (e) {
-      state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
+      mats = [];
     }
-  } else {
-    state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
   }
+  const live = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined" && Array.isArray(LINKAFORM_LIVE_MATERIALS)) ? LINKAFORM_LIVE_MATERIALS : [];
+  if (live.length > mats.length) {
+    mats = live;
+    localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(mats));
+  }
+  state.materialsLog = mats;
 }
 
 // Normalizador de texto para tolerar pequeñas variaciones o faltas ortográficas del catálogo
@@ -1750,21 +1786,32 @@ async function triggerLinkaformSync() {
       const res = await localResp.json();
       if (res.success) {
         syncSuccess = true;
-        // Recargar el archivo de datos en vivo dinámicamente en memoria
-        await reloadLiveDataScript();
-        checkAndMigrateLiveData();
-        loadRecords();
-        loadMaterialsLog();
-        recalculateSuministrosFromMaterialsLog();
+        // 1. Adoptar los datos devueltos directamente por el servicio local en memoria (actualización instantánea)
+        if (Array.isArray(res.records) && res.records.length > 0) {
+          state.records = res.records;
+          localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+        } else {
+          await reloadLiveDataScript();
+          checkAndMigrateLiveData();
+          loadRecords();
+        }
 
+        if (Array.isArray(res.materials) && res.materials.length > 0) {
+          state.materialsLog = res.materials;
+          localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+        } else {
+          loadMaterialsLog();
+        }
+
+        recalculateSuministrosFromMaterialsLog();
         const nowStr = new Date().toLocaleString("es-MX");
         localStorage.setItem("telmex_dashboard_last_sync", nowStr);
-        updateSyncLabel();
         populateAreaFilter();
         populateContratistasFilter();
         applyFilters();
         renderMaterialsTab();
         renderMaterialsLogTable();
+        updateSyncLabel();
 
         showToast(`✅ ${res.message || "Sincronización completada con éxito. Reporte Diario actualizado."}`, "success", 6000);
       }
