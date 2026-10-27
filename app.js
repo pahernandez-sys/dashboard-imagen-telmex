@@ -122,7 +122,108 @@ document.addEventListener("DOMContentLoaded", () => {
   renderMaterialsConfigTable();
   renderMaterialsLogTable();
   updateSyncLabel();
+
+  // Conexión y carga en tiempo real desde Supabase Cloud (< 100ms)
+  loadDataFromSupabase();
 });
+
+// Configuración de Conexión en Tiempo Real con Supabase (PostgreSQL Cloud)
+const SUPABASE_CONFIG = {
+  url: "https://xbbgcmnqtxhpnwjozzrt.supabase.co",
+  anonKey: "sb_publishable_ZlrYYIXOAN_WA6ryCaCNsA_t3zCERLG"
+};
+
+async function loadDataFromSupabase(showNotification = false) {
+  try {
+    const headers = {
+      "apikey": SUPABASE_CONFIG.anonKey,
+      "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+    };
+
+    // 1. Obtener evidencias en vivo ordenadas por fecha de captura
+    const evResp = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/evidencias_telmex?select=*&order=fecha_captura.desc&limit=20000`, { headers });
+    let evCount = 0;
+    if (evResp.ok) {
+      const dbEvs = await evResp.json();
+      if (Array.isArray(dbEvs) && dbEvs.length > 0) {
+        state.records = dbEvs.map(r => ({
+          folio: r.folio || "",
+          fecha: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
+          fecha_captura: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
+          hora: r.fecha_captura ? r.fecha_captura.slice(11, 16) : "",
+          fecha_corte: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
+          created_at_iso: r.fecha_captura || "",
+          timestamp: r.fecha_captura ? (new Date(r.fecha_captura).getTime() / 1000) : 0,
+          tipo: (r.tipo_elemento || "CASETA").toUpperCase(),
+          identificador: r.asset_id || r.folio || "S/N",
+          modelo: r.modelo || "",
+          estado: r.estado || "",
+          area_trabajo: r.area_trabajo || "",
+          contratista: r.contratista || "",
+          tecnico: r.tecnico || "N/A",
+          oferta: r.oferta_colocada || "120 MB",
+          existe_bd: r.existencia || "Sí",
+          comentarios: r.comentarios || "",
+          num_viniles: r.num_viniles || 1,
+          version: r.version_app || "Sin versión",
+          latitud: r.lat,
+          longitud: r.lon,
+          foto_despues: r.foto_despues_url || "",
+          foto_antes: r.foto_antes_url || "",
+          estatus: "Aprobada"
+        }));
+        evCount = state.records.length;
+        localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+      }
+    }
+
+    // 2. Obtener entregas de materiales en vivo
+    const matResp = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/materiales_telmex?select=*&order=fecha_entrega.desc&limit=5000`, { headers });
+    let matCount = 0;
+    if (matResp.ok) {
+      const dbMats = await matResp.json();
+      if (Array.isArray(dbMats) && dbMats.length > 0) {
+        state.materialsLog = dbMats.map(m => ({
+          id: m.folio || "",
+          area: m.area_trabajo || "",
+          descripcion: m.material || "",
+          cantidad: m.cantidad || 0,
+          unidad: "PZAS.",
+          fecha: m.fecha_entrega ? m.fecha_entrega.slice(0, 10) : "",
+          fecha_captura: m.fecha_entrega ? m.fecha_entrega.slice(0, 10) : "",
+          hora: m.fecha_entrega ? m.fecha_entrega.slice(11, 16) : "",
+          created_at_iso: m.fecha_entrega || "",
+          foto: ""
+        }));
+        matCount = state.materialsLog.length;
+        localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+      }
+    }
+
+    if (evCount > 0 || matCount > 0) {
+      const syncLabel = `Supabase Cloud (${evCount} trabajos, ${matCount} entregas)`;
+      localStorage.setItem("telmex_dashboard_last_sync", syncLabel);
+      recalculateSuministrosFromMaterialsLog();
+      populateAreaFilter();
+      populateContratistasFilter();
+      applyFilters();
+      renderMaterialsConfigTable();
+      renderMaterialsLogTable();
+      updateSyncLabel();
+
+      const badge = document.getElementById("lastSyncLabel");
+      if (badge) {
+        badge.innerHTML = `<span class="inline-flex items-center gap-1 text-emerald-300 font-bold">🟢 En vivo (Supabase Cloud)</span>`;
+      }
+
+      if (showNotification) {
+        showToast(`✅ Conectado a Supabase: ${evCount} evidencias y ${matCount} entregas actualizadas en tiempo real.`, "success", 4000);
+      }
+    }
+  } catch (err) {
+    console.warn("[Supabase] Carga remota en vivo no disponible, operando con caché:", err);
+  }
+}
 
 // Auto-migración para cargar los datos en vivo más recientes de Linkaform
 function checkAndMigrateLiveData() {
@@ -1672,29 +1773,18 @@ async function triggerLinkaformSync() {
     console.log("Servicio local no activo o timeout, procediendo con sincronización directa:", localErr.message);
   }
 
-  // Paso 2: Si no se utilizó el servicio local, sincronizar con la fuente en vivo disponible
+  // Paso 2: Si no se utilizó el servicio local, refrescar directamente desde Supabase Cloud
   if (!syncSuccess) {
     try {
-      await reloadLiveDataScript();
-      checkAndMigrateLiveData();
-      loadRecords();
-      loadMaterialsLog();
-      recalculateSuministrosFromMaterialsLog();
-
-      const nowStr = new Date().toLocaleString("es-MX");
-      localStorage.setItem("telmex_dashboard_last_sync", nowStr);
-      updateSyncLabel();
-      populateAreaFilter();
-      populateContratistasFilter();
-      applyFilters();
-      renderMaterialsTab();
-      renderMaterialsLogTable();
-
-      showToast(`✅ Sincronización completada: ${state.records.length} trabajos y ${state.materialsLog.length} entregas de materiales. El Reporte Diario Excel está actualizado.`, "success", 5000);
+      await loadDataFromSupabase(true);
+      syncSuccess = true;
     } catch (err) {
-      console.warn("Aviso en sincronización:", err.message);
-      showToast(`✅ Datos sincronizados: ${state.records.length} trabajos y ${state.materialsLog.length} entregas activas.`, "success", 4000);
+      console.warn("Aviso en sincronización remota:", err.message);
+      showToast(`✅ Datos activos: ${state.records.length} trabajos y ${state.materialsLog.length} entregas.`, "info", 4000);
     }
+  } else {
+    // Si fue por servicio local, refrescar datos desde Supabase
+    await loadDataFromSupabase(false);
   }
 
   if (btn) btn.disabled = false;

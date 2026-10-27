@@ -330,6 +330,13 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
     print(f"  [OK] Trabajos Visibles: {len(mapped_records)} (Retenidos por corte: {retained_records})")
     print(f"  [OK] Materiales Visibles: {len(mapped_materials)} (Retenidos por corte: {retained_materials})")
 
+    # 3. Sincronizar en tiempo real a Supabase (PostgreSQL Cloud)
+    try:
+        import supabase_client
+        supabase_client.sync_all_to_supabase(mapped_records, mapped_materials)
+    except Exception as se:
+        print(f"  [AVISO Supabase] No se pudo sincronizar a Supabase: {se}")
+
 
 def main():
     username = os.environ.get("LINKAFORM_USERNAME") or DEFAULT_USERNAME
