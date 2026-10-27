@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-26 21:15:12
- * Estado de corte: Jornada en vivo activa (26/10/2026, 21:15 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 1267 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-26 21:29:54
+ * Estado de corte: Jornada en vivo activa (26/10/2026, 21:29 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 1269 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-26 21:15:11",
+  "now": "2026-10-26 21:29:54",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-26",
-  "max_visible_dt": "2026-10-26 21:15:11",
-  "max_visible_datetime_str": "2026-10-26 21:15:11",
+  "max_visible_dt": "2026-10-26 21:29:54",
+  "max_visible_datetime_str": "2026-10-26 21:29:54",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (26/10/2026, 21:15 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (26/10/2026, 21:29 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16105257-1259",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "21:25",
+    "fecha_corte": "2026-10-26",
+    "created_at_iso": "2026-10-26 21:25:00",
+    "timestamp": 1793071500.0,
+    "tipo": "CASETA",
+    "identificador": "3112166262",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Normal",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 21.5263897,
+    "longitud": -104.8816101,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0198a8ca54acacb341d88.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16105199-1259",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "21:15",
+    "fecha_corte": "2026-10-26",
+    "created_at_iso": "2026-10-26 21:15:35",
+    "timestamp": 1793070935.0,
+    "tipo": "CASETA",
+    "identificador": "3112168072",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Normal",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 21.524156,
+    "longitud": -104.8880296,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae01755c0227b5c780eec4e.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16105179-1259",
     "fecha": "2026-10-26",
