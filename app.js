@@ -513,6 +513,39 @@ function recordMatchesArea(r, selectedArea) {
   return false;
 }
 
+// Normalizador y verificador de corte oficial (respeta todos los registros hasta las 22:00 hrs)
+function isRecordAfterCutoff(r, cutoffInfo) {
+  if (!cutoffInfo || !cutoffInfo.isFrozen) return false;
+  
+  // Extraer fecha y hora en formato estándar
+  let recDateStr = r.fecha_captura || r.fecha || "";
+  if (recDateStr.length > 10) recDateStr = recDateStr.slice(0, 10);
+  
+  let recTimeStr = r.hora || "";
+  if (!recTimeStr && r.created_at_iso) {
+    const raw = r.created_at_iso.replace("T", " ");
+    if (raw.length >= 16) recTimeStr = raw.slice(11, 16);
+  }
+  if (!recTimeStr) recTimeStr = "00:00";
+  if (recTimeStr.length === 5) recTimeStr += ":00";
+  
+  const recStandard = `${recDateStr} ${recTimeStr}`;
+  const cutoffStandard = `${cutoffInfo.activeReportingDate} 22:00:00`;
+  
+  // Registros con fecha posterior al ciclo oficial activo (ej. subidos de madrugada o al día siguiente)
+  if (recDateStr > cutoffInfo.activeReportingDate) {
+    return true;
+  }
+  
+  // Registros del mismo día del ciclo oficial: se respetan hasta las 22:00:00 inclusive
+  if (recDateStr === cutoffInfo.activeReportingDate) {
+    return recStandard > cutoffStandard;
+  }
+  
+  // Registros de días previos al ciclo oficial: siempre visibles
+  return false;
+}
+
 // =========================================================
 // APLICACIÓN DE FILTROS & CÁLCULOS
 // =========================================================
@@ -559,8 +592,8 @@ function applyFilters() {
     if (arVal && !recordMatchesArea(r, arVal)) return false;
     if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) return false;
     
-    // Regla de corte: si estamos en ventana congelada, ocultar registros capturados después de las 22:00
-    if (cutoffInfo.isFrozen && r.created_at_iso && r.created_at_iso > cutoffInfo.maxVisibleDt) {
+    // Regla de corte: en período congelado, respetar todo lo capturado hasta las 22:00
+    if (cutoffInfo.isFrozen && isRecordAfterCutoff(r, cutoffInfo)) {
       return false;
     }
 
