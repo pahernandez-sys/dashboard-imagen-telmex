@@ -1,24 +1,124 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 15:00:26
- * Estado de corte: Jornada en vivo activa (28/10/2026, 15:00 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2395 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 15:06:31
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 15:06 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2399 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 15:00:25",
+  "now": "2026-10-28 15:06:30",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 15:00:25",
-  "max_visible_datetime_str": "2026-10-28 15:00:25",
+  "max_visible_dt": "2026-10-28 15:06:30",
+  "max_visible_datetime_str": "2026-10-28 15:06:30",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 15:00 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 15:06 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117288-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:04",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:04:02",
+    "timestamp": 1793221442.0,
+    "tipo": "CASETA",
+    "identificador": "7222773649",
+    "modelo": "NORMAL",
+    "estado": "ESTADO DE MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Lucina Villanueva Hernández",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.282845,
+    "longitud": -99.660415,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae26340576556a8aeda8b95.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117282-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:02",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:02:58",
+    "timestamp": 1793221378.0,
+    "tipo": "CAJA",
+    "identificador": "JAL0164",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Wendy Magaly Castro Herrera",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.5293435,
+    "longitud": -96.9295575,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae263001979333951da8b95.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117280-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:02",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:02:55",
+    "timestamp": 1793221375.0,
+    "tipo": "CAJA",
+    "identificador": "JAL0041",
+    "modelo": "Envolvente Sencilla",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Wendy Magaly Castro Herrera",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.5312617,
+    "longitud": -96.932355,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae262fd4a67ca3f93c85cae.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117274-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:00",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:00:49",
+    "timestamp": 1793221249.0,
+    "tipo": "CAJA",
+    "identificador": "LMA0050",
+    "modelo": "Siecor Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Pcindustrial",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.3013158,
+    "longitud": -99.5347528,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2627f35b97a25b4c85cae.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117273-1259",
     "fecha": "2026-10-28",
