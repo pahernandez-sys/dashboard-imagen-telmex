@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 15:06:31
- * Estado de corte: Jornada en vivo activa (28/10/2026, 15:06 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2399 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 15:12:39
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 15:12 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2403 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 15:06:30",
+  "now": "2026-10-28 15:12:38",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 15:06:30",
-  "max_visible_datetime_str": "2026-10-28 15:06:30",
+  "max_visible_dt": "2026-10-28 15:12:38",
+  "max_visible_datetime_str": "2026-10-28 15:12:38",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 15:06 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 15:12 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117301-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:10",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:10:12",
+    "timestamp": 1793221812.0,
+    "tipo": "CASETA",
+    "identificador": "001",
+    "modelo": "NORMAL",
+    "estado": "CHIHUAHUA",
+    "area_trabajo": "CHIHUAHUA",
+    "contratista": "Jesús José Romero Pérez",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v5 - Android",
+    "latitud": 28.6270124,
+    "longitud": -106.0868064,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae264b2389262582d84f546.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117300-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:07",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:07:35",
+    "timestamp": 1793221655.0,
+    "tipo": "CASETA",
+    "identificador": "3115911650",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Normal",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 21.4767392,
+    "longitud": -104.8799419,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2641586b852d51c84f555.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117299-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:07",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:07:08",
+    "timestamp": 1793221628.0,
+    "tipo": "CAJA",
+    "identificador": "ZDW0006",
+    "modelo": "Desplazamiento Sencilla",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 18.8351358,
+    "longitud": -99.2407235,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae263fadf8e9dbc76c85cc3.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117288-1259",
     "fecha": "2026-10-28",
@@ -49916,6 +49991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.1908855,
     "longitud": -96.1717054,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adb901b261bfd126f8a9d01.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16056526-1259",
+    "fecha": "2026-10-23",
+    "fecha_captura": "2026-10-23",
+    "hora": "10:49",
+    "fecha_corte": "2026-10-23",
+    "created_at_iso": "2026-10-23 10:49:30",
+    "timestamp": 1792774170.0,
+    "tipo": "CAJA",
+    "identificador": "VVG0002",
+    "modelo": "Desplazamiento Sencilla",
+    "estado": "VERACRUZ",
+    "area_trabajo": "VERACRUZ",
+    "contratista": "Jorge Alberto Nava Sánchez",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Terminal con Bandalismo",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.1887031,
+    "longitud": -96.1704945,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adb9018bc297c8942650823.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
