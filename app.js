@@ -625,21 +625,56 @@ function applyFilters() {
     maxDate = minDate;
   }
 
-  state.filteredRecords = state.records.filter(r => {
-    if (arVal && !recordMatchesArea(r, arVal)) return false;
-    if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) return false;
+  // Deduplicación estricta por activo (coincidencia 100% con Excel oficial IASA / Telmex)
+  const START_DATE = "2026-10-26";
+  const seenAssets = new Set();
+  
+  // 1. Activos de la línea base previa a START_DATE
+  for (const r of state.records) {
+    if (r.fecha && r.fecha < START_DATE) {
+      const id = String(r.identificador || "").trim().toUpperCase();
+      const tipo = String(r.tipo || "CAJA").trim().toUpperCase();
+      if (id && id !== "S/N" && id !== "N/A" && id !== "0") {
+        seenAssets.add(`${tipo}_${id}`);
+      }
+    }
+  }
+
+  // 2. Orden cronológico para preservar el primer folio oficial
+  const sorted = [...state.records].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+  state.filteredRecords = [];
+  let totalRawFolios = 0;
+
+  for (const r of sorted) {
+    if (arVal && !recordMatchesArea(r, arVal)) continue;
+    if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) continue;
     
     // Regla de corte: en período congelado, respetar todo lo capturado hasta las 22:00
     if (cutoffInfo.isFrozen && isRecordAfterCutoff(r, cutoffInfo)) {
-      return false;
+      continue;
     }
 
-    if (minDate && r.fecha && r.fecha < minDate) return false;
-    if (maxDate && r.fecha && r.fecha > maxDate) return false;
+    if (minDate && r.fecha && r.fecha < minDate) continue;
+    if (maxDate && r.fecha && r.fecha > maxDate) continue;
 
-    return true;
-  });
+    totalRawFolios++;
 
+    // Deduplicación contable: 1 activo terminado = 1 avance oficial
+    const id = String(r.identificador || "").trim().toUpperCase();
+    const tipo = String(r.tipo || "CAJA").trim().toUpperCase();
+    if (r.fecha >= START_DATE && id && id !== "S/N" && id !== "N/A" && id !== "0") {
+      const key = `${tipo}_${id}`;
+      if (seenAssets.has(key)) {
+        continue;
+      }
+      seenAssets.add(key);
+    }
+
+    state.filteredRecords.push(r);
+  }
+
+  state.totalRawFoliosCount = totalRawFolios;
   state.currentPage = 1;
 
   // Renderizar vistas
