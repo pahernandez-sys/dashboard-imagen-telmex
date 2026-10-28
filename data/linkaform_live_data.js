@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 16:50:43
- * Estado de corte: Jornada en vivo activa (28/10/2026, 16:50 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2539 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 16:56:52
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 16:56 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2540 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 16:50:42",
+  "now": "2026-10-28 16:56:51",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 16:50:42",
-  "max_visible_datetime_str": "2026-10-28 16:50:42",
+  "max_visible_dt": "2026-10-28 16:56:51",
+  "max_visible_datetime_str": "2026-10-28 16:56:51",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 16:50 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 16:56 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117584-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "16:53",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 16:53:34",
+    "timestamp": 1793228014.0,
+    "tipo": "CAJA",
+    "identificador": "TPI0101",
+    "modelo": "Siecor Sencilla 1 Puerta",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 21.5076183,
+    "longitud": -104.8846417,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae27cededb785487dc85cb6.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117582-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "16:50",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 16:50:25",
+    "timestamp": 1793227825.0,
+    "tipo": "CASETA",
+    "identificador": "3115912748",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 0.0,
+    "version": "v4 - Android",
+    "latitud": 21.4689769,
+    "longitud": -104.8740558,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae27c2ff6966b39bbda8b97.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117580-1259",
     "fecha": "2026-10-28",
@@ -49991,31 +50041,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.1562671,
     "longitud": -86.8402436,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adbf2313db89ee8ff6507a6.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16062470-1259",
-    "fecha": "2026-10-23",
-    "fecha_captura": "2026-10-23",
-    "hora": "17:48",
-    "fecha_corte": "2026-10-23",
-    "created_at_iso": "2026-10-23 17:48:00",
-    "timestamp": 1792799280.0,
-    "tipo": "CAJA",
-    "identificador": "KUK0082",
-    "modelo": "Envolvente Sencilla",
-    "estado": "QUINTANA ROO",
-    "area_trabajo": "QUINTANA ROO",
-    "contratista": "IASA",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v4 - Android",
-    "latitud": 21.1584902,
-    "longitud": -86.8452153,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adbf22e91592f01786507a7.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
