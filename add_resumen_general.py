@@ -1,4 +1,5 @@
 import openpyxl
+from datetime import datetime
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
@@ -157,19 +158,45 @@ def add_resumen_general_sheet(wb, cutoff_info):
         cell.alignment = al_center
         cell.border = b_all_thin
 
-    # Fechas del reporte oficial
-    daily_rows = [
-        ("2026-10-17", "Sábado", "'Programa CASETAS REPORTE DIARIO'!AB79", "'Programa CAJAS REPORTE DIARIO'!AH77", "Línea Base Entregada"),
-        ("2026-10-18", "Domingo", "'Programa CASETAS REPORTE DIARIO'!AC79", "'Programa CAJAS REPORTE DIARIO'!AI77", "Línea Base Entregada"),
-        ("2026-10-19", "Lunes", "'Programa CASETAS REPORTE DIARIO'!AD79", "'Programa CAJAS REPORTE DIARIO'!AJ77", "Línea Base Entregada"),
-        ("2026-10-20", "Martes", "'Programa CASETAS REPORTE DIARIO'!AE79", "'Programa CAJAS REPORTE DIARIO'!AK77", "Línea Base Entregada"),
-        ("2026-10-21", "Miércoles", "'Programa CASETAS REPORTE DIARIO'!AF79", "'Programa CAJAS REPORTE DIARIO'!AL77", "Línea Base Entregada"),
-        ("2026-10-22", "Jueves", "'Programa CASETAS REPORTE DIARIO'!AG79", "'Programa CAJAS REPORTE DIARIO'!AM77", "Línea Base Entregada"),
-        ("2026-10-23", "Viernes", "'Programa CASETAS REPORTE DIARIO'!AH79", "'Programa CAJAS REPORTE DIARIO'!AN77", "Línea Base Entregada"),
-        ("2026-10-24", "Sábado", "'Programa CASETAS REPORTE DIARIO'!AI79", "'Programa CAJAS REPORTE DIARIO'!AO77", "Línea Base Entregada"),
-        ("2026-10-25", "Domingo", "'Programa CASETAS REPORTE DIARIO'!AJ79", "'Programa CAJAS REPORTE DIARIO'!AP77", "Línea Base Entregada"),
-        ("2026-10-26", "Lunes", "'Programa CASETAS REPORTE DIARIO'!AK79", "'Programa CAJAS REPORTE DIARIO'!AQ77", "En Proceso (7:00 AM)"),
-    ]
+    # Detectar dinámicamente las columnas de fechas disponibles en ambas hojas
+    ws_cas = wb["Programa CASETAS REPORTE DIARIO"]
+    ws_caj = wb["Programa CAJAS REPORTE DIARIO"]
+
+    cas_cols = {}
+    for c in range(23, 92):
+        v = ws_cas.cell(12, c).value
+        d = str(v)[:10] if v else ""
+        if "2026" in d:
+            cas_cols[d] = get_column_letter(c)
+
+    caj_cols = {}
+    for c in range(29, 86):
+        v = ws_caj.cell(12, c).value
+        d = str(v)[:10] if v else ""
+        if "2026" in d:
+            caj_cols[d] = get_column_letter(c)
+
+    active_date = cutoff_info.get("active_reporting_date", datetime.now().strftime("%Y-%m-%d"))
+    is_frozen = cutoff_info.get("is_frozen", False)
+
+    all_dates = sorted(set(cas_cols.keys()) & set(caj_cols.keys()))
+    # Filtrar fechas desde el inicio de campaña (2026-10-17) hasta la fecha activa de reporte
+    all_dates = [d for d in all_dates if "2026-10-17" <= d <= active_date]
+
+    days_es = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+    daily_rows = []
+    for d in all_dates:
+        dt = datetime.strptime(d, "%Y-%m-%d")
+        dia_sem = days_es[dt.weekday()]
+        f_cas = f"'Programa CASETAS REPORTE DIARIO'!{cas_cols[d]}79"
+        f_caj = f"'Programa CAJAS REPORTE DIARIO'!{caj_cols[d]}77"
+        if d < "2026-10-26":
+            st = "Línea Base Entregada"
+        elif d < active_date:
+            st = "Corte Oficial Cerrado"
+        else:
+            st = "Corte Oficial Cerrado" if is_frozen else "Jornada en Vivo"
+        daily_rows.append((d, dia_sem, f_cas, f_caj, st))
 
     curr_row = 11
     for f_str, dia_sem, f_cas, f_caj, status in daily_rows:
