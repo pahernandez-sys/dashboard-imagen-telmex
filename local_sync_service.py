@@ -33,10 +33,12 @@ def execute_full_sync():
     try:
         import importlib
         import sync_linkaform
+        import add_resumen_general
         import build_reporte_diario
         import build_materiales_recibidos
 
         importlib.reload(sync_linkaform)
+        importlib.reload(add_resumen_general)
         importlib.reload(build_reporte_diario)
         importlib.reload(build_materiales_recibidos)
 
