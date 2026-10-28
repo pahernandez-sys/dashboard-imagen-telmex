@@ -1,24 +1,124 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 14:42:12
- * Estado de corte: Jornada en vivo activa (28/10/2026, 14:42 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2357 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 14:48:16
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 14:48 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2361 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 14:42:11",
+  "now": "2026-10-28 14:48:15",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 14:42:11",
-  "max_visible_datetime_str": "2026-10-28 14:42:11",
+  "max_visible_dt": "2026-10-28 14:48:15",
+  "max_visible_datetime_str": "2026-10-28 14:48:15",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 14:42 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 14:48 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117216-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "14:46",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 14:46:53",
+    "timestamp": 1793220413.0,
+    "tipo": "CAJA",
+    "identificador": "VUH0005",
+    "modelo": "Siecor Sencilla 1 Puerta",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "PC INDUSTRIAL",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "CAJA VUH0005 YA NO EXISTE",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.4137749,
+    "longitud": -99.5607993,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae25f3b75f917b10c84f54b.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117215-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "14:45",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 14:45:52",
+    "timestamp": 1793220352.0,
+    "tipo": "CASETA",
+    "identificador": "3115911751",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Normal",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 21.4771647,
+    "longitud": -104.8775404,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae25efd3c082ace1a84f544.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117214-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "14:45",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 14:45:49",
+    "timestamp": 1793220349.0,
+    "tipo": "CASETA",
+    "identificador": "7773253558",
+    "modelo": "NORMAL",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 18.8362672,
+    "longitud": -99.2364992,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae25efb6623ac1499c85caf.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117211-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "14:42",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 14:42:32",
+    "timestamp": 1793220152.0,
+    "tipo": "CAJA",
+    "identificador": "ODM0003",
+    "modelo": "Desplazamiento Sencilla",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 16.7927901,
+    "longitud": -96.6743074,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae25e369a53d99ee284f54a.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117209-1259",
     "fecha": "2026-10-28",
