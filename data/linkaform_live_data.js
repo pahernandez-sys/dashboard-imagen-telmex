@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 13:36:03
- * Estado de corte: Jornada en vivo activa (28/10/2026, 13:36 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2302 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 13:41:57
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 13:41 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2305 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 149 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 13:36:02",
+  "now": "2026-10-28 13:41:56",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 13:36:02",
-  "max_visible_datetime_str": "2026-10-28 13:36:02",
+  "max_visible_dt": "2026-10-28 13:41:56",
+  "max_visible_datetime_str": "2026-10-28 13:41:56",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 13:36 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 13:41 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16116963-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "13:39",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 13:39:47",
+    "timestamp": 1793216387.0,
+    "tipo": "CAJA",
+    "identificador": "ODM0004",
+    "modelo": "Desplazamiento Sencilla",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 16.7940408,
+    "longitud": -96.674892,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae24f8101557c25ef560fb1.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116947-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "13:37",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 13:37:08",
+    "timestamp": 1793216228.0,
+    "tipo": "CAJA",
+    "identificador": "VDB0004",
+    "modelo": "Tradicional Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "ESTADO DE MEXICO SUR",
+    "contratista": "PC INDUSTRIAL",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "VDB0004",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 19.1958831,
+    "longitud": -100.1323354,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae24ee3477cc53a22560faa.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116945-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "13:35",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 13:35:38",
+    "timestamp": 1793216138.0,
+    "tipo": "CAJA",
+    "identificador": "OCY0021",
+    "modelo": "Siecor Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "BRUSIM",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "NO ESTA EL GABINETE",
+    "num_viniles": 0.0,
+    "version": "v4 - Android",
+    "latitud": 19.2706719,
+    "longitud": -99.4492566,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae24e88f869bce19adbf290.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16116944-1259",
     "fecha": "2026-10-28",
@@ -24945,6 +25020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16106000-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-26",
+    "hora": "23:52",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-26 23:52:57",
+    "timestamp": 1793080377.0,
+    "tipo": "CAJA",
+    "identificador": "SCA0054",
+    "modelo": "Siecor Sencilla 1 Puerta",
+    "estado": "NUEVO LEON",
+    "area_trabajo": "MONTERREY",
+    "contratista": "Jose antonio Esquivel",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 25.6590328,
+    "longitud": -100.4557535,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae03c37ca79e9250c0eec55.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16105999-1259",
     "fecha": "2026-10-27",
     "fecha_captura": "2026-10-26",
@@ -24991,31 +25091,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 25.66091,
     "longitud": -100.4621833,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae03c310bf8dafe520eec4c.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16105997-1259",
-    "fecha": "2026-10-27",
-    "fecha_captura": "2026-10-26",
-    "hora": "23:52",
-    "fecha_corte": "2026-10-27",
-    "created_at_iso": "2026-10-26 23:52:49",
-    "timestamp": 1793080369.0,
-    "tipo": "CAJA",
-    "identificador": "SCA0020",
-    "modelo": "Siecor Doble",
-    "estado": "NUEVO LEON",
-    "area_trabajo": "MONTERREY",
-    "contratista": "Jose antonio Esquivel",
-    "oferta": "120_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "Sin versión",
-    "latitud": 25.661726,
-    "longitud": -100.4604035,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae03c2f4404fdc164be727b.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
