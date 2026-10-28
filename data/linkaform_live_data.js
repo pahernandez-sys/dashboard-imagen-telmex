@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-27 19:07:54
- * Estado de corte: Jornada en vivo activa (27/10/2026, 19:07 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2020 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-27 19:13:56
+ * Estado de corte: Jornada en vivo activa (27/10/2026, 19:13 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2021 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-27 19:07:53",
+  "now": "2026-10-27 19:13:55",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-27",
-  "max_visible_dt": "2026-10-27 19:07:53",
-  "max_visible_datetime_str": "2026-10-27 19:07:53",
+  "max_visible_dt": "2026-10-27 19:13:55",
+  "max_visible_datetime_str": "2026-10-27 19:13:55",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (27/10/2026, 19:07 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (27/10/2026, 19:13 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16114780-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "19:12",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 19:12:23",
+    "timestamp": 1793149943.0,
+    "tipo": "CASETA",
+    "identificador": "3112169999",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Kevin Alexander López Cortes",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Normal",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 21.513685,
+    "longitud": -104.9026333,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae14bf5daf4afadc583e520.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16114770-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "19:07",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 19:07:42",
+    "timestamp": 1793149662.0,
+    "tipo": "CASETA",
+    "identificador": "3112167405",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Kevin Alexander López Cortes",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Normal",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 21.5132208,
+    "longitud": -104.9018746,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae14adc4bb2b0457a3c908c.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16114767-1259",
     "fecha": "2026-10-27",
@@ -49991,31 +50041,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.9517539,
     "longitud": -99.2301984,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad673cb6431a2b3bbdcb16e.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "15997279-1259",
-    "fecha": "2026-10-19",
-    "fecha_captura": "2026-10-19",
-    "hora": "13:44",
-    "fecha_corte": "2026-10-19",
-    "created_at_iso": "2026-10-19 13:44:02",
-    "timestamp": 1792439042.0,
-    "tipo": "CAJA",
-    "identificador": "OXT0026",
-    "modelo": "Siecor Doble",
-    "estado": "MEXICO",
-    "area_trabajo": "TOLUCA",
-    "contratista": "Lucina Villanueva Hernández",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 2.0,
-    "version": "Sin versión",
-    "latitud": 19.2908991,
-    "longitud": -99.6881933,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad6730042eddc022749dd5e.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
