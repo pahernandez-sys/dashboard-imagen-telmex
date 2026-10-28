@@ -1,24 +1,124 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-27 21:02:43
- * Estado de corte: Jornada en vivo activa (27/10/2026, 21:02 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2051 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-27 21:08:43
+ * Estado de corte: Jornada en vivo activa (27/10/2026, 21:08 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2055 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-27 21:02:42",
+  "now": "2026-10-27 21:08:43",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-27",
-  "max_visible_dt": "2026-10-27 21:02:42",
-  "max_visible_datetime_str": "2026-10-27 21:02:42",
+  "max_visible_dt": "2026-10-27 21:08:43",
+  "max_visible_datetime_str": "2026-10-27 21:08:43",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (27/10/2026, 21:02 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (27/10/2026, 21:08 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16115083-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "21:04",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 21:04:18",
+    "timestamp": 1793156658.0,
+    "tipo": "CASETA",
+    "identificador": "6142050384",
+    "modelo": "MINI",
+    "estado": "CHIHUAHUA",
+    "area_trabajo": "CHIHUAHUA",
+    "contratista": "Jesús José romero peres",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Prueva",
+    "num_viniles": 1.0,
+    "version": "v5 - Android",
+    "latitud": 28.7283517,
+    "longitud": -106.14406,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae16630219497ef5f3c9081.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16115078-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "21:04",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 21:04:15",
+    "timestamp": 1793156655.0,
+    "tipo": "CASETA",
+    "identificador": "6141850079",
+    "modelo": "MINI",
+    "estado": "CHIHUAHUA",
+    "area_trabajo": "CHIHUAHUA",
+    "contratista": "Jesús José romero peres",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v5 - Android",
+    "latitud": 28.7584048,
+    "longitud": -106.1367925,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae1662db0b938ce8b459647.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16115074-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "21:04",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 21:04:12",
+    "timestamp": 1793156652.0,
+    "tipo": "CASETA",
+    "identificador": "6141852587",
+    "modelo": "DOBLE",
+    "estado": "CHIHUAHUA",
+    "area_trabajo": "CHIHUAHUA",
+    "contratista": "Jesús José romero peres",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 4.0,
+    "version": "v5 - Android",
+    "latitud": 28.7584589,
+    "longitud": -106.1367153,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae1662a3ba4f168f4459647.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16115073-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "21:04",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 21:04:09",
+    "timestamp": 1793156649.0,
+    "tipo": "CAJA",
+    "identificador": "ZZS0002",
+    "modelo": "Siecor Doble",
+    "estado": "CHIHUAHUA",
+    "area_trabajo": "CHIHUAHUA",
+    "contratista": "Jesús José romero peres",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v5 - Android",
+    "latitud": 28.6006918,
+    "longitud": -106.1298007,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae16628b3690c235f83e517.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16115053-1259",
     "fecha": "2026-10-27",
