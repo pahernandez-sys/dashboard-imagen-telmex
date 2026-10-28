@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 15:55:29
- * Estado de corte: Jornada en vivo activa (28/10/2026, 15:55 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2443 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 16:01:37
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 16:01 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2444 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 15:55:28",
+  "now": "2026-10-28 16:01:36",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 15:55:28",
-  "max_visible_datetime_str": "2026-10-28 15:55:28",
+  "max_visible_dt": "2026-10-28 16:01:36",
+  "max_visible_datetime_str": "2026-10-28 16:01:36",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 15:55 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 16:01 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117393-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:55",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:55:24",
+    "timestamp": 1793224524.0,
+    "tipo": "CAJA",
+    "identificador": "MRE0004",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 18.9337039,
+    "longitud": -99.1849561,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae26f4ac3258e86f884f546.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117388-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:54",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:54:50",
+    "timestamp": 1793224490.0,
+    "tipo": "CAJA",
+    "identificador": "NEV0059",
+    "modelo": "Siecor Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Lucina Villanueva Hernández",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.2809283,
+    "longitud": -99.6548983,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae26f28a6e5e6281dc85cae.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117384-1259",
     "fecha": "2026-10-28",
@@ -24991,31 +25041,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 20.3866396,
     "longitud": -99.9686397,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0d6515cf63c1221b0f44a.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16112035-1259",
-    "fecha": "2026-10-27",
-    "fecha_captura": "2026-10-27",
-    "hora": "10:50",
-    "fecha_corte": "2026-10-27",
-    "created_at_iso": "2026-10-27 10:50:24",
-    "timestamp": 1793119824.0,
-    "tipo": "CASETA",
-    "identificador": "4272744898",
-    "modelo": "NORMAL",
-    "estado": "QUERETARO",
-    "area_trabajo": "QUERETARO",
-    "contratista": "Victor Hugo Lopez Garcia",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 2.0,
-    "version": "v4 - Android",
-    "latitud": 20.3866417,
-    "longitud": -99.9686322,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0d64eac09ea3327fcf333.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
