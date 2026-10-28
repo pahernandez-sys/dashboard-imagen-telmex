@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 14:06:03
- * Estado de corte: Jornada en vivo activa (28/10/2026, 14:06 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2325 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 14:12:04
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 14:12 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2326 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 14:06:01",
+  "now": "2026-10-28 14:12:03",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 14:06:01",
-  "max_visible_datetime_str": "2026-10-28 14:06:01",
+  "max_visible_dt": "2026-10-28 14:12:03",
+  "max_visible_datetime_str": "2026-10-28 14:12:03",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 14:06 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 14:12 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117062-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "14:05",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 14:05:57",
+    "timestamp": 1793217957.0,
+    "tipo": "CAJA",
+    "identificador": "TOL0125",
+    "modelo": "Envolvente Sencilla",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Lucina Villanueva Hernández",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.28414,
+    "longitud": -99.674985,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae255a3f21e831af784f54d.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117061-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "14:05",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 14:05:24",
+    "timestamp": 1793217924.0,
+    "tipo": "CAJA",
+    "identificador": "LMA0078",
+    "modelo": "Tradicional Sencilla",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Pcindustrial",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.3066854,
+    "longitud": -99.537282,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae25582425ed44928da8b94.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117048-1259",
     "fecha": "2026-10-28",
@@ -24991,31 +25041,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 25.6718533,
     "longitud": -100.4773717,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae059660f76552619341d85.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16110372-1259",
-    "fecha": "2026-10-27",
-    "fecha_captura": "2026-10-27",
-    "hora": "01:57",
-    "fecha_corte": "2026-10-27",
-    "created_at_iso": "2026-10-27 01:57:25",
-    "timestamp": 1793087845.0,
-    "tipo": "CAJA",
-    "identificador": "SCA0115",
-    "modelo": "Siecor Sencilla 1 Puerta",
-    "estado": "NUEVO LEON",
-    "area_trabajo": "MONTERREY",
-    "contratista": "Jose antonio Esquivel",
-    "oferta": "120_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "Sin versión",
-    "latitud": 25.6714871,
-    "longitud": -100.4747993,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae059630b4e05b34e0eec3b.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
