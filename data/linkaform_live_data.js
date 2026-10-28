@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 17:27:31
- * Estado de corte: Jornada en vivo activa (28/10/2026, 17:27 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-10-28 17:33:42
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 17:33 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 2551 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 17:27:30",
+  "now": "2026-10-28 17:33:41",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 17:27:30",
-  "max_visible_datetime_str": "2026-10-28 17:27:30",
+  "max_visible_dt": "2026-10-28 17:33:41",
+  "max_visible_datetime_str": "2026-10-28 17:33:41",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 17:27 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 17:33 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117630-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "17:26",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 17:26:59",
+    "timestamp": 1793230019.0,
+    "tipo": "CAJA",
+    "identificador": "TPI0058",
+    "modelo": "Siecor Sencilla 1 Puerta",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 21.5087694,
+    "longitud": -104.8807184,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae284c191a303d801c85cae.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117622-1259",
     "fecha": "2026-10-28",
@@ -24991,31 +25016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.1911224,
     "longitud": -96.1459191,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0f01bc764ff4fa49d20ef.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16112972-1259",
-    "fecha": "2026-10-27",
-    "fecha_captura": "2026-10-27",
-    "hora": "12:40",
-    "fecha_corte": "2026-10-27",
-    "created_at_iso": "2026-10-27 12:40:26",
-    "timestamp": 1793126426.0,
-    "tipo": "CAJA",
-    "identificador": "NCH0063",
-    "modelo": "Tradicional Sencilla",
-    "estado": "MICHOACAN",
-    "area_trabajo": "MICHOACAN",
-    "contratista": "Roberto Melchor Frutos Fuentes",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v4 - Android",
-    "latitud": 19.7039933,
-    "longitud": -101.1734283,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0f01897db5478239d20ef.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
