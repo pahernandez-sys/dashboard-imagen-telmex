@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 11:49:12
- * Estado de corte: Jornada en vivo activa (28/10/2026, 11:49 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2209 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 11:55:18
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 11:55 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2211 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 11:49:11",
+  "now": "2026-10-28 11:55:16",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 11:49:11",
-  "max_visible_datetime_str": "2026-10-28 11:49:11",
+  "max_visible_dt": "2026-10-28 11:55:16",
+  "max_visible_datetime_str": "2026-10-28 11:55:16",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 11:49 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 11:55 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16116657-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "11:52",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 11:52:43",
+    "timestamp": 1793209963.0,
+    "tipo": "CAJA",
+    "identificador": "MOE0070",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "MICHOACAN",
+    "area_trabajo": "MICHOACAN",
+    "contratista": "Roberto Melchor Frutos Fuentes",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.717959,
+    "longitud": -101.1745751,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae236698cd6d2805ec6d9a6.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16116647-1259",
     "fecha": "2026-10-28",
@@ -24966,6 +24991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.3291626,
     "longitud": -98.2243268,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adff039bbb3159f282f14a0.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16103900-1259",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "18:28",
+    "fecha_corte": "2026-10-26",
+    "created_at_iso": "2026-10-26 18:28:36",
+    "timestamp": 1793060916.0,
+    "tipo": "CAJA",
+    "identificador": "TLX0030",
+    "modelo": "Tradicional Doble",
+    "estado": "TLAXCALA",
+    "area_trabajo": "TLAXCALA",
+    "contratista": "Sergio Beccerra Franco",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.328989,
+    "longitud": -98.2218471,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adff030f94c010082828f31.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
