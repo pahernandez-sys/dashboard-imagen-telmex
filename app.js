@@ -29,6 +29,36 @@ function getLocalDateStr(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
+// Parser seguro de fecha/hora a zona horaria local de México
+function parseDateTimeSafe(val) {
+  if (!val) return { dateStr: "", timeStr: "00:00", dateTimeStr: "", dt: null };
+  let d;
+  if (val instanceof Date) {
+    d = val;
+  } else if (typeof val === "number") {
+    d = new Date(val > 1e11 ? val : val * 1000);
+  } else {
+    let s = String(val).trim();
+    if (!s.includes("Z") && !s.includes("+") && !s.includes("-", 10)) {
+      s = s.replace(" ", "T");
+    }
+    d = new Date(s);
+  }
+  if (isNaN(d.getTime())) return { dateStr: "", timeStr: "00:00", dateTimeStr: "", dt: null };
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const mins = String(d.getMinutes()).padStart(2, '0');
+  const secs = String(d.getSeconds()).padStart(2, '0');
+  return {
+    dateStr: `${year}-${month}-${day}`,
+    timeStr: `${hours}:${mins}`,
+    dateTimeStr: `${year}-${month}-${day} ${hours}:${mins}:${secs}`,
+    dt: d
+  };
+}
+
 // =========================================================
 // REGLAS OFICIALES DE CORTE TELMEX 2026 (10 PM - 10 AM)
 // =========================================================
@@ -125,6 +155,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Conexión y carga en tiempo real desde Supabase Cloud (< 100ms)
   loadDataFromSupabase();
+
+  // Auto-refresco en vivo cada 60 segundos si es horario de jornada activa (10:00 AM - 10:00 PM)
+  setInterval(() => {
+    const cutoff = getCutoffInfo();
+    if (!cutoff.isFrozen) {
+      loadDataFromSupabase(false);
+    }
+  }, 60000);
 });
 
 // Configuración de Conexión en Tiempo Real con Supabase (PostgreSQL Cloud)
@@ -174,32 +212,35 @@ async function loadDataFromSupabase(showNotification = false) {
     const dbEvs = await fetchPagedFromSupabase("evidencias_telmex", "*", "fecha_captura.desc");
     let evCount = 0;
     if (Array.isArray(dbEvs) && dbEvs.length > 0) {
-      state.records = dbEvs.map(r => ({
-        folio: r.folio || "",
-        fecha: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
-        fecha_captura: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
-        hora: r.fecha_captura ? r.fecha_captura.slice(11, 16) : "",
-        fecha_corte: r.fecha_captura ? r.fecha_captura.slice(0, 10) : "",
-        created_at_iso: r.fecha_captura || "",
-        timestamp: r.fecha_captura ? (new Date(r.fecha_captura).getTime() / 1000) : 0,
-        tipo: (r.tipo_elemento || "CASETA").toUpperCase(),
-        identificador: r.asset_id || r.folio || "S/N",
-        modelo: r.modelo || "",
-        estado: r.estado || "",
-        area_trabajo: r.area_trabajo || "",
-        contratista: r.contratista || "",
-        tecnico: r.tecnico || "N/A",
-        oferta: r.oferta_colocada || "120 MB",
-        existe_bd: r.existencia || "Sí",
-        comentarios: r.comentarios || "",
-        num_viniles: r.num_viniles || 1,
-        version: r.version_app || "Sin versión",
-        latitud: r.lat,
-        longitud: r.lon,
-        foto_despues: r.foto_despues_url || "",
-        foto_antes: r.foto_antes_url || "",
-        estatus: "Aprobada"
-      }));
+      state.records = dbEvs.map(r => {
+        const timeInfo = parseDateTimeSafe(r.fecha_captura);
+        return {
+          folio: r.folio || "",
+          fecha: timeInfo.dateStr,
+          fecha_captura: timeInfo.dateStr,
+          hora: timeInfo.timeStr,
+          fecha_corte: timeInfo.dateStr,
+          created_at_iso: timeInfo.dateTimeStr || r.fecha_captura || "",
+          timestamp: timeInfo.dt ? (timeInfo.dt.getTime() / 1000) : 0,
+          tipo: (r.tipo_elemento || "CASETA").toUpperCase(),
+          identificador: r.asset_id || r.folio || "S/N",
+          modelo: r.modelo || "",
+          estado: r.estado || "",
+          area_trabajo: r.area_trabajo || "",
+          contratista: r.contratista || "",
+          tecnico: r.tecnico || "N/A",
+          oferta: r.oferta_colocada || "120 MB",
+          existe_bd: r.existencia || "Sí",
+          comentarios: r.comentarios || "",
+          num_viniles: r.num_viniles || 1,
+          version: r.version_app || "Sin versión",
+          latitud: r.lat,
+          longitud: r.lon,
+          foto_despues: r.foto_despues_url || "",
+          foto_antes: r.foto_antes_url || "",
+          estatus: "Aprobada"
+        };
+      });
       evCount = state.records.length;
       localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
     }
@@ -208,18 +249,21 @@ async function loadDataFromSupabase(showNotification = false) {
     const dbMats = await fetchPagedFromSupabase("materiales_telmex", "*", "fecha_entrega.desc");
     let matCount = 0;
     if (Array.isArray(dbMats) && dbMats.length > 0) {
-      state.materialsLog = dbMats.map(m => ({
-        id: m.folio || "",
-        area: m.area_trabajo || "",
-        descripcion: m.material || "",
-        cantidad: m.cantidad || 0,
-        unidad: "PZAS.",
-        fecha: m.fecha_entrega ? m.fecha_entrega.slice(0, 10) : "",
-        fecha_captura: m.fecha_entrega ? m.fecha_entrega.slice(0, 10) : "",
-        hora: m.fecha_entrega ? m.fecha_entrega.slice(11, 16) : "",
-        created_at_iso: m.fecha_entrega || "",
-        foto: ""
-      }));
+      state.materialsLog = dbMats.map(m => {
+        const timeInfo = parseDateTimeSafe(m.fecha_entrega);
+        return {
+          id: m.folio || "",
+          area: m.area_trabajo || "",
+          descripcion: m.material || "",
+          cantidad: m.cantidad || 0,
+          unidad: "PZAS.",
+          fecha: timeInfo.dateStr,
+          fecha_captura: timeInfo.dateStr,
+          hora: timeInfo.timeStr,
+          created_at_iso: timeInfo.dateTimeStr || m.fecha_entrega || "",
+          foto: ""
+        };
+      });
       matCount = state.materialsLog.length;
       localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
     }
@@ -517,19 +561,12 @@ function recordMatchesArea(r, selectedArea) {
 function isRecordAfterCutoff(r, cutoffInfo) {
   if (!cutoffInfo || !cutoffInfo.isFrozen) return false;
   
-  // Extraer fecha y hora en formato estándar
-  let recDateStr = r.fecha_captura || r.fecha || "";
-  if (recDateStr.length > 10) recDateStr = recDateStr.slice(0, 10);
+  // Extraer fecha y hora en formato estándar local
+  const timeInfo = parseDateTimeSafe(r.created_at_iso || r.fecha_captura || r.fecha);
+  const recDateStr = timeInfo.dateStr || r.fecha || "";
+  const recTimeStr = timeInfo.timeStr || r.hora || "00:00";
   
-  let recTimeStr = r.hora || "";
-  if (!recTimeStr && r.created_at_iso) {
-    const raw = r.created_at_iso.replace("T", " ");
-    if (raw.length >= 16) recTimeStr = raw.slice(11, 16);
-  }
-  if (!recTimeStr) recTimeStr = "00:00";
-  if (recTimeStr.length === 5) recTimeStr += ":00";
-  
-  const recStandard = `${recDateStr} ${recTimeStr}`;
+  const recStandard = `${recDateStr} ${recTimeStr.length === 5 ? recTimeStr + ":00" : recTimeStr}`;
   const cutoffStandard = `${cutoffInfo.activeReportingDate} 22:00:00`;
   
   // Registros con fecha posterior al ciclo oficial activo (ej. subidos de madrugada o al día siguiente)
@@ -1807,7 +1844,7 @@ async function triggerLinkaformSync() {
   // Paso 1: Intentar sincronización directa vía Servicio Local HTTP Bridge (si está activo en la máquina)
   try {
     const localCtrl = new AbortController();
-    const localTimeout = setTimeout(() => localCtrl.abort(), 40000);
+    const localTimeout = setTimeout(() => localCtrl.abort(), 120000);
     const localResp = await fetch("http://127.0.0.1:8765/sync", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
