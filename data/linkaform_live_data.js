@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 12:48:12
- * Estado de corte: Jornada en vivo activa (28/10/2026, 12:48 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2258 (Retenidos por corte: 0)
- * Movimientos de materiales visibles: 146 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 12:54:04
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 12:54 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2261 (Retenidos por corte: 0)
+ * Movimientos de materiales visibles: 149 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 12:48:12",
+  "now": "2026-10-28 12:54:03",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 12:48:12",
-  "max_visible_datetime_str": "2026-10-28 12:48:12",
+  "max_visible_dt": "2026-10-28 12:54:03",
+  "max_visible_datetime_str": "2026-10-28 12:54:03",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 12:48 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 12:54 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16116843-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "12:48",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 12:48:51",
+    "timestamp": 1793213331.0,
+    "tipo": "CAJA",
+    "identificador": "GSF0009",
+    "modelo": "Tradicional Sencilla",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 18.9296257,
+    "longitud": -99.1896969,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2439117bf9ee61d01607b.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16116837-1259",
     "fecha": "2026-10-28",
@@ -24966,6 +24991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 20.707229,
     "longitud": -103.3557085,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0123e6e3d788f140eec3e.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16105046-1259",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "20:53",
+    "fecha_corte": "2026-10-26",
+    "created_at_iso": "2026-10-26 20:53:49",
+    "timestamp": 1793069629.0,
+    "tipo": "CASETA",
+    "identificador": "3338246459",
+    "modelo": "NORMAL",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 20.7072247,
+    "longitud": -103.3557498,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0123a8f78a5b9ffbe7279.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -49970,6 +50020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16039311-1259",
+    "fecha": "2026-10-22",
+    "fecha_captura": "2026-10-22",
+    "hora": "01:59",
+    "fecha_corte": "2026-10-22",
+    "created_at_iso": "2026-10-22 01:59:35",
+    "timestamp": 1792655975.0,
+    "tipo": "CAJA",
+    "identificador": "VAR0143",
+    "modelo": "Desplazamiento Doble",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "Sin versión",
+    "latitud": 20.6724056,
+    "longitud": -103.3715656,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad9c265aa6673d839a02e75.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16039262-1259",
     "fecha": "2026-10-22",
     "fecha_captura": "2026-10-22",
@@ -56472,6 +56547,42 @@ const LINKAFORM_LIVE_RECORDS = [
 ];
 
 const LINKAFORM_LIVE_MATERIALS = [
+  {
+    "id": "16116844-1259",
+    "area": "MORELIA",
+    "descripcion": "SIECOR SENCILLA 2 PTAS. 200 MB",
+    "cantidad": 609.0,
+    "unidad": "PZAS.",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "00:00",
+    "created_at_iso": "2026-10-27 00:00:00",
+    "foto": ""
+  },
+  {
+    "id": "16116842-1259",
+    "area": "MORELIA",
+    "descripcion": "SIECOR SENCILLA 1 PTA. 200 MB",
+    "cantidad": 564.0,
+    "unidad": "PZAS.",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "12:48",
+    "created_at_iso": "2026-10-27 12:48:23",
+    "foto": ""
+  },
+  {
+    "id": "16116841-1259",
+    "area": "ACAPULCO",
+    "descripcion": "DEPLAZAMIENTO SENCILLA 2 PTAS 200 MB",
+    "cantidad": 93.0,
+    "unidad": "PZAS.",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "12:47",
+    "created_at_iso": "2026-10-27 12:47:53",
+    "foto": ""
+  },
   {
     "id": "16116839-1259",
     "area": "MORELIA",
