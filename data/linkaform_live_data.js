@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 15:49:24
- * Estado de corte: Jornada en vivo activa (28/10/2026, 15:49 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2441 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 15:55:29
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 15:55 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2443 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 15:49:23",
+  "now": "2026-10-28 15:55:28",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 15:49:23",
-  "max_visible_datetime_str": "2026-10-28 15:49:23",
+  "max_visible_dt": "2026-10-28 15:55:28",
+  "max_visible_datetime_str": "2026-10-28 15:55:28",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 15:49 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 15:55 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117384-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:53",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:53:06",
+    "timestamp": 1793224386.0,
+    "tipo": "CASETA",
+    "identificador": "3115912150",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Normal",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 21.4736458,
+    "longitud": -104.8739041,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae26ec0d6caeb2ff2da8b99.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117377-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "15:48",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 15:48:49",
+    "timestamp": 1793224129.0,
+    "tipo": "CAJA",
+    "identificador": "OEN0009",
+    "modelo": "Siecor Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "BRUSIM",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Ok",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.2838297,
+    "longitud": -99.4672046,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae26dbf41a54e3778da8ba1.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117353-1259",
     "fecha": "2026-10-28",
@@ -24970,6 +25020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16112035-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "10:50",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 10:50:24",
+    "timestamp": 1793119824.0,
+    "tipo": "CASETA",
+    "identificador": "4272744898",
+    "modelo": "NORMAL",
+    "estado": "QUERETARO",
+    "area_trabajo": "QUERETARO",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 20.3866417,
+    "longitud": -99.9686322,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0d64eac09ea3327fcf333.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16112034-1259",
     "fecha": "2026-10-27",
     "fecha_captura": "2026-10-27",
@@ -24991,31 +25066,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 20.3870434,
     "longitud": -99.9664462,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0d64b2431f1c945b0f44c.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16112033-1259",
-    "fecha": "2026-10-27",
-    "fecha_captura": "2026-10-27",
-    "hora": "10:50",
-    "fecha_corte": "2026-10-27",
-    "created_at_iso": "2026-10-27 10:50:18",
-    "timestamp": 1793119818.0,
-    "tipo": "CAJA",
-    "identificador": "BNT0002",
-    "modelo": "Desplazamiento Doble",
-    "estado": "QUERETARO",
-    "area_trabajo": "QUERETARO",
-    "contratista": "Victor Hugo Lopez Garcia",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v4 - Android",
-    "latitud": 20.3831185,
-    "longitud": -99.9642958,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0d64883ccfa212f9f90bb.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
