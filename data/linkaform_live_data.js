@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 16:26:10
- * Estado de corte: Jornada en vivo activa (28/10/2026, 16:26 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2493 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 16:32:20
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 16:32 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2495 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 16:26:08",
+  "now": "2026-10-28 16:32:19",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 16:26:08",
-  "max_visible_datetime_str": "2026-10-28 16:26:08",
+  "max_visible_dt": "2026-10-28 16:32:19",
+  "max_visible_datetime_str": "2026-10-28 16:32:19",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 16:26 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 16:32 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117528-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "16:28",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 16:28:52",
+    "timestamp": 1793226532.0,
+    "tipo": "CAJA",
+    "identificador": "MRE0009",
+    "modelo": "Siecor Doble",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 18.9504218,
+    "longitud": -99.1834583,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae27722afd8025e28c85cb7.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117523-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "16:27",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 16:27:35",
+    "timestamp": 1793226455.0,
+    "tipo": "CAJA",
+    "identificador": "AQT0002",
+    "modelo": "Desplazamiento Sencilla",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Caja vandalizada no cuenta con las puertas para colocar el vinil",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 17.0266383,
+    "longitud": -96.7025295,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae276d53b53847340da8b97.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117518-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "16:25",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 16:25:33",
+    "timestamp": 1793226333.0,
+    "tipo": "CASETA",
+    "identificador": "7222194953",
+    "modelo": "NORMAL",
+    "estado": "ESTADO DE MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Lucina Villanueva Hernández",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.2756913,
+    "longitud": -99.6508948,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2765bece31deb3184f54b.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117513-1259",
     "fecha": "2026-10-28",
@@ -24991,31 +25066,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.886709,
     "longitud": -99.2190011,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0e22bafbfd49d8f9d20f9.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16112477-1259",
-    "fecha": "2026-10-27",
-    "fecha_captura": "2026-10-27",
-    "hora": "11:34",
-    "fecha_corte": "2026-10-27",
-    "created_at_iso": "2026-10-27 11:34:39",
-    "timestamp": 1793122479.0,
-    "tipo": "CASETA",
-    "identificador": "8717225728",
-    "modelo": "NORMAL",
-    "estado": "COAHUILA",
-    "area_trabajo": "TORREON",
-    "contratista": "Jose antonio Esquivel",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "No existe",
-    "num_viniles": 1.0,
-    "version": "v5 - IPhone",
-    "latitud": 25.54924325816873,
-    "longitud": -103.44685390823977,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0e0ad6894ba5fcce313f7.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
