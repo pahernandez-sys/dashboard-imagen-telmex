@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 17:33:42
- * Estado de corte: Jornada en vivo activa (28/10/2026, 17:33 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2551 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 17:39:51
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 17:39 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2553 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 17:33:41",
+  "now": "2026-10-28 17:39:50",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 17:33:41",
-  "max_visible_datetime_str": "2026-10-28 17:33:41",
+  "max_visible_dt": "2026-10-28 17:39:50",
+  "max_visible_datetime_str": "2026-10-28 17:39:50",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 17:33 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 17:39 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117635-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "17:36",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 17:36:20",
+    "timestamp": 1793230580.0,
+    "tipo": "CAJA",
+    "identificador": "MQS0057",
+    "modelo": "Tradicional Doble",
+    "estado": "QUERETARO",
+    "area_trabajo": "QUERETARO",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 20.5956391,
+    "longitud": -100.3838236,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae286f2cb50827d4679517d.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117634-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "17:34",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 17:34:05",
+    "timestamp": 1793230445.0,
+    "tipo": "CAJA",
+    "identificador": "TPI0039",
+    "modelo": "Desplazamiento Sencilla",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 21.5050959,
+    "longitud": -104.8814857,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2866bf27950226af168bf.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117630-1259",
     "fecha": "2026-10-28",
