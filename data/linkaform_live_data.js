@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-27 18:49:46
- * Estado de corte: Jornada en vivo activa (27/10/2026, 18:49 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 1996 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-27 18:55:48
+ * Estado de corte: Jornada en vivo activa (27/10/2026, 18:55 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 1998 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-27 18:49:45",
+  "now": "2026-10-27 18:55:47",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-27",
-  "max_visible_dt": "2026-10-27 18:49:45",
-  "max_visible_datetime_str": "2026-10-27 18:49:45",
+  "max_visible_dt": "2026-10-27 18:55:47",
+  "max_visible_datetime_str": "2026-10-27 18:55:47",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (27/10/2026, 18:49 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (27/10/2026, 18:55 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16114715-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "18:53",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 18:53:30",
+    "timestamp": 1793148810.0,
+    "tipo": "CAJA",
+    "identificador": "CRT0005",
+    "modelo": "Siecor Doble",
+    "estado": "SONORA",
+    "area_trabajo": "NOGALES",
+    "contratista": "Noe Gastelum Lopez",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "Sin versión",
+    "latitud": 31.317832474167613,
+    "longitud": -110.94707250923923,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae14788a99fd4709a83e515.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16114714-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "18:52",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 18:52:41",
+    "timestamp": 1793148761.0,
+    "tipo": "CASETA",
+    "identificador": "3112120608",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Kevin Alexander López Cortes",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 21.5149073,
+    "longitud": -104.9009829,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae14758b72d5d3b7f3c9095.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16114713-1259",
     "fecha": "2026-10-27",
