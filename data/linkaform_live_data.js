@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 12:12:29
- * Estado de corte: Jornada en vivo activa (28/10/2026, 12:12 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2221 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 12:18:28
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 12:18 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2224 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 12:12:27",
+  "now": "2026-10-28 12:18:27",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 12:12:27",
-  "max_visible_datetime_str": "2026-10-28 12:12:27",
+  "max_visible_dt": "2026-10-28 12:18:27",
+  "max_visible_datetime_str": "2026-10-28 12:18:27",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 12:12 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 12:18 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16116759-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "12:16",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 12:16:54",
+    "timestamp": 1793211414.0,
+    "tipo": "CASETA",
+    "identificador": "7222129978",
+    "modelo": "NORMAL",
+    "estado": "ESTADO DE MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Lucina Villanueva Hernández",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.2790877,
+    "longitud": -99.6689798,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae23c14584500bf11c6da08.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116758-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "12:16",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 12:16:42",
+    "timestamp": 1793211402.0,
+    "tipo": "CAJA",
+    "identificador": "TXO0021",
+    "modelo": "Siecor Sencilla 1 Puerta",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 18.8411032,
+    "longitud": -99.2243729,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae23c0829f610b03ed1371e.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116757-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "12:16",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 12:16:05",
+    "timestamp": 1793211365.0,
+    "tipo": "CAJA",
+    "identificador": "AME0024",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Wendy Magaly castro herrera",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.5483408,
+    "longitud": -96.9156543,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae23be332025bdad5c6da52.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16116717-1259",
     "fecha": "2026-10-28",
