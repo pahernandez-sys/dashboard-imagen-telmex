@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 14:18:05
- * Estado de corte: Jornada en vivo activa (28/10/2026, 14:18 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2333 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 14:24:06
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 14:24 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2335 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 14:18:04",
+  "now": "2026-10-28 14:24:05",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 14:18:04",
-  "max_visible_datetime_str": "2026-10-28 14:18:04",
+  "max_visible_dt": "2026-10-28 14:24:05",
+  "max_visible_datetime_str": "2026-10-28 14:24:05",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 14:18 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 14:24 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117091-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "14:21",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 14:21:20",
+    "timestamp": 1793218880.0,
+    "tipo": "CASETA",
+    "identificador": "01",
+    "modelo": "NORMAL",
+    "estado": "CHIHUAHUA",
+    "area_trabajo": "CHIHUAHUA",
+    "contratista": "Jesús José Romero Pérez",
+    "oferta": "120_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v5 - Android",
+    "latitud": 28.6281957,
+    "longitud": -106.0844534,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2593e0dca26e196da8bbc.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117090-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "14:19",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 14:19:38",
+    "timestamp": 1793218778.0,
+    "tipo": "CAJA",
+    "identificador": "ODM0007",
+    "modelo": "Desplazamiento Doble",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 17.0503563,
+    "longitud": -96.6948615,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae258d805094379dbda8b94.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117086-1259",
     "fecha": "2026-10-28",
