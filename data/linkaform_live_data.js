@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-27 19:19:56
- * Estado de corte: Jornada en vivo activa (27/10/2026, 19:19 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2022 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-27 19:25:58
+ * Estado de corte: Jornada en vivo activa (27/10/2026, 19:25 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2024 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-27 19:19:55",
+  "now": "2026-10-27 19:25:57",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-27",
-  "max_visible_dt": "2026-10-27 19:19:55",
-  "max_visible_datetime_str": "2026-10-27 19:19:55",
+  "max_visible_dt": "2026-10-27 19:25:57",
+  "max_visible_datetime_str": "2026-10-27 19:25:57",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (27/10/2026, 19:19 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (27/10/2026, 19:25 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16114828-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "19:24",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 19:24:43",
+    "timestamp": 1793150683.0,
+    "tipo": "CASETA",
+    "identificador": "3336351572",
+    "modelo": "NORMAL",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 20.6390986,
+    "longitud": -103.3114201,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae14ed9ed4be01bb23c9083.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16114825-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "19:24",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 19:24:40",
+    "timestamp": 1793150680.0,
+    "tipo": "CASETA",
+    "identificador": "3336572638",
+    "modelo": "NORMAL",
+    "estado": "JALISCO",
+    "area_trabajo": "JALISCO",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 20.6390752,
+    "longitud": -103.3114494,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae14ed6bf09c0d4fb459659.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16114788-1259",
     "fecha": "2026-10-27",
