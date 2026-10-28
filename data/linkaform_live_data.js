@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 10:26:08
- * Estado de corte: Jornada en vivo activa (28/10/2026, 10:26 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2131 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 10:32:06
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 10:32 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2135 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 10:26:08",
+  "now": "2026-10-28 10:32:05",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 10:26:08",
-  "max_visible_datetime_str": "2026-10-28 10:26:08",
+  "max_visible_dt": "2026-10-28 10:32:05",
+  "max_visible_datetime_str": "2026-10-28 10:32:05",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 10:26 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 10:32 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16116311-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "10:29",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 10:29:10",
+    "timestamp": 1793204950.0,
+    "tipo": "CASETA",
+    "identificador": "7773163386",
+    "modelo": "MINI",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 18.9144183,
+    "longitud": -99.2006429,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae222d46569e8b68c086d69.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116310-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "10:28",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 10:28:57",
+    "timestamp": 1793204937.0,
+    "tipo": "CASETA",
+    "identificador": "7773659574",
+    "modelo": "NORMAL",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 18.8393979,
+    "longitud": -99.229682,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae222c70d148636cc086d55.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116309-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "10:28",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 10:28:54",
+    "timestamp": 1793204934.0,
+    "tipo": "CASETA",
+    "identificador": "7222173595",
+    "modelo": "NORMAL",
+    "estado": "ESTADO DE MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Lucina Villanueva Hernández",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.2724562,
+    "longitud": -99.6616551,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae222c4331212318f521ff2.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16116303-1259",
     "fecha": "2026-10-28",
@@ -24916,6 +24991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.17668,
     "longitud": -100.2165533,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adfd064b38df3d3c791e816.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16102055-1259",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "16:12",
+    "fecha_corte": "2026-10-26",
+    "created_at_iso": "2026-10-26 16:12:30",
+    "timestamp": 1793052750.0,
+    "tipo": "CAJA",
+    "identificador": "DK7",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 18.9137966,
+    "longitud": -99.2050457,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adfd04cca9a24e87491e803.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
