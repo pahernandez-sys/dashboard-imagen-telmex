@@ -1,24 +1,149 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 12:42:17
- * Estado de corte: Jornada en vivo activa (28/10/2026, 12:42 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2253 (Retenidos por corte: 0)
- * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 12:48:12
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 12:48 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2258 (Retenidos por corte: 0)
+ * Movimientos de materiales visibles: 146 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 12:42:17",
+  "now": "2026-10-28 12:48:12",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 12:42:17",
-  "max_visible_datetime_str": "2026-10-28 12:42:17",
+  "max_visible_dt": "2026-10-28 12:48:12",
+  "max_visible_datetime_str": "2026-10-28 12:48:12",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 12:42 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 12:48 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16116837-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "12:46",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 12:46:39",
+    "timestamp": 1793213199.0,
+    "tipo": "CASETA",
+    "identificador": "7222129934",
+    "modelo": "NORMAL",
+    "estado": "ESTADO DE MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Lucina Villanueva Hernández",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.2767933,
+    "longitud": -99.66304,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2430d7d24188afe410493.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116833-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "12:45",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 12:45:27",
+    "timestamp": 1793213127.0,
+    "tipo": "CAJA",
+    "identificador": "AME0088",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Wendy Magaly castro herrera",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.5418773,
+    "longitud": -96.9191378,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae242c5f48b89f13a410495.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116829-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "12:44",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 12:44:15",
+    "timestamp": 1793213055.0,
+    "tipo": "CAJA",
+    "identificador": "OCY0024",
+    "modelo": "Desplazamiento Sencilla",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "BRUSIM",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Ok",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.2656961,
+    "longitud": -99.4475402,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2427dfc4c2a7220dbf292.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116828-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "12:43",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 12:43:28",
+    "timestamp": 1793213008.0,
+    "tipo": "CASETA",
+    "identificador": "7773256797",
+    "modelo": "NORMAL",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 18.8510039,
+    "longitud": -99.2286636,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2424eddcabb396041048a.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116827-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "12:43",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 12:43:21",
+    "timestamp": 1793213001.0,
+    "tipo": "CAJA",
+    "identificador": "VUH0002",
+    "modelo": "Siecor Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "PC INDUSTRIAL",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "N/A",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.4294733,
+    "longitud": -99.5608889,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae241cde9f8e425c0016071.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16116824-1259",
     "fecha": "2026-10-28",
@@ -56347,6 +56472,90 @@ const LINKAFORM_LIVE_RECORDS = [
 ];
 
 const LINKAFORM_LIVE_MATERIALS = [
+  {
+    "id": "16116839-1259",
+    "area": "MORELIA",
+    "descripcion": "LATERAL CASETA NORMAL 200 MB",
+    "cantidad": 4504.0,
+    "unidad": "PZAS.",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "12:46",
+    "created_at_iso": "2026-10-27 12:46:55",
+    "foto": ""
+  },
+  {
+    "id": "16116838-1259",
+    "area": "TUXTLA",
+    "descripcion": "KRONE",
+    "cantidad": 6.0,
+    "unidad": "PZAS.",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "12:46",
+    "created_at_iso": "2026-10-27 12:46:23",
+    "foto": ""
+  },
+  {
+    "id": "16116836-1259",
+    "area": "TUXTLA",
+    "descripcion": "DEPLASAMIENTO DOBLE 200 MB",
+    "cantidad": 50.0,
+    "unidad": "PZAS.",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "12:45",
+    "created_at_iso": "2026-10-27 12:45:49",
+    "foto": ""
+  },
+  {
+    "id": "16116835-1259",
+    "area": "TUXTLA",
+    "descripcion": "ENVOLVENTE DOBLE 200 MB",
+    "cantidad": 1.0,
+    "unidad": "PZAS.",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "12:45",
+    "created_at_iso": "2026-10-26 12:45:31",
+    "foto": ""
+  },
+  {
+    "id": "16116832-1259",
+    "area": "TUXTLA",
+    "descripcion": "ENVOLVELTE SECILLO 200 MB",
+    "cantidad": 21.0,
+    "unidad": "PZAS.",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "12:45",
+    "created_at_iso": "2026-10-26 12:45:06",
+    "foto": ""
+  },
+  {
+    "id": "16116831-1259",
+    "area": "TUXTLA",
+    "descripcion": "TRADICIONAL DOBLE 200 MB",
+    "cantidad": 6.0,
+    "unidad": "JUEGOS",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "12:44",
+    "created_at_iso": "2026-10-26 12:44:21",
+    "foto": ""
+  },
+  {
+    "id": "16116830-1259",
+    "area": "CELAYA",
+    "descripcion": "TRADICIONAL SENCILLA 200 MB",
+    "cantidad": 8.0,
+    "unidad": "PZAS.",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "12:43",
+    "created_at_iso": "2026-10-26 12:43:55",
+    "foto": ""
+  },
   {
     "id": "16103040-1259",
     "area": "MONTERREY",
