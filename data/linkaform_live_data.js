@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 13:41:57
- * Estado de corte: Jornada en vivo activa (28/10/2026, 13:41 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2305 (Retenidos por corte: 0)
- * Movimientos de materiales visibles: 149 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 13:47:54
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 13:47 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2307 (Retenidos por corte: 0)
+ * Movimientos de materiales visibles: 150 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 13:41:56",
+  "now": "2026-10-28 13:47:53",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 13:41:56",
-  "max_visible_datetime_str": "2026-10-28 13:41:56",
+  "max_visible_dt": "2026-10-28 13:47:53",
+  "max_visible_datetime_str": "2026-10-28 13:47:53",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 13:41 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 13:47 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16116983-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "13:46",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 13:46:13",
+    "timestamp": 1793216773.0,
+    "tipo": "CAJA",
+    "identificador": "OCY0002",
+    "modelo": "Desplazamiento Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "BRUSIM",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "No hay GABINETE",
+    "num_viniles": 0.0,
+    "version": "v4 - Android",
+    "latitud": 19.2718555,
+    "longitud": -99.454062,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae25103fb3c3a254ec85cc3.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116982-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "13:45",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 13:45:29",
+    "timestamp": 1793216729.0,
+    "tipo": "CAJA",
+    "identificador": "ZDW0003",
+    "modelo": "Siecor Doble",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 18.8430477,
+    "longitud": -99.2408703,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae250d76654dc7747da8b95.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116968-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "13:41",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 13:41:28",
+    "timestamp": 1793216488.0,
+    "tipo": "CAJA",
+    "identificador": "MIZ0005",
+    "modelo": "Siecor Sencilla 1 Puerta",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Pcindustrial",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.3068243,
+    "longitud": -99.5360126,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae24fe6ef3f4e221cda8b95.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16116963-1259",
     "fecha": "2026-10-28",
@@ -24991,31 +25066,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 25.65864,
     "longitud": -100.455505,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae03c3ac650decd24be7286.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16106000-1259",
-    "fecha": "2026-10-27",
-    "fecha_captura": "2026-10-26",
-    "hora": "23:52",
-    "fecha_corte": "2026-10-27",
-    "created_at_iso": "2026-10-26 23:52:57",
-    "timestamp": 1793080377.0,
-    "tipo": "CAJA",
-    "identificador": "SCA0054",
-    "modelo": "Siecor Sencilla 1 Puerta",
-    "estado": "NUEVO LEON",
-    "area_trabajo": "MONTERREY",
-    "contratista": "Jose antonio Esquivel",
-    "oferta": "120_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "Sin versión",
-    "latitud": 25.6590328,
-    "longitud": -100.4557535,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae03c37ca79e9250c0eec55.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -57647,6 +57697,18 @@ const LINKAFORM_LIVE_RECORDS = [
 ];
 
 const LINKAFORM_LIVE_MATERIALS = [
+  {
+    "id": "16116984-1259",
+    "area": "CHIHUAHUA",
+    "descripcion": "DEPLASAMIENTO DOBLE 200 MB",
+    "cantidad": 85.0,
+    "unidad": "PZAS.",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "13:47",
+    "created_at_iso": "2026-10-26 13:47:05",
+    "foto": ""
+  },
   {
     "id": "16116844-1259",
     "area": "MORELIA",
