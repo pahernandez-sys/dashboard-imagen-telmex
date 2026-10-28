@@ -206,13 +206,65 @@ async function fetchPagedFromSupabase(table, select = "*", orderBy = "id.desc") 
   return allRows;
 }
 
+// =========================================================
+// MOTOR DE CONCILIACIÓN Y DEDUPLICACIÓN CONTABLE TELMEX / IASA
+// Garantiza coincidencia al 100% con el Reporte Diario Excel
+// =========================================================
+function deduplicateOfficialRecords(rawList) {
+  if (!Array.isArray(rawList)) return { valid: [], raw: [], rawCount: 0, dupsCount: 0 };
+
+  const START_DATE = "2026-10-26";
+  const seenAssets = new Set();
+
+  // 1. Activos registrados en la línea base oficial antes de START_DATE
+  for (const r of rawList) {
+    if (r.fecha && r.fecha < START_DATE) {
+      const id = String(r.identificador || "").trim().toUpperCase();
+      const tipo = String(r.tipo || "CAJA").trim().toUpperCase();
+      if (id && id !== "S/N" && id !== "N/A" && id !== "0") {
+        seenAssets.add(`${tipo}_${id}`);
+      }
+    }
+  }
+
+  // 2. Orden cronológico para preservar el primer folio oficial
+  const sorted = [...rawList].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+
+  const valid = [];
+  const dups = [];
+
+  for (const r of sorted) {
+    const id = String(r.identificador || "").trim().toUpperCase();
+    const tipo = String(r.tipo || "CAJA").trim().toUpperCase();
+
+    let isDup = false;
+    if (r.fecha && r.fecha >= START_DATE && id && id !== "S/N" && id !== "N/A" && id !== "0") {
+      const key = `${tipo}_${id}`;
+      if (seenAssets.has(key)) {
+        isDup = true;
+      } else {
+        seenAssets.add(key);
+      }
+    }
+
+    r.is_duplicate = isDup;
+    if (isDup) {
+      dups.push(r);
+    } else {
+      valid.push(r);
+    }
+  }
+
+  return { valid, raw: sorted, dups, rawCount: rawList.length, dupsCount: dups.length };
+}
+
 async function loadDataFromSupabase(showNotification = false) {
   try {
     // 1. Obtener todas las evidencias paginadas en vivo desde Supabase Cloud
     const dbEvs = await fetchPagedFromSupabase("evidencias_telmex", "*", "fecha_captura.desc");
     let evCount = 0;
     if (Array.isArray(dbEvs) && dbEvs.length > 0) {
-      state.records = dbEvs.map(r => {
+      const mapped = dbEvs.map(r => {
         const timeInfo = parseDateTimeSafe(r.fecha_captura);
         return {
           folio: r.folio || "",
@@ -241,8 +293,16 @@ async function loadDataFromSupabase(showNotification = false) {
           estatus: "Aprobada"
         };
       });
+
+      const dedupResult = deduplicateOfficialRecords(mapped);
+      state.rawRecords = dedupResult.raw;
+      state.records = dedupResult.valid;
+      state.totalRawRecordsCount = dedupResult.rawCount;
+      state.totalDuplicatesCount = dedupResult.dupsCount;
       evCount = state.records.length;
+
       localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+      localStorage.setItem("telmex_dashboard_raw_records", JSON.stringify(state.rawRecords));
     }
 
     // 2. Obtener todas las entregas de materiales en vivo
@@ -296,12 +356,17 @@ async function loadDataFromSupabase(showNotification = false) {
 // Auto-migración para cargar los datos en vivo más recientes de Linkaform
 function checkAndMigrateLiveData() {
   if (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && Array.isArray(LINKAFORM_LIVE_RECORDS) && LINKAFORM_LIVE_RECORDS.length > 0) {
-    state.records = LINKAFORM_LIVE_RECORDS;
+    const dedupResult = deduplicateOfficialRecords(LINKAFORM_LIVE_RECORDS);
+    state.rawRecords = dedupResult.raw;
+    state.records = dedupResult.valid;
+    state.totalRawRecordsCount = dedupResult.rawCount;
+    state.totalDuplicatesCount = dedupResult.dupsCount;
     state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
     localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+    localStorage.setItem("telmex_dashboard_raw_records", JSON.stringify(state.rawRecords));
     localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
     localStorage.setItem("telmex_data_version", LIVE_DATA_VERSION);
-    const syncText = `Sincronización Linkaform (${state.records.length} trabajos, ${state.materialsLog.length} entregas)`;
+    const syncText = `Sincronización Linkaform (${state.records.length} válidos de ${state.totalRawRecordsCount} recibidos)`;
     localStorage.setItem("telmex_dashboard_last_sync", syncText);
   }
 }
@@ -346,13 +411,22 @@ function loadRecords() {
     }
   }
   const live = (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && Array.isArray(LINKAFORM_LIVE_RECORDS)) ? LINKAFORM_LIVE_RECORDS : [];
+  let sourceRecords = [];
   if (live.length > records.length) {
-    records = live;
-    localStorage.setItem("telmex_dashboard_records", JSON.stringify(records));
-  } else if (records.length === 0) {
-    records = (typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : [];
+    sourceRecords = live;
+  } else if (records.length > 0) {
+    sourceRecords = records;
+  } else {
+    sourceRecords = (typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : [];
   }
-  state.records = records;
+
+  const dedupResult = deduplicateOfficialRecords(sourceRecords);
+  state.rawRecords = dedupResult.raw;
+  state.records = dedupResult.valid;
+  state.totalRawRecordsCount = dedupResult.rawCount;
+  state.totalDuplicatesCount = dedupResult.dupsCount;
+  localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+  localStorage.setItem("telmex_dashboard_raw_records", JSON.stringify(state.rawRecords));
 }
 
 // Cargar Bitácora de Suministros de Materiales (Forma 184350)
@@ -542,18 +616,27 @@ function recordMatchesArea(r, selectedArea) {
   const rAreaNorm = normalizeAreaKey(r.area_trabajo);
   const rEstadoNorm = normalizeAreaKey(r.estado);
 
-  if (rAreaNorm === selNorm || rEstadoNorm === selNorm) return true;
+  // 1. Coincidencia directa por Área de Trabajo / Plaza (la unidad operativa oficial de Telmex)
+  if (rAreaNorm && (rAreaNorm === selNorm || rAreaNorm.includes(selNorm) || selNorm.includes(rAreaNorm))) {
+    return true;
+  }
 
-  // Si selectedArea es una Región/División (ej. CDMX Y CONURBADA, GUADALAJARA, MONTERREY)
+  // 2. Si no tiene área de trabajo, comparar por estado
+  if (!rAreaNorm && rEstadoNorm === selNorm) {
+    return true;
+  }
+
+  // 3. Si selectedArea es una Región macro en CATALOGO_METAS que agrupa varias plazas
   if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
     for (let est in CATALOGO_METAS.estados) {
-      if (normalizeAreaKey(est) === rAreaNorm) {
+      if (normalizeAreaKey(est) === selNorm && est !== selectedArea) {
         for (let ar in CATALOGO_METAS.estados[est]) {
-          if (normalizeAreaKey(ar) === selNorm) return true;
+          if (normalizeAreaKey(ar) === rAreaNorm) return true;
         }
       }
     }
   }
+
   return false;
 }
 
@@ -625,28 +708,10 @@ function applyFilters() {
     maxDate = minDate;
   }
 
-  // Deduplicación estricta por activo (coincidencia 100% con Excel oficial IASA / Telmex)
-  const START_DATE = "2026-10-26";
-  const seenAssets = new Set();
-  
-  // 1. Activos de la línea base previa a START_DATE
-  for (const r of state.records) {
-    if (r.fecha && r.fecha < START_DATE) {
-      const id = String(r.identificador || "").trim().toUpperCase();
-      const tipo = String(r.tipo || "CAJA").trim().toUpperCase();
-      if (id && id !== "S/N" && id !== "N/A" && id !== "0") {
-        seenAssets.add(`${tipo}_${id}`);
-      }
-    }
-  }
-
-  // 2. Orden cronológico para preservar el primer folio oficial
-  const sorted = [...state.records].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
-
+  // state.records contiene exclusivamente los activos físicos únicos validados (coincidencia 100% con Excel oficial)
   state.filteredRecords = [];
-  let totalRawFolios = 0;
 
-  for (const r of sorted) {
+  for (const r of (state.records || [])) {
     if (arVal && !recordMatchesArea(r, arVal)) continue;
     if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) continue;
     
@@ -658,20 +723,19 @@ function applyFilters() {
     if (minDate && r.fecha && r.fecha < minDate) continue;
     if (maxDate && r.fecha && r.fecha > maxDate) continue;
 
-    totalRawFolios++;
-
-    // Deduplicación contable: 1 activo terminado = 1 avance oficial
-    const id = String(r.identificador || "").trim().toUpperCase();
-    const tipo = String(r.tipo || "CAJA").trim().toUpperCase();
-    if (r.fecha >= START_DATE && id && id !== "S/N" && id !== "N/A" && id !== "0") {
-      const key = `${tipo}_${id}`;
-      if (seenAssets.has(key)) {
-        continue;
-      }
-      seenAssets.add(key);
-    }
-
     state.filteredRecords.push(r);
+  }
+
+  // Contar cuántos folios brutos en Linkaform corresponden a este mismo filtro (para auditoría transparente)
+  let totalRawFolios = 0;
+  const rawList = (state.rawRecords && state.rawRecords.length > 0) ? state.rawRecords : (state.records || []);
+  for (const r of rawList) {
+    if (arVal && !recordMatchesArea(r, arVal)) continue;
+    if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) continue;
+    if (cutoffInfo.isFrozen && isRecordAfterCutoff(r, cutoffInfo)) continue;
+    if (minDate && r.fecha && r.fecha < minDate) continue;
+    if (maxDate && r.fecha && r.fecha > maxDate) continue;
+    totalRawFolios++;
   }
 
   state.totalRawFoliosCount = totalRawFolios;
@@ -728,6 +792,17 @@ function renderKpis() {
   document.getElementById("kpiTotalMeta").innerText = activeTargetMeta.toLocaleString();
   document.getElementById("kpiTotalPercent").innerText = `${totalPercent}%`;
   document.getElementById("kpiTotalProgressBar").style.width = `${Math.min(100, totalPercent)}%`;
+
+  const auditSub = document.getElementById("kpiTotalAuditSub");
+  if (auditSub) {
+    const rawTotal = state.totalRawFoliosCount || totalDone;
+    const dups = Math.max(0, rawTotal - totalDone);
+    if (dups > 0) {
+      auditSub.innerHTML = `<span class="text-emerald-700 font-bold">${totalDone.toLocaleString()} validados</span> <span class="text-slate-400 font-normal">(${rawTotal.toLocaleString()} folios • ${dups} dup)</span>`;
+    } else {
+      auditSub.innerHTML = `<span class="text-emerald-700 font-bold">${totalDone.toLocaleString()} activos validados</span>`;
+    }
+  }
 
   document.getElementById("kpiCajasDone").innerText = cajasDone.toLocaleString();
   document.getElementById("kpiCajasMeta").innerText = cajasMeta.toLocaleString();
