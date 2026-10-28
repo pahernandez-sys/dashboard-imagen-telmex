@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 13:30:02
- * Estado de corte: Jornada en vivo activa (28/10/2026, 13:30 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2300 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 13:36:03
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 13:36 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2302 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 149 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 13:30:01",
+  "now": "2026-10-28 13:36:02",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 13:30:01",
-  "max_visible_datetime_str": "2026-10-28 13:30:01",
+  "max_visible_dt": "2026-10-28 13:36:02",
+  "max_visible_datetime_str": "2026-10-28 13:36:02",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 13:30 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 13:36 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16116944-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "13:34",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 13:34:50",
+    "timestamp": 1793216090.0,
+    "tipo": "CASETA",
+    "identificador": "7771715166",
+    "modelo": "MINI",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 18.9268394,
+    "longitud": -99.1829322,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae24e59a5adfd3d29dbf290.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16116938-1259",
     "fecha": "2026-10-28",
@@ -24966,6 +24991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 25.66091,
     "longitud": -100.4621833,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae03c310bf8dafe520eec4c.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16105997-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-26",
+    "hora": "23:52",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-26 23:52:49",
+    "timestamp": 1793080369.0,
+    "tipo": "CAJA",
+    "identificador": "SCA0020",
+    "modelo": "Siecor Doble",
+    "estado": "NUEVO LEON",
+    "area_trabajo": "MONTERREY",
+    "contratista": "Jose antonio Esquivel",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 25.661726,
+    "longitud": -100.4604035,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae03c2f4404fdc164be727b.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
