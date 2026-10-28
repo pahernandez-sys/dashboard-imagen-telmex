@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 10:50:02
- * Estado de corte: Jornada en vivo activa (28/10/2026, 10:50 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2143 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 10:56:01
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 10:56 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2145 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 10:50:01",
+  "now": "2026-10-28 10:56:01",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 10:50:01",
-  "max_visible_datetime_str": "2026-10-28 10:50:01",
+  "max_visible_dt": "2026-10-28 10:56:01",
+  "max_visible_datetime_str": "2026-10-28 10:56:01",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 10:50 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 10:56 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16116460-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "10:53",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 10:53:41",
+    "timestamp": 1793206421.0,
+    "tipo": "CAJA",
+    "identificador": "OSD0001",
+    "modelo": "Siecor Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Pcindustrial",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.3126403,
+    "longitud": -99.5413958,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae228938044f919f5dc06e8.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16116440-1259",
     "fecha": "2026-10-28",
@@ -24966,6 +24991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 24.1612735,
     "longitud": -110.3076838,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adfd4f2f9d81e1ef56507a6.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16102335-1259",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "16:29",
+    "fecha_corte": "2026-10-26",
+    "created_at_iso": "2026-10-26 16:29:37",
+    "timestamp": 1793053777.0,
+    "tipo": "CAJA",
+    "identificador": "XAA0026",
+    "modelo": "Desplazamiento Doble",
+    "estado": "QUINTANA ROO",
+    "area_trabajo": "QUINTANA ROO",
+    "contratista": "IASA",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 21.1856021,
+    "longitud": -86.8600896,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adfd44e784bdc98ffafdb11.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
