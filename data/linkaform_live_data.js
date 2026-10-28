@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 10:38:03
- * Estado de corte: Jornada en vivo activa (28/10/2026, 10:38 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2138 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 10:44:01
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 10:44 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2140 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 139 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 10:38:03",
+  "now": "2026-10-28 10:44:00",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 10:38:03",
-  "max_visible_datetime_str": "2026-10-28 10:38:03",
+  "max_visible_dt": "2026-10-28 10:44:00",
+  "max_visible_datetime_str": "2026-10-28 10:44:00",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 10:38 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 10:44 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16116422-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "10:40",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 10:40:18",
+    "timestamp": 1793205618.0,
+    "tipo": "CASETA",
+    "identificador": "7222124275",
+    "modelo": "NORMAL",
+    "estado": "ESTADO DE MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Lucina Villanueva Hernández",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.2728581,
+    "longitud": -99.6616914,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae225709bed534563521fff.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16116420-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "10:38",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 10:38:21",
+    "timestamp": 1793205501.0,
+    "tipo": "CAJA",
+    "identificador": "VDB0028",
+    "modelo": "Tradicional Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "ESTADO DE MEXICO SUR",
+    "contratista": "PC INDUSTRIAL",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "VDB0028",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 19.2026108,
+    "longitud": -100.1261271,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae224fbd330b04a94b3f7b1.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16116349-1259",
     "fecha": "2026-10-28",
