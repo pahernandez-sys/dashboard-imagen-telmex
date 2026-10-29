@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 18:48:11
- * Estado de corte: Jornada en vivo activa (28/10/2026, 18:48 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2561 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 18:54:20
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 18:54 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2562 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 18:48:10",
+  "now": "2026-10-28 18:54:19",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 18:48:10",
-  "max_visible_datetime_str": "2026-10-28 18:48:10",
+  "max_visible_dt": "2026-10-28 18:54:19",
+  "max_visible_datetime_str": "2026-10-28 18:54:19",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 18:48 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 18:54 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117729-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "18:48",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 18:48:07",
+    "timestamp": 1793234887.0,
+    "tipo": "CAJA",
+    "identificador": "HDI0001",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "MICHOACAN",
+    "area_trabajo": "MICHOACAN",
+    "contratista": "Roberto Melchor Frutos Fuentes",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.7519914,
+    "longitud": -101.196773,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae297c60c88af5c45dd73af.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117674-1259",
     "fecha": "2026-10-28",
