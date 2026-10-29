@@ -1,24 +1,124 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 10:44:24
- * Estado de corte: Jornada en vivo activa (29/10/2026, 10:44 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2825 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-29 10:50:38
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 10:50 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2829 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 10:44:23",
+  "now": "2026-10-29 10:50:37",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 10:44:23",
-  "max_visible_datetime_str": "2026-10-29 10:44:23",
+  "max_visible_dt": "2026-10-29 10:50:37",
+  "max_visible_datetime_str": "2026-10-29 10:50:37",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 10:44 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 10:50 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16119193-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "10:49",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 10:49:49",
+    "timestamp": 1793292589.0,
+    "tipo": "CAJA",
+    "identificador": "VIL0006",
+    "modelo": "Tradicional Sencilla",
+    "estado": "VERACRUZ",
+    "area_trabajo": "VERACRUZ",
+    "contratista": "Jonas israel cambara chiunti",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Caja de distribución con publicidadexistente ,  no coincide con el tamaño del vinil",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.1733094,
+    "longitud": -96.1332355,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3792c8130d32911dd7398.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16119188-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "10:48",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 10:48:59",
+    "timestamp": 1793292539.0,
+    "tipo": "CAJA",
+    "identificador": "MIZ0007",
+    "modelo": "Desplazamiento Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Pcindustrial",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 3.0,
+    "version": "v4 - Android",
+    "latitud": 19.2942464,
+    "longitud": -99.5450898,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae378f939513154aadd73a1.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16119187-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "10:48",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 10:48:09",
+    "timestamp": 1793292489.0,
+    "tipo": "CAJA",
+    "identificador": "VDB0003",
+    "modelo": "Siecor Sencilla 1 Puerta",
+    "estado": "MEXICO",
+    "area_trabajo": "ESTADO DE MEXICO SUR",
+    "contratista": "PC INDUSTRIAL",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "VDB0003",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.194495,
+    "longitud": -100.1327783,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae378c7856cf3a3a979517e.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16119176-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "10:45",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 10:45:34",
+    "timestamp": 1793292334.0,
+    "tipo": "CASETA",
+    "identificador": "2288402338",
+    "modelo": "NORMAL",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Wendy Magaly castro herrera",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.5362108,
+    "longitud": -96.9245731,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3782c7c8090918ef530a8.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16119173-1259",
     "fecha": "2026-10-29",
@@ -803,7 +903,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 10:01:31",
     "timestamp": 1793289691.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-32",
+    "identificador": "S/ID-36",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
