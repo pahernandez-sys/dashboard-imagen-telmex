@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 14:38:13
- * Estado de corte: Jornada en vivo activa (29/10/2026, 14:38 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 3246 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-29 14:44:43
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 14:44 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 3249 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 175 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 14:38:11",
+  "now": "2026-10-29 14:44:40",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 14:38:11",
-  "max_visible_datetime_str": "2026-10-29 14:38:11",
+  "max_visible_dt": "2026-10-29 14:44:40",
+  "max_visible_datetime_str": "2026-10-29 14:44:40",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 14:38 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 14:44 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16120090-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "14:43",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 14:43:39",
+    "timestamp": 1793306619.0,
+    "tipo": "CAJA",
+    "identificador": "PZW0009",
+    "modelo": "Tradicional Sencilla",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "Ingeniería avanzada en construcción sa de cv",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Ya no existe la caja solo está  el piso del pozo de visita.",
+    "num_viniles": 0.0,
+    "version": "Sin versión",
+    "latitud": 16.7907603,
+    "longitud": -99.8023254,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3aff9ffc1f365dc6f45f4.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16120075-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "14:40",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 14:40:21",
+    "timestamp": 1793306421.0,
+    "tipo": "CAJA",
+    "identificador": "QQE0008",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 20.5972982,
+    "longitud": -103.4139535,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3af337cff02c9ec16e908.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16120059-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "14:38",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 14:38:15",
+    "timestamp": 1793306295.0,
+    "tipo": "CAJA",
+    "identificador": "AMS0019",
+    "modelo": "Desplazamiento Sencilla",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 17.0616967,
+    "longitud": -96.6671434,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3aeb615d0b011ec6f4607.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16120053-1259",
     "fecha": "2026-10-29",
@@ -11328,7 +11403,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 10:01:31",
     "timestamp": 1793289691.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-453",
+    "identificador": "S/ID-456",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
