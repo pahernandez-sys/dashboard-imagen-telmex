@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 20:08:19
- * Estado de corte: Jornada en vivo activa (28/10/2026, 20:08 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2635 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 20:14:29
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 20:14 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2638 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 20:08:18",
+  "now": "2026-10-28 20:14:27",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 20:08:18",
-  "max_visible_datetime_str": "2026-10-28 20:08:18",
+  "max_visible_dt": "2026-10-28 20:14:27",
+  "max_visible_datetime_str": "2026-10-28 20:14:27",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 20:08 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 20:14 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16118036-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "20:10",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 20:10:51",
+    "timestamp": 1793239851.0,
+    "tipo": "CAJA",
+    "identificador": "TPI0004",
+    "modelo": "Envolvente Sencilla",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 21.51137,
+    "longitud": -104.8957317,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2ab28b14c8954abdd73ab.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16118034-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "20:10",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 20:10:34",
+    "timestamp": 1793239834.0,
+    "tipo": "CASETA",
+    "identificador": "7773681420",
+    "modelo": "NORMAL",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Lateral derchos retrirados",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 18.8432271,
+    "longitud": -99.1860545,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2ab181952685d13795182.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16118033-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "20:10",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 20:10:31",
+    "timestamp": 1793239831.0,
+    "tipo": "CASETA",
+    "identificador": "7773685513",
+    "modelo": "NORMAL",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 18.8498231,
+    "longitud": -99.1930239,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2ab15b633cf49f8f530ac.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16118015-1259",
     "fecha": "2026-10-28",
