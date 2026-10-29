@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 10:19:39
- * Estado de corte: Jornada en vivo activa (29/10/2026, 10:19 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2807 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-29 10:25:49
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 10:25 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2810 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 10:19:38",
+  "now": "2026-10-29 10:25:48",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 10:19:38",
-  "max_visible_datetime_str": "2026-10-29 10:19:38",
+  "max_visible_dt": "2026-10-29 10:25:48",
+  "max_visible_datetime_str": "2026-10-29 10:25:48",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 10:19 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 10:25 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16119106-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "10:24",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 10:24:40",
+    "timestamp": 1793291080.0,
+    "tipo": "CAJA",
+    "identificador": "VIL0029",
+    "modelo": "Tradicional Sencilla",
+    "estado": "VERACRUZ",
+    "area_trabajo": "VERACRUZ",
+    "contratista": "Jonas israel cambara chiunti",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "No existe caja de distribución",
+    "num_viniles": 0.0,
+    "version": "v4 - Android",
+    "latitud": 19.1783412,
+    "longitud": -96.1384486,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae37346f0aa593151795181.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16119105-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "10:24",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 10:24:10",
+    "timestamp": 1793291050.0,
+    "tipo": "CASETA",
+    "identificador": "3331447855",
+    "modelo": "NORMAL",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 20.6206075,
+    "longitud": -103.3939368,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae37328bb308eeeaaf530a8.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16119103-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "10:23",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 10:23:21",
+    "timestamp": 1793291001.0,
+    "tipo": "CAJA",
+    "identificador": "AMS0007",
+    "modelo": "Tradicional Sencilla",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 17.064905,
+    "longitud": -96.6934244,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae372f75f99da41f4f530b3.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16119091-1259",
     "fecha": "2026-10-29",
@@ -353,7 +428,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 10:01:31",
     "timestamp": 1793289691.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-14",
+    "identificador": "S/ID-17",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
