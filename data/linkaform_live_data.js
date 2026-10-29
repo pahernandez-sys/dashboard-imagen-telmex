@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 15:03:45
- * Estado de corte: Jornada en vivo activa (29/10/2026, 15:03 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 3273 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-29 15:10:16
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 15:10 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 3277 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 175 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 15:03:44",
+  "now": "2026-10-29 15:10:14",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 15:03:44",
-  "max_visible_datetime_str": "2026-10-29 15:03:44",
+  "max_visible_dt": "2026-10-29 15:10:14",
+  "max_visible_datetime_str": "2026-10-29 15:10:14",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 15:03 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 15:10 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16120257-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "15:07",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 15:07:22",
+    "timestamp": 1793308042.0,
+    "tipo": "CAJA",
+    "identificador": "QEB0002",
+    "modelo": "Siecor Doble",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v6 - Android",
+    "latitud": 18.5243543,
+    "longitud": -98.7897354,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3b58825a73b56d5d07754.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16120238-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "15:04",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 15:04:06",
+    "timestamp": 1793307846.0,
+    "tipo": "CAJA",
+    "identificador": "OME0005",
+    "modelo": "Envolvente Sencilla",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "INGENIERÍA AVANZADA EN CONSTRUCCIÓN",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 16.6884893,
+    "longitud": -98.4044407,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3b4c4c46cdf53e7d07756.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16120232-1259",
     "fecha": "2026-10-29",
@@ -12003,7 +12053,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 10:01:31",
     "timestamp": 1793289691.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-480",
+    "identificador": "S/ID-482",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -49970,6 +50020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16105520-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-26",
+    "hora": "22:08",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-26 22:08:25",
+    "timestamp": 1793074105.0,
+    "tipo": "CAJA",
+    "identificador": "SGL0042",
+    "modelo": "Tradicional Doble",
+    "estado": "NUEVO LEON",
+    "area_trabajo": "MONTERREY",
+    "contratista": "Jose antonio Esquivel",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Solo una puerta",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 25.523074646121547,
+    "longitud": -103.3386197351975,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae023b7cbb59107970eec5b.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16105519-1259",
     "fecha": "2026-10-27",
     "fecha_captura": "2026-10-26",
@@ -74916,6 +74991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.700525,
     "longitud": -101.1580717,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ada5847bc8d81f93182e475.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16041905-1259",
+    "fecha": "2026-10-22",
+    "fecha_captura": "2026-10-22",
+    "hora": "12:25",
+    "fecha_corte": "2026-10-22",
+    "created_at_iso": "2026-10-22 12:25:17",
+    "timestamp": 1792693517.0,
+    "tipo": "CAJA",
+    "identificador": "NCH0096",
+    "modelo": "Envolvente Sencilla",
+    "estado": "MICHOACAN",
+    "area_trabajo": "MICHOACAN",
+    "contratista": "Roberto Melchor Frutos Fuentes",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 19.6995283,
+    "longitud": -101.1602717,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ada550b68c5e6b66ba02e97.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
