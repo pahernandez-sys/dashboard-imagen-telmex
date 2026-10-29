@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-28 18:04:32
- * Estado de corte: Jornada en vivo activa (28/10/2026, 18:04 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2560 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-28 18:10:41
+ * Estado de corte: Jornada en vivo activa (28/10/2026, 18:10 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2561 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-28 18:04:31",
+  "now": "2026-10-28 18:10:39",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-28",
-  "max_visible_dt": "2026-10-28 18:04:31",
-  "max_visible_datetime_str": "2026-10-28 18:04:31",
+  "max_visible_dt": "2026-10-28 18:10:39",
+  "max_visible_datetime_str": "2026-10-28 18:10:39",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (28/10/2026, 18:04 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (28/10/2026, 18:10 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16117674-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "18:06",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 18:06:05",
+    "timestamp": 1793232365.0,
+    "tipo": "CAJA",
+    "identificador": "AVN0017",
+    "modelo": "Desplazamiento Sencilla",
+    "estado": "MEXICO",
+    "area_trabajo": "ESTADO DE MEXICO SUR",
+    "contratista": "PC INDUSTRIAL",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "AVN00117",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.1498011,
+    "longitud": -100.1120866,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae28debe2b561581ddd73cf.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16117664-1259",
     "fecha": "2026-10-28",
