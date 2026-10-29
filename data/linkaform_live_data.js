@@ -1,24 +1,124 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 16:33:43
- * Estado de corte: Jornada en vivo activa (29/10/2026, 16:33 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 3556 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-29 16:40:09
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 16:40 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 3560 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 175 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 16:33:42",
+  "now": "2026-10-29 16:40:08",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 16:33:42",
-  "max_visible_datetime_str": "2026-10-29 16:33:42",
+  "max_visible_dt": "2026-10-29 16:40:08",
+  "max_visible_datetime_str": "2026-10-29 16:40:08",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 16:33 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 16:40 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16120928-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "16:38",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 16:38:27",
+    "timestamp": 1793313507.0,
+    "tipo": "CAJA",
+    "identificador": "DIA0020",
+    "modelo": "Siecor Sencilla 1 Puerta",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "Ingeniería Avanzada En Construcción SADECV",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "En buen estado la caja de distribución",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 16.8086547,
+    "longitud": -99.8219848,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3cae1ef793ac2c916e8e9.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16120926-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "16:37",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 16:37:30",
+    "timestamp": 1793313450.0,
+    "tipo": "CAJA",
+    "identificador": "QQE0012",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 20.6001097,
+    "longitud": -103.4174446,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3caa8032f4027726f4605.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16120925-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "16:35",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 16:35:54",
+    "timestamp": 1793313354.0,
+    "tipo": "CAJA",
+    "identificador": "CCY0007",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "INGENIERÍA AVANZADA EN CONSTRUCCIÓN",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin detalles",
+    "num_viniles": 2.0,
+    "version": "Sin versión",
+    "latitud": 17.6397071,
+    "longitud": -101.4801089,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3ca48a503ac297816e8ea.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16120924-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "16:35",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 16:35:23",
+    "timestamp": 1793313323.0,
+    "tipo": "CAJA",
+    "identificador": "ERO0022",
+    "modelo": "Desplazamiento Sencilla",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 17.050655,
+    "longitud": -96.6895626,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3ca2940ce6401f316e8f4.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16120922-1259",
     "fecha": "2026-10-29",
@@ -19078,7 +19178,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 10:01:31",
     "timestamp": 1793289691.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-763",
+    "identificador": "S/ID-767",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
