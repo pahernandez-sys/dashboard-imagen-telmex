@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 10:07:10
- * Estado de corte: Jornada en vivo activa (29/10/2026, 10:07 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 2797 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-29 10:13:25
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 10:13 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 2801 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 161 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 10:07:08",
+  "now": "2026-10-29 10:13:24",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 10:07:08",
-  "max_visible_datetime_str": "2026-10-29 10:07:08",
+  "max_visible_dt": "2026-10-29 10:13:24",
+  "max_visible_datetime_str": "2026-10-29 10:13:24",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 10:07 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 10:13 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16119073-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "10:11",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 10:11:50",
+    "timestamp": 1793290310.0,
+    "tipo": "CASETA",
+    "identificador": "2288143946",
+    "modelo": "MINI",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Wendy Magaly castro herrera",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.5424421,
+    "longitud": -96.9284984,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae370430e2c35dee079517b.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16119071-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "10:10",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 10:10:33",
+    "timestamp": 1793290233.0,
+    "tipo": "CAJA",
+    "identificador": "KSS0007",
+    "modelo": "Tradicional Sencilla",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 18.8471606,
+    "longitud": -98.9509134,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae36ff8a2b6cb5f0979517c.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16119067-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "10:09",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 10:09:09",
+    "timestamp": 1793290149.0,
+    "tipo": "CAJA",
+    "identificador": "LMA0082",
+    "modelo": "Siecor Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "BRUSIM",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Ok",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.2904589,
+    "longitud": -99.5136852,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae36fa365079b9d8d795182.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16119061-1259",
     "fecha": "2026-10-29",
@@ -103,7 +178,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 10:01:31",
     "timestamp": 1793289691.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4",
+    "identificador": "S/ID-7",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -49916,6 +49991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.3096094,
     "longitud": -99.5934941,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6add20bb19923d5f4491e80e.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16075771-1259",
+    "fecha": "2026-10-24",
+    "fecha_captura": "2026-10-24",
+    "hora": "15:18",
+    "fecha_corte": "2026-10-24",
+    "created_at_iso": "2026-10-24 15:18:39",
+    "timestamp": 1792876719.0,
+    "tipo": "CAJA",
+    "identificador": "TLL0229",
+    "modelo": "Siecor Doble",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Pcindustrial",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 3.0,
+    "version": "Sin versión",
+    "latitud": 19.3071819,
+    "longitud": -99.5911453,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6add20ad5ae37bd5dc91e823.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
