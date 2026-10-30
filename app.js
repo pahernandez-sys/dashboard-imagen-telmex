@@ -1993,7 +1993,7 @@ async function triggerLinkaformSync() {
         // 1. Adoptar los datos devueltos directamente por el servicio local en memoria (actualización instantánea)
         if (Array.isArray(res.records) && res.records.length > 0) {
           state.records = res.records;
-          localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
+          safeRemoveStorage("telmex_dashboard_records");
         } else {
           await reloadLiveDataScript();
           checkAndMigrateLiveData();
@@ -2002,14 +2002,14 @@ async function triggerLinkaformSync() {
 
         if (Array.isArray(res.materials) && res.materials.length > 0) {
           state.materialsLog = res.materials;
-          localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+          safeRemoveStorage("telmex_dashboard_materials_log");
         } else {
           loadMaterialsLog();
         }
 
         recalculateSuministrosFromMaterialsLog();
         const nowStr = new Date().toLocaleString("es-MX");
-        localStorage.setItem("telmex_dashboard_last_sync", nowStr);
+        safeSetStorage("telmex_dashboard_last_sync", nowStr);
         populateAreaFilter();
         populateContratistasFilter();
         applyFilters();
@@ -2158,8 +2158,8 @@ function handleFileSelected(e) {
 }
 
 function saveAndRefreshImportedRecords(fileName, count, typeLabel = "registros") {
-  localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-  localStorage.setItem("telmex_dashboard_last_sync", `Archivo: ${fileName} (${new Date().toLocaleTimeString("es-MX")})`);
+  safeSetStorage("telmex_dashboard_records", state.records);
+  safeSetStorage("telmex_dashboard_last_sync", `Archivo: ${fileName} (${new Date().toLocaleTimeString("es-MX")})`);
   
   const statusEl = document.getElementById("fileImportStatus");
   statusEl.className = "mt-3 p-3 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-800 block";
@@ -2172,13 +2172,14 @@ function saveAndRefreshImportedRecords(fileName, count, typeLabel = "registros")
 }
 
 function restoreDefaultRecords() {
-  const choice = confirm("¿Deseas restaurar los datos en vivo oficiales de Linkaform (107 trabajos y 10 suministros)?\n\nPresiona Aceptar para restaurar los datos oficiales de Linkaform.");
+  const choice = confirm("¿Deseas restaurar los datos en vivo oficiales de Linkaform?\n\nPresiona Aceptar para restaurar los datos oficiales de Linkaform.");
   if (choice) {
     state.records = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS : ((typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : []);
     state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
-    localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-    localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
-    localStorage.setItem("telmex_dashboard_last_sync", "Datos oficiales Linkaform restaurados");
+    safeRemoveStorage("telmex_dashboard_records");
+    safeRemoveStorage("telmex_dashboard_raw_records");
+    safeRemoveStorage("telmex_dashboard_materials_log");
+    safeSetStorage("telmex_dashboard_last_sync", "Datos oficiales Linkaform restaurados");
     recalculateSuministrosFromMaterialsLog();
     updateSyncLabel();
     populateAreaFilter();
