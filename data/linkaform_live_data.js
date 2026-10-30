@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 18:34:33
- * Estado de corte: Jornada en vivo activa (29/10/2026, 18:34 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-10-29 18:40:54
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 18:40 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 3724 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 175 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 18:34:32",
+  "now": "2026-10-29 18:40:53",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 18:34:32",
-  "max_visible_datetime_str": "2026-10-29 18:34:32",
+  "max_visible_dt": "2026-10-29 18:40:53",
+  "max_visible_datetime_str": "2026-10-29 18:40:53",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 18:34 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 18:40 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16121211-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "18:34",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 18:34:12",
+    "timestamp": 1793320452.0,
+    "tipo": "CAJA",
+    "identificador": "ATU 2",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "120_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 18.5411128,
+    "longitud": -98.7323234,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3e602bd9a6f2584d07754.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16121202-1259",
     "fecha": "2026-10-29",
@@ -3278,7 +3303,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-131",
+    "identificador": "S/ID-132",
     "modelo": "Desplazamiento Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -3303,7 +3328,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-132",
+    "identificador": "S/ID-133",
     "modelo": "Desplazamiento Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -3328,7 +3353,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-133",
+    "identificador": "S/ID-134",
     "modelo": "Desplazamiento Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -23253,7 +23278,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 10:01:31",
     "timestamp": 1793289691.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-930",
+    "identificador": "S/ID-931",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -74991,31 +75016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.3268292,
     "longitud": -99.6053303,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6add010cb0837275286507eb.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16073996-1259",
-    "fecha": "2026-10-24",
-    "fecha_captura": "2026-10-24",
-    "hora": "13:02",
-    "fecha_corte": "2026-10-24",
-    "created_at_iso": "2026-10-24 13:02:29",
-    "timestamp": 1792868549.0,
-    "tipo": "CAJA",
-    "identificador": "MIR0002",
-    "modelo": "Siecor Doble",
-    "estado": "MORELOS",
-    "area_trabajo": "MORELOS",
-    "contratista": "Victor Hugo Lopez Garcia",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v4 - Android",
-    "latitud": 18.9251766,
-    "longitud": -99.2181809,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6add00c30302c381956507eb.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
