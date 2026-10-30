@@ -16,8 +16,34 @@ let state = {
 };
 
 // =========================================================
-const LIVE_DATA_VERSION = "2026-10-23-linkaform-cutoff-v12";
+const LIVE_DATA_VERSION = "2026-10-30-linkaform-cutoff-v13";
 const EXCLUDED_MATERIALS = ["pintura_azul", "pintura_gris", "thinner", "sellador"];
+
+// Funciones seguras para localStorage (previenen QuotaExceededError por límite de 5MB con miles de registros)
+function safeSetStorage(key, value) {
+  try {
+    const str = typeof value === 'string' ? value : JSON.stringify(value);
+    localStorage.setItem(key, str);
+  } catch (e) {
+    console.warn(`[Storage Aviso] No se pudo persistir '${key}' en localStorage (límite de cuota):`, e.message);
+  }
+}
+
+function safeGetStorage(key, defaultVal = null) {
+  try {
+    const val = localStorage.getItem(key);
+    return val !== null ? val : defaultVal;
+  } catch (e) {
+    return defaultVal;
+  }
+}
+
+function safeRemoveStorage(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch (e) {}
+}
+
 
 // Obtener fecha local en formato YYYY-MM-DD evitando el desfase de zona horaria UTC
 function getLocalDateStr(date = new Date()) {
@@ -140,21 +166,29 @@ function closeCutoffModal() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadConfig();
-  checkAndMigrateLiveData();
-  loadRecords();
-  loadMaterialsLog();
-  recalculateSuministrosFromMaterialsLog();
-  initFilters();
-  initDatePresets();
-  renderCutoffBanner();
-  applyFilters();
-  renderMaterialsConfigTable();
-  renderMaterialsLogTable();
-  updateSyncLabel();
+  // 1. Limpieza preventiva de claves sobredimensionadas en localStorage que saturan la cuota de 5MB
+  safeRemoveStorage("telmex_dashboard_raw_records");
+  safeRemoveStorage("telmex_dashboard_records");
+
+  try { loadConfig(); } catch (e) { console.error("Error en loadConfig:", e); }
+  try { checkAndMigrateLiveData(); } catch (e) { console.error("Error en checkAndMigrateLiveData:", e); }
+  try { loadRecords(); } catch (e) { console.error("Error en loadRecords:", e); }
+  try { loadMaterialsLog(); } catch (e) { console.error("Error en loadMaterialsLog:", e); }
+  try { recalculateSuministrosFromMaterialsLog(); } catch (e) { console.error("Error en recalculateSuministros:", e); }
+  try { initFilters(); } catch (e) { console.error("Error en initFilters:", e); }
+  try { initDatePresets(); } catch (e) { console.error("Error en initDatePresets:", e); }
+  try { renderCutoffBanner(); } catch (e) { console.error("Error en renderCutoffBanner:", e); }
+  try { applyFilters(); } catch (e) { console.error("Error en applyFilters:", e); }
+  try { renderMaterialsConfigTable(); } catch (e) { console.error("Error en renderMaterialsConfigTable:", e); }
+  try { renderMaterialsLogTable(); } catch (e) { console.error("Error en renderMaterialsLogTable:", e); }
+  try { updateSyncLabel(); } catch (e) { console.error("Error en updateSyncLabel:", e); }
 
   // Conexión y carga en tiempo real desde Supabase Cloud (< 100ms)
-  loadDataFromSupabase();
+  try {
+    loadDataFromSupabase();
+  } catch (e) {
+    console.error("Error en loadDataFromSupabase:", e);
+  }
 
   // Auto-refresco en vivo cada 60 segundos si es horario de jornada activa (10:00 AM - 10:00 PM)
   setInterval(() => {
@@ -301,8 +335,9 @@ async function loadDataFromSupabase(showNotification = false) {
       state.totalDuplicatesCount = dedupResult.dupsCount;
       evCount = state.records.length;
 
-      localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-      localStorage.setItem("telmex_dashboard_raw_records", JSON.stringify(state.rawRecords));
+      // Evitar saturar cuota de localStorage: la información se mantiene en memoria (state)
+      safeRemoveStorage("telmex_dashboard_records");
+      safeRemoveStorage("telmex_dashboard_raw_records");
     }
 
     // 2. Obtener todas las entregas de materiales en vivo
@@ -325,12 +360,12 @@ async function loadDataFromSupabase(showNotification = false) {
         };
       });
       matCount = state.materialsLog.length;
-      localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+      safeRemoveStorage("telmex_dashboard_materials_log");
     }
 
     if (evCount > 0 || matCount > 0) {
       const syncLabel = `Supabase Cloud (${evCount} trabajos, ${matCount} entregas)`;
-      localStorage.setItem("telmex_dashboard_last_sync", syncLabel);
+      safeSetStorage("telmex_dashboard_last_sync", syncLabel);
       recalculateSuministrosFromMaterialsLog();
       populateAreaFilter();
       populateContratistasFilter();
@@ -362,18 +397,21 @@ function checkAndMigrateLiveData() {
     state.totalRawRecordsCount = dedupResult.rawCount;
     state.totalDuplicatesCount = dedupResult.dupsCount;
     state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
-    localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-    localStorage.setItem("telmex_dashboard_raw_records", JSON.stringify(state.rawRecords));
-    localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
-    localStorage.setItem("telmex_data_version", LIVE_DATA_VERSION);
+    
+    // Proteger contra QuotaExceededError (5MB) en navegadores
+    safeRemoveStorage("telmex_dashboard_records");
+    safeRemoveStorage("telmex_dashboard_raw_records");
+    safeRemoveStorage("telmex_dashboard_materials_log");
+
+    safeSetStorage("telmex_data_version", LIVE_DATA_VERSION);
     const syncText = `Sincronización Linkaform (${state.records.length} válidos de ${state.totalRawRecordsCount} recibidos)`;
-    localStorage.setItem("telmex_dashboard_last_sync", syncText);
+    safeSetStorage("telmex_dashboard_last_sync", syncText);
   }
 }
 
 // Cargar Configuración de Materiales (localStorage o por defecto)
 function loadConfig() {
-  const saved = localStorage.getItem("telmex_dashboard_config");
+  const saved = safeGetStorage("telmex_dashboard_config");
   if (saved) {
     try {
       state.config = JSON.parse(saved);
@@ -399,23 +437,17 @@ function loadConfig() {
   }
 }
 
-// Cargar Registros (localStorage o LINKAFORM_LIVE_RECORDS)
+// Cargar Registros (LINKAFORM_LIVE_RECORDS o memoria)
 function loadRecords() {
-  const saved = localStorage.getItem("telmex_dashboard_records");
-  let records = [];
-  if (saved) {
-    try {
-      records = JSON.parse(saved);
-    } catch (e) {
-      records = [];
-    }
+  // Si ya se migraron los datos en vivo, no sobreescribir
+  if (state.records && state.records.length > 0) {
+    return;
   }
+
   const live = (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && Array.isArray(LINKAFORM_LIVE_RECORDS)) ? LINKAFORM_LIVE_RECORDS : [];
   let sourceRecords = [];
-  if (live.length > records.length) {
+  if (live.length > 0) {
     sourceRecords = live;
-  } else if (records.length > 0) {
-    sourceRecords = records;
   } else {
     sourceRecords = (typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : [];
   }
@@ -425,27 +457,19 @@ function loadRecords() {
   state.records = dedupResult.valid;
   state.totalRawRecordsCount = dedupResult.rawCount;
   state.totalDuplicatesCount = dedupResult.dupsCount;
-  localStorage.setItem("telmex_dashboard_records", JSON.stringify(state.records));
-  localStorage.setItem("telmex_dashboard_raw_records", JSON.stringify(state.rawRecords));
 }
 
 // Cargar Bitácora de Suministros de Materiales (Forma 184350)
 function loadMaterialsLog() {
-  const saved = localStorage.getItem("telmex_dashboard_materials_log");
-  let mats = [];
-  if (saved) {
-    try {
-      mats = JSON.parse(saved);
-    } catch (e) {
-      mats = [];
-    }
+  if (state.materialsLog && state.materialsLog.length > 0) {
+    return;
   }
   const live = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined" && Array.isArray(LINKAFORM_LIVE_MATERIALS)) ? LINKAFORM_LIVE_MATERIALS : [];
-  if (live.length > mats.length) {
-    mats = live;
-    localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(mats));
+  if (live.length > 0) {
+    state.materialsLog = live;
+    return;
   }
-  state.materialsLog = mats;
+  state.materialsLog = [];
 }
 
 // Normalizador de texto para tolerar pequeñas variaciones o faltas ortográficas del catálogo
