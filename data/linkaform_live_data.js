@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 17:56:25
- * Estado de corte: Jornada en vivo activa (29/10/2026, 17:56 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-10-29 18:02:46
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 18:02 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 3704 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 175 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 17:56:24",
+  "now": "2026-10-29 18:02:46",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 17:56:24",
-  "max_visible_datetime_str": "2026-10-29 17:56:24",
+  "max_visible_dt": "2026-10-29 18:02:46",
+  "max_visible_datetime_str": "2026-10-29 18:02:46",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 17:56 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 18:02 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16121161-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "17:55",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 17:55:30",
+    "timestamp": 1793318130.0,
+    "tipo": "CAJA",
+    "identificador": "AXO0008",
+    "modelo": "Tradicional Doble",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 4.0,
+    "version": "v6 - Android",
+    "latitud": 18.4993047,
+    "longitud": -98.7487689,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3dcf0384f6e48ca6f45f7.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16121160-1259",
     "fecha": "2026-10-29",
@@ -2778,7 +2803,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-111",
+    "identificador": "S/ID-112",
     "modelo": "Desplazamiento Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -2803,7 +2828,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-112",
+    "identificador": "S/ID-113",
     "modelo": "Desplazamiento Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -2828,7 +2853,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-113",
+    "identificador": "S/ID-114",
     "modelo": "Desplazamiento Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -22753,7 +22778,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 10:01:31",
     "timestamp": 1793289691.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-910",
+    "identificador": "S/ID-911",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -24991,31 +25016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.7019387,
     "longitud": -101.2281145,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2ff35080d39dad2f530ad.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16118391-1259",
-    "fecha": "2026-10-29",
-    "fecha_captura": "2026-10-29",
-    "hora": "02:09",
-    "fecha_corte": "2026-10-29",
-    "created_at_iso": "2026-10-29 02:09:24",
-    "timestamp": 1793261364.0,
-    "tipo": "CAJA",
-    "identificador": "TAS0059",
-    "modelo": "Siecor Sencilla 2 Puertas",
-    "estado": "MICHOACAN",
-    "area_trabajo": "MICHOACAN",
-    "contratista": "Roberto Melchor Frutos Fuentes",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v5 - Android",
-    "latitud": 19.7016335,
-    "longitud": -101.2291623,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2ff337d3294d7d1f530b2.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
