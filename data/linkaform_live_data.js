@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 21:40:08
- * Estado de corte: Jornada en vivo activa (29/10/2026, 21:40 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 3852 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-29 21:46:39
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 21:46 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 3853 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 175 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 21:40:06",
+  "now": "2026-10-29 21:46:37",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 21:40:06",
-  "max_visible_datetime_str": "2026-10-29 21:40:06",
+  "max_visible_dt": "2026-10-29 21:46:37",
+  "max_visible_datetime_str": "2026-10-29 21:46:37",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 21:40 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 21:46 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -25020,6 +25020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16119240-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "11:04",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 11:04:48",
+    "timestamp": 1793293488.0,
+    "tipo": "CASETA",
+    "identificador": "7262624666",
+    "modelo": "NORMAL",
+    "estado": "ESTADO DE MEXICO",
+    "area_trabajo": "ESTADO DE MEXICO SUR",
+    "contratista": "PC INDUSTRIAL",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Retiraron la caseta ya no está",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.1949169,
+    "longitud": -100.1350424,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae37cad81dfc9538d52fbfe.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16119238-1259",
     "fecha": "2026-10-29",
     "fecha_captura": "2026-10-29",
@@ -26478,7 +26503,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 10:01:31",
     "timestamp": 1793289691.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1059",
+    "identificador": "S/ID-1060",
     "modelo": "Sencilla",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
