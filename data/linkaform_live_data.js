@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 20:23:07
- * Estado de corte: Jornada en vivo activa (29/10/2026, 20:23 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-10-29 20:29:30
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 20:29 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 3840 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 175 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 20:23:06",
+  "now": "2026-10-29 20:29:29",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 20:23:06",
-  "max_visible_datetime_str": "2026-10-29 20:23:06",
+  "max_visible_dt": "2026-10-29 20:29:29",
+  "max_visible_datetime_str": "2026-10-29 20:29:29",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 20:23 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 20:29 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
