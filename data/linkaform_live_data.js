@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-10-29 19:57:29
- * Estado de corte: Jornada en vivo activa (29/10/2026, 19:57 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 3815 (Retenidos por corte: 0)
+ * Sincronización: 2026-10-29 20:03:52
+ * Estado de corte: Jornada en vivo activa (29/10/2026, 20:03 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 3818 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 175 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-10-29 19:57:28",
+  "now": "2026-10-29 20:03:51",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "10:00",
   "active_reporting_date": "2026-10-29",
-  "max_visible_dt": "2026-10-29 19:57:28",
-  "max_visible_datetime_str": "2026-10-29 19:57:28",
+  "max_visible_dt": "2026-10-29 20:03:51",
+  "max_visible_datetime_str": "2026-10-29 20:03:51",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (29/10/2026, 19:57 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (29/10/2026, 20:03 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -50020,6 +50020,56 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16114174-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "16:22",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 16:22:23",
+    "timestamp": 1793139743.0,
+    "tipo": "CAJA",
+    "identificador": "SCA0002",
+    "modelo": "Siecor Sencilla 1 Puerta",
+    "estado": "NUEVO LEON",
+    "area_trabajo": "MONTERREY",
+    "contratista": "Jose antonio Esquivel",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v5 - Android",
+    "latitud": 25.6706433,
+    "longitud": -100.4558617,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae1241cb786f17cb6c52b72.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16114173-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "16:22",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 16:22:19",
+    "timestamp": 1793139739.0,
+    "tipo": "CAJA",
+    "identificador": "SCA0010",
+    "modelo": "Siecor Sencilla 1 Puerta",
+    "estado": "NUEVO LEON",
+    "area_trabajo": "MONTERREY",
+    "contratista": "Jose antonio Esquivel",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v5 - Android",
+    "latitud": 25.6706517,
+    "longitud": -100.4562867,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae124195f2da68f55079133.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16114172-1259",
     "fecha": "2026-10-27",
     "fecha_captura": "2026-10-27",
@@ -74941,6 +74991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.310714721679688,
     "longitud": -99.5852279663086,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6add4163dc1009c7b36507a8.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16076182-1259",
+    "fecha": "2026-10-24",
+    "fecha_captura": "2026-10-24",
+    "hora": "16:06",
+    "fecha_corte": "2026-10-24",
+    "created_at_iso": "2026-10-24 16:06:52",
+    "timestamp": 1792879612.0,
+    "tipo": "CAJA",
+    "identificador": "ZZS6(",
+    "modelo": "Siecor Sencilla 2 Puertas",
+    "estado": "CHIHUAHUA",
+    "area_trabajo": "CHIHUAHUA",
+    "contratista": "Jesús José Romero Pérez",
+    "oferta": "120_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 28.60682,
+    "longitud": -106.120615,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6add2bfa5b08aaffbe91e7fe.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
