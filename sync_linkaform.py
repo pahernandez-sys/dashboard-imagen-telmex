@@ -13,6 +13,78 @@ import os
 import json
 import requests
 from datetime import datetime, timedelta
+import re
+
+def normalize_model_name(raw_model, tipo):
+    """
+    Homologa los modelos de Cajas y Casetas a los 10 y 5 nombres oficiales del reporte Excel.
+    """
+    s = (raw_model or "").strip().upper()
+    t = (tipo or "").strip().upper()
+    if t == "CASETA":
+        if "CUICUILCO" in s:
+            return "CUICUILCO"
+        if "REFORMA" in s or "DOBLE" in s:
+            return "DOBLE REFORMA"
+        if "SEMI" in s:
+            return "SEMICIRCULAR"
+        if "MINI" in s:
+            return "MINI"
+        return "NORMAL"
+    else:  # CAJA
+        if "KRONE" in s:
+            return "KRONE"
+        if "ENVOLV" in s:
+            return "ENVOLVENTE DOBLE" if "DOBLE" in s else "ENVOLVENTE SENCILLA"
+        if "DESPLAZ" in s or "DEPLAS" in s or "DEPLAZ" in s:
+            return "DESPLAZAMIENTO DOBLE" if "DOBLE" in s else "DESPLAZAMIENTO SENCILLA"
+        if "SIECOR" in s:
+            if "DOBLE" in s:
+                return "SIECOR DOBLE"
+            if re.search(r"\b2\s*P", s) or "2P" in s or "DOS P" in s:
+                return "SIECOR SENCILLA 2 PTAS"
+            if re.search(r"\b1\s*P", s) or "1P" in s or "UNA P" in s:
+                return "SIECOR SENCILLA 1PTA"
+            return "SIECOR SENCILLA 1PTA"
+        if "TRADICIONAL" in s:
+            return "TRADICIONAL DOBLE" if "DOBLE" in s else "TRADICIONAL SENCILLA"
+        return "TRADICIONAL DOBLE" if "DOBLE" in s else "TRADICIONAL SENCILLA"
+
+def normalize_material_name(raw_desc):
+    """
+    Homologa las descripciones de recepción de materiales de la Forma 184350 al catálogo oficial.
+    """
+    s = (raw_desc or "").strip().upper()
+    # Casetas
+    if "CUICUILCO" in s:
+        return "CUICUILCO"
+    if "REFORMA" in s or ("CASETA" in s and "DOBLE" in s):
+        return "DOBLE REFORMA"
+    if "SEMI" in s:
+        return "SEMICIRCULAR"
+    if "MINI" in s:
+        return "MINI"
+    if "NORMAL" in s or ("LATERAL" in s and "CASETA" in s):
+        return "NORMAL"
+    # Cajas
+    if "KRONE" in s:
+        return "KRONE"
+    if "ENVOLV" in s:
+        return "ENVOLVENTE DOBLE" if "DOBLE" in s else "ENVOLVENTE SENCILLA"
+    if "DESPLAZ" in s or "DEPLAS" in s or "DEPLAZ" in s:
+        return "DESPLAZAMIENTO DOBLE" if "DOBLE" in s else "DESPLAZAMIENTO SENCILLA"
+    if "SIECOR" in s:
+        if "DOBLE" in s:
+            return "SIECOR DOBLE"
+        if re.search(r"\b2\s*P", s) or "2P" in s or "DOS P" in s:
+            return "SIECOR SENCILLA 2 PTAS"
+        if re.search(r"\b1\s*P", s) or "1P" in s or "UNA P" in s:
+            return "SIECOR SENCILLA 1PTA"
+        return "SIECOR SENCILLA 1PTA"
+    if "TRADICIONAL" in s:
+        return "TRADICIONAL DOBLE" if "DOBLE" in s else "TRADICIONAL SENCILLA"
+    return s
+
 
 def get_cutoff_info(current_dt=None):
     """
@@ -193,7 +265,8 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
         estado = (ans.get("6ad52fc6bc424ea79992eac0") or "MORELOS").upper()
         area = (ans.get("6ad52fc6bc424ea79992eac1") or estado).upper()
         contratista = ans.get("6abe9357bef08742fcf94020") or "Victor Hugo Lopez Garcia"
-        modelo = ans.get("6ab9d647dba7a0c191e6a0f6") or "Sencilla"
+        raw_modelo = ans.get("6ab9d647dba7a0c191e6a0f6") or "Sencilla"
+        modelo = normalize_model_name(raw_modelo, tipo)
         oferta = ans.get("6a99eb8af9c750d6db214c5d") or "200 MB"
         existe_bd = ans.get("6ad530403c0c04d9bb2555b2") or "Sí"
         comentarios = ans.get("6ad4df593c0c04d9bb25556e") or ""
@@ -247,7 +320,7 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
     for idx, m in enumerate(raw_materials or []):
         ans = m.get("answers", {})
         area = (ans.get("6ad695943f0d28deb4a6c9a3") or "GENERAL").upper()
-        desc = (ans.get("6ad692011583192abb37cd8f") or "MATERIAL").upper()
+        desc = normalize_material_name(ans.get("6ad692011583192abb37cd8f") or "MATERIAL")
         qty = float(ans.get("6ad65b0b1b305d8b534b1e13") or 0)
         unidad_val = ans.get("6ad695943f0d28deb4a6c9a4") or "PZAS."
         if isinstance(unidad_val, list):

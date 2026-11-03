@@ -16,7 +16,69 @@ let state = {
 };
 
 // =========================================================
-const LIVE_DATA_VERSION = "2026-10-30-linkaform-cutoff-v13";
+const LIVE_DATA_VERSION = "2026-11-03-homologacion-modelos-v14";
+
+// Funciones globales de normalización para homologar con el Reporte Oficial Excel (10 Cajas, 5 Casetas)
+function normalizeModelName(rawModel, tipo) {
+  const s = (rawModel || "").toString().trim().toUpperCase();
+  const t = (tipo || "").toString().trim().toUpperCase();
+
+  if (t === "CASETA") {
+    if (s.includes("CUICUILCO")) return "CUICUILCO";
+    if (s.includes("REFORMA") || s.includes("DOBLE")) return "DOBLE REFORMA";
+    if (s.includes("SEMI")) return "SEMICIRCULAR";
+    if (s.includes("MINI")) return "MINI";
+    return "NORMAL";
+  } else {
+    // CAJA
+    if (s.includes("KRONE")) return "KRONE";
+    if (s.includes("ENVOLV")) {
+      return s.includes("DOBLE") ? "ENVOLVENTE DOBLE" : "ENVOLVENTE SENCILLA";
+    }
+    if (s.includes("DESPLAZ") || s.includes("DEPLAS") || s.includes("DEPLAZ")) {
+      return s.includes("DOBLE") ? "DESPLAZAMIENTO DOBLE" : "DESPLAZAMIENTO SENCILLA";
+    }
+    if (s.includes("SIECOR")) {
+      if (s.includes("DOBLE")) return "SIECOR DOBLE";
+      if (/\b2\s*P/i.test(s) || s.includes("2P") || s.includes("DOS P")) return "SIECOR SENCILLA 2 PTAS";
+      if (/\b1\s*P/i.test(s) || s.includes("1P") || s.includes("UNA P")) return "SIECOR SENCILLA 1PTA";
+      return "SIECOR SENCILLA 1PTA";
+    }
+    if (s.includes("TRADICIONAL")) {
+      return s.includes("DOBLE") ? "TRADICIONAL DOBLE" : "TRADICIONAL SENCILLA";
+    }
+    return s.includes("DOBLE") ? "TRADICIONAL DOBLE" : "TRADICIONAL SENCILLA";
+  }
+}
+
+function normalizeMaterialName(rawDesc) {
+  const s = (rawDesc || "").toString().trim().toUpperCase();
+  // Casetas
+  if (s.includes("CUICUILCO")) return "CUICUILCO";
+  if (s.includes("REFORMA") || (s.includes("CASETA") && s.includes("DOBLE"))) return "DOBLE REFORMA";
+  if (s.includes("SEMI")) return "SEMICIRCULAR";
+  if (s.includes("MINI")) return "MINI";
+  if (s.includes("NORMAL") || (s.includes("LATERAL") && s.includes("CASETA"))) return "NORMAL";
+
+  // Cajas
+  if (s.includes("KRONE")) return "KRONE";
+  if (s.includes("ENVOLV")) {
+    return s.includes("DOBLE") ? "ENVOLVENTE DOBLE" : "ENVOLVENTE SENCILLA";
+  }
+  if (s.includes("DESPLAZ") || s.includes("DEPLAS") || s.includes("DEPLAZ")) {
+    return s.includes("DOBLE") ? "DESPLAZAMIENTO DOBLE" : "DESPLAZAMIENTO SENCILLA";
+  }
+  if (s.includes("SIECOR")) {
+    if (s.includes("DOBLE")) return "SIECOR DOBLE";
+    if (/\b2\s*P/i.test(s) || s.includes("2P") || s.includes("DOS P")) return "SIECOR SENCILLA 2 PTAS";
+    if (/\b1\s*P/i.test(s) || s.includes("1P") || s.includes("UNA P")) return "SIECOR SENCILLA 1PTA";
+    return "SIECOR SENCILLA 1PTA";
+  }
+  if (s.includes("TRADICIONAL")) {
+    return s.includes("DOBLE") ? "TRADICIONAL DOBLE" : "TRADICIONAL SENCILLA";
+  }
+  return s;
+}
 const EXCLUDED_MATERIALS = ["pintura_azul", "pintura_gris", "thinner", "sellador"];
 
 // Funciones seguras para localStorage (previenen QuotaExceededError por límite de 5MB con miles de registros)
@@ -443,7 +505,7 @@ async function loadDataFromSupabase(showNotification = false) {
           timestamp: timeInfo.dt ? (timeInfo.dt.getTime() / 1000) : 0,
           tipo: (r.tipo_elemento || "CASETA").toUpperCase(),
           identificador: r.asset_id || r.folio || "S/N",
-          modelo: r.modelo || "",
+          modelo: normalizeModelName(r.modelo, r.tipo_elemento),
           estado: r.estado || "",
           area_trabajo: r.area_trabajo || "",
           contratista: r.contratista || "",
@@ -482,7 +544,7 @@ async function loadDataFromSupabase(showNotification = false) {
         return {
           id: m.folio || "",
           area: m.area_trabajo || "",
-          descripcion: m.material || "",
+          descripcion: normalizeMaterialName(m.material),
           cantidad: m.cantidad || 0,
           unidad: "PZAS.",
           fecha: getAccountingDate(timeInfo.dt || m.fecha_entrega),
@@ -531,12 +593,17 @@ async function loadDataFromSupabase(showNotification = false) {
 // Auto-migración para cargar los datos en vivo más recientes de Linkaform
 function checkAndMigrateLiveData() {
   if (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && Array.isArray(LINKAFORM_LIVE_RECORDS) && LINKAFORM_LIVE_RECORDS.length > 0) {
+    LINKAFORM_LIVE_RECORDS.forEach(r => {
+      r.modelo = normalizeModelName(r.modelo, r.tipo);
+    });
     const dedupResult = deduplicateOfficialRecords(LINKAFORM_LIVE_RECORDS);
     state.rawRecords = dedupResult.raw;
     state.records = dedupResult.valid;
     state.totalRawRecordsCount = dedupResult.rawCount;
     state.totalDuplicatesCount = dedupResult.dupsCount;
-    state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
+    state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") 
+      ? LINKAFORM_LIVE_MATERIALS.map(m => ({ ...m, descripcion: normalizeMaterialName(m.descripcion) })) 
+      : [];
     
     // Proteger contra QuotaExceededError (5MB) en navegadores
     safeRemoveStorage("telmex_dashboard_records");
@@ -566,6 +633,9 @@ function loadConfig() {
     state.config = DEFAULT_CONFIG;
   }
 
+  // Siempre forzar el catálogo oficial homologado del Excel (10 Cajas y 5 Casetas)
+  state.config.materiales = DEFAULT_CONFIG.materiales;
+
   // Eliminar esmalte, thinner y sellador de materiales en cualquier circunstancia
   if (state.config && state.config.materiales) {
     state.config.materiales = state.config.materiales.filter(m => {
@@ -592,6 +662,9 @@ function loadRecords() {
     sourceRecords = (typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : [];
   }
 
+  sourceRecords.forEach(r => {
+    r.modelo = normalizeModelName(r.modelo, r.tipo);
+  });
   const dedupResult = deduplicateOfficialRecords(sourceRecords);
   state.rawRecords = dedupResult.raw;
   state.records = dedupResult.valid;
@@ -640,27 +713,15 @@ function normalizeAreaKey(str) {
 function recalculateSuministrosFromMaterialsLog() {
   if (!state.materialsLog || state.materialsLog.length === 0) return;
 
-  const totalsByDesc = {};
+  const totalsByMatId = {};
   state.materialsLog.forEach(item => {
-    const norm = normalizeMaterialStr(item.descripcion);
+    const matId = mapMaterialDescToId(item.descripcion);
     const qty = parseFloat(item.cantidad) || 0;
-    totalsByDesc[norm] = (totalsByDesc[norm] || 0) + qty;
+    totalsByMatId[matId] = (totalsByMatId[matId] || 0) + qty;
   });
 
   state.config.materiales.forEach(mat => {
-    const normId = normalizeMaterialStr(mat.id);
-    const normName = normalizeMaterialStr(mat.nombre);
-    let matchedQty = 0;
-
-    for (let desc in totalsByDesc) {
-      if (desc === normId || normName.includes(desc) || desc.includes(normId) || (mat.alias && mat.alias.some(a => normalizeMaterialStr(a) === desc))) {
-        matchedQty += totalsByDesc[desc];
-      }
-    }
-
-    if (matchedQty > 0) {
-      mat.suministrado = matchedQty;
-    }
+    mat.suministrado = totalsByMatId[mat.id] || 0;
   });
 }
 
@@ -1001,54 +1062,64 @@ function renderKpis() {
 
 // Mapeo exacto entre el registro de trabajo de campo (Forma 142786) y el catálogo de materiales
 function mapRecordToMaterialId(rec) {
-  const tipo = (rec.tipo || "").toUpperCase().trim();
-  const modelo = (rec.modelo || "").toUpperCase().trim();
+  const tipo = (rec.tipo || '').toUpperCase().trim();
+  const modelo = normalizeModelName(rec.modelo, tipo);
 
-  if (tipo === "CASETA") {
-    if (modelo.includes("MINI")) return "lateral_caseta_mini_200_mb";
-    if (modelo.includes("SEMICIRCULAR")) return "semicircular_200_mb";
-    return "lateral_caseta_normal_200_mb";
+  if (tipo === 'CASETA') {
+    if (modelo === 'CUICUILCO') return 'cuicuilco';
+    if (modelo === 'DOBLE REFORMA') return 'doble_reforma';
+    if (modelo === 'SEMICIRCULAR') return 'semicircular';
+    if (modelo === 'MINI') return 'caseta_mini';
+    return 'caseta_normal';
   } else {
     // CAJA
-    if (modelo.includes("TRADICIONAL DOBLE")) return "tradicional_doble_200_mb";
-    if (modelo.includes("SIECOR SENCILLA 1") || modelo.includes("SIECOR 1")) return "siecor_sencilla_1_pta._200_mb";
-    if (modelo.includes("SIECOR SENCILLA 2") || modelo.includes("SIECOR 2")) return "siecor_sencilla_2_ptas._200_mb";
-    if (modelo.includes("SIECOR DOBLE") || modelo.includes("SIECOR")) return "siecor_doble_2_ptas._200_mb";
-    if (modelo.includes("ENVOLVENTE") || modelo.includes("ENVOLVELTE")) return "envolvelte_secillo_200_mb";
-    if (modelo.includes("DESPLAZAMIENTO DOBLE") || modelo.includes("DEPLASAMIENTO DOBLE")) return "deplasamiento_doble_200_mb";
-    if (modelo.includes("DESPLAZAMIENTO") || modelo.includes("DEPLASAMIENTO")) return "deplasamiento_sencilla_200_mb";
-    return "tradicional_sencilla_200_mb"; // Tradicional sencilla / Krone / Estándar
+    if (modelo === 'DESPLAZAMIENTO DOBLE') return 'desplazamiento_doble';
+    if (modelo === 'DESPLAZAMIENTO SENCILLA') return 'desplazamiento_sencilla';
+    if (modelo === 'ENVOLVENTE DOBLE') return 'envolvente_doble';
+    if (modelo === 'ENVOLVENTE SENCILLA') return 'envolvente_sencilla';
+    if (modelo === 'KRONE') return 'krone';
+    if (modelo === 'SIECOR DOBLE') return 'siecor_doble';
+    if (modelo === 'SIECOR SENCILLA 1PTA') return 'siecor_sencilla_1pta';
+    if (modelo === 'SIECOR SENCILLA 2 PTAS') return 'siecor_sencilla_2_ptas';
+    if (modelo === 'TRADICIONAL DOBLE') return 'tradicional_doble';
+    return 'tradicional_sencilla';
   }
 }
 
 // Obtener cantidad real de viniles instalados en el activo reportado
 function getRecordVinilCount(rec) {
-  if (rec.num_viniles !== undefined && rec.num_viniles !== null && rec.num_viniles !== "") {
+  if (rec.num_viniles !== undefined && rec.num_viniles !== null && rec.num_viniles !== '') {
     const val = parseFloat(rec.num_viniles);
     if (!isNaN(val)) return val;
   }
   // Valor por defecto en campo si no fue capturado
-  return (rec.tipo || "").toUpperCase().trim() === "CASETA" ? 2 : 1;
+  return (rec.tipo || '').toUpperCase().trim() === 'CASETA' ? 2 : 1;
 }
 
 // Mapeo normalizado de la descripción de entrega (Forma 184350) al ID de material
 function mapMaterialDescToId(desc) {
+  const norm = normalizeMaterialName(desc);
+  if (norm === 'CUICUILCO') return 'cuicuilco';
+  if (norm === 'DOBLE REFORMA') return 'doble_reforma';
+  if (norm === 'SEMICIRCULAR') return 'semicircular';
+  if (norm === 'MINI') return 'caseta_mini';
+  if (norm === 'NORMAL') return 'caseta_normal';
+  if (norm === 'DESPLAZAMIENTO DOBLE') return 'desplazamiento_doble';
+  if (norm === 'DESPLAZAMIENTO SENCILLA') return 'desplazamiento_sencilla';
+  if (norm === 'ENVOLVENTE DOBLE') return 'envolvente_doble';
+  if (norm === 'ENVOLVENTE SENCILLA') return 'envolvente_sencilla';
+  if (norm === 'KRONE') return 'krone';
+  if (norm === 'SIECOR DOBLE') return 'siecor_doble';
+  if (norm === 'SIECOR SENCILLA 1PTA') return 'siecor_sencilla_1pta';
+  if (norm === 'SIECOR SENCILLA 2 PTAS') return 'siecor_sencilla_2_ptas';
+  if (norm === 'TRADICIONAL DOBLE') return 'tradicional_doble';
+  if (norm === 'TRADICIONAL SENCILLA') return 'tradicional_sencilla';
+
   const d = normalizeMaterialStr(desc);
-  if (d.includes("lateral") && d.includes("mini")) return "lateral_caseta_mini_200_mb";
-  if (d.includes("lateral")) return "lateral_caseta_normal_200_mb";
-  if (d.includes("semicircular")) return "semicircular_200_mb";
-  if (d.includes("tradicional") && d.includes("doble")) return "tradicional_doble_200_mb";
-  if (d.includes("tradicional")) return "tradicional_sencilla_200_mb";
-  if (d.includes("siecor") && d.includes("1")) return "siecor_sencilla_1_pta._200_mb";
-  if (d.includes("siecor") && d.includes("2") && !d.includes("doble")) return "siecor_sencilla_2_ptas._200_mb";
-  if (d.includes("siecor") && d.includes("doble")) return "siecor_doble_2_ptas._200_mb";
-  if (d.includes("envolvente") || d.includes("envolvelte")) return "envolvelte_secillo_200_mb";
-  if (d.includes("desplazamiento") && d.includes("doble")) return "deplasamiento_doble_200_mb";
-  if (d.includes("desplazamiento")) return "deplasamiento_sencilla_200_mb";
-  if (d.includes("pintura") && d.includes("azul")) return "pintura_azul";
-  if (d.includes("pintura") && d.includes("gris")) return "pintura_gris";
-  if (d.includes("thinner")) return "thinner";
-  if (d.includes("sellador")) return "sellador";
+  if (d.includes('pintura') && d.includes('azul')) return 'pintura_azul';
+  if (d.includes('pintura') && d.includes('gris')) return 'pintura_gris';
+  if (d.includes('thinner')) return 'thinner';
+  if (d.includes('sellador')) return 'sellador';
   return d;
 }
 
@@ -2304,7 +2375,9 @@ function restoreDefaultRecords() {
   const choice = confirm("¿Deseas restaurar los datos en vivo oficiales de Linkaform?\n\nPresiona Aceptar para restaurar los datos oficiales de Linkaform.");
   if (choice) {
     state.records = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS : ((typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : []);
-    state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") ? LINKAFORM_LIVE_MATERIALS : [];
+    state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") 
+      ? LINKAFORM_LIVE_MATERIALS.map(m => ({ ...m, descripcion: normalizeMaterialName(m.descripcion) })) 
+      : [];
     safeRemoveStorage("telmex_dashboard_records");
     safeRemoveStorage("telmex_dashboard_raw_records");
     safeRemoveStorage("telmex_dashboard_materials_log");
