@@ -88,11 +88,23 @@ function parseDateTimeSafe(val) {
 // =========================================================
 // REGLAS OFICIALES DE CORTE TELMEX 2026 (10 PM - 10 AM)
 // =========================================================
+function getAccountingDate(val) {
+  const timeInfo = parseDateTimeSafe(val);
+  if (!timeInfo.dt) return timeInfo.dateStr || "";
+  const hour = timeInfo.dt.getHours();
+  if (hour >= 22) {
+    const nextDay = new Date(timeInfo.dt);
+    nextDay.setDate(nextDay.getDate() + 1);
+    return getLocalDateStr(nextDay);
+  }
+  return timeInfo.dateStr;
+}
+
 function getCutoffInfo(date = new Date()) {
   const d = (date instanceof Date) ? date : new Date(date);
   const hour = d.getHours();
   
-  if (hour < 10) {
+  if (hour < 8) {
     // Antes de las 10:00 AM -> Muestra corte oficial cerrado de ayer a las 22:00
     const prevDate = new Date(d);
     prevDate.setDate(prevDate.getDate() - 1);
@@ -104,7 +116,7 @@ function getCutoffInfo(date = new Date()) {
       badgeText: "REPORTE OFICIAL CERRADO",
       badgeClass: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
       badgeDotClass: "bg-amber-400",
-      statusMessage: `Reporte matutino cerrado al ${activeDateStr} (22:00 hrs). En período de entrega matutina. La jornada de hoy se liberará a las 10:00 AM.`,
+      statusMessage: `Reporte matutino cerrado al ${activeDateStr} (22:00 hrs). En período de entrega matutina. La jornada de hoy se liberará a las 08:00 AM.`,
       cycleLabel: `Ciclo Oficial: ${activeDateStr}`
     };
   } else if (hour >= 22) {
@@ -420,12 +432,13 @@ async function loadDataFromSupabase(showNotification = false) {
     if (Array.isArray(dbEvs) && dbEvs.length > 0) {
       const mapped = dbEvs.map(r => {
         const timeInfo = parseDateTimeSafe(r.fecha_captura);
+        const accDate = getAccountingDate(timeInfo.dt || r.fecha_captura);
         return {
           folio: r.folio || "",
-          fecha: timeInfo.dateStr,
+          fecha: accDate,
           fecha_captura: timeInfo.dateStr,
           hora: timeInfo.timeStr,
-          fecha_corte: timeInfo.dateStr,
+          fecha_corte: accDate,
           created_at_iso: timeInfo.dateTimeStr || r.fecha_captura || "",
           timestamp: timeInfo.dt ? (timeInfo.dt.getTime() / 1000) : 0,
           tipo: (r.tipo_elemento || "CASETA").toUpperCase(),
@@ -472,7 +485,7 @@ async function loadDataFromSupabase(showNotification = false) {
           descripcion: m.material || "",
           cantidad: m.cantidad || 0,
           unidad: "PZAS.",
-          fecha: timeInfo.dateStr,
+          fecha: getAccountingDate(timeInfo.dt || m.fecha_entrega),
           fecha_captura: timeInfo.dateStr,
           hora: timeInfo.timeStr,
           created_at_iso: timeInfo.dateTimeStr || m.fecha_entrega || "",
@@ -792,29 +805,18 @@ function recordMatchesArea(r, selectedArea) {
 }
 
 // Normalizador y verificador de corte oficial (respeta todos los registros hasta las 22:00 hrs)
+// Normalizador y verificador de corte oficial (respeta todos los registros hasta las 22:00 hrs)
 function isRecordAfterCutoff(r, cutoffInfo) {
   if (!cutoffInfo || !cutoffInfo.isFrozen) return false;
   
-  // Extraer fecha y hora en formato estándar local
+  // Extraer fecha y hora real de captura
   const timeInfo = parseDateTimeSafe(r.created_at_iso || r.fecha_captura || r.fecha);
-  const recDateStr = timeInfo.dateStr || r.fecha || "";
-  const recTimeStr = timeInfo.timeStr || r.hora || "00:00";
+  const captureDate = timeInfo.dateStr || "";
+  const captureTime = timeInfo.timeStr ? (timeInfo.timeStr.length === 5 ? timeInfo.timeStr + ":00" : timeInfo.timeStr) : "00:00:00";
+  const captureDateTime = `${captureDate} ${captureTime}`;
   
-  const recStandard = `${recDateStr} ${recTimeStr.length === 5 ? recTimeStr + ":00" : recTimeStr}`;
-  const cutoffStandard = `${cutoffInfo.activeReportingDate} 22:00:00`;
-  
-  // Registros con fecha posterior al ciclo oficial activo (ej. subidos de madrugada o al día siguiente)
-  if (recDateStr > cutoffInfo.activeReportingDate) {
-    return true;
-  }
-  
-  // Registros del mismo día del ciclo oficial: se respetan hasta las 22:00:00 inclusive
-  if (recDateStr === cutoffInfo.activeReportingDate) {
-    return recStandard > cutoffStandard;
-  }
-  
-  // Registros de días previos al ciclo oficial: siempre visibles
-  return false;
+  const cutoffLimit = cutoffInfo.maxVisibleDt || `${cutoffInfo.activeReportingDate} 22:00:00`;
+  return captureDateTime > cutoffLimit;
 }
 
 // =========================================================

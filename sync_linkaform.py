@@ -29,14 +29,14 @@ def get_cutoff_info(current_dt=None):
     if current_dt is None:
         current_dt = datetime.now()
 
-    if current_dt.hour < 10:
+    if current_dt.hour < 8:
         # Mañana antes de las 10:00 AM: muestra corte oficial cerrado de ayer a las 22:00
         prev_day = (current_dt - timedelta(days=1)).date()
         max_visible_dt = datetime(prev_day.year, prev_day.month, prev_day.day, 22, 0, 0)
         active_reporting_date = prev_day.strftime("%Y-%m-%d")
         is_frozen = True
         badge = "[CERRADO] REPORTE OFICIAL CERRADO"
-        desc = f"Reporte matutino cerrado al {prev_day.strftime('%d/%m/%Y')} (22:00 hrs). La jornada de hoy se liberará a las 10:00 AM."
+        desc = f"Reporte matutino cerrado al {prev_day.strftime('%d/%m/%Y')} (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM."
     elif current_dt.hour >= 22:
         # Noche a partir de las 22:00 hrs: corte cerrado de hoy a las 22:00 para depuración
         today = current_dt.date()
@@ -44,7 +44,7 @@ def get_cutoff_info(current_dt=None):
         active_reporting_date = today.strftime("%Y-%m-%d")
         is_frozen = True
         badge = "[CORTE 22:00] CORTE OFICIAL ACTIVO"
-        desc = f"Corte oficial de las 10:00 PM activo ({today.strftime('%d/%m/%Y')}). Período de depuración. Registros posteriores se liberan mañana a las 10:00 AM."
+        desc = f"Corte oficial de las 10:00 PM activo ({today.strftime('%d/%m/%Y')}). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM."
     else:
         # Jornada activa en vivo (10:00 AM a 22:00 PM)
         today = current_dt.date()
@@ -58,7 +58,7 @@ def get_cutoff_info(current_dt=None):
     return {
         "now": current_dt.strftime("%Y-%m-%d %H:%M:%S"),
         "corte_oficial_hora": "22:00",
-        "liberacion_matutina_hora": "10:00",
+        "liberacion_matutina_hora": "08:00",
         "active_reporting_date": active_reporting_date,
         "max_visible_dt": max_visible_dt.strftime("%Y-%m-%d %H:%M:%S"),
         "max_visible_datetime_str": max_visible_dt.strftime("%Y-%m-%d %H:%M:%S"),
