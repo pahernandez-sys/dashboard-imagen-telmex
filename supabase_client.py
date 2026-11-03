@@ -119,11 +119,57 @@ def upsert_materiales_batch(materials_batch):
         print(f"  [ERROR Supabase Materiales] HTTP {resp.status_code}: {resp.text[:300]}")
         return False
 
+def clean_orphaned_records(active_records):
+    """
+    Elimina de Supabase aquellos registros cuyo folio ya no existe en Linkaform.
+    Mantiene Supabase 100% limpio y alineado con Linkaform.
+    """
+    if not active_records:
+        return 0
+    active_folios = set(str(r.get("folio") or "").strip() for r in active_records if r.get("folio"))
+    headers = get_headers(use_service_key=True)
+    
+    # Obtener folios actuales en Supabase
+    all_sb = []
+    offset = 0
+    limit = 1000
+    while True:
+        hdrs = {**headers, "Range": f"{offset}-{offset+limit-1}"}
+        try:
+            r = requests.get(f"{SUPABASE_REST_URL}/evidencias_telmex?select=id,folio", headers=hdrs, timeout=30)
+            if r.status_code in [200, 206]:
+                rows = r.json()
+                all_sb.extend(rows)
+                if len(rows) < limit:
+                    break
+                offset += limit
+            else:
+                break
+        except Exception:
+            break
+            
+    orphans = [row["id"] for row in all_sb if str(row.get("folio") or "").strip() not in active_folios]
+    if orphans:
+        print(f"  [Supabase Cleanup] Eliminando {len(orphans)} registros huérfanos de Supabase...")
+        batch_size = 100
+        for i in range(0, len(orphans), batch_size):
+            b = orphans[i:i+batch_size]
+            ids_param = f"in.({','.join(str(x) for x in b)})"
+            try:
+                requests.delete(f"{SUPABASE_REST_URL}/evidencias_telmex?id={ids_param}", headers=headers, timeout=20)
+            except Exception:
+                pass
+        print(f"  [Supabase Cleanup OK] Supabase alineado con Linkaform.")
+    return len(orphans)
+
 def sync_all_to_supabase(records, materials, batch_size=200):
     """
     Sube todos los registros y materiales por bloques a Supabase.
     """
     print(f"\n[Supabase Cloud] Iniciando carga de {len(records)} evidencias y {len(materials)} entregas...")
+
+    # Limpieza de huérfanos antes de upsert
+    clean_orphaned_records(records)
 
     # Evidencias
     ev_ok = 0
