@@ -1,0 +1,49 @@
+name: Sincronizacion en la Nube Linkaform 24/7
+
+on:
+  schedule:
+    # Se ejecuta cada 15 minutos ininterrumpidamente las 24 horas del dia
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Sincronizar Linkaform a Supabase y Dashboard
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Descargar codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Ejecutar sincronizacion Linkaform (API -> Supabase Cloud -> Excel)
+        env:
+          TZ: "America/Mexico_City"
+          LINKAFORM_USERNAME: ${{ secrets.LINKAFORM_USERNAME }}
+          LINKAFORM_API_KEY: ${{ secrets.LINKAFORM_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: |
+          python -u sync_linkaform.py
+
+      - name: Publicar cambios en GitHub Pages
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/linkaform_live_data.js data/Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx data/linkaform_records_142786.json data/linkaform_materials_184350.json
+          git diff --staged --quiet || (git commit -m "chore(cloud): sync avances en vivo 24/7 [skip ci]" && git push)
