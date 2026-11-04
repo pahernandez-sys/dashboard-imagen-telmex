@@ -1,24 +1,99 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-04 08:01:39
- * Estado de corte: Jornada en vivo activa (04/11/2026, 08:01 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 7189 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-04 08:11:33
+ * Estado de corte: Jornada en vivo activa (04/11/2026, 08:11 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 7192 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 241 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-04 08:01:33",
+  "now": "2026-11-04 08:11:27",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-04",
-  "max_visible_dt": "2026-11-04 08:01:33",
-  "max_visible_datetime_str": "2026-11-04 08:01:33",
+  "max_visible_dt": "2026-11-04 08:11:27",
+  "max_visible_datetime_str": "2026-11-04 08:11:27",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (04/11/2026, 08:01 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (04/11/2026, 08:11 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16140642-1259",
+    "fecha": "2026-11-04",
+    "fecha_captura": "2026-11-04",
+    "hora": "08:02",
+    "fecha_corte": "2026-11-04",
+    "created_at_iso": "2026-11-04 08:02:57",
+    "timestamp": 1793800977.0,
+    "tipo": "CAJA",
+    "identificador": "XLU0023",
+    "modelo": "SIECOR SENCILLA 2 PTAS",
+    "estado": "YUCATAN",
+    "area_trabajo": "YUCATAN",
+    "contratista": "Victor Chan",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 20.92145,
+    "longitud": -89.614985,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeb3b0da91887aa4898a6c3.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16140641-1259",
+    "fecha": "2026-11-04",
+    "fecha_captura": "2026-11-04",
+    "hora": "08:02",
+    "fecha_corte": "2026-11-04",
+    "created_at_iso": "2026-11-04 08:02:52",
+    "timestamp": 1793800972.0,
+    "tipo": "CAJA",
+    "identificador": "XLU0022",
+    "modelo": "SIECOR SENCILLA 2 PTAS",
+    "estado": "YUCATAN",
+    "area_trabajo": "YUCATAN",
+    "contratista": "Victor Chan",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 20.922685,
+    "longitud": -89.6160967,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeb3b070fdfcd60213be03c.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16140640-1259",
+    "fecha": "2026-11-04",
+    "fecha_captura": "2026-11-04",
+    "hora": "08:02",
+    "fecha_corte": "2026-11-04",
+    "created_at_iso": "2026-11-04 08:02:46",
+    "timestamp": 1793800966.0,
+    "tipo": "CAJA",
+    "identificador": "XLU0018",
+    "modelo": "SIECOR SENCILLA 2 PTAS",
+    "estado": "YUCATAN",
+    "area_trabajo": "YUCATAN",
+    "contratista": "Victor Chan",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 20.9247117,
+    "longitud": -89.6175167,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeb3b02c13ffbbcd976254f.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16140607-1259",
     "fecha": "2026-11-04",
@@ -102003,7 +102078,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4080",
+    "identificador": "S/ID-4083",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -102028,7 +102103,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4081",
+    "identificador": "S/ID-4084",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -102053,7 +102128,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4082",
+    "identificador": "S/ID-4085",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -118228,7 +118303,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 10:01:31",
     "timestamp": 1793289691.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4729",
+    "identificador": "S/ID-4732",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
