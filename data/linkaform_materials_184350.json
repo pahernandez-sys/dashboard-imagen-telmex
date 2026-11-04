@@ -1,9 +1,1233 @@
 [
   {
     "answers": {
+      "6ad65b0b1b305d8b534b1e11": "2026-10-28 17:57:57",
+      "6ad65b0b1b305d8b534b1e13": 980,
+      "6ad692011583192abb37cd8f": "MINI",
+      "6ad695943f0d28deb4a6c9a3": "JALAPA",
+      "6ad695943f0d28deb4a6c9a4": [
+        "PZAS."
+      ]
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6aea752b271526afd7814d03",
+    "created_at": 1793750315.0,
+    "created_by_email": "csolares@operacionpci.com.mx",
+    "created_by_id": 3387,
+    "created_by_name": "Solares Barron Cristel",
+    "created_by_username": "csolares@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": "37 segs",
+    "end_date": 1793750315.0,
+    "folio": "16139905-1259",
+    "form_id": 184350,
+    "form_name": "Imagen Telmex 2026 - Materiales",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.434200286865234,
+      -99.13860321044922
+    ],
+    "id": "6aea752b271526afd7814d03",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6aea752b271526afd7814d03/",
+    "start_date": 1793750277.0,
+    "timezone": "America/Monterrey",
+    "tz_offset": -360.0,
+    "updated_at": 1793750343.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 31542,
+    "user_name": "Bautista Diaz Eddie Santiago",
+    "version": 1
+  },
+  {
+    "answers": {
+      "6ad65b0b1b305d8b534b1e11": "2026-10-27 17:11:34",
+      "6ad65b0b1b305d8b534b1e13": 2820,
+      "6ad692011583192abb37cd8f": "NORMAL",
+      "6ad695943f0d28deb4a6c9a3": "JALAPA",
+      "6ad695943f0d28deb4a6c9a4": [
+        "PZAS."
+      ]
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6aea74865b40b3f85f2a1cc9",
+    "created_at": 1793750150.0,
+    "created_by_email": "csolares@operacionpci.com.mx",
+    "created_by_id": 3387,
+    "created_by_name": "Solares Barron Cristel",
+    "created_by_username": "csolares@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": "44 mins 16 segs",
+    "end_date": 1793750150.0,
+    "folio": "16139899-1259",
+    "form_id": 184350,
+    "form_name": "Imagen Telmex 2026 - Materiales",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.434200286865234,
+      -99.13860321044922
+    ],
+    "id": "6aea74865b40b3f85f2a1cc9",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6aea74865b40b3f85f2a1cc9/",
+    "start_date": 1793747493.0,
+    "timezone": "America/Monterrey",
+    "tz_offset": -360.0,
+    "updated_at": 1793750178.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 31542,
+    "user_name": "Bautista Diaz Eddie Santiago",
+    "version": 1
+  },
+  {
+    "answers": {
+      "6ad65b0b1b305d8b534b1e11": "2026-10-29 17:09:33",
+      "6ad65b0b1b305d8b534b1e13": 600,
+      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1PTA",
+      "6ad695943f0d28deb4a6c9a3": "JALAPA",
+      "6ad695943f0d28deb4a6c9a4": [
+        "PZAS."
+      ]
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6aea69c25dbfd4881601fddd",
+    "created_at": 1793747394.0,
+    "created_by_email": "csolares@operacionpci.com.mx",
+    "created_by_id": 3387,
+    "created_by_name": "Solares Barron Cristel",
+    "created_by_username": "csolares@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": "22 segs",
+    "end_date": 1793747395.0,
+    "folio": "16139857-1259",
+    "form_id": 184350,
+    "form_name": "Imagen Telmex 2026 - Materiales",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.434200286865234,
+      -99.13860321044922
+    ],
+    "id": "6aea69c25dbfd4881601fddd",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6aea69c25dbfd4881601fddd/",
+    "start_date": 1793747372.0,
+    "timezone": "America/Monterrey",
+    "tz_offset": -360.0,
+    "updated_at": 1793747422.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 31542,
+    "user_name": "Bautista Diaz Eddie Santiago",
+    "version": 1
+  },
+  {
+    "answers": {
+      "6ad65b0b1b305d8b534b1e11": "2026-10-28 00:00:00",
+      "6ad65b0b1b305d8b534b1e13": 200,
+      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA",
+      "6ad695943f0d28deb4a6c9a3": "JALAPA",
+      "6ad695943f0d28deb4a6c9a4": [
+        "PZAS."
+      ]
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6aea69aa92e48b4ddb61ffda",
+    "created_at": 1793747370.0,
+    "created_by_email": "csolares@operacionpci.com.mx",
+    "created_by_id": 3387,
+    "created_by_name": "Solares Barron Cristel",
+    "created_by_username": "csolares@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": "36 segs",
+    "end_date": 1793747370.0,
+    "folio": "16139852-1259",
+    "form_id": 184350,
+    "form_name": "Imagen Telmex 2026 - Materiales",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.434200286865234,
+      -99.13860321044922
+    ],
+    "id": "6aea69aa92e48b4ddb61ffda",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6aea69aa92e48b4ddb61ffda/",
+    "start_date": 1793747334.0,
+    "timezone": "America/Monterrey",
+    "tz_offset": -360.0,
+    "updated_at": 1793747398.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 31542,
+    "user_name": "Bautista Diaz Eddie Santiago",
+    "version": 1
+  },
+  {
+    "answers": {
+      "6ad65b0b1b305d8b534b1e11": "2026-10-28 17:08:34",
+      "6ad65b0b1b305d8b534b1e13": 33,
+      "6ad692011583192abb37cd8f": "DESPLAZAMIENTO DOBLE",
+      "6ad695943f0d28deb4a6c9a3": "JALAPA",
+      "6ad695943f0d28deb4a6c9a4": [
+        "PZAS."
+      ]
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6aea6981eb3f2f93c184eefc",
+    "created_at": 1793747329.0,
+    "created_by_email": "csolares@operacionpci.com.mx",
+    "created_by_id": 3387,
+    "created_by_name": "Solares Barron Cristel",
+    "created_by_username": "csolares@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": "15 segs",
+    "end_date": 1793747330.0,
+    "folio": "16139851-1259",
+    "form_id": 184350,
+    "form_name": "Imagen Telmex 2026 - Materiales",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.434200286865234,
+      -99.13860321044922
+    ],
+    "id": "6aea6981eb3f2f93c184eefc",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6aea6981eb3f2f93c184eefc/",
+    "start_date": 1793747314.0,
+    "timezone": "America/Monterrey",
+    "tz_offset": -360.0,
+    "updated_at": 1793747357.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 31542,
+    "user_name": "Bautista Diaz Eddie Santiago",
+    "version": 1
+  },
+  {
+    "answers": {
+      "6ad65b0b1b305d8b534b1e11": "2026-11-03 10:18:01",
+      "6ad65b0b1b305d8b534b1e13": 1440,
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
+      "6ad695943f0d28deb4a6c9a3": "NOGALES",
+      "6ad695943f0d28deb4a6c9a4": [
+        "PZAS."
+      ]
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6aea338bf07766b559f6a61e",
+    "created_at": 1793733515.0,
+    "created_by_email": "csolares@operacionpci.com.mx",
+    "created_by_id": 3387,
+    "created_by_name": "Solares Barron Cristel",
+    "created_by_username": "csolares@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": "35 segs",
+    "end_date": 1793733516.0,
+    "folio": "16138835-1259",
+    "form_id": 184350,
+    "form_name": "Imagen Telmex 2026 - Materiales",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.434200286865234,
+      -99.13860321044922
+    ],
+    "id": "6aea338bf07766b559f6a61e",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6aea338bf07766b559f6a61e/",
+    "start_date": 1793733480.0,
+    "timezone": "America/Monterrey",
+    "tz_offset": -360.0,
+    "updated_at": 1793733543.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 31542,
+    "user_name": "Bautista Diaz Eddie Santiago",
+    "version": 1
+  },
+  {
+    "answers": {
+      "6ad65b0b1b305d8b534b1e11": "2026-11-03 10:17:33",
+      "6ad65b0b1b305d8b534b1e13": 420,
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
+      "6ad695943f0d28deb4a6c9a3": "NOGALES",
+      "6ad695943f0d28deb4a6c9a4": [
+        "PZAS."
+      ]
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6aea33658a108885d7ec3a2b",
+    "created_at": 1793733477.0,
+    "created_by_email": "csolares@operacionpci.com.mx",
+    "created_by_id": 3387,
+    "created_by_name": "Solares Barron Cristel",
+    "created_by_username": "csolares@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": "24 segs",
+    "end_date": 1793733477.0,
+    "folio": "16138834-1259",
+    "form_id": 184350,
+    "form_name": "Imagen Telmex 2026 - Materiales",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.434200286865234,
+      -99.13860321044922
+    ],
+    "id": "6aea33658a108885d7ec3a2b",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6aea33658a108885d7ec3a2b/",
+    "start_date": 1793733453.0,
+    "timezone": "America/Monterrey",
+    "tz_offset": -360.0,
+    "updated_at": 1793733506.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 31542,
+    "user_name": "Bautista Diaz Eddie Santiago",
+    "version": 1
+  },
+  {
+    "answers": {
+      "6ad65b0b1b305d8b534b1e11": "2026-11-03 10:12:36",
+      "6ad65b0b1b305d8b534b1e13": 189,
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
+      "6ad695943f0d28deb4a6c9a3": "NOGALES",
+      "6ad695943f0d28deb4a6c9a4": [
+        "PZAS."
+      ]
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6aea323cb09b94ca21402b37",
+    "created_at": 1793733180.0,
+    "created_by_email": "csolares@operacionpci.com.mx",
+    "created_by_id": 3387,
+    "created_by_name": "Solares Barron Cristel",
+    "created_by_username": "csolares@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": "24 segs",
+    "end_date": 1793733180.0,
+    "folio": "16138791-1259",
+    "form_id": 184350,
+    "form_name": "Imagen Telmex 2026 - Materiales",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.434200286865234,
+      -99.13860321044922
+    ],
+    "id": "6aea323cb09b94ca21402b37",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6aea323cb09b94ca21402b37/",
+    "start_date": 1793733155.0,
+    "timezone": "America/Monterrey",
+    "tz_offset": -360.0,
+    "updated_at": 1793733208.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 31542,
+    "user_name": "Bautista Diaz Eddie Santiago",
+    "version": 1
+  },
+  {
+    "answers": {
+      "6ad65b0b1b305d8b534b1e11": "2026-11-03 10:12:01",
+      "6ad65b0b1b305d8b534b1e13": 289,
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
+      "6ad695943f0d28deb4a6c9a3": "NOGALES",
+      "6ad695943f0d28deb4a6c9a4": [
+        "PZAS."
+      ]
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6aea32219b05760e56ca8bbe",
+    "created_at": 1793733153.0,
+    "created_by_email": "csolares@operacionpci.com.mx",
+    "created_by_id": 3387,
+    "created_by_name": "Solares Barron Cristel",
+    "created_by_username": "csolares@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": "33 segs",
+    "end_date": 1793733153.0,
+    "folio": "16138788-1259",
+    "form_id": 184350,
+    "form_name": "Imagen Telmex 2026 - Materiales",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.434200286865234,
+      -99.13860321044922
+    ],
+    "id": "6aea32219b05760e56ca8bbe",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6aea32219b05760e56ca8bbe/",
+    "start_date": 1793733120.0,
+    "timezone": "America/Monterrey",
+    "tz_offset": -360.0,
+    "updated_at": 1793733181.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 31542,
+    "user_name": "Bautista Diaz Eddie Santiago",
+    "version": 1
+  },
+  {
+    "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-11-03 00:00:00",
       "6ad65b0b1b305d8b534b1e13": 140,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CHIAPAS",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -139,7 +1363,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-11-03 11:29:03",
       "6ad65b0b1b305d8b534b1e13": 1864,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CHIAPAS",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -275,7 +1499,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-11-03 11:28:14",
       "6ad65b0b1b305d8b534b1e13": 46,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -411,7 +1635,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-11-03 11:26:22",
       "6ad65b0b1b305d8b534b1e13": 40,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -547,7 +1771,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-28 11:25:54",
       "6ad65b0b1b305d8b534b1e13": 50,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -683,7 +1907,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-28 11:17:02",
       "6ad65b0b1b305d8b534b1e13": 43,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -819,7 +2043,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-29 10:52:51",
       "6ad65b0b1b305d8b534b1e13": 12,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -955,7 +2179,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-28 10:52:07",
       "6ad65b0b1b305d8b534b1e13": 600,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -1091,7 +2315,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 10:51:26",
       "6ad65b0b1b305d8b534b1e13": 70,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -1227,7 +2451,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 10:50:49",
       "6ad65b0b1b305d8b534b1e13": 19,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -1363,7 +2587,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 10:30:30",
       "6ad65b0b1b305d8b534b1e13": 244,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TORREON",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -1771,7 +2995,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 9:11:00",
       "6ad65b0b1b305d8b534b1e13": 1820,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -1907,7 +3131,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-29 08:42:01",
       "6ad65b0b1b305d8b534b1e13": 586,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO NORTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -2043,7 +3267,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 08:40:28",
       "6ad65b0b1b305d8b534b1e13": 160,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -2179,7 +3403,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 08:40:07",
       "6ad65b0b1b305d8b534b1e13": 14,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY I",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -2315,7 +3539,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 08:39:40",
       "6ad65b0b1b305d8b534b1e13": 90,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY III",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -2451,7 +3675,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 08:39:10",
       "6ad65b0b1b305d8b534b1e13": 100,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY III",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -2587,7 +3811,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 08:38:42",
       "6ad65b0b1b305d8b534b1e13": 100,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY I",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -2723,7 +3947,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 08:38:19",
       "6ad65b0b1b305d8b534b1e13": 100,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY I",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -2859,7 +4083,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 08:37:34",
       "6ad65b0b1b305d8b534b1e13": 50,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY I",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -2995,7 +4219,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 08:36:36",
       "6ad65b0b1b305d8b534b1e13": 100,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "CHIHUAHUA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -3131,7 +4355,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 08:35:52",
       "6ad65b0b1b305d8b534b1e13": 54,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "LA PAZ",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -3267,7 +4491,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 00:00:00",
       "6ad65b0b1b305d8b534b1e13": 50,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY II",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -3403,7 +4627,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 08:34:52",
       "6ad65b0b1b305d8b534b1e13": 50,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY II",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -3539,7 +4763,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 08:34:17",
       "6ad65b0b1b305d8b534b1e13": 48,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY II",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -3675,7 +4899,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 08:33:48",
       "6ad65b0b1b305d8b534b1e13": 50,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY II",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -3811,7 +5035,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 08:30:35",
       "6ad65b0b1b305d8b534b1e13": 50,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY III",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -3947,7 +5171,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 08:26:02",
       "6ad65b0b1b305d8b534b1e13": 102,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "CELAYA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -4083,7 +5307,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 08:25:42",
       "6ad65b0b1b305d8b534b1e13": 192,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -4219,7 +5443,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 08:25:23",
       "6ad65b0b1b305d8b534b1e13": 311,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -4355,7 +5579,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 08:25:01",
       "6ad65b0b1b305d8b534b1e13": 53,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -4491,7 +5715,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 00:00:00",
       "6ad65b0b1b305d8b534b1e13": 200,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -4627,7 +5851,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 08:23:09",
       "6ad65b0b1b305d8b534b1e13": 39,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -4763,7 +5987,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 00:00:00",
       "6ad65b0b1b305d8b534b1e13": 1000,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -4899,7 +6123,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 08:22:24",
       "6ad65b0b1b305d8b534b1e13": 12,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TLAXCALA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -5035,7 +6259,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-31 00:00:00",
       "6ad65b0b1b305d8b534b1e13": 40,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TLAXCALA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -5171,7 +6395,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-11-01 18:56:00",
       "6ad65b0b1b305d8b534b1e13": 29,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TLAXCALA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -5307,7 +6531,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-11-01 18:54:00",
       "6ad65b0b1b305d8b534b1e13": 50,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TLAXCALA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -5579,7 +6803,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-11-01 18:55:00",
       "6ad65b0b1b305d8b534b1e13": 2,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "TLAXCALA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -5715,7 +6939,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 15:02:17",
       "6ad65b0b1b305d8b534b1e13": 38,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "VILLAHERMOSA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -5851,7 +7075,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 00:00:00",
       "6ad65b0b1b305d8b534b1e13": 20,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "VILLAHERMOSA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -5987,7 +7211,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 15:01:28",
       "6ad65b0b1b305d8b534b1e13": 173,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "VILLAHERMOSA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -6123,7 +7347,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-28 15:01:04",
       "6ad65b0b1b305d8b534b1e13": 75,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "OAXACA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -6259,7 +7483,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 15:00:48",
       "6ad65b0b1b305d8b534b1e13": 226,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "OAXACA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -6395,7 +7619,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 15:00:07",
       "6ad65b0b1b305d8b534b1e13": 226,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "OAXACA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -6531,7 +7755,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-30 14:59:40",
       "6ad65b0b1b305d8b534b1e13": 9,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "TUXTLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -6667,7 +7891,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-29 14:59:05",
       "6ad65b0b1b305d8b534b1e13": 313,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TUXTLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -6802,7 +8026,7 @@
   {
     "answers": {
       "6ad65b0b1b305d8b534b1e13": 50,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -7071,7 +8295,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-29 09:32:21",
       "6ad65b0b1b305d8b534b1e13": 14,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "JALISCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -7204,7 +8428,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-29 09:31:51",
       "6ad65b0b1b305d8b534b1e13": 25,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "JALISCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -7337,7 +8561,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-29 09:31:28",
       "6ad65b0b1b305d8b534b1e13": 2,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "JALISCO",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -7470,7 +8694,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-29 09:30:58",
       "6ad65b0b1b305d8b534b1e13": 100,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "NAYARIT",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -7736,7 +8960,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-29 09:03:42",
       "6ad65b0b1b305d8b534b1e13": 200,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "DURANGO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -7872,7 +9096,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-28 12:02:04",
       "6ad65b0b1b305d8b534b1e13": 100,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO NORTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -8008,7 +9232,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-29 07:01:20",
       "6ad65b0b1b305d8b534b1e13": 100,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "CIUDAD JUAREZ",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -8144,7 +9368,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-28 11:56:31",
       "6ad65b0b1b305d8b534b1e13": 24,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -8280,7 +9504,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-28 11:54:21",
       "6ad65b0b1b305d8b534b1e13": 4,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "IRAPUATO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -8416,7 +9640,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-28 20:28:10",
       "6ad65b0b1b305d8b534b1e13": 3,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "LEON",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -8552,7 +9776,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-28 11:23:58",
       "6ad65b0b1b305d8b534b1e13": 129,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "CELAYA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -8688,7 +9912,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 11:21:28",
       "6ad65b0b1b305d8b534b1e13": 357,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "NAYARIT",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -8824,7 +10048,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 11:21:05",
       "6ad65b0b1b305d8b534b1e13": 66,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "NAYARIT",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -8960,7 +10184,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 11:16:43",
       "6ad65b0b1b305d8b534b1e13": 44,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "NAYARIT",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -9096,7 +10320,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 11:07:07",
       "6ad65b0b1b305d8b534b1e13": 25,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "AGUASCALIENTES",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -9232,7 +10456,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 11:05:03",
       "6ad65b0b1b305d8b534b1e13": 206,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "AGUASCALIENTES",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -9368,7 +10592,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 11:04:42",
       "6ad65b0b1b305d8b534b1e13": 300,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA ORIENTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -9504,7 +10728,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 11:04:05",
       "6ad65b0b1b305d8b534b1e13": 368,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA ORIENTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -9640,7 +10864,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 11:03:10",
       "6ad65b0b1b305d8b534b1e13": 3,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA ORIENTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -9776,7 +11000,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 11:01:47",
       "6ad65b0b1b305d8b534b1e13": 700,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -9912,7 +11136,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 11:01:09",
       "6ad65b0b1b305d8b534b1e13": 550,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -10048,7 +11272,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 13:56:57",
       "6ad65b0b1b305d8b534b1e13": 20,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -10181,7 +11405,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 13:56:32",
       "6ad65b0b1b305d8b534b1e13": 141,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -10314,7 +11538,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 13:55:53",
       "6ad65b0b1b305d8b534b1e13": 20,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -10447,7 +11671,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 13:54:20",
       "6ad65b0b1b305d8b534b1e13": 1160,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -10580,7 +11804,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 13:52:40",
       "6ad65b0b1b305d8b534b1e13": 2178,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -10713,7 +11937,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:52:17",
       "6ad65b0b1b305d8b534b1e13": 32,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -10846,7 +12070,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:51:23",
       "6ad65b0b1b305d8b534b1e13": 2,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -10979,7 +12203,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:50:28",
       "6ad65b0b1b305d8b534b1e13": 18,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -11112,7 +12336,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 00:00:00",
       "6ad65b0b1b305d8b534b1e13": 20,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -11245,7 +12469,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:48:29",
       "6ad65b0b1b305d8b534b1e13": 15,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "NOGALES",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -11378,7 +12602,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:47:35",
       "6ad65b0b1b305d8b534b1e13": 44,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "NOGALES",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -11511,7 +12735,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:47:05",
       "6ad65b0b1b305d8b534b1e13": 85,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CHIHUAHUA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -11644,7 +12868,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 00:00:00",
       "6ad65b0b1b305d8b534b1e13": 609,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -11780,7 +13004,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 12:48:23",
       "6ad65b0b1b305d8b534b1e13": 564,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -11916,7 +13140,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 12:47:53",
       "6ad65b0b1b305d8b534b1e13": 93,
-      "6ad692011583192abb37cd8f": "DEPLAZAMIENTO SENCILLA 2 PTAS 200 MB",
+      "6ad692011583192abb37cd8f": "deplazamiento_sencilla_2_ptas_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -12052,7 +13276,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 12:46:55",
       "6ad65b0b1b305d8b534b1e13": 4504,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -12324,7 +13548,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-27 12:45:49",
       "6ad65b0b1b305d8b534b1e13": 50,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TUXTLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -12460,7 +13684,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 12:45:31",
       "6ad65b0b1b305d8b534b1e13": 1,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TUXTLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -12596,7 +13820,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 12:45:06",
       "6ad65b0b1b305d8b534b1e13": 21,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TUXTLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -12732,7 +13956,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 12:44:21",
       "6ad65b0b1b305d8b534b1e13": 6,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TUXTLA",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -12868,7 +14092,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 12:43:55",
       "6ad65b0b1b305d8b534b1e13": 8,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CELAYA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -13004,7 +14228,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:21:41",
       "6ad65b0b1b305d8b534b1e13": 4200,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -13140,7 +14364,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:21:14",
       "6ad65b0b1b305d8b534b1e13": 1500,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CHIHUAHUA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -13276,7 +14500,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:46:16",
       "6ad65b0b1b305d8b534b1e13": 117,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CHIHUAHUA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -13412,7 +14636,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:41:22",
       "6ad65b0b1b305d8b534b1e13": 68,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -13548,7 +14772,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 13:40:37",
       "6ad65b0b1b305d8b534b1e13": 266,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -13684,7 +14908,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-24 16:39:43",
       "6ad65b0b1b305d8b534b1e13": 19,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -13820,7 +15044,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 10:41:55",
       "6ad65b0b1b305d8b534b1e13": 4,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "YUCATAN",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -13956,7 +15180,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 10:33:09",
       "6ad65b0b1b305d8b534b1e13": 45,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "YUCATAN",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -14092,7 +15316,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-24 10:30:38",
       "6ad65b0b1b305d8b534b1e13": 1,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CELAYA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -14228,7 +15452,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-24 10:29:52",
       "6ad65b0b1b305d8b534b1e13": 26,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CELAYA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -14364,7 +15588,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 08:00:16",
       "6ad65b0b1b305d8b534b1e13": 12,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TLAXCALA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -14500,7 +15724,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 07:00:00",
       "6ad65b0b1b305d8b534b1e13": 192,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -14636,7 +15860,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-26 08:52:11",
       "6ad65b0b1b305d8b534b1e13": 311,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -14772,7 +15996,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-25 10:51:23",
       "6ad65b0b1b305d8b534b1e13": 470,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -14908,7 +16132,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-25 09:48:08",
       "6ad65b0b1b305d8b534b1e13": 12,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -15044,7 +16268,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-25 09:47:30",
       "6ad65b0b1b305d8b534b1e13": 102,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -15180,7 +16404,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-25 08:39:38",
       "6ad65b0b1b305d8b534b1e13": 6,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "LA PAZ",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -15316,7 +16540,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-25 08:39:12",
       "6ad65b0b1b305d8b534b1e13": 4,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "LA PAZ",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -15452,7 +16676,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 15:32:32",
       "6ad65b0b1b305d8b534b1e13": 8,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CHIHUAHUA",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -15588,7 +16812,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-24 08:28:16",
       "6ad65b0b1b305d8b534b1e13": 63,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "JALAPA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -15724,7 +16948,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 12:00:00",
       "6ad65b0b1b305d8b534b1e13": 52,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CULIACAN",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -15996,7 +17220,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 15:26:34",
       "6ad65b0b1b305d8b534b1e13": 38,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "AGUASCALIENTES",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -16132,7 +17356,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 14:25:55",
       "6ad65b0b1b305d8b534b1e13": 55,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "AGUASCALIENTES",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -16268,7 +17492,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 13:23:42",
       "6ad65b0b1b305d8b534b1e13": 1,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "NOGALES",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -16404,7 +17628,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 13:19:56",
       "6ad65b0b1b305d8b534b1e13": 380,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA ORIENTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -16540,7 +17764,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 16:19:24",
       "6ad65b0b1b305d8b534b1e13": 23,
-      "6ad692011583192abb37cd8f": "LATERAL SEMI CIRCULAR DERECHO/IZQUIERDO",
+      "6ad692011583192abb37cd8f": "lateral_semi_circular_derecho/izquierdo",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA ORIENTE",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -16676,7 +17900,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 15:18:54",
       "6ad65b0b1b305d8b534b1e13": 110,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -16812,7 +18036,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 14:18:18",
       "6ad65b0b1b305d8b534b1e13": 1,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -16948,7 +18172,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 15:17:49",
       "6ad65b0b1b305d8b534b1e13": 416,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -17084,7 +18308,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 14:17:09",
       "6ad65b0b1b305d8b534b1e13": 13,
-      "6ad692011583192abb37cd8f": "LATERAL SEMI CIRCULAR DERECHO/IZQUIERDO",
+      "6ad692011583192abb37cd8f": "lateral_semi_circular_derecho/izquierdo",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -17220,7 +18444,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 13:03:55",
       "6ad65b0b1b305d8b534b1e13": 5,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "VILLAHERMOSA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -17356,7 +18580,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 02:03:29",
       "6ad65b0b1b305d8b534b1e13": 10,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "VILLAHERMOSA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -17492,7 +18716,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 15:02:54",
       "6ad65b0b1b305d8b534b1e13": 2,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "VILLAHERMOSA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -17628,7 +18852,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 15:02:21",
       "6ad65b0b1b305d8b534b1e13": 14,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "VILLAHERMOSA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -17764,7 +18988,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 16:01:37",
       "6ad65b0b1b305d8b534b1e13": 5,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -17900,7 +19124,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 19:59:50",
       "6ad65b0b1b305d8b534b1e13": 93,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "ACAPULCO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -18036,7 +19260,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 19:57:41",
       "6ad65b0b1b305d8b534b1e13": 154,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -18172,7 +19396,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 19:57:10",
       "6ad65b0b1b305d8b534b1e13": 2,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -18308,7 +19532,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 19:56:48",
       "6ad65b0b1b305d8b534b1e13": 138,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -18444,7 +19668,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 19:55:50",
       "6ad65b0b1b305d8b534b1e13": 132,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -18580,7 +19804,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 19:55:30",
       "6ad65b0b1b305d8b534b1e13": 1,
-      "6ad692011583192abb37cd8f": "LATERAL SEMI CIRCULAR DERECHO/IZQUIERDO",
+      "6ad692011583192abb37cd8f": "lateral_semi_circular_derecho/izquierdo",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -18716,7 +19940,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 19:55:03",
       "6ad65b0b1b305d8b534b1e13": 1119,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -18852,7 +20076,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 19:54:27",
       "6ad65b0b1b305d8b534b1e13": 634,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -18988,7 +20212,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 19:53:08",
       "6ad65b0b1b305d8b534b1e13": 8,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY III",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -19124,7 +20348,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 20:30:04",
       "6ad65b0b1b305d8b534b1e13": 152,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY III",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -19260,7 +20484,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 22:26:40",
       "6ad65b0b1b305d8b534b1e13": 9,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CELAYA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -19396,7 +20620,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 09:26:17",
       "6ad65b0b1b305d8b534b1e13": 3,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CELAYA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -19532,7 +20756,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 09:22:06",
       "6ad65b0b1b305d8b534b1e13": 1,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "NOGALES",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -19674,7 +20898,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 08:21:36",
       "6ad65b0b1b305d8b534b1e13": 22,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY III",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -19810,7 +21034,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 08:21:04",
       "6ad65b0b1b305d8b534b1e13": 2,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY III",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -19946,7 +21170,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 08:20:31",
       "6ad65b0b1b305d8b534b1e13": 8,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY II",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -20082,7 +21306,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 08:19:52",
       "6ad65b0b1b305d8b534b1e13": 2,
-      "6ad692011583192abb37cd8f": "LATERAL SEMI CIRCULAR DERECHO/IZQUIERDO",
+      "6ad692011583192abb37cd8f": "lateral_semi_circular_derecho/izquierdo",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY III",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -20218,7 +21442,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 08:19:21",
       "6ad65b0b1b305d8b534b1e13": 26,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "HERMOSILLO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -20354,7 +21578,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-23 09:18:12",
       "6ad65b0b1b305d8b534b1e13": 46,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -20496,7 +21720,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 17:19:40",
       "6ad65b0b1b305d8b534b1e13": 289,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -20774,7 +21998,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 12:08:07",
       "6ad65b0b1b305d8b534b1e13": 80,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -20910,7 +22134,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 11:07:44",
       "6ad65b0b1b305d8b534b1e13": 95,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELOS",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -21046,7 +22270,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 00:00:00",
       "6ad65b0b1b305d8b534b1e13": 28,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELOS",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -21182,7 +22406,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 11:04:35",
       "6ad65b0b1b305d8b534b1e13": 45,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -21324,7 +22548,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 09:01:21",
       "6ad65b0b1b305d8b534b1e13": 4,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA ORIENTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -21466,7 +22690,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 12:58:42",
       "6ad65b0b1b305d8b534b1e13": 40,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA ORIENTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -21608,7 +22832,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 11:56:24",
       "6ad65b0b1b305d8b534b1e13": 30,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "JALAPA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -21750,7 +22974,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 12:55:50",
       "6ad65b0b1b305d8b534b1e13": 198,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELOS",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -21886,7 +23110,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 12:54:27",
       "6ad65b0b1b305d8b534b1e13": 168,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELOS",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -22022,7 +23246,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 12:54:05",
       "6ad65b0b1b305d8b534b1e13": 210,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELOS",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -22158,7 +23382,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 12:52:56",
       "6ad65b0b1b305d8b534b1e13": 34,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELOS",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -22430,7 +23654,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 20:06:48",
       "6ad65b0b1b305d8b534b1e13": 31,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "OAXACA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -22566,7 +23790,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 20:56:32",
       "6ad65b0b1b305d8b534b1e13": 118,
-      "6ad692011583192abb37cd8f": "DEPLAZAMIENTO SENCILLA 2 PTAS 200 MB",
+      "6ad692011583192abb37cd8f": "deplazamiento_sencilla_2_ptas_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY III",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -22702,7 +23926,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 19:56:01",
       "6ad65b0b1b305d8b534b1e13": 12,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY I",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -22838,7 +24062,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 20:55:03",
       "6ad65b0b1b305d8b534b1e13": 75,
-      "6ad692011583192abb37cd8f": "DEPLAZAMIENTO SENCILLA 2 PTAS 200 MB",
+      "6ad692011583192abb37cd8f": "deplazamiento_sencilla_2_ptas_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY II",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -22974,7 +24198,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 21:27:19",
       "6ad65b0b1b305d8b534b1e13": 36,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY II",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -23110,7 +24334,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 21:26:47",
       "6ad65b0b1b305d8b534b1e13": 88,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY I",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -23246,7 +24470,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 21:01:52",
       "6ad65b0b1b305d8b534b1e13": 20,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUERETARO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -23382,7 +24606,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 20:01:22",
       "6ad65b0b1b305d8b534b1e13": 21,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUERETARO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -23518,7 +24742,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 20:00:37",
       "6ad65b0b1b305d8b534b1e13": 18,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUERETARO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -23654,7 +24878,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 21:00:08",
       "6ad65b0b1b305d8b534b1e13": 24,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUERETARO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -23790,7 +25014,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 19:59:07",
       "6ad65b0b1b305d8b534b1e13": 16,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUERETARO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -23926,7 +25150,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 19:00:00",
       "6ad65b0b1b305d8b534b1e13": 422,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -24068,7 +25292,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 13:05:26",
       "6ad65b0b1b305d8b534b1e13": 42,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -24352,7 +25576,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 12:02:01",
       "6ad65b0b1b305d8b534b1e13": 740,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -24488,7 +25712,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 12:01:11",
       "6ad65b0b1b305d8b534b1e13": 72,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -24624,7 +25848,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 12:00:34",
       "6ad65b0b1b305d8b534b1e13": 6,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -24760,7 +25984,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 12:57:05",
       "6ad65b0b1b305d8b534b1e13": 1744,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -24883,7 +26107,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 10:51:37",
       "6ad65b0b1b305d8b534b1e13": 540,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -25025,7 +26249,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 12:00:05",
       "6ad65b0b1b305d8b534b1e13": 3,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CULIACAN",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -25167,7 +26391,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 12:00:23",
       "6ad65b0b1b305d8b534b1e13": 45,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CULIACAN",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -25309,7 +26533,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 19:21:16",
       "6ad65b0b1b305d8b534b1e13": 36,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -25581,7 +26805,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 19:20:02",
       "6ad65b0b1b305d8b534b1e13": 74,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -25717,7 +26941,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 07:13:37",
       "6ad65b0b1b305d8b534b1e13": 27,
-      "6ad692011583192abb37cd8f": "TRADICIONAL DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS.",
@@ -25860,7 +27084,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 07:12:35",
       "6ad65b0b1b305d8b534b1e13": 17,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 2 PTAS. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_2_ptas._200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -26144,7 +27368,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 10:02:55",
       "6ad65b0b1b305d8b534b1e13": 38,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -26286,7 +27510,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-21 10:02:16",
       "6ad65b0b1b305d8b534b1e13": 1,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "PUEBLA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -26570,7 +27794,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 18:59:46",
       "6ad65b0b1b305d8b534b1e13": 1,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "JALAPA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -26854,7 +28078,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 18:57:34",
       "6ad65b0b1b305d8b534b1e13": 10,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "YUCATAN",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -26996,7 +28220,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:56:25",
       "6ad65b0b1b305d8b534b1e13": 61,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -27132,7 +28356,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:55:51",
       "6ad65b0b1b305d8b534b1e13": 1,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY I",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -27268,7 +28492,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 00:55:18",
       "6ad65b0b1b305d8b534b1e13": 8,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY II",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -27404,7 +28628,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 09:54:52",
       "6ad65b0b1b305d8b534b1e13": 6,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY III",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -27540,7 +28764,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:45:11",
       "6ad65b0b1b305d8b534b1e13": 12,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY I",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -27676,7 +28900,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:38:36",
       "6ad65b0b1b305d8b534b1e13": 63,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA ORIENTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -27813,7 +29037,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:37:45",
       "6ad65b0b1b305d8b534b1e13": 160,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -27955,7 +29179,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:36:29",
       "6ad65b0b1b305d8b534b1e13": 58,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -28097,7 +29321,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:00:17",
       "6ad65b0b1b305d8b534b1e13": 22,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -28239,7 +29463,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:55",
       "6ad65b0b1b305d8b534b1e13": 28,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA ORIENTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -28375,7 +29599,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:15",
       "6ad65b0b1b305d8b534b1e13": 93,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA ORIENTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -28511,7 +29735,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:23",
       "6ad65b0b1b305d8b534b1e13": 34,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -28647,7 +29871,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:00",
       "6ad65b0b1b305d8b534b1e13": 15,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "GUADALAJARA CENTRO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -28783,7 +30007,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:00:34",
       "6ad65b0b1b305d8b534b1e13": 9,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "VERACRUZ",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -28925,7 +30149,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:00:45",
       "6ad65b0b1b305d8b534b1e13": 11,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "VERACRUZ",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -29209,7 +30433,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:00:36",
       "6ad65b0b1b305d8b534b1e13": 14,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELIA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -29351,7 +30575,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 18:00:46",
       "6ad65b0b1b305d8b534b1e13": 86,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "DURANGO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -29493,7 +30717,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:06",
       "6ad65b0b1b305d8b534b1e13": 40,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUERETARO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -29629,7 +30853,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:33",
       "6ad65b0b1b305d8b534b1e13": 38,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUERETARO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -29765,7 +30989,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:00:23",
       "6ad65b0b1b305d8b534b1e13": 14,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -29907,7 +31131,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:37",
       "6ad65b0b1b305d8b534b1e13": 76,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -30044,7 +31268,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:29",
       "6ad65b0b1b305d8b534b1e13": 12,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MONTERREY",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -30186,7 +31410,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:25",
       "6ad65b0b1b305d8b534b1e13": 2,
-      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "CHIHUAHUA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -30322,7 +31546,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-16 12:00:02",
       "6ad65b0b1b305d8b534b1e13": 16,
-      "6ad692011583192abb37cd8f": "SIECOR SENCILLA 1 PTA. 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_sencilla_1_pta._200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -30464,7 +31688,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-16 12:00:53",
       "6ad65b0b1b305d8b534b1e13": 8,
-      "6ad692011583192abb37cd8f": "SIECOR DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "siecor_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "JUEGOS"
@@ -30606,7 +31830,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-16 12:00:07",
       "6ad65b0b1b305d8b534b1e13": 5,
-      "6ad692011583192abb37cd8f": "ENVOLVELTE SECILLO 200 MB",
+      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -30748,7 +31972,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-16 12:00:11",
       "6ad65b0b1b305d8b534b1e13": 38,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -30890,7 +32114,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-16 12:00:29",
       "6ad65b0b1b305d8b534b1e13": 67,
-      "6ad692011583192abb37cd8f": "DEPLASAMIENTO DOBLE 200 MB",
+      "6ad692011583192abb37cd8f": "deplasamiento_doble_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -31032,7 +32256,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:29",
       "6ad65b0b1b305d8b534b1e13": 48,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -31178,7 +32402,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-19 12:00:44",
       "6ad65b0b1b305d8b534b1e13": 100,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "TOLUCA",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -31320,7 +32544,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-15 12:00:04",
       "6ad65b0b1b305d8b534b1e13": 64,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA MINI 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_mini_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELOS",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -31462,7 +32686,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-15 12:00:50",
       "6ad65b0b1b305d8b534b1e13": 554,
-      "6ad692011583192abb37cd8f": "LATERAL CASETA NORMAL 200 MB",
+      "6ad692011583192abb37cd8f": "lateral_caseta_normal_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELOS",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
@@ -31604,7 +32828,7 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-15 12:00:39",
       "6ad65b0b1b305d8b534b1e13": 176,
-      "6ad692011583192abb37cd8f": "TRADICIONAL SENCILLA 200 MB",
+      "6ad692011583192abb37cd8f": "tradicional_sencilla_200_mb",
       "6ad695943f0d28deb4a6c9a3": "MORELOS",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."

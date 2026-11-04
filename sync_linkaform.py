@@ -99,7 +99,11 @@ def get_cutoff_info(current_dt=None):
       y los nuevos del Día D+1.
     """
     if current_dt is None:
-        current_dt = datetime.now()
+        try:
+            from datetime import timezone
+            current_dt = datetime.now(timezone(timedelta(hours=-6))).replace(tzinfo=None)
+        except Exception:
+            current_dt = datetime.now()
 
     if current_dt.hour < 8:
         # Mañana antes de las 10:00 AM: muestra corte oficial cerrado de ayer a las 22:00
