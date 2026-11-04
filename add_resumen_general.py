@@ -1,4 +1,4 @@
-import openpyxl
+﻿import openpyxl
 from datetime import datetime
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
@@ -25,7 +25,10 @@ def add_resumen_general_sheet(wb, cutoff_info):
     f_kpi_title = Font(name="Calibri", size=10, bold=True, color="555555")
     f_kpi_val = Font(name="Calibri", size=22, bold=True, color=c_blue_dark)
     f_kpi_val_green = Font(name="Calibri", size=24, bold=True, color=c_green)
+    f_kpi_title_mat = Font(name="Calibri", size=10, bold=True, color="92400E")
+    f_kpi_val_mat = Font(name="Calibri", size=24, bold=True, color="B45309")
     f_kpi_sub = Font(name="Calibri", size=9, color="777777")
+    f_kpi_sub_mat = Font(name="Calibri", size=9, color="78350F")
     f_tbl_header = Font(name="Calibri", size=11, bold=True, color=c_white)
     f_tbl_row = Font(name="Calibri", size=11, color="111111")
     f_tbl_total = Font(name="Calibri", size=12, bold=True, color=c_blue_dark)
@@ -34,6 +37,7 @@ def add_resumen_general_sheet(wb, cutoff_info):
     fill_header = PatternFill(start_color=c_blue_dark, end_color=c_blue_dark, fill_type="solid")
     fill_kpi_bg = PatternFill(start_color=c_blue_light, end_color=c_blue_light, fill_type="solid")
     fill_kpi_tot = PatternFill(start_color="E6F4EA", end_color="E6F4EA", fill_type="solid") # Verde suave
+    fill_kpi_mat = PatternFill(start_color="FEF3C7", end_color="FEF3C7", fill_type="solid") # Ámbar suave
     fill_tbl_h = PatternFill(start_color=c_blue_accent, end_color=c_blue_accent, fill_type="solid")
     fill_row_alt = PatternFill(start_color=c_gray_bg, end_color=c_gray_bg, fill_type="solid")
     fill_total_row = PatternFill(start_color="D9E8F5", end_color="D9E8F5", fill_type="solid")
@@ -51,13 +55,13 @@ def add_resumen_general_sheet(wb, cutoff_info):
     al_right = Alignment(horizontal="right", vertical="center")
 
     # 1. TÍTULO Y ENCABEZADO
-    ws.merge_cells("B2:J2")
+    ws.merge_cells("B2:I2")
     ws["B2"] = "REPORTE DIARIO DE CASETAS Y CAJAS CONTRATISTAS 2026 - IASA / TELMEX"
     ws["B2"].font = f_title
     ws["B2"].fill = fill_header
     ws["B2"].alignment = al_center
 
-    ws.merge_cells("B3:J3")
+    ws.merge_cells("B3:I3")
     desc_corte = cutoff_info.get("description", "Regla de corte 10:00 PM")
     ws["B3"] = f"RESUMEN EJECUTIVO CONSOLIDADO AL MOMENTO • {desc_corte}"
     ws["B3"].font = f_subtitle
@@ -78,6 +82,7 @@ def add_resumen_general_sheet(wb, cutoff_info):
     ws["B6"] = "='Programa CASETAS REPORTE DIARIO'!CN79"
     ws["B6"].font = f_kpi_val
     ws["B6"].alignment = al_center
+    ws["B6"].number_format = "#,##0"
 
     ws.merge_cells("B7:C7")
     ws["B7"] = "Casetas Instaladas Validadas"
@@ -85,47 +90,69 @@ def add_resumen_general_sheet(wb, cutoff_info):
     ws["B7"].alignment = al_center
 
     # KPI 2: Cajas
-    ws.merge_cells("E5:F5")
-    ws["E5"] = "TOTAL CAJAS AL MOMENTO"
-    ws["E5"].font = f_kpi_title
-    ws["E5"].alignment = al_center
+    ws.merge_cells("D5:E5")
+    ws["D5"] = "TOTAL CAJAS AL MOMENTO"
+    ws["D5"].font = f_kpi_title
+    ws["D5"].alignment = al_center
 
-    ws.merge_cells("E6:F6")
-    ws["E6"] = "='Programa CAJAS REPORTE DIARIO'!CH77"
-    ws["E6"].font = f_kpi_val
-    ws["E6"].alignment = al_center
+    ws.merge_cells("D6:E6")
+    ws["D6"] = "='Programa CAJAS REPORTE DIARIO'!CH77"
+    ws["D6"].font = f_kpi_val
+    ws["D6"].alignment = al_center
+    ws["D6"].number_format = "#,##0"
 
-    ws.merge_cells("E7:F7")
-    ws["E7"] = "Cajas Instaladas Validadas"
-    ws["E7"].font = f_kpi_sub
-    ws["E7"].alignment = al_center
+    ws.merge_cells("D7:E7")
+    ws["D7"] = "Cajas Instaladas Validadas"
+    ws["D7"].font = f_kpi_sub
+    ws["D7"].alignment = al_center
 
     # KPI 3: SUMA TOTAL (Cajas + Casetas)
-    ws.merge_cells("H5:J5")
-    ws["H5"] = "SUMA TOTAL AL MOMENTO (CASETAS + CAJAS)"
-    ws["H5"].font = Font(name="Calibri", size=11, bold=True, color=c_green)
+    ws.merge_cells("F5:G5")
+    ws["F5"] = "TOTAL AL MOMENTO (CASETAS + CAJAS)"
+    ws["F5"].font = Font(name="Calibri", size=10, bold=True, color=c_green)
+    ws["F5"].alignment = al_center
+
+    ws.merge_cells("F6:G6")
+    ws["F6"] = "=B6+D6"
+    ws["F6"].font = f_kpi_val_green
+    ws["F6"].alignment = al_center
+    ws["F6"].number_format = "#,##0"
+
+    ws.merge_cells("F7:G7")
+    ws["F7"] = "Gran Total Acumulado al Momento"
+    ws["F7"].font = f_kpi_sub
+    ws["F7"].alignment = al_center
+
+    # KPI 4: TOTAL GENERAL MATERIAL RECIBIDO (Cajas + Casetas)
+    ws.merge_cells("H5:I5")
+    ws["H5"] = "TOTAL MATERIAL RECIBIDO"
+    ws["H5"].font = f_kpi_title_mat
     ws["H5"].alignment = al_center
 
-    ws.merge_cells("H6:J6")
-    ws["H6"] = "=B6+E6"
-    ws["H6"].font = f_kpi_val_green
+    ws.merge_cells("H6:I6")
+    ws["H6"] = "='Programa CASETAS REPORTE DIARIO'!CU79+'Programa CAJAS REPORTE DIARIO'!CO77"
+    ws["H6"].font = f_kpi_val_mat
     ws["H6"].alignment = al_center
+    ws["H6"].number_format = "#,##0"
 
-    ws.merge_cells("H7:J7")
-    ws["H7"] = "Gran Total Acumulado al Momento"
-    ws["H7"].font = f_kpi_sub
+    ws.merge_cells("H7:I7")
+    ws["H7"] = "Total General Unidades (Cajas + Casetas)"
+    ws["H7"].font = f_kpi_sub_mat
     ws["H7"].alignment = al_center
 
     # Aplicar fondos y bordes a KPIs
     for r in range(5, 8):
-        for c in [2, 3]:
+        for c in [2, 3]:   # B, C -> KPI 1
             ws.cell(r, c).fill = fill_kpi_bg
             ws.cell(r, c).border = b_kpi
-        for c in [5, 6]:
+        for c in [4, 5]:   # D, E -> KPI 2
             ws.cell(r, c).fill = fill_kpi_bg
             ws.cell(r, c).border = b_kpi
-        for c in [8, 9, 10]:
+        for c in [6, 7]:   # F, G -> KPI 3
             ws.cell(r, c).fill = fill_kpi_tot
+            ws.cell(r, c).border = b_kpi
+        for c in [8, 9]:   # H, I -> KPI 4
+            ws.cell(r, c).fill = fill_kpi_mat
             ws.cell(r, c).border = b_kpi
 
     ws.row_dimensions[5].height = 18
@@ -134,25 +161,25 @@ def add_resumen_general_sheet(wb, cutoff_info):
 
     # 3. TABLA DE AVANCE DIARIO CONSOLIDADO
     # Título de Sección
-    ws.merge_cells("B9:J9")
+    ws.merge_cells("B9:I9")
     ws["B9"] = "DESGLOSE DE AVANCE DIARIO CONSOLIDADO (TELMEX)"
     ws["B9"].font = Font(name="Calibri", size=12, bold=True, color=c_blue_dark)
     ws["B9"].alignment = al_left
 
-    headers = [
-        ("B", "FECHA"),
-        ("C", "DÍA SEMANA"),
-        ("D", "CASETAS"),
-        ("E", "CAJAS"),
-        ("F", "TOTAL DÍA (CASETAS + CAJAS)"),
-        ("G", "ACUMULADO AL MOMENTO"),
-        ("H", "ESTADO CORTE")
-    ]
-
     ws.row_dimensions[10].height = 24
-    for col_letter, title in headers:
+
+    ws["B10"] = "FECHA"
+    ws["C10"] = "DÍA SEMANA"
+    ws["D10"] = "CASETAS"
+    ws["E10"] = "CAJAS"
+    ws["F10"] = "TOTAL DÍA (CASETAS + CAJAS)"
+    ws["G10"] = "ACUMULADO AL MOMENTO"
+
+    ws.merge_cells("H10:I10")
+    ws["H10"] = "ESTADO CORTE"
+
+    for col_letter in ["B", "C", "D", "E", "F", "G", "H", "I"]:
         cell = ws[f"{col_letter}10"]
-        cell.value = title
         cell.font = f_tbl_header
         cell.fill = fill_tbl_h
         cell.alignment = al_center
@@ -227,10 +254,11 @@ def add_resumen_general_sheet(wb, cutoff_info):
         ws[f"G{curr_row}"].alignment = al_right
         ws[f"G{curr_row}"].number_format = "#,##0"
 
+        ws.merge_cells(f"H{curr_row}:I{curr_row}")
         ws[f"H{curr_row}"] = status
         ws[f"H{curr_row}"].alignment = al_center
 
-        for col_letter, _ in headers:
+        for col_letter in ["B", "C", "D", "E", "F", "G", "H", "I"]:
             cell = ws[f"{col_letter}{curr_row}"]
             cell.font = f_tbl_row
             if fill_curr.fill_type: cell.fill = fill_curr
@@ -261,10 +289,11 @@ def add_resumen_general_sheet(wb, cutoff_info):
     ws[f"G{total_row}"].alignment = al_right
     ws[f"G{total_row}"].number_format = "#,##0"
 
+    ws.merge_cells(f"H{total_row}:I{total_row}")
     ws[f"H{total_row}"] = "100% CONCILIADO"
     ws[f"H{total_row}"].alignment = al_center
 
-    for col_letter, _ in headers:
+    for col_letter in ["B", "C", "D", "E", "F", "G", "H", "I"]:
         cell = ws[f"{col_letter}{total_row}"]
         cell.font = f_tbl_total
         cell.fill = fill_total_row
@@ -272,34 +301,34 @@ def add_resumen_general_sheet(wb, cutoff_info):
 
     # 4. CUADRO DE NOTAS DE AUDITORÍA Y CONCILIACIÓN
     note_start = total_row + 2
-    ws.merge_cells(f"B{note_start}:H{note_start}")
+    ws.merge_cells(f"B{note_start}:I{note_start}")
     ws[f"B{note_start}"] = "NOTAS DE INTEGRIDAD Y REGLAS DE AUDITORÍA"
     ws[f"B{note_start}"].font = Font(name="Calibri", size=11, bold=True, color=c_blue_dark)
 
     notes = [
-        "1. Línea Base Oficial Entregada: Los datos del 17 al 25 de Octubre corresponden al reporte entregado hoy (263 casetas + 684 cajas = 947 intervenciones validadas), los cuales quedan 100% fijos e inmutables.",
-        "2. Actividad Diaria Normal: A partir del 26 de Octubre, las actividades de campo se suman diariamente en cada corte matutino (7:00 AM) sobre la línea base oficial.",
+        "1. Línea Base Oficial Entregada: Los datos del 17 al 25 de Octubre corresponden al reporte entregado (263 casetas + 684 cajas = 947 intervenciones validadas), los cuales quedan 100% fijos e inmutables.",
+        "2. Actividad Diaria Normal: A partir del 26 de Octubre, las actividades de campo se suman diariamente en cada corte matutino (8:00 AM) sobre la línea base oficial.",
         "3. Deduplicación Estricta: Cada activo físico se contabiliza una sola vez por orden cronológico, protegiendo las cifras frente a reintentos de captura en campo.",
-        "4. Regla de Horario de Corte: Las capturas realizadas después de las 22:00 hrs se contabilizan oficialmente para el ciclo del día siguiente."
+        "4. Regla de Horario de Corte: Las capturas realizadas después de las 22:00 hrs se contabilizan oficialmente para el ciclo del día siguiente.",
+        "5. Balance de Materiales: El total de material recibido refleja las unidades entregadas y validadas acumuladas en Cajas y Casetas."
     ]
 
     for idx, note_txt in enumerate(notes):
         r_n = note_start + 1 + idx
-        ws.merge_cells(f"B{r_n}:H{r_n}")
+        ws.merge_cells(f"B{r_n}:I{r_n}")
         ws[f"B{r_n}"] = note_txt
         ws[f"B{r_n}"].font = Font(name="Calibri", size=9.5, italic=True, color="444444")
         ws.row_dimensions[r_n].height = 18
 
-    # Ajustar ancho de columnas
+    # Ajustar ancho de columnas para visualización óptima
     ws.column_dimensions["A"].width = 3
-    ws.column_dimensions["B"].width = 16
+    ws.column_dimensions["B"].width = 15
     ws.column_dimensions["C"].width = 15
     ws.column_dimensions["D"].width = 16
     ws.column_dimensions["E"].width = 16
-    ws.column_dimensions["F"].width = 24
-    ws.column_dimensions["G"].width = 24
-    ws.column_dimensions["H"].width = 20
-    ws.column_dimensions["I"].width = 5
-    ws.column_dimensions["J"].width = 5
+    ws.column_dimensions["F"].width = 20
+    ws.column_dimensions["G"].width = 20
+    ws.column_dimensions["H"].width = 18
+    ws.column_dimensions["I"].width = 18
 
     return ws

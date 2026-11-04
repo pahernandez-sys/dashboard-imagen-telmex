@@ -335,6 +335,17 @@ def build_reporte_diario(current_dt=None):
     ws_cas["I3"].fill = fill_tot
     ws_cas["I3"].border = b_kpi_box
 
+    fill_mat_top = PatternFill(start_color="FEF3C7", end_color="FEF3C7", fill_type="solid")
+    f_kpi_mat_top = Font(name="Calibri", size=16, bold=True, color="B45309")
+    ws_cas["K3"] = "TOTAL MATERIAL RECIBIDO:"
+    ws_cas["K3"].font = Font(name="Calibri", size=11, bold=True, color="B45309")
+    ws_cas["K3"].alignment = Alignment(horizontal="right", vertical="center")
+    ws_cas["N3"] = "=+CU79+'Programa CAJAS REPORTE DIARIO'!CO77"
+    ws_cas["N3"].font = f_kpi_mat_top
+    ws_cas["N3"].alignment = Alignment(horizontal="center", vertical="center")
+    ws_cas["N3"].fill = fill_mat_top
+    ws_cas["N3"].border = b_kpi_box
+
     ws_caj["B3"] = "TOTAL CAJAS AL MOMENTO:"
     ws_caj["B3"].font = f_kpi_lbl
     ws_caj["B3"].alignment = Alignment(horizontal="right", vertical="center")
@@ -352,6 +363,15 @@ def build_reporte_diario(current_dt=None):
     ws_caj["I3"].alignment = Alignment(horizontal="center", vertical="center")
     ws_caj["I3"].fill = fill_tot
     ws_caj["I3"].border = b_kpi_box
+
+    ws_caj["K3"] = "TOTAL MATERIAL RECIBIDO:"
+    ws_caj["K3"].font = Font(name="Calibri", size=11, bold=True, color="B45309")
+    ws_caj["K3"].alignment = Alignment(horizontal="right", vertical="center")
+    ws_caj["N3"] = "='Programa CASETAS REPORTE DIARIO'!CU79+CO77"
+    ws_caj["N3"].font = f_kpi_mat_top
+    ws_caj["N3"].alignment = Alignment(horizontal="center", vertical="center")
+    ws_caj["N3"].fill = fill_mat_top
+    ws_caj["N3"].border = b_kpi_box
 
     # Hoja Ejecutiva al inicio del libro
     add_resumen_general_sheet(wb, cutoff_info)
