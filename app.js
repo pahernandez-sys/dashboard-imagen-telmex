@@ -257,20 +257,11 @@ document.addEventListener("DOMContentLoaded", () => {
   try { renderMaterialsLogTable(); } catch (e) { console.error("Error en renderMaterialsLogTable:", e); }
   try { updateSyncLabel(); } catch (e) { console.error("Error en updateSyncLabel:", e); }
 
-  // Conexión y carga en tiempo real desde Supabase Cloud (< 100ms)
-  try {
-    initSupabaseSmartSync();
-  } catch (e) {
-    console.error("Error en loadDataFromSupabase:", e);
+  // Operación ultra rápida en vivo vía Red CDN (GitHub Pages) sin límites de cuota
+  const badge = document.getElementById("lastSyncLabel");
+  if (badge) {
+    badge.innerHTML = `<span class="inline-flex items-center gap-1 text-emerald-300 font-bold">● En vivo (Red CDN)</span>`;
   }
-
-  // Auto-refresco en vivo cada 60 segundos si es horario de jornada activa (10:00 AM - 10:00 PM)
-  setInterval(async () => {
-    const cutoff = getCutoffInfo();
-    if (!cutoff.isFrozen && await checkSupabaseHasChanges()) {
-      loadDataFromSupabase(false);
-    }
-  }, 60000);
 });
 
 // Configuración de Conexión en Tiempo Real con Supabase (PostgreSQL Cloud)
