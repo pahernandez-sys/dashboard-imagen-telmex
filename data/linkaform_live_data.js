@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-05 08:34:13
- * Estado de corte: Jornada en vivo activa (05/11/2026, 08:34 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-05 08:44:23
+ * Estado de corte: Jornada en vivo activa (05/11/2026, 08:44 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 8677 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 256 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-05 08:34:08",
+  "now": "2026-11-05 08:44:17",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-05",
-  "max_visible_dt": "2026-11-05 08:34:08",
-  "max_visible_datetime_str": "2026-11-05 08:34:08",
+  "max_visible_dt": "2026-11-05 08:44:17",
+  "max_visible_datetime_str": "2026-11-05 08:44:17",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (05/11/2026, 08:34 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (05/11/2026, 08:44 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16144036-1259",
+    "fecha": "2026-11-05",
+    "fecha_captura": "2026-11-05",
+    "hora": "08:32",
+    "fecha_corte": "2026-11-05",
+    "created_at_iso": "2026-11-05 08:32:10",
+    "timestamp": 1793889130.0,
+    "tipo": "CASETA",
+    "identificador": "042590",
+    "modelo": "NORMAL",
+    "estado": "SINALOA",
+    "area_trabajo": "CULIACAN",
+    "contratista": "Alejandro Adrian Obeso",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Se agrego al sistema",
+    "num_viniles": 1.0,
+    "version": "v7 - Android",
+    "latitud": 24.8107209,
+    "longitud": -107.389734,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aec9366c4b9808e2f3be046.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16144027-1259",
     "fecha": "2026-11-05",
@@ -26478,7 +26503,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1059",
+    "identificador": "S/ID-1060",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -124991,31 +125016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 16.8615442,
     "longitud": -99.9234326,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae4e366475e32fc4efa39ec.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16123736-1259",
-    "fecha": "2026-10-30",
-    "fecha_captura": "2026-10-30",
-    "hora": "12:35",
-    "fecha_corte": "2026-10-30",
-    "created_at_iso": "2026-10-30 12:35:16",
-    "timestamp": 1793385316.0,
-    "tipo": "CAJA",
-    "identificador": "MOB0029",
-    "modelo": "DESPLAZAMIENTO SENCILLA",
-    "estado": "GUERRERO",
-    "area_trabajo": "ACAPULCO",
-    "contratista": "Ricardo Avila Sanchez",
-    "oferta": "120_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v4 - Android",
-    "latitud": 16.8634944,
-    "longitud": -99.9281821,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae4e35f5bfd138c9f4a4f0a.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
