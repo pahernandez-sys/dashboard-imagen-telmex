@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-05 02:53:47
+ * Sincronización: 2026-11-05 03:03:56
  * Estado de corte: Reporte matutino cerrado al 04/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 8578 (Retenidos por corte: 63)
+ * Trabajos de campo visibles: 8575 (Retenidos por corte: 66)
  * Movimientos de materiales visibles: 255 (Retenidos por corte: 1)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-05 02:53:42",
+  "now": "2026-11-05 03:03:51",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-04",
@@ -23366,81 +23366,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 24.7969877,
     "longitud": -107.4117345,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeb827533fe3cbd3b98a6c7.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16141866-1259",
-    "fecha": "2026-11-04",
-    "fecha_captura": "2026-11-04",
-    "hora": "13:07",
-    "fecha_corte": "2026-11-04",
-    "created_at_iso": "2026-11-04 13:07:13",
-    "timestamp": 1793819233.0,
-    "tipo": "CAJA",
-    "identificador": "LHP0002",
-    "modelo": "TRADICIONAL SENCILLA",
-    "estado": "PUEBLA",
-    "area_trabajo": "PUEBLA",
-    "contratista": "Ivan Rosas Cruz",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v7 - Android",
-    "latitud": 18.9739792,
-    "longitud": -98.2147174,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeb825c57e079d0623be033.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16141845-1259",
-    "fecha": "2026-11-04",
-    "fecha_captura": "2026-11-04",
-    "hora": "13:06",
-    "fecha_corte": "2026-11-04",
-    "created_at_iso": "2026-11-04 13:06:46",
-    "timestamp": 1793819206.0,
-    "tipo": "CAJA",
-    "identificador": "GAN0062",
-    "modelo": "TRADICIONAL SENCILLA",
-    "estado": "AGUASCALIENTES",
-    "area_trabajo": "AGUASCALIENTES",
-    "contratista": "Adrian Valenzuela",
-    "oferta": "120_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v4 - Android",
-    "latitud": 21.8669602,
-    "longitud": -102.307771,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeb8242da2d163c3e762532.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16141843-1259",
-    "fecha": "2026-11-04",
-    "fecha_captura": "2026-11-04",
-    "hora": "13:06",
-    "fecha_corte": "2026-11-04",
-    "created_at_iso": "2026-11-04 13:06:25",
-    "timestamp": 1793819185.0,
-    "tipo": "CAJA",
-    "identificador": "VHG0023",
-    "modelo": "SIECOR SENCILLA 2 PTAS",
-    "estado": "JALISCO",
-    "area_trabajo": "AGUASCALIENTES",
-    "contratista": "Adrian Valenzuela",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Ok",
-    "num_viniles": 1.0,
-    "version": "v7 - Android",
-    "latitud": 21.6799578,
-    "longitud": -102.5894602,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeb822c887d34c9a798a6c5.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
