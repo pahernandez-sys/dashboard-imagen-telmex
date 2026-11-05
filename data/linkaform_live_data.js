@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-05 06:13:59
+ * Sincronización: 2026-11-05 06:24:14
  * Estado de corte: Reporte matutino cerrado al 04/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 8575 (Retenidos por corte: 66)
+ * Trabajos de campo visibles: 8575 (Retenidos por corte: 69)
  * Movimientos de materiales visibles: 255 (Retenidos por corte: 1)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-05 06:13:54",
+  "now": "2026-11-05 06:24:08",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-04",
@@ -23953,7 +23953,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1024",
+    "identificador": "S/ID-1027",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -136678,7 +136678,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5533",
+    "identificador": "S/ID-5536",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -136703,7 +136703,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5534",
+    "identificador": "S/ID-5537",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -136728,7 +136728,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5535",
+    "identificador": "S/ID-5538",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
