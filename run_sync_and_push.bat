@@ -6,6 +6,8 @@ echo [%DATE% %TIME%] Iniciando sincronizacion automatica programada... >> auto_s
 
 "C:\Users\PCI\AppData\Local\Programs\Python\Python312\python.exe" -u sync_linkaform.py >> auto_sync_service.log 2>&1
 
+"C:\Users\PCI\AppData\Local\Programs\Python\Python312\python.exe" -u "C:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\scripts\sync_to_local_mysql.py" >> auto_sync_service.log 2>&1
+
 "C:\Users\PCI\AppData\Local\Programs\Git\cmd\git.exe" add data/linkaform_live_data.js data/Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx app.js >> auto_sync_service.log 2>&1
 "C:\Users\PCI\AppData\Local\Programs\Git\cmd\git.exe" diff --staged --quiet || (
     "C:\Users\PCI\AppData\Local\Programs\Git\cmd\git.exe" commit -m "chore: sync avances en vivo (local CDN)" >> auto_sync_service.log 2>&1

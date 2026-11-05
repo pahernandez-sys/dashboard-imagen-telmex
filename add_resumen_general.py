@@ -310,7 +310,7 @@ def add_resumen_general_sheet(wb, cutoff_info):
         "2. Actividad Diaria Normal: A partir del 26 de Octubre, las actividades de campo se suman diariamente en cada corte matutino (8:00 AM) sobre la línea base oficial.",
         "3. Deduplicación Estricta: Cada activo físico se contabiliza una sola vez por orden cronológico, protegiendo las cifras frente a reintentos de captura en campo.",
         "4. Regla de Horario de Corte: Las capturas realizadas después de las 22:00 hrs se contabilizan oficialmente para el ciclo del día siguiente.",
-        "5. Balance de Materiales: El total de material recibido refleja las unidades entregadas y validadas acumuladas en Cajas y Casetas."
+        "5. Balance de Materiales: El total de material recibido refleja el 100% de las unidades recibidas acumuladas en almacén (63,716 piezas: 35,992 laterales de caseta y 27,724 cajas) sin conciliar, comparándose contra las unidades efectivamente instaladas en campo."
     ]
 
     for idx, note_txt in enumerate(notes):

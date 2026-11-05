@@ -181,40 +181,48 @@ def build_reporte_diario(current_dt=None):
 
 
     # =========================================================
-    # APLICAR MATERIALES NUEVOS (START_DATE <= fecha_corte <= active_reporting_date)
+    # APLICAR MATERIALES RECIBIDOS (Total bruto sin conciliar)
+    # Refleja el 100% de los materiales recibidos registrados en Linkaform
+    # Total esperado: 63,716 unidades (35,992 laterales caseta + 27,724 cajas)
     # =========================================================
+    # 1. Limpiar columnas de materiales en plantilla base para registrar datos reales de Linkaform
+    for r in range(14, 79):
+        for c in range(103, 108): # CY:DC
+            ws_cas.cell(r, c).value = None
+        ws_cas.cell(r, 99).value = f"=DD{r}"
+
+    for r in range(14, 77):
+        for c in range(97, 107): # CS:DB
+            ws_caj.cell(r, c).value = None
+        ws_caj.cell(r, 93).value = f"=DC{r}"
+
+    # 2. Inyectar todos los materiales recibidos sin filtros ni recortes de fecha
     for m in materials:
         mat_dt = parse_record_datetime(m)
         if mat_dt and mat_dt > max_visible_dt:
             continue
-
-        f_m = get_accounting_date(mat_dt) if mat_dt else str(m.get("fecha") or "")[:10]
-        if f_m < START_DATE or f_m > active_reporting_date:
-            continue
         
         area = m.get("area") or ""
-        desc = (m.get("descripcion") or "").strip()
+        desc = (m.get("descripcion") or "").strip().upper()
         qty = float(m.get("cantidad") or 0)
         if qty <= 0:
             continue
 
-        is_cas = "CASETA" in desc.upper() or "SEMICIRCULAR" in desc.upper()
+        is_cas = any(k in desc for k in ["CASETA", "SEMICIRCULAR", "NORMAL", "MINI", "REFORMA", "CUICUILCO"])
         if is_cas:
             r_idx = find_caseta_row(area)
             c_idx = map_caseta_mat_col(desc)
             if r_idx and c_idx:
-                curr = ws_cas.cell(r_idx, c_idx).value
-                ws_cas.cell(r_idx, c_idx).value = (curr or 0) + qty
+                curr = ws_cas.cell(r_idx, c_idx).value or 0
+                ws_cas.cell(r_idx, c_idx).value = curr + qty
                 ws_cas.cell(r_idx, 99).value = f"=DD{r_idx}"
-                print(f"  [Caseta Mat Nuevo] {area} -> Fila {r_idx}, Col {c_idx} += {qty}")
         else:
             r_idx = find_caja_row(area)
             c_idx = map_caja_mat_col(desc)
             if r_idx and c_idx:
-                curr = ws_caj.cell(r_idx, c_idx).value
-                ws_caj.cell(r_idx, c_idx).value = (curr or 0) + qty
+                curr = ws_caj.cell(r_idx, c_idx).value or 0
+                ws_caj.cell(r_idx, c_idx).value = curr + qty
                 ws_caj.cell(r_idx, 93).value = f"=DC{r_idx}"
-                print(f"  [Caja Mat Nuevo] {area} -> Fila {r_idx}, Col {c_idx} += {qty}")
 
     # =========================================================
     # APLICAR TRABAJOS DE CAMPO NUEVOS (START_DATE <= fecha_corte <= active_reporting_date)
