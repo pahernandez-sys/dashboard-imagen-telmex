@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-05 08:54:04
- * Estado de corte: Jornada en vivo activa (05/11/2026, 08:54 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 8677 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-05 09:04:09
+ * Estado de corte: Jornada en vivo activa (05/11/2026, 09:04 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 8679 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 256 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-05 08:54:00",
+  "now": "2026-11-05 09:04:03",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-05",
-  "max_visible_dt": "2026-11-05 08:54:00",
-  "max_visible_datetime_str": "2026-11-05 08:54:00",
+  "max_visible_dt": "2026-11-05 09:04:03",
+  "max_visible_datetime_str": "2026-11-05 09:04:03",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (05/11/2026, 08:54 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (05/11/2026, 09:04 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -174966,6 +174966,56 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.73769,
     "longitud": -101.1161433,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae14631101ce362f1459645.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16114690-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "18:47",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 18:47:44",
+    "timestamp": 1793148464.0,
+    "tipo": "CAJA",
+    "identificador": "MCI0002",
+    "modelo": "DESPLAZAMIENTO SENCILLA",
+    "estado": "MICHOACAN",
+    "area_trabajo": "MICHOACAN",
+    "contratista": "Roberto Melchor Frutos Fuentes",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.7388233,
+    "longitud": -101.1170983,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae1462e584683740d83e515.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16114689-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "18:47",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 18:47:41",
+    "timestamp": 1793148461.0,
+    "tipo": "CAJA",
+    "identificador": "LJD0007",
+    "modelo": "DESPLAZAMIENTO SENCILLA",
+    "estado": "MICHOACAN",
+    "area_trabajo": "MICHOACAN",
+    "contratista": "Roberto Melchor Frutos Fuentes",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.7322749,
+    "longitud": -101.1197845,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae1462a15f658b9fa3c9094.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
