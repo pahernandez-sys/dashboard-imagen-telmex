@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-05 02:23:50
+ * Sincronización: 2026-11-05 02:34:10
  * Estado de corte: Reporte matutino cerrado al 04/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 8575 (Retenidos por corte: 1)
+ * Trabajos de campo visibles: 8576 (Retenidos por corte: 1)
  * Movimientos de materiales visibles: 255 (Retenidos por corte: 1)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-05 02:23:44",
+  "now": "2026-11-05 02:34:05",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-04",
@@ -149966,6 +149966,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.2704534,
     "longitud": -99.5322879,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae388d64808542b9fe3e1f6.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16119430-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "11:56",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 11:56:20",
+    "timestamp": 1793296580.0,
+    "tipo": "CAJA",
+    "identificador": "CLS0038",
+    "modelo": "TRADICIONAL SENCILLA",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "Ingeniería avanzada en redes",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Se limpia y se pega logo nuevo",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 16.8495664,
+    "longitud": -99.8160805,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae388c2b99aa49828d00055.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
