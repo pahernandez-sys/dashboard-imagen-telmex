@@ -1,24 +1,74 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-05 21:12:50
- * Estado de corte: Jornada en vivo activa (05/11/2026, 21:12 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 10111 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-05 21:19:03
+ * Estado de corte: Jornada en vivo activa (05/11/2026, 21:19 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 10113 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 272 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-05 21:12:44",
+  "now": "2026-11-05 21:19:01",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-05",
-  "max_visible_dt": "2026-11-05 21:12:44",
-  "max_visible_datetime_str": "2026-11-05 21:12:44",
+  "max_visible_dt": "2026-11-05 21:19:01",
+  "max_visible_datetime_str": "2026-11-05 21:19:01",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (05/11/2026, 21:12 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (05/11/2026, 21:19 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16146847-1259",
+    "fecha": "2026-11-05",
+    "fecha_captura": "2026-11-05",
+    "hora": "21:13",
+    "fecha_corte": "2026-11-05",
+    "created_at_iso": "2026-11-05 21:13:17",
+    "timestamp": 1793934797.0,
+    "tipo": "CASETA",
+    "identificador": "3338233963",
+    "modelo": "NORMAL",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v7 - Android",
+    "latitud": 20.6988481,
+    "longitud": -103.3476806,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed45c834324643b7176f5a.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16146843-1259",
+    "fecha": "2026-11-05",
+    "fecha_captura": "2026-11-05",
+    "hora": "21:13",
+    "fecha_corte": "2026-11-05",
+    "created_at_iso": "2026-11-05 21:13:11",
+    "timestamp": 1793934791.0,
+    "tipo": "CASETA",
+    "identificador": "3338246646",
+    "modelo": "NORMAL",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v7 - Android",
+    "latitud": 20.6988079,
+    "longitud": -103.3477061,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed45c26237207209176f55.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16146834-1259",
     "fecha": "2026-11-05",
@@ -32103,7 +32153,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1284",
+    "identificador": "S/ID-1286",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -32278,7 +32328,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1291",
+    "identificador": "S/ID-1293",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -32728,7 +32778,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1309",
+    "identificador": "S/ID-1311",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -33053,7 +33103,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1322",
+    "identificador": "S/ID-1324",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -62353,7 +62403,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-2494",
+    "identificador": "S/ID-2496",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -175078,7 +175128,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7003",
+    "identificador": "S/ID-7005",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -175103,7 +175153,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7004",
+    "identificador": "S/ID-7006",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -175128,7 +175178,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7005",
+    "identificador": "S/ID-7007",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
