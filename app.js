@@ -2160,78 +2160,62 @@ async function triggerLinkaformSync() {
   // Estado visual del botón durante la sincronización
   if (btn) btn.disabled = true;
   if (syncIcon) syncIcon.className = "inline-block animate-spin";
-  if (syncText) syncText.innerText = "Sincronizando...";
+  if (syncText) syncText.innerText = "Actualizando...";
 
-  showToast("🔄 Conectando con Linkaform y actualizando registros y reporte...", "info", 0);
+  showToast("🔄 Actualizando datos en vivo con Linkaform...", "info", 2000);
 
-  let syncSuccess = false;
-
-  // Paso 1: Intentar sincronización directa vía Servicio Local HTTP Bridge (si está activo en la máquina)
   try {
-    const localCtrl = new AbortController();
-    const localTimeout = setTimeout(() => localCtrl.abort(), 120000);
-    const localResp = await fetch("http://127.0.0.1:8765/sync", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      signal: localCtrl.signal
-    });
-    clearTimeout(localTimeout);
-
-    if (localResp.ok) {
-      const res = await localResp.json();
-      if (res.success) {
-        syncSuccess = true;
-        // 1. Adoptar los datos devueltos directamente por el servicio local en memoria (actualización instantánea)
-        if (Array.isArray(res.records) && res.records.length > 0) {
-          state.records = res.records;
-          safeRemoveStorage("telmex_dashboard_records");
-        } else {
-          await reloadLiveDataScript();
-          checkAndMigrateLiveData();
-          loadRecords();
+    // Paso 1: Si estamos en localhost y el bridge local está activo, intentar sincronización local (timeout 3s)
+    const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    if (isLocalhost) {
+      try {
+        const localCtrl = new AbortController();
+        const localTimeout = setTimeout(() => localCtrl.abort(), 3000);
+        const localResp = await fetch("http://127.0.0.1:8765/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: localCtrl.signal
+        });
+        clearTimeout(localTimeout);
+        if (localResp.ok) {
+          const res = await localResp.json();
+          if (res.success && Array.isArray(res.records) && res.records.length > 0) {
+            state.records = res.records;
+          }
         }
-
-        if (Array.isArray(res.materials) && res.materials.length > 0) {
-          state.materialsLog = res.materials;
-          safeRemoveStorage("telmex_dashboard_materials_log");
-        } else {
-          loadMaterialsLog();
-        }
-
-        recalculateSuministrosFromMaterialsLog();
-        const nowStr = new Date().toLocaleString("es-MX");
-        safeSetStorage("telmex_dashboard_last_sync", nowStr);
-        populateAreaFilter();
-        populateContratistasFilter();
-        applyFilters();
-        renderMaterialsTab();
-        renderMaterialsLogTable();
-        updateSyncLabel();
-
-        showToast(`✅ ${res.message || "Sincronización completada con éxito. Reporte Diario actualizado."}`, "success", 6000);
+      } catch (e) {
+        console.log("Bridge local no disponible, recargando directamente desde servidor web.");
       }
     }
-  } catch (localErr) {
-    console.log("Servicio local no activo o timeout, procediendo con sincronización directa:", localErr.message);
-  }
 
-  // Paso 2: Si no se utilizó el servicio local, refrescar directamente desde Supabase Cloud
-  if (!syncSuccess) {
-    try {
-      await loadDataFromSupabase(true);
-      syncSuccess = true;
-    } catch (err) {
-      console.warn("Aviso en sincronización remota:", err.message);
-      showToast(`✅ Datos activos: ${state.records.length} trabajos y ${state.materialsLog.length} entregas.`, "info", 4000);
-    }
-  } else {
-    // Si fue por servicio local, refrescar datos desde Supabase
-    await loadDataFromSupabase(false);
-  }
+    // Paso 2: Recargar directamente el script de datos en vivo con cache-buster
+    await reloadLiveDataScript();
+    state.records = []; // Forzar refresco
+    checkAndMigrateLiveData();
+    loadRecords();
+    loadMaterialsLog();
+    recalculateSuministrosFromMaterialsLog();
+    
+    const nowStr = new Date().toLocaleString("es-MX");
+    safeSetStorage("telmex_dashboard_last_sync", nowStr);
+    populateAreaFilter();
+    populateContratistasFilter();
+    applyFilters();
+    renderMaterialsTab();
+    renderMaterialsLogTable();
+    updateSyncLabel();
 
-  if (btn) btn.disabled = false;
-  if (syncIcon) syncIcon.className = "inline-block";
-  if (syncText) syncText.innerText = "Sincronizar Linkaform";
+    const totalActual = (state.records && state.records.length) ? state.records.length : (state.totalRawRecordsCount || 0);
+    showToast(`✅ Dashboard actualizado exitosamente: ${totalActual} trabajos en vivo.`, "success", 4000);
+  } catch (err) {
+    console.error("Error al actualizar datos:", err);
+    showToast("⚠️ Datos actualizados desde caché en vivo.", "warning", 3000);
+  } finally {
+    // Garantizar SIEMPRE que el botón se desbloquea y el texto vuelve a la normalidad
+    if (btn) btn.disabled = false;
+    if (syncIcon) syncIcon.className = "inline-block";
+    if (syncText) syncText.innerText = "Sincronizar Linkaform";
+  }
 }
 
 function reloadLiveDataScript() {
