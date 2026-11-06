@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-06 01:42:49
+ * Sincronización: 2026-11-06 01:52:50
  * Estado de corte: Reporte matutino cerrado al 05/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 10177 (Retenidos por corte: 38)
+ * Trabajos de campo visibles: 10176 (Retenidos por corte: 39)
  * Movimientos de materiales visibles: 272 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-06 01:42:43",
+  "now": "2026-11-06 01:52:44",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-05",
@@ -33728,7 +33728,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1387",
+    "identificador": "S/ID-1388",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -33903,7 +33903,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1394",
+    "identificador": "S/ID-1395",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -34353,7 +34353,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1412",
+    "identificador": "S/ID-1413",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -34678,7 +34678,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1425",
+    "identificador": "S/ID-1426",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -49041,31 +49041,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.1775802,
     "longitud": -86.8725476,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aebbfd8c9f4a2c7993be059.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16142981-1259",
-    "fecha": "2026-11-04",
-    "fecha_captura": "2026-11-04",
-    "hora": "17:28",
-    "fecha_corte": "2026-11-04",
-    "created_at_iso": "2026-11-04 17:28:57",
-    "timestamp": 1793834937.0,
-    "tipo": "CAJA",
-    "identificador": "LWP0012",
-    "modelo": "SIECOR SENCILLA 1PTA",
-    "estado": "PUEBLA",
-    "area_trabajo": "PUEBLA",
-    "contratista": "Ivan Rosas Cruz",
-    "oferta": "120_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v7 - Android",
-    "latitud": 18.973892,
-    "longitud": -98.1741802,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aebbfb439050def0598a6c5.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
