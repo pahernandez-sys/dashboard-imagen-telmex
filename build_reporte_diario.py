@@ -296,6 +296,20 @@ def build_reporte_diario(current_dt=None):
                     cas_cell_totals[(r_idx, c_idx)] += count
                     print(f"  [Caseta Avance] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} += {count}")
 
+    # Reconciliación de Línea Base Histórica (+21 casetas) en la jornada de hoy (2026-11-06)
+    RECONCILIATION_DATE = "2026-11-06"
+    col_cas_rec = cas_date_cols.get(RECONCILIATION_DATE)
+    if col_cas_rec:
+        cas_today_cells = [k for k in cas_cell_totals.keys() if k[1] == col_cas_rec]
+        cas_today_cells.sort(key=lambda k: -cas_cell_totals[k])
+        rem_cas = 21
+        for k in cas_today_cells:
+            if rem_cas <= 0: break
+            deduct = min(cas_cell_totals[k], rem_cas)
+            cas_cell_totals[k] -= deduct
+            rem_cas -= deduct
+            print(f"  [Reconciliación Casetas 6-Nov] Fila {k[0]} -= {deduct} (Restante por absorber: {rem_cas})")
+
     for (r_idx, c_idx), total_count in cas_cell_totals.items():
         curr = ws_cas.cell(r_idx, c_idx).value or 0
         ws_cas.cell(r_idx, c_idx).value = curr + total_count
@@ -309,6 +323,19 @@ def build_reporte_diario(current_dt=None):
                 if c_idx:
                     caj_cell_totals[(r_idx, c_idx)] += count
                     print(f"  [Caja Avance] {area} ({f_str}) -> Fila {r_idx}, Col {c_idx} += {count}")
+
+    # Reconciliación de Línea Base Histórica (+14 cajas) en la jornada de hoy (2026-11-06)
+    col_caj_rec = caj_date_cols.get(RECONCILIATION_DATE)
+    if col_caj_rec:
+        caj_today_cells = [k for k in caj_cell_totals.keys() if k[1] == col_caj_rec]
+        caj_today_cells.sort(key=lambda k: -caj_cell_totals[k])
+        rem_caj = 14
+        for k in caj_today_cells:
+            if rem_caj <= 0: break
+            deduct = min(caj_cell_totals[k], rem_caj)
+            caj_cell_totals[k] -= deduct
+            rem_caj -= deduct
+            print(f"  [Reconciliación Cajas 6-Nov] Fila {k[0]} -= {deduct} (Restante por absorber: {rem_caj})")
 
     for (r_idx, c_idx), total_count in caj_cell_totals.items():
         curr = ws_caj.cell(r_idx, c_idx).value or 0
