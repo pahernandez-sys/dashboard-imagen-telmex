@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-05 23:52:47
- * Estado de corte: Corte oficial de las 10:00 PM activo (05/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM.
- * Trabajos de campo visibles: 10177 (Retenidos por corte: 27)
+ * Sincronización: 2026-11-06 00:02:50
+ * Estado de corte: Reporte matutino cerrado al 05/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
+ * Trabajos de campo visibles: 10177 (Retenidos por corte: 28)
  * Movimientos de materiales visibles: 272 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-05 23:52:41",
+  "now": "2026-11-06 00:02:44",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-05",
   "max_visible_dt": "2026-11-05 22:00:00",
   "max_visible_datetime_str": "2026-11-05 22:00:00",
   "is_frozen": true,
-  "badge": "[CORTE 22:00] CORTE OFICIAL ACTIVO",
-  "description": "Corte oficial de las 10:00 PM activo (05/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM."
+  "badge": "[CERRADO] REPORTE OFICIAL CERRADO",
+  "description": "Reporte matutino cerrado al 05/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -33728,7 +33728,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1376",
+    "identificador": "S/ID-1377",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -33903,7 +33903,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1383",
+    "identificador": "S/ID-1384",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -34353,7 +34353,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1401",
+    "identificador": "S/ID-1402",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -34678,7 +34678,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-1414",
+    "identificador": "S/ID-1415",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -63978,7 +63978,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-2586",
+    "identificador": "S/ID-2587",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -174345,31 +174345,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
-    "folio": "16121159-1259",
-    "fecha": "2026-10-29",
-    "fecha_captura": "2026-10-29",
-    "hora": "17:54",
-    "fecha_corte": "2026-10-29",
-    "created_at_iso": "2026-10-29 17:54:17",
-    "timestamp": 1793318057.0,
-    "tipo": "CASETA",
-    "identificador": "3112145029",
-    "modelo": "NORMAL",
-    "estado": "NAYARIT",
-    "area_trabajo": "NAYARIT",
-    "contratista": "Adrian Valenzuela",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 2.0,
-    "version": "v4 - Android",
-    "latitud": 21.4947238,
-    "longitud": -104.9008752,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3dca88fd4c1811316e8f0.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
     "folio": "16121157-1259",
     "fecha": "2026-10-29",
     "fecha_captura": "2026-10-29",
@@ -249316,6 +249291,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.3060812,
     "longitud": -99.63417,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad91f5bf129ef00c582e47d.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16028662-1259",
+    "fecha": "2026-10-21",
+    "fecha_captura": "2026-10-21",
+    "hora": "14:22",
+    "fecha_corte": "2026-10-21",
+    "created_at_iso": "2026-10-21 14:22:49",
+    "timestamp": 1792614169.0,
+    "tipo": "CAJA",
+    "identificador": "AVN0003",
+    "modelo": "TRADICIONAL SENCILLA",
+    "estado": "MEXICO",
+    "area_trabajo": "ESTADO DE MEXICO SUR",
+    "contratista": "PC INDUSTRIAL",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "AVN0003",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 19.1672818,
+    "longitud": -100.1198281,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad91f178a513343ccbacdd5.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
