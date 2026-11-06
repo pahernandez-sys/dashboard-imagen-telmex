@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-06 14:13:05
- * Estado de corte: Jornada en vivo activa (06/11/2026, 14:12 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-06 14:13:17
+ * Estado de corte: Jornada en vivo activa (06/11/2026, 14:13 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 10910 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-06 14:12:59",
+  "now": "2026-11-06 14:13:15",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-06",
-  "max_visible_dt": "2026-11-06 14:12:59",
-  "max_visible_datetime_str": "2026-11-06 14:12:59",
+  "max_visible_dt": "2026-11-06 14:13:15",
+  "max_visible_datetime_str": "2026-11-06 14:13:15",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (06/11/2026, 14:12 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (06/11/2026, 14:13 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -50020,6 +50020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16144799-1259",
+    "fecha": "2026-11-05",
+    "fecha_captura": "2026-11-05",
+    "hora": "12:10",
+    "fecha_corte": "2026-11-05",
+    "created_at_iso": "2026-11-05 12:10:15",
+    "timestamp": 1793902215.0,
+    "tipo": "CAJA",
+    "identificador": "IND0172",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA CENTRO",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "SÍ",
+    "comentarios": "Ok",
+    "num_viniles": 1.0,
+    "version": "v7 - Android",
+    "latitud": 20.6341347,
+    "longitud": -103.3753985,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aecc683085c921a30c2473f.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16144798-1259",
     "fecha": "2026-11-05",
     "fecha_captura": "2026-11-05",
@@ -52003,7 +52028,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-2080",
+    "identificador": "S/ID-2081",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -52178,7 +52203,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-2087",
+    "identificador": "S/ID-2088",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -52628,7 +52653,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-2105",
+    "identificador": "S/ID-2106",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -52953,7 +52978,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-2118",
+    "identificador": "S/ID-2119",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -74991,31 +75016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.5076319,
     "longitud": -96.8815546,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeba0b41bfe98f2d63be030.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16142400-1259",
-    "fecha": "2026-11-04",
-    "fecha_captura": "2026-11-04",
-    "hora": "15:16",
-    "fecha_corte": "2026-11-04",
-    "created_at_iso": "2026-11-04 15:16:31",
-    "timestamp": 1793826991.0,
-    "tipo": "CAJA",
-    "identificador": "CHU0038",
-    "modelo": "SIECOR SENCILLA 2 PTAS",
-    "estado": "CHIHUAHUA",
-    "area_trabajo": "CHIHUAHUA",
-    "contratista": "Jesús José Romero Pérez",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 2.0,
-    "version": "v6 - Android",
-    "latitud": 28.6222617,
-    "longitud": -106.0819333,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeba0ab685ece9f6198a6d0.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -100020,6 +100020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16139834-1259",
+    "fecha": "2026-11-03",
+    "fecha_captura": "2026-11-03",
+    "hora": "17:04",
+    "fecha_corte": "2026-11-03",
+    "created_at_iso": "2026-11-03 17:04:29",
+    "timestamp": 1793747069.0,
+    "tipo": "CAJA",
+    "identificador": "SUM0007",
+    "modelo": "SIECOR SENCILLA 2 PTAS",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Wendy Magaly castro herrera",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 19.5499924,
+    "longitud": -96.8988321,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aea687847b1b5169814a8c0.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16139833-1259",
     "fecha": "2026-11-03",
     "fecha_captura": "2026-11-03",
@@ -124991,31 +125016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.9105479,
     "longitud": -102.2590826,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae9030c29d597e14614a8c5.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16136578-1259",
-    "fecha": "2026-11-02",
-    "fecha_captura": "2026-11-02",
-    "hora": "15:39",
-    "fecha_corte": "2026-11-02",
-    "created_at_iso": "2026-11-02 15:39:25",
-    "timestamp": 1793655565.0,
-    "tipo": "CAJA",
-    "identificador": "MRU0004",
-    "modelo": "SIECOR SENCILLA 2 PTAS",
-    "estado": "AGUASCALIENTES",
-    "area_trabajo": "AGUASCALIENTES",
-    "contratista": "Adrian Valenzuela",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v4 - Android",
-    "latitud": 21.9056303,
-    "longitud": -102.243234,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae90309a42bde7dadaedb6e.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
