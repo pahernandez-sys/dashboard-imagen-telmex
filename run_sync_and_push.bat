@@ -6,6 +6,8 @@ echo [%DATE% %TIME%] Iniciando sincronizacion automatica programada... >> auto_s
 
 "C:\Users\PCI\AppData\Local\Programs\Python\Python312\python.exe" -u sync_linkaform.py >> auto_sync_service.log 2>&1
 
+"C:\Users\PCI\AppData\Local\Programs\Python\Python312\python.exe" -u "C:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\scripts\auto_patch_generic_linkaform.py" >> auto_sync_service.log 2>&1
+
 "C:\Users\PCI\AppData\Local\Programs\Python\Python312\python.exe" -u "C:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\scripts\generate_completed_assets.py" >> auto_sync_service.log 2>&1
 
 "C:\Users\PCI\AppData\Local\Programs\Python\Python312\python.exe" -u "C:\Users\PCI\Documents\Antigravity\Imagen Telmex 2026_2\scripts\sync_to_local_mysql.py" >> auto_sync_service.log 2>&1
