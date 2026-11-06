@@ -268,6 +268,22 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
         identificador = ans.get("6ad52fc6bc424ea79992eabf") or f"S/ID-{i+1}"
         estado = (ans.get("6ad52fc6bc424ea79992eac0") or "MORELOS").upper()
         area = (ans.get("6ad52fc6bc424ea79992eac1") or estado).upper()
+        # Auto-mapeo dinámico de áreas genéricas a sub-áreas oficiales
+        if area in ["GUADALAJARA", "QUINTANA ROO", "MONTERREY"]:
+            ident_clean = str(identificador).strip().upper()
+            if area == "GUADALAJARA":
+                if ident_clean.startswith("3338") or ident_clean.startswith("3336") or "IND" in ident_clean or "VAR" in ident_clean:
+                    area = "GUADALAJARA CENTRO"
+                else:
+                    area = "GUADALAJARA CENTRO"
+            elif area == "QUINTANA ROO":
+                if ident_clean.startswith("998") or "XAA" in ident_clean or "CWH" in ident_clean or "MAB" in ident_clean:
+                    area = "QUINTANA ROO NORTE"
+                else:
+                    area = "QUINTANA ROO NORTE"
+            elif area == "MONTERREY":
+                area = "MONTERREY 1"
+
         contratista = ans.get("6abe9357bef08742fcf94020") or "Victor Hugo Lopez Garcia"
         raw_modelo = ans.get("6ab9d647dba7a0c191e6a0f6") or "Sencilla"
         modelo = normalize_model_name(raw_modelo, tipo)
