@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-06 01:52:50
+ * Sincronización: 2026-11-06 02:02:47
  * Estado de corte: Reporte matutino cerrado al 05/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 10176 (Retenidos por corte: 39)
+ * Trabajos de campo visibles: 10178 (Retenidos por corte: 39)
  * Movimientos de materiales visibles: 272 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-06 01:52:44",
+  "now": "2026-11-06 02:02:41",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-05",
@@ -223991,6 +223991,56 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 25.6802667,
     "longitud": -100.462525,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0599a0900fee6bd0eec3b.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16110380-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "01:58",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 01:58:17",
+    "timestamp": 1793087897.0,
+    "tipo": "CAJA",
+    "identificador": "SCA0092",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "NUEVO LEON",
+    "area_trabajo": "MONTERREY 2",
+    "contratista": "Jose antonio Esquivel",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 25.67798,
+    "longitud": -100.465815,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0599790bb1c5691341d85.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16110379-1259",
+    "fecha": "2026-10-27",
+    "fecha_captura": "2026-10-27",
+    "hora": "01:58",
+    "fecha_corte": "2026-10-27",
+    "created_at_iso": "2026-10-27 01:58:14",
+    "timestamp": 1793087894.0,
+    "tipo": "CAJA",
+    "identificador": "SCA0091",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "NUEVO LEON",
+    "area_trabajo": "MONTERREY 2",
+    "contratista": "Jose antonio Esquivel",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 25.6801075,
+    "longitud": -100.4672758,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae05994c2a2c4e0c8be7279.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
