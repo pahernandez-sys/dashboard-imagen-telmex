@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-06 01:12:48
+ * Sincronización: 2026-11-06 01:22:49
  * Estado de corte: Reporte matutino cerrado al 05/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 10176 (Retenidos por corte: 36)
+ * Trabajos de campo visibles: 10177 (Retenidos por corte: 36)
  * Movimientos de materiales visibles: 272 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-06 01:12:42",
+  "now": "2026-11-06 01:22:42",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-05",
@@ -174120,6 +174120,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16121180-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "18:10",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 18:10:09",
+    "timestamp": 1793319009.0,
+    "tipo": "CASETA",
+    "identificador": "7221996182",
+    "modelo": "NORMAL",
+    "estado": "ESTADO DE MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "Brusim",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Dañada",
+    "num_viniles": 0.0,
+    "version": "v4 - Android",
+    "latitud": 19.29433,
+    "longitud": -99.581125,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3e05edc6c63d38a6f45f9.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16121179-1259",
     "fecha": "2026-10-29",
     "fecha_captura": "2026-10-29",
@@ -176703,7 +176728,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7104",
+    "identificador": "S/ID-7105",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -176728,7 +176753,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7105",
+    "identificador": "S/ID-7106",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -176753,7 +176778,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7106",
+    "identificador": "S/ID-7107",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
