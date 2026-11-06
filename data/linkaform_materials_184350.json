@@ -1,6 +1,142 @@
 [
   {
     "answers": {
+      "6ad65b0b1b305d8b534b1e11": "2026-11-05 12:27:47",
+      "6ad65b0b1b305d8b534b1e13": 57,
+      "6ad692011583192abb37cd8f": "SIECOR DOBLE",
+      "6ad695943f0d28deb4a6c9a3": "OAXACA",
+      "6ad695943f0d28deb4a6c9a4": [
+        "JUEGOS"
+      ]
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6aee1c375927c34b34dddb3e",
+    "created_at": 1793989687.0,
+    "created_by_email": "csolares@operacionpci.com.mx",
+    "created_by_id": 3387,
+    "created_by_name": "Solares Barron Cristel",
+    "created_by_username": "csolares@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": "21 segs",
+    "end_date": 1793989687.0,
+    "folio": "16148207-1259",
+    "form_id": 184350,
+    "form_name": "Imagen Telmex 2026 - Materiales",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.43000030517578,
+      -99.12999725341797
+    ],
+    "id": "6aee1c375927c34b34dddb3e",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6aee1c375927c34b34dddb3e/",
+    "start_date": 1793989666.0,
+    "timezone": "America/Monterrey",
+    "tz_offset": -360.0,
+    "updated_at": 1793989716.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 31542,
+    "user_name": "Bautista Diaz Eddie Santiago",
+    "version": 1
+  },
+  {
+    "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-11-04 15:08:01",
       "6ad65b0b1b305d8b534b1e13": 107,
       "6ad692011583192abb37cd8f": "SIECOR DOBLE",
@@ -26116,7 +26252,7 @@
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 10:10:35",
       "6ad65b0b1b305d8b534b1e13": 1,
       "6ad692011583192abb37cd8f": "KRONE",
-      "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
+      "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO NORTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
       ],
@@ -26226,8 +26362,8 @@
     "created_by_username": "csolares@operacionpci.com.mx",
     "deleted_at": null,
     "deleted_by": null,
-    "duration": "35 segs",
-    "end_date": 1792710670.0,
+    "duration": 0,
+    "end_date": 1792710634.0,
     "folio": "16045726-1259",
     "form_id": 184350,
     "form_name": "Imagen Telmex 2026 - Materiales",
@@ -26244,14 +26380,14 @@
     "start_date": 1792710634.0,
     "timezone": "America/Monterrey",
     "tz_offset": -360.0,
-    "updated_at": 1792710698.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1793989631.0,
+    "updated_by": 3387,
+    "updated_by_email": "csolares@operacionpci.com.mx",
+    "updated_by_name": "Solares Barron Cristel",
+    "updated_by_username": "csolares@operacionpci.com.mx",
     "user_id": 31542,
     "user_name": "Bautista Diaz Eddie Santiago",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -26665,8 +26801,8 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-22 11:04:35",
       "6ad65b0b1b305d8b534b1e13": 45,
-      "6ad692011583192abb37cd8f": "envolvelte_secillo_200_mb",
-      "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
+      "6ad692011583192abb37cd8f": "ENVOLVENTE SENCILLA",
+      "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO NORTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
       ],
@@ -26776,8 +26912,8 @@
     "created_by_username": "csolares@operacionpci.com.mx",
     "deleted_at": null,
     "deleted_by": null,
-    "duration": "42 segs",
-    "end_date": 1792706716.0,
+    "duration": 0,
+    "end_date": 1792706674.0,
     "folio": "16044506-1259",
     "form_id": 184350,
     "form_name": "Imagen Telmex 2026 - Materiales",
@@ -26794,14 +26930,14 @@
     "start_date": 1792706674.0,
     "timezone": "America/Monterrey",
     "tz_offset": -360.0,
-    "updated_at": 1792706745.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1793989670.0,
+    "updated_by": 3387,
+    "updated_by_email": "csolares@operacionpci.com.mx",
+    "updated_by_name": "Solares Barron Cristel",
+    "updated_by_username": "csolares@operacionpci.com.mx",
     "user_id": 31542,
     "user_name": "Bautista Diaz Eddie Santiago",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -35261,8 +35397,8 @@
     "answers": {
       "6ad65b0b1b305d8b534b1e11": "2026-10-20 12:00:23",
       "6ad65b0b1b305d8b534b1e13": 14,
-      "6ad692011583192abb37cd8f": "envolvente_doble_200_mb",
-      "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO",
+      "6ad692011583192abb37cd8f": "ENVOLVENTE DOBLE",
+      "6ad695943f0d28deb4a6c9a3": "QUINTANA ROO NORTE",
       "6ad695943f0d28deb4a6c9a4": [
         "PZAS."
       ],
@@ -35372,8 +35508,8 @@
     "created_by_username": "csolares@operacionpci.com.mx",
     "deleted_at": null,
     "deleted_by": null,
-    "duration": "1 mins 51 segs",
-    "end_date": 1792509794.0,
+    "duration": 0,
+    "end_date": 1792509682.0,
     "folio": "16008505-1259",
     "form_id": 184350,
     "form_name": "Imagen Telmex 2026 - Materiales",
@@ -35390,14 +35526,14 @@
     "start_date": 1792509682.0,
     "timezone": "America/Monterrey",
     "tz_offset": -360.0,
-    "updated_at": 1792509822.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1793989652.0,
+    "updated_by": 3387,
+    "updated_by_email": "csolares@operacionpci.com.mx",
+    "updated_by_name": "Solares Barron Cristel",
+    "updated_by_username": "csolares@operacionpci.com.mx",
     "user_id": 31542,
     "user_name": "Bautista Diaz Eddie Santiago",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
