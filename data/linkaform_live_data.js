@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-06 17:33:25
- * Estado de corte: Jornada en vivo activa (06/11/2026, 17:33 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 11389 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-06 17:34:09
+ * Estado de corte: Jornada en vivo activa (06/11/2026, 17:34 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 11390 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-06 17:33:19",
+  "now": "2026-11-06 17:34:07",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-06",
-  "max_visible_dt": "2026-11-06 17:33:19",
-  "max_visible_datetime_str": "2026-11-06 17:33:19",
+  "max_visible_dt": "2026-11-06 17:34:07",
+  "max_visible_datetime_str": "2026-11-06 17:34:07",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (06/11/2026, 17:33 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (06/11/2026, 17:34 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -100020,6 +100020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16141190-1259",
+    "fecha": "2026-11-04",
+    "fecha_captura": "2026-11-04",
+    "hora": "10:46",
+    "fecha_corte": "2026-11-04",
+    "created_at_iso": "2026-11-04 10:46:30",
+    "timestamp": 1793810790.0,
+    "tipo": "CAJA",
+    "identificador": "VID0069",
+    "modelo": "TRADICIONAL SENCILLA",
+    "estado": "AGUASCALIENTES",
+    "area_trabajo": "AGUASCALIENTES",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 21.9055746,
+    "longitud": -102.2921847,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeb6162ad11c2a1df76253b.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16141189-1259",
     "fecha": "2026-11-04",
     "fecha_captura": "2026-11-04",
@@ -174991,31 +175016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.9461908,
     "longitud": -105.2211829,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae564b029db4dbf4f94fc40.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16126412-1259",
-    "fecha": "2026-10-30",
-    "fecha_captura": "2026-10-30",
-    "hora": "21:46",
-    "fecha_corte": "2026-10-30",
-    "created_at_iso": "2026-10-30 21:46:55",
-    "timestamp": 1793418415.0,
-    "tipo": "CASETA",
-    "identificador": "3192321229",
-    "modelo": "NORMAL",
-    "estado": "NAYARIT",
-    "area_trabajo": "NAYARIT",
-    "contratista": "Adrian Valenzuela",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 2.0,
-    "version": "v4 - Android",
-    "latitud": 21.9459908,
-    "longitud": -105.2210007,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae564aa208b0184277b74be.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -274991,6 +274991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 20.667569,
     "longitud": -103.3763221,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adaffdba7d32c106591e7fe.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16046602-1259",
+    "fecha": "2026-10-22",
+    "fecha_captura": "2026-10-22",
+    "hora": "18:28",
+    "fecha_corte": "2026-10-22",
+    "created_at_iso": "2026-10-22 18:28:35",
+    "timestamp": 1792715315.0,
+    "tipo": "CAJA",
+    "identificador": "JAL0080",
+    "modelo": "ENVOLVENTE SENCILLA",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Wendy Magali Castro herrera",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 19.5275285,
+    "longitud": -96.9356841,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adaaa313f04e01dd7a02ea4.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
