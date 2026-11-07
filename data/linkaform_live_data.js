@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-06 18:39:54
- * Estado de corte: Jornada en vivo activa (06/11/2026, 18:39 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 11603 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-06 18:43:10
+ * Estado de corte: Jornada en vivo activa (06/11/2026, 18:43 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 11604 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-06 18:39:52",
+  "now": "2026-11-06 18:43:03",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-06",
-  "max_visible_dt": "2026-11-06 18:39:52",
-  "max_visible_datetime_str": "2026-11-06 18:39:52",
+  "max_visible_dt": "2026-11-06 18:43:03",
+  "max_visible_datetime_str": "2026-11-06 18:43:03",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (06/11/2026, 18:39 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (06/11/2026, 18:43 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -224991,6 +224991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.2838165,
     "longitud": -99.6457998,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae38ca63782605e89e3e1f7.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16119495-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "12:12",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 12:12:44",
+    "timestamp": 1793297564.0,
+    "tipo": "CASETA",
+    "identificador": "3336639006",
+    "modelo": "NORMAL",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA CENTRO",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 20.6352833,
+    "longitud": -103.384785,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae38c9a9d4ec9e32feccd36.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
