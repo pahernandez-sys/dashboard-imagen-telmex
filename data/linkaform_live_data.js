@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-07 15:50:07
- * Estado de corte: Jornada en vivo activa (07/11/2026, 15:50 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-07 15:53:29
+ * Estado de corte: Jornada en vivo activa (07/11/2026, 15:53 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 12808 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-07 15:50:05",
+  "now": "2026-11-07 15:53:22",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-07",
-  "max_visible_dt": "2026-11-07 15:50:05",
-  "max_visible_datetime_str": "2026-11-07 15:50:05",
+  "max_visible_dt": "2026-11-07 15:53:22",
+  "max_visible_datetime_str": "2026-11-07 15:53:22",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (07/11/2026, 15:50 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (07/11/2026, 15:53 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16151746-1259",
+    "fecha": "2026-11-07",
+    "fecha_captura": "2026-11-07",
+    "hora": "15:48",
+    "fecha_corte": "2026-11-07",
+    "created_at_iso": "2026-11-07 15:48:49",
+    "timestamp": 1794088129.0,
+    "tipo": "CAJA",
+    "identificador": "VDO0016",
+    "modelo": "TRADICIONAL SENCILLA",
+    "estado": "CHIHUAHUA",
+    "area_trabajo": "CHIHUAHUA",
+    "contratista": "Jesús José Romero Pérez",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 2.0,
+    "version": "v8 - Android",
+    "latitud": 28.6112456,
+    "longitud": -106.0719844,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef9cbc3aa2838f8c7fac50.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16151745-1259",
     "fecha": "2026-11-07",
@@ -99503,7 +99528,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-3980",
+    "identificador": "S/ID-3981",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -99678,7 +99703,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-3987",
+    "identificador": "S/ID-3988",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -100128,7 +100153,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4005",
+    "identificador": "S/ID-4006",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -100453,7 +100478,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4018",
+    "identificador": "S/ID-4019",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -129753,7 +129778,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5190",
+    "identificador": "S/ID-5191",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -199991,31 +200016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.0172338,
     "longitud": -98.1834037,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae646c4465ee308d81f7c85.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16127960-1259",
-    "fecha": "2026-10-31",
-    "fecha_captura": "2026-10-31",
-    "hora": "13:51",
-    "fecha_corte": "2026-10-31",
-    "created_at_iso": "2026-10-31 13:51:31",
-    "timestamp": 1793476291.0,
-    "tipo": "CAJA",
-    "identificador": "SMA0174",
-    "modelo": "SIECOR SENCILLA 1PTA",
-    "estado": "PUEBLA",
-    "area_trabajo": "PUEBLA",
-    "contratista": "Sergio Beccerra Franco",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v6 - Android",
-    "latitud": 19.0165628,
-    "longitud": -98.1818241,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae646bf7b38a755567b74c6.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
