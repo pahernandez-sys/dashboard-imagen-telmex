@@ -21,8 +21,8 @@
       "6ad52fc6bc424ea79992eabe": "CAJA",
       "6ad52fc6bc424ea79992eabf": "VAR0111",
       "6ad52fc6bc424ea79992eac0": "JALISCO",
-      "6ad52fc6bc424ea79992eac1": "GUADALAJARA",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "GUADALAJARA CENTRO",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -169,7 +169,10 @@
     "form_id": 142786,
     "form_name": "Imagen Telmex 2026 -2",
     "geofence_evaluated": false,
-    "geolocation": null,
+    "geolocation": [
+      19.4371,
+      -99.0111
+    ],
     "id": "6aeea2b5e34edebda4e083b6",
     "media": {},
     "mobile_record_id": null,
@@ -178,14 +181,14 @@
     "start_date": 1794024120.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794024160.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794024843.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -209,8 +212,8 @@
       "6ad52fc6bc424ea79992eabe": "CAJA",
       "6ad52fc6bc424ea79992eabf": "VAR0029",
       "6ad52fc6bc424ea79992eac0": "JALISCO",
-      "6ad52fc6bc424ea79992eac1": "GUADALAJARA",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "GUADALAJARA CENTRO",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -318,6 +321,19 @@
           "rtype": "user",
           "rules": [],
           "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
         }
       ],
       "groups": [],
@@ -344,7 +360,10 @@
     "form_id": 142786,
     "form_name": "Imagen Telmex 2026 -2",
     "geofence_evaluated": false,
-    "geolocation": null,
+    "geolocation": [
+      19.4371,
+      -99.0111
+    ],
     "id": "6aeea2afbaf84eb279e083b6",
     "media": {},
     "mobile_record_id": null,
@@ -353,14 +372,14 @@
     "start_date": 1794024115.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794024450.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794024848.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -384,8 +403,8 @@
       "6ad52fc6bc424ea79992eabe": "CAJA",
       "6ad52fc6bc424ea79992eabf": "VAR0012",
       "6ad52fc6bc424ea79992eac0": "JALISCO",
-      "6ad52fc6bc424ea79992eac1": "GUADALAJARA",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "GUADALAJARA CENTRO",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -532,7 +551,10 @@
     "form_id": 142786,
     "form_name": "Imagen Telmex 2026 -2",
     "geofence_evaluated": false,
-    "geolocation": null,
+    "geolocation": [
+      19.4371,
+      -99.0111
+    ],
     "id": "6aeea2aac53200a5d77fac4f",
     "media": {},
     "mobile_record_id": null,
@@ -541,14 +563,14 @@
     "start_date": 1794024109.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794024149.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794024853.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -572,8 +594,8 @@
       "6ad52fc6bc424ea79992eabe": "CAJA",
       "6ad52fc6bc424ea79992eabf": "VAR0186",
       "6ad52fc6bc424ea79992eac0": "JALISCO",
-      "6ad52fc6bc424ea79992eac1": "GUADALAJARA",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "GUADALAJARA CENTRO",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -720,7 +742,10 @@
     "form_id": 142786,
     "form_name": "Imagen Telmex 2026 -2",
     "geofence_evaluated": false,
-    "geolocation": null,
+    "geolocation": [
+      19.4371,
+      -99.0111
+    ],
     "id": "6aeea2a4e6876af25ee083b6",
     "media": {},
     "mobile_record_id": null,
@@ -729,14 +754,14 @@
     "start_date": 1794024103.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794024143.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794024858.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -760,8 +785,8 @@
       "6ad52fc6bc424ea79992eabe": "CAJA",
       "6ad52fc6bc424ea79992eabf": "VAR0172",
       "6ad52fc6bc424ea79992eac0": "JALISCO",
-      "6ad52fc6bc424ea79992eac1": "GUADALAJARA",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "GUADALAJARA CENTRO",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -908,7 +933,10 @@
     "form_id": 142786,
     "form_name": "Imagen Telmex 2026 -2",
     "geofence_evaluated": false,
-    "geolocation": null,
+    "geolocation": [
+      19.4371,
+      -99.0111
+    ],
     "id": "6aeea29f9ac3043b2d5d170a",
     "media": {},
     "mobile_record_id": null,
@@ -917,14 +945,14 @@
     "start_date": 1794024097.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794024137.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794024863.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -948,8 +976,8 @@
       "6ad52fc6bc424ea79992eabe": "CAJA",
       "6ad52fc6bc424ea79992eabf": "VAR0013",
       "6ad52fc6bc424ea79992eac0": "JALISCO",
-      "6ad52fc6bc424ea79992eac1": "GUADALAJARA",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "GUADALAJARA CENTRO",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -1096,7 +1124,10 @@
     "form_id": 142786,
     "form_name": "Imagen Telmex 2026 -2",
     "geofence_evaluated": false,
-    "geolocation": null,
+    "geolocation": [
+      19.4371,
+      -99.0111
+    ],
     "id": "6aeea299516f7f36b4e083b6",
     "media": {},
     "mobile_record_id": null,
@@ -1105,14 +1136,14 @@
     "start_date": 1794024091.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794024132.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794024868.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
