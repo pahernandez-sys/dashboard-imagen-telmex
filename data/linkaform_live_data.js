@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-06 19:43:36
- * Estado de corte: Jornada en vivo activa (06/11/2026, 19:43 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 11628 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-06 19:46:22
+ * Estado de corte: Jornada en vivo activa (06/11/2026, 19:46 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 11632 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-06 19:43:30",
+  "now": "2026-11-06 19:46:19",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-06",
-  "max_visible_dt": "2026-11-06 19:43:30",
-  "max_visible_datetime_str": "2026-11-06 19:43:30",
+  "max_visible_dt": "2026-11-06 19:46:19",
+  "max_visible_datetime_str": "2026-11-06 19:46:19",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (06/11/2026, 19:43 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (06/11/2026, 19:46 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -150020,6 +150020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16136107-1259",
+    "fecha": "2026-11-02",
+    "fecha_captura": "2026-11-02",
+    "hora": "11:36",
+    "fecha_corte": "2026-11-02",
+    "created_at_iso": "2026-11-02 11:36:38",
+    "timestamp": 1793640998.0,
+    "tipo": "CAJA",
+    "identificador": "ELU0006",
+    "modelo": "TRADICIONAL SENCILLA",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 17.0480468,
+    "longitud": -96.6271138,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae8ca219b64e0d23f7b74c8.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16136106-1259",
     "fecha": "2026-11-02",
     "fecha_captura": "2026-11-02",
@@ -174941,6 +174966,56 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 16.9042688,
     "longitud": -99.8100899,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae62990ae8b0d9d2d7b7504.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16127463-1259",
+    "fecha": "2026-10-31",
+    "fecha_captura": "2026-10-31",
+    "hora": "11:46",
+    "fecha_corte": "2026-10-31",
+    "created_at_iso": "2026-10-31 11:46:44",
+    "timestamp": 1793468804.0,
+    "tipo": "CAJA",
+    "identificador": "SJE0005",
+    "modelo": "TRADICIONAL SENCILLA",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "Ingeniería avanzada en construccion",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Distrito dañado",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 17.1353571,
+    "longitud": -100.4684869,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae6297f508db5d5471f7c7c.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16127462-1259",
+    "fecha": "2026-10-31",
+    "fecha_captura": "2026-10-31",
+    "hora": "11:46",
+    "fecha_corte": "2026-10-31",
+    "created_at_iso": "2026-10-31 11:46:21",
+    "timestamp": 1793468781.0,
+    "tipo": "CAJA",
+    "identificador": "BAH0114",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "Ingenieria avanzada en construcción",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 16.8497937,
+    "longitud": -99.8444531,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae62968378ebe8b8a7b750b.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -199945,6 +200020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16123646-1259",
+    "fecha": "2026-10-30",
+    "fecha_captura": "2026-10-30",
+    "hora": "12:21",
+    "fecha_corte": "2026-10-30",
+    "created_at_iso": "2026-10-30 12:21:19",
+    "timestamp": 1793384479.0,
+    "tipo": "CAJA",
+    "identificador": "JID0001",
+    "modelo": "ENVOLVENTE DOBLE",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "INGENIERÍA AVANZADA EN REDES",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Solo tiene una puerta",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 16.9737086,
+    "longitud": -99.7366044,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae4e01bfc4931da3c153a48.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16123645-1259",
     "fecha": "2026-10-30",
     "fecha_captura": "2026-10-30",
@@ -213003,7 +213103,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-8520",
+    "identificador": "S/ID-8524",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -213028,7 +213128,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-8521",
+    "identificador": "S/ID-8525",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -213053,7 +213153,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-8522",
+    "identificador": "S/ID-8526",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
