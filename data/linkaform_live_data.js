@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-07 08:23:14
- * Estado de corte: Jornada en vivo activa (07/11/2026, 08:23 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 11977 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-07 08:33:16
+ * Estado de corte: Jornada en vivo activa (07/11/2026, 08:33 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 11978 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-07 08:23:08",
+  "now": "2026-11-07 08:33:09",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-07",
-  "max_visible_dt": "2026-11-07 08:23:08",
-  "max_visible_datetime_str": "2026-11-07 08:23:08",
+  "max_visible_dt": "2026-11-07 08:33:09",
+  "max_visible_datetime_str": "2026-11-07 08:33:09",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (07/11/2026, 08:23 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (07/11/2026, 08:33 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -34,7 +34,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "area_trabajo": "QUINTANA ROO NORTE",
     "contratista": "Propio",
     "oferta": "200_mb",
-    "existe_bd": "Sí",
+    "existe_bd": "SÍ",
     "comentarios": "Sin comentarios",
     "num_viniles": 1.0,
     "version": "v8 - Android",
@@ -200020,6 +200020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16124849-1259",
+    "fecha": "2026-10-30",
+    "fecha_captura": "2026-10-30",
+    "hora": "14:46",
+    "fecha_corte": "2026-10-30",
+    "created_at_iso": "2026-10-30 14:46:28",
+    "timestamp": 1793393188.0,
+    "tipo": "CASETA",
+    "identificador": "2288180855",
+    "modelo": "MINI",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Wendy Magaly Castro Herrera",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v6 - Android",
+    "latitud": 19.5257723,
+    "longitud": -96.9370086,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae5021fc6ff0e0a081f7c98.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16124848-1259",
     "fecha": "2026-10-30",
     "fecha_captura": "2026-10-30",
@@ -221728,7 +221753,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-8869",
+    "identificador": "S/ID-8870",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -221753,7 +221778,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-8870",
+    "identificador": "S/ID-8871",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -221778,7 +221803,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-8871",
+    "identificador": "S/ID-8872",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
