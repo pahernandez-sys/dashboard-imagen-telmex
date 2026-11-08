@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-08 15:10:53
- * Estado de corte: Jornada en vivo activa (08/11/2026, 15:10 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-08 15:13:27
+ * Estado de corte: Jornada en vivo activa (08/11/2026, 15:13 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 13313 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-08 15:10:51",
+  "now": "2026-11-08 15:13:20",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-08",
-  "max_visible_dt": "2026-11-08 15:10:51",
-  "max_visible_datetime_str": "2026-11-08 15:10:51",
+  "max_visible_dt": "2026-11-08 15:13:20",
+  "max_visible_datetime_str": "2026-11-08 15:13:20",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (08/11/2026, 15:10 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (08/11/2026, 15:13 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -24991,6 +24991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.5209782,
     "longitud": -104.9355952,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef5f4e4a992ac4e35d1770.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16151101-1259",
+    "fecha": "2026-11-07",
+    "fecha_captura": "2026-11-07",
+    "hora": "11:26",
+    "fecha_corte": "2026-11-07",
+    "created_at_iso": "2026-11-07 11:26:31",
+    "timestamp": 1794072391.0,
+    "tipo": "CASETA",
+    "identificador": "9988934757",
+    "modelo": "MINI",
+    "estado": "QUINTANA ROO",
+    "area_trabajo": "QUINTANA ROO NORTE",
+    "contratista": "Propio",
+    "oferta": "200_mb",
+    "existe_bd": "SÍ",
+    "comentarios": "No hay caja en el lugar pero se ve que existio caja o caseta",
+    "num_viniles": 1.0,
+    "version": "v8 - Android",
+    "latitud": 21.1471139,
+    "longitud": -86.9025196,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef5f4262c1710ecf5d1744.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -112128,7 +112153,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4485",
+    "identificador": "S/ID-4486",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -112303,7 +112328,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4492",
+    "identificador": "S/ID-4493",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -112753,7 +112778,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4510",
+    "identificador": "S/ID-4511",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -113078,7 +113103,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4523",
+    "identificador": "S/ID-4524",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -142378,7 +142403,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5695",
+    "identificador": "S/ID-5696",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -255103,7 +255128,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-10204",
+    "identificador": "S/ID-10205",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -255128,7 +255153,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-10205",
+    "identificador": "S/ID-10206",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -255153,7 +255178,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-10206",
+    "identificador": "S/ID-10207",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -274991,31 +275016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 28.7600907,
     "longitud": -106.1371512,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2ad46b14c8954abdd73b6.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16118041-1259",
-    "fecha": "2026-10-28",
-    "fecha_captura": "2026-10-28",
-    "hora": "20:18",
-    "fecha_corte": "2026-10-28",
-    "created_at_iso": "2026-10-28 20:18:24",
-    "timestamp": 1793240304.0,
-    "tipo": "CAJA",
-    "identificador": "TPI0035",
-    "modelo": "SIECOR SENCILLA 1PTA",
-    "estado": "NAYARIT",
-    "area_trabajo": "NAYARIT",
-    "contratista": "Adrian Valenzuela",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v4 - Android",
-    "latitud": 21.5106801,
-    "longitud": -104.8940134,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2aceead035fb0bff530a8.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
