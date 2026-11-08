@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-08 10:53:34
- * Estado de corte: Jornada en vivo activa (08/11/2026, 10:53 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-08 10:55:04
+ * Estado de corte: Jornada en vivo activa (08/11/2026, 10:55 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 13146 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-08 10:53:26",
+  "now": "2026-11-08 10:55:02",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-08",
-  "max_visible_dt": "2026-11-08 10:53:26",
-  "max_visible_datetime_str": "2026-11-08 10:53:26",
+  "max_visible_dt": "2026-11-08 10:55:02",
+  "max_visible_datetime_str": "2026-11-08 10:55:02",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (08/11/2026, 10:53 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (08/11/2026, 10:55 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -24991,6 +24991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.5237249,
     "longitud": -104.9184336,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef4fab93c502270c7fac73.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16150877-1259",
+    "fecha": "2026-11-07",
+    "fecha_captura": "2026-11-07",
+    "hora": "10:19",
+    "fecha_corte": "2026-11-07",
+    "created_at_iso": "2026-11-07 10:19:52",
+    "timestamp": 1794068392.0,
+    "tipo": "CASETA",
+    "identificador": "3112167811",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 2.0,
+    "version": "v8 - Android",
+    "latitud": 21.5246653,
+    "longitud": -104.919311,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef4fa446b1ce9f565d172e.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -107953,7 +107978,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4318",
+    "identificador": "S/ID-4319",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -108128,7 +108153,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4325",
+    "identificador": "S/ID-4326",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -108578,7 +108603,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4343",
+    "identificador": "S/ID-4344",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -108903,7 +108928,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4356",
+    "identificador": "S/ID-4357",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -138203,7 +138228,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5528",
+    "identificador": "S/ID-5529",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -199991,31 +200016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 16.8612954,
     "longitud": -99.9035422,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae737cfe5dd4d3b291f7c7d.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16129032-1259",
-    "fecha": "2026-11-01",
-    "fecha_captura": "2026-11-01",
-    "hora": "06:33",
-    "fecha_corte": "2026-11-01",
-    "created_at_iso": "2026-11-01 06:33:11",
-    "timestamp": 1793536391.0,
-    "tipo": "CAJA",
-    "identificador": "HID0008",
-    "modelo": "SIECOR SENCILLA 1PTA",
-    "estado": "GUERRERO",
-    "area_trabajo": "ACAPULCO",
-    "contratista": "INGENIERIA AVANZADA EN CONSTRUCCIÓN",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v6 - Android",
-    "latitud": 16.8403148,
-    "longitud": -99.9126642,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae73182940051d82594fc44.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
