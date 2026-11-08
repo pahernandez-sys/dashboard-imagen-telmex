@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-08 12:02:31
- * Estado de corte: Jornada en vivo activa (08/11/2026, 12:02 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 13171 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-08 12:03:31
+ * Estado de corte: Jornada en vivo activa (08/11/2026, 12:03 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 13172 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-08 12:02:28",
+  "now": "2026-11-08 12:03:24",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-08",
-  "max_visible_dt": "2026-11-08 12:02:28",
-  "max_visible_datetime_str": "2026-11-08 12:02:28",
+  "max_visible_dt": "2026-11-08 12:03:24",
+  "max_visible_datetime_str": "2026-11-08 12:03:24",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (08/11/2026, 12:02 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (08/11/2026, 12:03 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -324991,6 +324991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.163873,
     "longitud": -100.1238565,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad8ee668bd1f7cd23bacdd0.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16025765-1259",
+    "fecha": "2026-10-21",
+    "fecha_captura": "2026-10-21",
+    "hora": "10:47",
+    "fecha_corte": "2026-10-21",
+    "created_at_iso": "2026-10-21 10:47:38",
+    "timestamp": 1792601258.0,
+    "tipo": "CAJA",
+    "identificador": "ZAP0044",
+    "modelo": "TRADICIONAL DOBLE",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "Sin versión",
+    "latitud": 18.9453378,
+    "longitud": -99.2388181,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad8eca82a841ee1b382e485.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
