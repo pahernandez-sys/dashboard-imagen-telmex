@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-07 18:30:35
- * Estado de corte: Jornada en vivo activa (07/11/2026, 18:30 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-07 18:33:24
+ * Estado de corte: Jornada en vivo activa (07/11/2026, 18:33 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 12990 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-07 18:30:33",
+  "now": "2026-11-07 18:33:17",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-07",
-  "max_visible_dt": "2026-11-07 18:30:33",
-  "max_visible_datetime_str": "2026-11-07 18:30:33",
+  "max_visible_dt": "2026-11-07 18:33:17",
+  "max_visible_datetime_str": "2026-11-07 18:33:17",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (07/11/2026, 18:30 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (07/11/2026, 18:33 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16152037-1259",
+    "fecha": "2026-11-07",
+    "fecha_captura": "2026-11-07",
+    "hora": "18:27",
+    "fecha_corte": "2026-11-07",
+    "created_at_iso": "2026-11-07 18:27:31",
+    "timestamp": 1794097651.0,
+    "tipo": "CAJA",
+    "identificador": "BRA0070",
+    "modelo": "DESPLAZAMIENTO DOBLE",
+    "estado": "VERACRUZ",
+    "area_trabajo": "VERACRUZ",
+    "contratista": "Ramón Magaña Portilla",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v8 - Android",
+    "latitud": 19.209468,
+    "longitud": -96.1987761,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aefc1ef843a397f21e083c4.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16152034-1259",
     "fecha": "2026-11-07",
@@ -24991,31 +25016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 20.9518298,
     "longitud": -89.5995355,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef37f06224871e2e5d1743.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16150430-1259",
-    "fecha": "2026-11-07",
-    "fecha_captura": "2026-11-07",
-    "hora": "08:38",
-    "fecha_corte": "2026-11-07",
-    "created_at_iso": "2026-11-07 08:38:39",
-    "timestamp": 1794062319.0,
-    "tipo": "CAJA",
-    "identificador": "YAX0001",
-    "modelo": "SIECOR DOBLE",
-    "estado": "YUCATAN",
-    "area_trabajo": "YUCATAN",
-    "contratista": "Victor chan",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 1.0,
-    "version": "v8 - Android",
-    "latitud": 20.951448,
-    "longitud": -89.602836,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef37ea1ced96c7bee083fe.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
