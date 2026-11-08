@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-08 08:53:30
- * Estado de corte: Jornada en vivo activa (08/11/2026, 08:53 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-08 09:03:30
+ * Estado de corte: Jornada en vivo activa (08/11/2026, 09:03 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 13109 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-08 08:53:23",
+  "now": "2026-11-08 09:03:22",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-08",
-  "max_visible_dt": "2026-11-08 08:53:23",
-  "max_visible_datetime_str": "2026-11-08 08:53:23",
+  "max_visible_dt": "2026-11-08 09:03:22",
+  "max_visible_datetime_str": "2026-11-08 09:03:22",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (08/11/2026, 08:53 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (08/11/2026, 09:03 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16152307-1259",
+    "fecha": "2026-11-08",
+    "fecha_captura": "2026-11-08",
+    "hora": "08:51",
+    "fecha_corte": "2026-11-08",
+    "created_at_iso": "2026-11-08 08:51:16",
+    "timestamp": 1794149476.0,
+    "tipo": "CAJA",
+    "identificador": "ZTK0007",
+    "modelo": "DESPLAZAMIENTO DOBLE",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 17.0628628,
+    "longitud": -96.7018253,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af08c60b79c26d1357fac66.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16152295-1259",
     "fecha": "2026-11-08",
@@ -107028,7 +107053,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4281",
+    "identificador": "S/ID-4282",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -107203,7 +107228,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4288",
+    "identificador": "S/ID-4289",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -107653,7 +107678,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4306",
+    "identificador": "S/ID-4307",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -107978,7 +108003,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4319",
+    "identificador": "S/ID-4320",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -124991,31 +125016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 16.757465,
     "longitud": -93.1315141,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aebb86a4f4ec0a969762541.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16142819-1259",
-    "fecha": "2026-11-04",
-    "fecha_captura": "2026-11-04",
-    "hora": "16:57",
-    "fecha_corte": "2026-11-04",
-    "created_at_iso": "2026-11-04 16:57:45",
-    "timestamp": 1793833065.0,
-    "tipo": "CASETA",
-    "identificador": "9616396693",
-    "modelo": "NORMAL",
-    "estado": "CHIAPAS",
-    "area_trabajo": "CHIAPAS",
-    "contratista": "Jose Miguel Prats Coutiño",
-    "oferta": "200_mb",
-    "existe_bd": "No",
-    "comentarios": "Ok",
-    "num_viniles": 2.0,
-    "version": "v6 - Android",
-    "latitud": 16.7563298,
-    "longitud": -93.1316406,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aebb86458f031d16598a6db.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
