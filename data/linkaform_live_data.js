@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-07 19:33:30
- * Estado de corte: Jornada en vivo activa (07/11/2026, 19:33 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-07 19:37:43
+ * Estado de corte: Jornada en vivo activa (07/11/2026, 19:37 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 13050 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-07 19:33:23",
+  "now": "2026-11-07 19:37:40",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-07",
-  "max_visible_dt": "2026-11-07 19:33:23",
-  "max_visible_datetime_str": "2026-11-07 19:33:23",
+  "max_visible_dt": "2026-11-07 19:37:40",
+  "max_visible_datetime_str": "2026-11-07 19:37:40",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (07/11/2026, 19:33 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (07/11/2026, 19:37 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16152141-1259",
+    "fecha": "2026-11-07",
+    "fecha_captura": "2026-11-07",
+    "hora": "19:30",
+    "fecha_corte": "2026-11-07",
+    "created_at_iso": "2026-11-07 19:30:53",
+    "timestamp": 1794101453.0,
+    "tipo": "CAJA",
+    "identificador": "BRA0005",
+    "modelo": "SIECOR SENCILLA 2 PTAS",
+    "estado": "VERACRUZ",
+    "area_trabajo": "VERACRUZ",
+    "contratista": "Ramón Magaña Portilla",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v8 - Android",
+    "latitud": 19.2108221,
+    "longitud": -96.1784759,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aefd0c87e33caf4abe083bc.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16152131-1259",
     "fecha": "2026-11-07",
@@ -99991,31 +100016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.4722266,
     "longitud": -104.8764274,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aecd5d2c6d7d6d888c2473f.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16145185-1259",
-    "fecha": "2026-11-05",
-    "fecha_captura": "2026-11-05",
-    "hora": "13:15",
-    "fecha_corte": "2026-11-05",
-    "created_at_iso": "2026-11-05 13:15:13",
-    "timestamp": 1793906113.0,
-    "tipo": "CAJA",
-    "identificador": "TJS0005",
-    "modelo": "TRADICIONAL SENCILLA",
-    "estado": "AGUASCALIENTES",
-    "area_trabajo": "AGUASCALIENTES",
-    "contratista": "Adrian Valenzuela",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Ok",
-    "num_viniles": 1.0,
-    "version": "v7 - Android",
-    "latitud": 21.9415959,
-    "longitud": -102.3249043,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aecd5bc81026c086e03952d.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
