@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-07 21:53:25
- * Estado de corte: Jornada en vivo activa (07/11/2026, 21:53 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 13096 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-07 21:58:12
+ * Estado de corte: Jornada en vivo activa (07/11/2026, 21:58 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 13097 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-07 21:53:17",
+  "now": "2026-11-07 21:58:10",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-07",
-  "max_visible_dt": "2026-11-07 21:53:17",
-  "max_visible_datetime_str": "2026-11-07 21:53:17",
+  "max_visible_dt": "2026-11-07 21:58:10",
+  "max_visible_datetime_str": "2026-11-07 21:58:10",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (07/11/2026, 21:53 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (07/11/2026, 21:58 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -324991,6 +324991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.935843,
     "longitud": -99.2435158,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad6cede2e2c11a40fdcb150.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16001981-1259",
+    "fecha": "2026-10-19",
+    "fecha_captura": "2026-10-19",
+    "hora": "20:14",
+    "fecha_corte": "2026-10-19",
+    "created_at_iso": "2026-10-19 20:14:06",
+    "timestamp": 1792462446.0,
+    "tipo": "CAJA",
+    "identificador": "BOR0225",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones [CARGA REMOTA AUTORIZADA - PIN: 2026]",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 18.909177,
+    "longitud": -99.2399295,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad6ce659709b6261e340378.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
