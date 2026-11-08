@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-08 14:23:29
- * Estado de corte: Jornada en vivo activa (08/11/2026, 14:23 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 13293 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-08 14:30:26
+ * Estado de corte: Jornada en vivo activa (08/11/2026, 14:30 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 13294 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-08 14:23:21",
+  "now": "2026-11-08 14:30:24",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-08",
-  "max_visible_dt": "2026-11-08 14:23:21",
-  "max_visible_datetime_str": "2026-11-08 14:23:21",
+  "max_visible_dt": "2026-11-08 14:30:24",
+  "max_visible_datetime_str": "2026-11-08 14:30:24",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (08/11/2026, 14:23 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (08/11/2026, 14:30 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -324991,6 +324991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.9551855,
     "longitud": -99.2547549,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ada74e4458fade81582e485.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16042909-1259",
+    "fecha": "2026-10-22",
+    "fecha_captura": "2026-10-22",
+    "hora": "14:07",
+    "fecha_corte": "2026-10-22",
+    "created_at_iso": "2026-10-22 14:07:55",
+    "timestamp": 1792699675.0,
+    "tipo": "CAJA",
+    "identificador": "VEO0004",
+    "modelo": "ENVOLVENTE SENCILLA",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Si",
+    "comentarios": "",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 21.5065691,
+    "longitud": -104.8723195,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ada6d19003f48688e82e460.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
