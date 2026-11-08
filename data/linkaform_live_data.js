@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-08 11:33:30
- * Estado de corte: Jornada en vivo activa (08/11/2026, 11:33 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-08 11:35:39
+ * Estado de corte: Jornada en vivo activa (08/11/2026, 11:35 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 13159 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-08 11:33:23",
+  "now": "2026-11-08 11:35:37",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-08",
-  "max_visible_dt": "2026-11-08 11:33:23",
-  "max_visible_datetime_str": "2026-11-08 11:33:23",
+  "max_visible_dt": "2026-11-08 11:35:37",
+  "max_visible_datetime_str": "2026-11-08 11:35:37",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (08/11/2026, 11:33 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (08/11/2026, 11:35 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16152406-1259",
+    "fecha": "2026-11-08",
+    "fecha_captura": "2026-11-08",
+    "hora": "11:31",
+    "fecha_corte": "2026-11-08",
+    "created_at_iso": "2026-11-08 11:31:46",
+    "timestamp": 1794159106.0,
+    "tipo": "CASETA",
+    "identificador": "2222312771",
+    "modelo": "NORMAL",
+    "estado": "PUEBLA",
+    "area_trabajo": "PUEBLA",
+    "contratista": "Erick Mauricio Herrera Quiroz",
+    "oferta": "250_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v8 - Android",
+    "latitud": 19.0780742,
+    "longitud": -98.2142034,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af0b1fd5de667705ee083b6.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16152405-1259",
     "fecha": "2026-11-08",
@@ -108278,7 +108303,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4331",
+    "identificador": "S/ID-4332",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -108453,7 +108478,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4338",
+    "identificador": "S/ID-4339",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -108903,7 +108928,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4356",
+    "identificador": "S/ID-4357",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -109228,7 +109253,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4369",
+    "identificador": "S/ID-4370",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -138528,7 +138553,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5541",
+    "identificador": "S/ID-5542",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -199991,31 +200016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 28.6455272,
     "longitud": -106.0710258,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae7447fb2a04383e87b74c9.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16129056-1259",
-    "fecha": "2026-11-01",
-    "fecha_captura": "2026-11-01",
-    "hora": "07:46",
-    "fecha_corte": "2026-11-01",
-    "created_at_iso": "2026-11-01 07:46:25",
-    "timestamp": 1793540785.0,
-    "tipo": "CASETA",
-    "identificador": "6144159897",
-    "modelo": "MINI",
-    "estado": "CHIHUAHUA",
-    "area_trabajo": "CHIHUAHUA",
-    "contratista": "Jesús José Romero Pérez",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 2.0,
-    "version": "v6 - Android",
-    "latitud": 28.6441943,
-    "longitud": -106.0722433,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae742acb5fbea256494fc45.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
