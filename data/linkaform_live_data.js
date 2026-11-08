@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-07 18:53:25
- * Estado de corte: Jornada en vivo activa (07/11/2026, 18:53 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 12991 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-07 18:57:24
+ * Estado de corte: Jornada en vivo activa (07/11/2026, 18:57 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 12993 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-07 18:53:17",
+  "now": "2026-11-07 18:57:22",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-07",
-  "max_visible_dt": "2026-11-07 18:53:17",
-  "max_visible_datetime_str": "2026-11-07 18:53:17",
+  "max_visible_dt": "2026-11-07 18:57:22",
+  "max_visible_datetime_str": "2026-11-07 18:57:22",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (07/11/2026, 18:53 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (07/11/2026, 18:57 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -175020,6 +175020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16136727-1259",
+    "fecha": "2026-11-02",
+    "fecha_captura": "2026-11-02",
+    "hora": "16:42",
+    "fecha_corte": "2026-11-02",
+    "created_at_iso": "2026-11-02 16:42:31",
+    "timestamp": 1793659351.0,
+    "tipo": "CAJA",
+    "identificador": "AJJ0003",
+    "modelo": "SIECOR SENCILLA 2 PTAS",
+    "estado": "JALISCO",
+    "area_trabajo": "JALISCO",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Queda ok",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 20.2990154,
+    "longitud": -103.2488669,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae911d32d72b9c37514a8ca.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16136725-1259",
     "fecha": "2026-11-02",
     "fecha_captura": "2026-11-02",
@@ -199966,6 +199991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 28.6738529,
     "longitud": -106.1013777,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae674a2d7d672621f7b74bc.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16128440-1259",
+    "fecha": "2026-10-31",
+    "fecha_captura": "2026-10-31",
+    "hora": "17:06",
+    "fecha_corte": "2026-10-31",
+    "created_at_iso": "2026-10-31 17:06:13",
+    "timestamp": 1793487973.0,
+    "tipo": "CAJA",
+    "identificador": "VID0001",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "AGUASCALIENTES",
+    "area_trabajo": "AGUASCALIENTES",
+    "contratista": "Adrian Valenzuela",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Ok",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 21.9001633,
+    "longitud": -102.30642,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae674601e19e196b27b74bc.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -247078,7 +247128,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-9883",
+    "identificador": "S/ID-9885",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -247103,7 +247153,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-9884",
+    "identificador": "S/ID-9886",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -247128,7 +247178,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-9885",
+    "identificador": "S/ID-9887",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
