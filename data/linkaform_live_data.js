@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-08 16:03:35
- * Estado de corte: Jornada en vivo activa (08/11/2026, 16:03 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-08 16:04:40
+ * Estado de corte: Jornada en vivo activa (08/11/2026, 16:04 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 13335 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-08 16:03:28",
+  "now": "2026-11-08 16:04:38",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-08",
-  "max_visible_dt": "2026-11-08 16:03:28",
-  "max_visible_datetime_str": "2026-11-08 16:03:28",
+  "max_visible_dt": "2026-11-08 16:04:38",
+  "max_visible_datetime_str": "2026-11-08 16:04:38",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (08/11/2026, 16:03 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (08/11/2026, 16:04 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -24991,6 +24991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.5198632,
     "longitud": -104.9256691,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef61f24631b6bfcce083d5.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16151125-1259",
+    "fecha": "2026-11-07",
+    "fecha_captura": "2026-11-07",
+    "hora": "11:36",
+    "fecha_corte": "2026-11-07",
+    "created_at_iso": "2026-11-07 11:36:36",
+    "timestamp": 1794072996.0,
+    "tipo": "CASETA",
+    "identificador": "2464627739",
+    "modelo": "NORMAL",
+    "estado": "TLAXCALA",
+    "area_trabajo": "TLAXCALA",
+    "contratista": "Erick Mauricio Herrera Quiroz",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "No hay caja en el lugar pero se ve que existio caja o caseta",
+    "num_viniles": 1.0,
+    "version": "v8 - Android",
+    "latitud": 19.3158925,
+    "longitud": -98.218794,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef61a015d7a356555d1717.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -112678,7 +112703,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4507",
+    "identificador": "S/ID-4508",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -112853,7 +112878,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4514",
+    "identificador": "S/ID-4515",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -113303,7 +113328,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4532",
+    "identificador": "S/ID-4533",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -113628,7 +113653,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4545",
+    "identificador": "S/ID-4546",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -142928,7 +142953,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5717",
+    "identificador": "S/ID-5718",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -174991,31 +175016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.4976934,
     "longitud": -104.8923341,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aea16c11cd717b264aedb41.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16138020-1259",
-    "fecha": "2026-11-03",
-    "fecha_captura": "2026-11-03",
-    "hora": "11:15",
-    "fecha_corte": "2026-11-03",
-    "created_at_iso": "2026-11-03 11:15:44",
-    "timestamp": 1793726144.0,
-    "tipo": "CASETA",
-    "identificador": "3112104315",
-    "modelo": "NORMAL",
-    "estado": "NAYARIT",
-    "area_trabajo": "NAYARIT",
-    "contratista": "Adrian Valenzuela",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 2.0,
-    "version": "v4 - Android",
-    "latitud": 21.4976459,
-    "longitud": -104.8922162,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aea16bb4cb1cba85414a916.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
