@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-07 23:55:17
- * Estado de corte: Corte oficial de las 10:00 PM activo (07/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM.
+ * Sincronización: 2026-11-08 00:05:27
+ * Estado de corte: Reporte matutino cerrado al 07/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
  * Trabajos de campo visibles: 13097 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-07 23:55:10",
+  "now": "2026-11-08 00:05:20",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-07",
   "max_visible_dt": "2026-11-07 22:00:00",
   "max_visible_datetime_str": "2026-11-07 22:00:00",
   "is_frozen": true,
-  "badge": "[CORTE 22:00] CORTE OFICIAL ACTIVO",
-  "description": "Corte oficial de las 10:00 PM activo (07/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM."
+  "badge": "[CERRADO] REPORTE OFICIAL CERRADO",
+  "description": "Reporte matutino cerrado al 07/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
