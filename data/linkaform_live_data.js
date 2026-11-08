@@ -1,24 +1,49 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-08 12:53:32
- * Estado de corte: Jornada en vivo activa (08/11/2026, 12:53 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-08 12:56:03
+ * Estado de corte: Jornada en vivo activa (08/11/2026, 12:56 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 13186 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-08 12:53:24",
+  "now": "2026-11-08 12:56:01",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-08",
-  "max_visible_dt": "2026-11-08 12:53:24",
-  "max_visible_datetime_str": "2026-11-08 12:53:24",
+  "max_visible_dt": "2026-11-08 12:56:01",
+  "max_visible_datetime_str": "2026-11-08 12:56:01",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (08/11/2026, 12:53 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (08/11/2026, 12:56 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16152460-1259",
+    "fecha": "2026-11-08",
+    "fecha_captura": "2026-11-08",
+    "hora": "12:50",
+    "fecha_corte": "2026-11-08",
+    "created_at_iso": "2026-11-08 12:50:40",
+    "timestamp": 1794163840.0,
+    "tipo": "CAJA",
+    "identificador": "FAG0009",
+    "modelo": "SIECOR DOBLE",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 17.1018011,
+    "longitud": -96.7012871,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af0c47b4901225c865d1709.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16152459-1259",
     "fecha": "2026-11-08",
@@ -74991,31 +75016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.8055152,
     "longitud": -99.1921339,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed6417cfe68c015ddaec2f.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16147067-1259",
-    "fecha": "2026-11-06",
-    "fecha_captura": "2026-11-05",
-    "hora": "23:16",
-    "fecha_corte": "2026-11-06",
-    "created_at_iso": "2026-11-05 23:16:19",
-    "timestamp": 1793942179.0,
-    "tipo": "CAJA",
-    "identificador": "MOA0062",
-    "modelo": "ENVOLVENTE SENCILLA",
-    "estado": "VERACRUZ",
-    "area_trabajo": "VERACRUZ",
-    "contratista": "Ramón Magaña Portilla",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 1.0,
-    "version": "v8 - Android",
-    "latitud": 19.1645783,
-    "longitud": -96.120001,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed629ecc0930254bc44e62.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
