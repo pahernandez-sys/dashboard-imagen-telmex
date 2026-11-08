@@ -1,18 +1,18 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-08 14:43:31
+ * Sincronización: 2026-11-08 14:43:51
  * Estado de corte: Jornada en vivo activa (08/11/2026, 14:43 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 13296 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-08 14:43:24",
+  "now": "2026-11-08 14:43:49",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-08",
-  "max_visible_dt": "2026-11-08 14:43:24",
-  "max_visible_datetime_str": "2026-11-08 14:43:24",
+  "max_visible_dt": "2026-11-08 14:43:49",
+  "max_visible_datetime_str": "2026-11-08 14:43:49",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
   "description": "Jornada en vivo activa (08/11/2026, 14:43 hrs). Próximo corte oficial hoy a las 10:00 PM."
@@ -250020,6 +250020,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16121334-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "19:41",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 19:41:33",
+    "timestamp": 1793324493.0,
+    "tipo": "CAJA",
+    "identificador": "HOR0007",
+    "modelo": "TRADICIONAL SENCILLA",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "Ingeniería avanzada en costruccion",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "No hay señal de que haya caja",
+    "num_viniles": 1.0,
+    "version": "Sin versión",
+    "latitud": 16.8676876,
+    "longitud": -99.8955733,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3f5cb61ddc84ce86f45fa.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16121333-1259",
     "fecha": "2026-10-29",
     "fecha_captura": "2026-10-29",
@@ -254678,7 +254703,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-10187",
+    "identificador": "S/ID-10188",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -254703,7 +254728,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-10188",
+    "identificador": "S/ID-10189",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -254728,7 +254753,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-10189",
+    "identificador": "S/ID-10190",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -299991,31 +300016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 20.3761798,
     "longitud": -99.9607082,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0d6361a523e211cfcf32d.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16112026-1259",
-    "fecha": "2026-10-27",
-    "fecha_captura": "2026-10-27",
-    "hora": "10:49",
-    "fecha_corte": "2026-10-27",
-    "created_at_iso": "2026-10-27 10:49:58",
-    "timestamp": 1793119798.0,
-    "tipo": "CAJA",
-    "identificador": "BNT0042",
-    "modelo": "SIECOR SENCILLA 1PTA",
-    "estado": "QUERETARO",
-    "area_trabajo": "QUERETARO",
-    "contratista": "Victor Hugo Lopez Garcia",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v4 - Android",
-    "latitud": 20.373955,
-    "longitud": -99.9603838,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae0d634c69e83644b9f90c3.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
