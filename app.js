@@ -562,6 +562,7 @@ async function loadDataFromSupabase(showNotification = false) {
       recalculateSuministrosFromMaterialsLog();
       populateAreaFilter();
       populateContratistasFilter();
+  populateTecnicosFilter();
       applyFilters();
       renderMaterialsConfigTable();
       renderMaterialsLogTable();
@@ -1976,6 +1977,7 @@ function renderRecordsTable() {
       <td class="py-2.5 px-3 text-slate-600">${r.estado || 'N/A'}</td>
       <td class="py-2.5 px-3 text-slate-600">${r.area_trabajo || 'N/A'}</td>
       <td class="py-2.5 px-3 text-slate-700">${r.contratista || 'Sin Contratista'}</td>
+      <td class="py-2.5 px-3 text-slate-700 font-medium">${r.tecnico || 'N/A'}</td>
       <td class="py-2.5 px-4 text-center">
         <span class="badge badge-success">✓ ${r.estatus || 'Aprobada'}</span>
       </td>
@@ -1990,19 +1992,94 @@ function changeRecordsPage(delta) {
 }
 
 function filterRecordsTable() {
-  const query = document.getElementById("searchRecordsInput").value.trim().toLowerCase();
-  if (!query) {
-    applyFilters();
-    return;
+  const queryEl = document.getElementById("searchRecordsInput");
+  const query = queryEl ? queryEl.value.trim().toLowerCase() : "";
+  const tecEl = document.getElementById("filterRecordsTecnico");
+  const selectedTecnico = tecEl ? tecEl.value.trim().toLowerCase() : "";
+
+  // Base filtrada según filtros globales de área, fechas y tipo
+  const arEl = document.getElementById("filterArea");
+  const arVal = arEl ? arEl.value.trim().toUpperCase() : "";
+  const tipoEl = document.getElementById("filterTipo");
+  const tipoVal = tipoEl ? tipoEl.value.trim().toUpperCase() : "";
+  const presetEl = document.getElementById("filterPresetDate");
+  const presetVal = presetEl ? presetEl.value : "all";
+
+  let minDate = null;
+  let maxDate = null;
+  const today = new Date();
+  if (presetVal === "today") {
+    minDate = getLocalDateStr(today);
+    maxDate = minDate;
+  } else if (presetVal === "7days") {
+    const d = new Date(today);
+    d.setDate(d.getDate() - 7);
+    minDate = getLocalDateStr(d);
+    maxDate = getLocalDateStr(today);
+  } else if (presetVal === "30days") {
+    const d = new Date(today);
+    d.setDate(d.getDate() - 30);
+    minDate = getLocalDateStr(d);
+    maxDate = getLocalDateStr(today);
+  } else if (presetVal === "custom") {
+    minDate = document.getElementById("customDateFrom") ? document.getElementById("customDateFrom").value || null : null;
+    maxDate = document.getElementById("customDateTo") ? document.getElementById("customDateTo").value || null : null;
   }
-  state.filteredRecords = state.records.filter(r => {
-    return (r.folio && r.folio.toLowerCase().includes(query)) ||
-           (r.identificador && r.identificador.toLowerCase().includes(query)) ||
-           (r.area_trabajo && r.area_trabajo.toLowerCase().includes(query)) ||
-           (r.contratista && r.contratista.toLowerCase().includes(query));
+
+  const cutoffInfo = getCutoffInfo();
+  if (presetVal === "today") {
+    minDate = cutoffInfo.activeReportingDate;
+    maxDate = minDate;
+  }
+
+  state.filteredRecords = (state.records || []).filter(r => {
+    if (arVal && !recordMatchesArea(r, arVal)) return false;
+    if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) return false;
+    if (cutoffInfo.isFrozen && isRecordAfterCutoff(r, cutoffInfo)) return false;
+    if (minDate && r.fecha && r.fecha < minDate) return false;
+    if (maxDate && r.fecha && r.fecha > maxDate) return false;
+
+    // Filtro específico por Técnico
+    if (selectedTecnico) {
+      const rTec = (r.tecnico || "").trim().toLowerCase();
+      if (rTec !== selectedTecnico) return false;
+    }
+
+    // Filtro por búsqueda de texto
+    if (query) {
+      const match = (r.folio && r.folio.toLowerCase().includes(query)) ||
+                    (r.identificador && r.identificador.toLowerCase().includes(query)) ||
+                    (r.area_trabajo && r.area_trabajo.toLowerCase().includes(query)) ||
+                    (r.contratista && r.contratista.toLowerCase().includes(query)) ||
+                    (r.tecnico && r.tecnico.toLowerCase().includes(query));
+      if (!match) return false;
+    }
+    return true;
   });
+
   state.currentPage = 1;
   renderRecordsTable();
+}
+
+function populateTecnicosFilter() {
+  const tecnicoSelect = document.getElementById("filterRecordsTecnico");
+  if (!tecnicoSelect) return;
+  const currentVal = tecnicoSelect.value;
+  tecnicoSelect.innerHTML = `<option value="">-- Todos los Técnicos --</option>`;
+
+  const arEl = document.getElementById("filterArea");
+  const arVal = arEl ? arEl.value.trim().toUpperCase() : "";
+
+  // Extraer técnicos disponibles (respetando área si está seleccionada)
+  const pool = arVal ? state.records.filter(r => recordMatchesArea(r, arVal)) : state.records;
+  const tecnicos = Array.from(new Set(pool.map(r => (r.tecnico || "").trim()).filter(Boolean))).sort();
+  tecnicos.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.innerText = t;
+    tecnicoSelect.appendChild(opt);
+  });
+  tecnicoSelect.value = currentVal;
 }
 
 // =========================================================
@@ -2200,6 +2277,7 @@ async function triggerLinkaformSync() {
     safeSetStorage("telmex_dashboard_last_sync", nowStr);
     populateAreaFilter();
     populateContratistasFilter();
+  populateTecnicosFilter();
     applyFilters();
     renderMaterialsTab();
     renderMaterialsLogTable();
@@ -2343,6 +2421,7 @@ function saveAndRefreshImportedRecords(fileName, count, typeLabel = "registros")
   updateSyncLabel();
   populateAreaFilter();
   populateContratistasFilter();
+  populateTecnicosFilter();
   applyFilters();
 }
 
@@ -2361,6 +2440,7 @@ function restoreDefaultRecords() {
     updateSyncLabel();
     populateAreaFilter();
     populateContratistasFilter();
+  populateTecnicosFilter();
     applyFilters();
     renderMaterialsLogTable();
     closeImportModal();
@@ -2479,6 +2559,7 @@ function exportDataToExcel() {
     "Modelo": r.modelo,
     "Viniles Instalados": r.num_viniles !== undefined ? r.num_viniles : (r.tipo === "CASETA" ? 2 : 1),
     "Contratista": r.contratista,
+    "Técnico": r.tecnico || "Sin Técnico",
     "Estatus": r.estatus
   }));
   const wsRecords = XLSX.utils.json_to_sheet(recordsRows);

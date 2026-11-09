@@ -285,6 +285,7 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
                 area = "MONTERREY 1"
 
         contratista = ans.get("6abe9357bef08742fcf94020") or "Victor Hugo Lopez Garcia"
+        tecnico = (ans.get("6abe9357bef08742fcf94021") or "").strip() or "Sin Técnico"
         raw_modelo = ans.get("6ab9d647dba7a0c191e6a0f6") or "Sencilla"
         modelo = normalize_model_name(raw_modelo, tipo)
         oferta = ans.get("6a99eb8af9c750d6db214c5d") or "200 MB"
@@ -322,6 +323,7 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
             "estado": estado,
             "area_trabajo": area,
             "contratista": contratista,
+            "tecnico": tecnico,
             "oferta": oferta,
             "existe_bd": existe_bd,
             "comentarios": comentarios,

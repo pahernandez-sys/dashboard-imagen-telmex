@@ -505,7 +505,12 @@
             <span id="filteredRecordsBadge" class="badge badge-info">0 registros</span>
           </div>
           <div class="flex items-center gap-2">
-            <input type="text" id="searchRecordsInput" oninput="filterRecordsTable()" placeholder="Buscar por ID, folio o calle..." class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-telmex">
+            <div class="flex items-center gap-2 flex-wrap">
+            <select id="filterRecordsTecnico" onchange="filterRecordsTable()" class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-telmex font-medium">
+              <option value="">-- Todos los Técnicos --</option>
+            </select>
+            <input type="text" id="searchRecordsInput" oninput="filterRecordsTable()" placeholder="Buscar por ID, folio, técnico..." class="text-xs border border-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-telmex">
+          </div>
           </div>
         </div>
 
@@ -521,6 +526,7 @@
                 <th class="py-2.5 px-3">Estado</th>
                 <th class="py-2.5 px-3">Área de Trabajo</th>
                 <th class="py-2.5 px-3">Contratista</th>
+                <th class="py-2.5 px-3">Técnico</th>
                 <th class="py-2.5 px-4 text-center">Estatus</th>
               </tr>
             </thead>

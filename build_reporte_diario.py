@@ -410,6 +410,7 @@ def build_reporte_diario(current_dt=None):
 
     # Hoja Ejecutiva al inicio del libro
     add_resumen_general_sheet(wb, cutoff_info)
+    add_trabajos_de_campo_sheet(wb, cutoff_info)
 
     if wb.calculation:
         wb.calculation.fullCalcOnLoad = True
@@ -447,3 +448,144 @@ def recalculate_with_excel_com(file_path):
 
 if __name__ == "__main__":
     build_reporte_diario()
+
+
+def add_trabajos_de_campo_sheet(wb, cutoff_info=None):
+    """
+    Agrega o actualiza la hoja 'Trabajos de campo' en el Reporte Diario Excel
+    con el desglose registro por registro de Linkaform incluyendo la columna TÉCNICO.
+    """
+    records_path = os.path.join(os.path.dirname(__file__), "data", "linkaform_records_142786.json")
+    if not os.path.exists(records_path):
+        return
+
+    with open(records_path, "r", encoding="utf-8") as f:
+        raw_records = json.load(f)
+
+    sheet_name = "Trabajos de campo"
+    if sheet_name in wb.sheetnames:
+        del wb[sheet_name]
+
+    ws = wb.create_sheet(title=sheet_name)
+    ws.views.sheetView[0].showGridLines = True
+
+    # Encabezados
+    headers = [
+        "FOLIO LINKAFORM",
+        "FECHA",
+        "HORA",
+        "TIPO",
+        "IDENTIFICADOR",
+        "MODELO",
+        "ESTADO",
+        "ÁREA DE TRABAJO",
+        "CONTRATISTA",
+        "TÉCNICO",
+        "VINILES INSTALADOS",
+        "ESTATUS",
+        "LATITUD",
+        "LONGITUD",
+        "FOTO ANTES",
+        "FOTO DESPUÉS"
+    ]
+
+    header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
+    header_fill = PatternFill(start_color="003366", end_color="003366", fill_type="solid")
+    header_alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    border_thin = Border(
+        left=Side(style='thin', color='D9D9D9'),
+        right=Side(style='thin', color='D9D9D9'),
+        top=Side(style='thin', color='D9D9D9'),
+        bottom=Side(style='thin', color='D9D9D9')
+    )
+
+    for col_idx, h in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_idx, value=h)
+        cell.font = header_font
+        cell.fill = header_fill
+        cell.alignment = header_alignment
+        cell.border = border_thin
+    ws.row_dimensions[1].height = 28
+
+    data_font = Font(name="Calibri", size=10)
+    data_align_left = Alignment(horizontal="left", vertical="center")
+    data_align_center = Alignment(horizontal="center", vertical="center")
+
+    row_num = 2
+    for item in raw_records:
+        ans = item.get("answers", {})
+        folio = item.get("folio") or f"LF-{item.get('id', '')}"
+        
+        # Fecha y hora
+        created_at = item.get("created_at")
+        date_str, time_str = "", ""
+        if isinstance(created_at, (int, float)):
+            dt = datetime.fromtimestamp(created_at)
+            date_str = dt.strftime("%Y-%m-%d")
+            time_str = dt.strftime("%H:%M")
+        elif isinstance(created_at, str):
+            date_str = created_at[:10]
+            time_str = created_at[11:16]
+
+        tipo = (ans.get("6ad52fc6bc424ea79992eabe") or "CAJA").upper()
+        identificador = ans.get("6ad52fc6bc424ea79992eabf") or ""
+        raw_modelo = ans.get("6ab9d647dba7a0c191e6a0f6") or ""
+        modelo = normalize_model_name(raw_modelo, tipo) if "normalize_model_name" in globals() else raw_modelo
+        estado = (ans.get("6ad52fc6bc424ea79992eac0") or "").upper()
+        area = (ans.get("6ad52fc6bc424ea79992eac1") or estado).upper()
+        contratista = ans.get("6abe9357bef08742fcf94020") or "Victor Hugo Lopez Garcia"
+        tecnico = (ans.get("6abe9357bef08742fcf94021") or "").strip() or "Sin Técnico"
+
+        # Viniles
+        num_viniles_raw = ans.get("6a99eb60a20e4f1d25581b72")
+        try:
+            num_viniles = float(num_viniles_raw) if (num_viniles_raw is not None and str(num_viniles_raw).strip() != "") else (2.0 if tipo == "CASETA" else 1.0)
+        except Exception:
+            num_viniles = 2.0 if tipo == "CASETA" else 1.0
+
+        lat = ans.get("6ab6f3a4c472baf119e176e8") or ""
+        lng = ans.get("6ab6f3a4c472baf119e176e9") or ""
+
+        foto_antes_arr = ans.get("6a99e764f9c750d6db214c54") or []
+        foto_despues_arr = ans.get("6a99e764f9c750d6db214c55") or []
+        foto_antes = foto_antes_arr[0].get("file_url") if (isinstance(foto_antes_arr, list) and len(foto_antes_arr) > 0) else ""
+        foto_despues = foto_despues_arr[0].get("file_url") if (isinstance(foto_despues_arr, list) and len(foto_despues_arr) > 0) else ""
+
+        row_data = [
+            folio,
+            date_str,
+            time_str,
+            tipo,
+            identificador,
+            modelo,
+            estado,
+            area,
+            contratista,
+            tecnico,
+            num_viniles,
+            "Aprobada",
+            lat,
+            lng,
+            foto_antes,
+            foto_despues
+        ]
+
+        for col_idx, val in enumerate(row_data, 1):
+            cell = ws.cell(row=row_num, column=col_idx, value=val)
+            cell.font = data_font
+            cell.border = border_thin
+            if col_idx in [1, 2, 3, 4, 11, 12]:
+                cell.alignment = data_align_center
+            else:
+                cell.alignment = data_align_left
+
+        row_num += 1
+
+    col_widths = {
+        1: 18, 2: 13, 3: 10, 4: 12, 5: 16, 6: 22, 7: 16,
+        8: 24, 9: 28, 10: 28, 11: 18, 12: 14, 13: 14, 14: 14,
+        15: 35, 16: 35
+    }
+    for col_idx, width in col_widths.items():
+        col_letter = openpyxl.utils.get_column_letter(col_idx)
+        ws.column_dimensions[col_letter].width = width
