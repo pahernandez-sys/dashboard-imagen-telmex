@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-08 20:13:40
- * Estado de corte: Jornada en vivo activa (08/11/2026, 20:13 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 13374 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-08 20:20:23
+ * Estado de corte: Jornada en vivo activa (08/11/2026, 20:20 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 13375 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-08 20:13:32",
+  "now": "2026-11-08 20:20:21",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-08",
-  "max_visible_dt": "2026-11-08 20:13:32",
-  "max_visible_datetime_str": "2026-11-08 20:13:32",
+  "max_visible_dt": "2026-11-08 20:20:21",
+  "max_visible_datetime_str": "2026-11-08 20:20:21",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (08/11/2026, 20:13 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (08/11/2026, 20:20 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -274991,6 +274991,31 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.7019387,
     "longitud": -101.2281145,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2ff35080d39dad2f530ad.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16118391-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "02:09",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 02:09:24",
+    "timestamp": 1793261364.0,
+    "tipo": "CAJA",
+    "identificador": "TAS0059",
+    "modelo": "SIECOR SENCILLA 2 PTAS",
+    "estado": "MICHOACAN",
+    "area_trabajo": "MICHOACAN",
+    "contratista": "Roberto Melchor Frutos Fuentes",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v5 - Android",
+    "latitud": 19.7016335,
+    "longitud": -101.2291623,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2ff337d3294d7d1f530b2.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
