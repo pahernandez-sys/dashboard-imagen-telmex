@@ -7,7 +7,7 @@
           "file_url": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af179b7e325314f327fac4f.jpg"
         }
       ],
-      "6a99eb60a20e4f1d25581b71": "No",
+      "6a99eb60a20e4f1d25581b71": "SÍ",
       "6a99eb60a20e4f1d25581b72": "1",
       "6a99eb8af9c750d6db214c5d": "200_mb",
       "6ab6f3a4c472baf119e176e7": "CAS_MON_0004",
@@ -21,8 +21,8 @@
       "6ad52fc6bc424ea79992eabe": "CASETA",
       "6ad52fc6bc424ea79992eabf": "8183166640",
       "6ad52fc6bc424ea79992eac0": "NUEVO LEON",
-      "6ad52fc6bc424ea79992eac1": "MONTERREY",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "MONTERREY 1",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -181,14 +181,14 @@
     "start_date": 1794210237.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794210278.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794210873.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
