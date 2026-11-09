@@ -250,6 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try { loadMaterialsLog(); } catch (e) { console.error("Error en loadMaterialsLog:", e); }
   try { recalculateSuministrosFromMaterialsLog(); } catch (e) { console.error("Error en recalculateSuministros:", e); }
   try { initFilters(); } catch (e) { console.error("Error en initFilters:", e); }
+  try { populateTecnicosFilter(); } catch (e) { console.error("Error en populateTecnicosFilter:", e); }
   try { initDatePresets(); } catch (e) { console.error("Error en initDatePresets:", e); }
   try { renderCutoffBanner(); } catch (e) { console.error("Error en renderCutoffBanner:", e); }
   try { applyFilters(); } catch (e) { console.error("Error en applyFilters:", e); }
@@ -735,6 +736,8 @@ function updateSyncLabel() {
 // =========================================================
 function initFilters() {
   populateAreaFilter();
+  populateContratistasFilter();
+  populateTecnicosFilter();
   initDatePresets();
 }
 
@@ -946,6 +949,9 @@ function applyFilters() {
 
   state.totalRawFoliosCount = totalRawFolios;
   state.currentPage = 1;
+
+  // Mantener catálogo de técnicos sincronizado con el área activa
+  populateTecnicosFilter();
 
   // Renderizar vistas
   renderKpis();
@@ -2071,15 +2077,20 @@ function populateTecnicosFilter() {
   const arVal = arEl ? arEl.value.trim().toUpperCase() : "";
 
   // Extraer técnicos disponibles (respetando área si está seleccionada)
-  const pool = arVal ? state.records.filter(r => recordMatchesArea(r, arVal)) : state.records;
-  const tecnicos = Array.from(new Set(pool.map(r => (r.tecnico || "").trim()).filter(Boolean))).sort();
+  const pool = (arVal && typeof recordMatchesArea === "function")
+    ? (state.records || []).filter(r => recordMatchesArea(r, arVal))
+    : (state.records || []);
+
+  const tecnicos = Array.from(new Set(pool.map(r => (r.tecnico || "").trim()).filter(t => t && t !== "Sin Técnico" && t !== "N/A"))).sort();
   tecnicos.forEach(t => {
     const opt = document.createElement("option");
     opt.value = t;
     opt.innerText = t;
     tecnicoSelect.appendChild(opt);
   });
-  tecnicoSelect.value = currentVal;
+  if (currentVal && tecnicos.includes(currentVal)) {
+    tecnicoSelect.value = currentVal;
+  }
 }
 
 // =========================================================
