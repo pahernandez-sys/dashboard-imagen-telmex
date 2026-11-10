@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-09 21:34:06
- * Estado de corte: Jornada en vivo activa (09/11/2026, 21:33 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-09 21:36:03
+ * Estado de corte: Jornada en vivo activa (09/11/2026, 21:36 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 14786 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-09 21:33:58",
+  "now": "2026-11-09 21:36:00",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-09",
-  "max_visible_dt": "2026-11-09 21:33:58",
-  "max_visible_datetime_str": "2026-11-09 21:33:58",
+  "max_visible_dt": "2026-11-09 21:36:00",
+  "max_visible_datetime_str": "2026-11-09 21:36:00",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (09/11/2026, 21:33 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (09/11/2026, 21:36 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -156020,6 +156020,32 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16144545-1259",
+    "fecha": "2026-11-05",
+    "fecha_captura": "2026-11-05",
+    "hora": "10:34",
+    "fecha_corte": "2026-11-05",
+    "created_at_iso": "2026-11-05 10:34:22",
+    "timestamp": 1793896462.0,
+    "tipo": "CAJA",
+    "identificador": "CTA0067",
+    "modelo": "SIECOR SENCILLA 2 PTAS",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "tecnico": "Oscar Arturo machuca Jiménez",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 21.505165,
+    "longitud": -104.9018583,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aecb0090b727adf4dc2474b.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16144544-1259",
     "fecha": "2026-11-05",
     "fecha_captura": "2026-11-05",
@@ -186370,7 +186396,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7168",
+    "identificador": "S/ID-7169",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -303604,7 +303630,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-11677",
+    "identificador": "S/ID-11678",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -303630,7 +303656,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-11678",
+    "identificador": "S/ID-11679",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -303656,7 +303682,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-11679",
+    "identificador": "S/ID-11680",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -363990,32 +364016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 20.6758889,
     "longitud": -103.3551649,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ade0c686cdb6805b06507a6.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16077508-1259",
-    "fecha": "2026-10-24",
-    "fecha_captura": "2026-10-24",
-    "hora": "18:50",
-    "fecha_corte": "2026-10-24",
-    "created_at_iso": "2026-10-24 18:50:25",
-    "timestamp": 1792889425.0,
-    "tipo": "CAJA",
-    "identificador": "NNE0007",
-    "modelo": "SIECOR SENCILLA 1PTA",
-    "estado": "MEXICO",
-    "area_trabajo": "TOLUCA",
-    "contratista": "Brusim",
-    "tecnico": "Victor Antonio Farfán",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v4 - Android",
-    "latitud": 19.2855441,
-    "longitud": -99.5492305,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6add524faf6ee402cf6507af.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
