@@ -1,24 +1,50 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-10 08:24:08
- * Estado de corte: Jornada en vivo activa (10/11/2026, 08:24 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-10 08:34:12
+ * Estado de corte: Jornada en vivo activa (10/11/2026, 08:34 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 14862 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-10 08:24:00",
+  "now": "2026-11-10 08:34:03",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-10",
-  "max_visible_dt": "2026-11-10 08:24:00",
-  "max_visible_datetime_str": "2026-11-10 08:24:00",
+  "max_visible_dt": "2026-11-10 08:34:03",
+  "max_visible_datetime_str": "2026-11-10 08:34:03",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (10/11/2026, 08:24 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (10/11/2026, 08:34 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16160723-1259",
+    "fecha": "2026-11-10",
+    "fecha_captura": "2026-11-10",
+    "hora": "08:20",
+    "fecha_corte": "2026-11-10",
+    "created_at_iso": "2026-11-10 08:20:10",
+    "timestamp": 1794320410.0,
+    "tipo": "CASETA",
+    "identificador": "8252381214",
+    "modelo": "NORMAL",
+    "estado": "NUEVO LEON",
+    "area_trabajo": "MONTERREY 3",
+    "contratista": "Jose antonio Esquivel",
+    "tecnico": "Jose antonio Esquivel",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 0.0,
+    "version": "v9 - IPhone",
+    "latitud": 25.52357580935169,
+    "longitud": -103.32605895109819,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af32816ed6a63cc155fae1c.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16160718-1259",
     "fecha": "2026-11-10",
@@ -25990,32 +26016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 24.8086875,
     "longitud": -107.4508116,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af21ba65ca75ad68cb0063b.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16158332-1259",
-    "fecha": "2026-11-09",
-    "fecha_captura": "2026-11-09",
-    "hora": "13:14",
-    "fecha_corte": "2026-11-09",
-    "created_at_iso": "2026-11-09 13:14:32",
-    "timestamp": 1794251672.0,
-    "tipo": "CAJA",
-    "identificador": "SUM0057",
-    "modelo": "SIECOR SENCILLA 1PTA",
-    "estado": "VERACRUZ",
-    "area_trabajo": "JALAPA",
-    "contratista": "TECNICO DIRECTO",
-    "tecnico": "Erik Antonio Contreras Aguilera",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 1.0,
-    "version": "v8 - Android",
-    "latitud": 19.5486215,
-    "longitud": -96.8978329,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af21b93e56b8c55af5fae28.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
