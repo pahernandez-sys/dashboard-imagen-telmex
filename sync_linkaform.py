@@ -195,24 +195,33 @@ def fetch_form_answers(form_id, jwt_token):
 
     while True:
         url = f"{ANSWERS_URL}?form_id={form_id}&limit={limit}&offset={offset}"
-        try:
-            resp = requests.get(url, headers=headers, timeout=45)
-            if resp.status_code == 200:
-                data = resp.json()
-                objs = data.get("data") or data.get("results") or data.get("objects") or []
-                if not objs or len(objs) == 0:
+        success_page = False
+        objs = []
+        for attempt in range(5):
+            try:
+                resp = requests.get(url, headers=headers, timeout=60)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    objs = data.get("data") or data.get("results") or data.get("objects") or []
+                    success_page = True
                     break
-                all_objects.extend(objs)
-                print(f"  [Pagina offset={offset}] {len(objs)} registros recuperados (Total acumulado: {len(all_objects)}).")
-                if len(objs) < limit:
-                    break
-                offset += limit
-            else:
-                print(f"  [ERROR {resp.status_code}] Fallo en offset={offset}: {resp.text[:200]}")
-                break
-        except Exception as e:
-            print(f"  [EXCEPCION] Error al consultar Forma {form_id} en offset={offset}: {e}")
+                else:
+                    print(f"  [RETRY {attempt+1}/5 - ERROR {resp.status_code}] en offset={offset}: {resp.text[:100]}")
+                    time.sleep(2.0 * (attempt + 1))
+            except Exception as e:
+                print(f"  [RETRY {attempt+1}/5 - EXCEPCION] en offset={offset}: {e}")
+                time.sleep(2.5 * (attempt + 1))
+        
+        if not success_page or not objs:
             break
+        
+        all_objects.extend(objs)
+        print(f"  [Pagina offset={offset}] {len(objs)} registros recuperados (Total acumulado: {len(all_objects)}).")
+        
+        if len(objs) < limit:
+            break
+        
+        offset += limit
 
     print(f"  [OK] Forma {form_id}: Total de {len(all_objects)} registros recuperados.")
     return all_objects
