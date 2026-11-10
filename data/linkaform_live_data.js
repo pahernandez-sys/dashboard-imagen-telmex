@@ -1,24 +1,50 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-09 21:44:03
- * Estado de corte: Jornada en vivo activa (09/11/2026, 21:43 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-09 21:50:11
+ * Estado de corte: Jornada en vivo activa (09/11/2026, 21:50 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 14787 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-09 21:43:54",
+  "now": "2026-11-09 21:50:09",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-09",
-  "max_visible_dt": "2026-11-09 21:43:54",
-  "max_visible_datetime_str": "2026-11-09 21:43:54",
+  "max_visible_dt": "2026-11-09 21:50:09",
+  "max_visible_datetime_str": "2026-11-09 21:50:09",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (09/11/2026, 21:43 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (09/11/2026, 21:50 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16160290-1259",
+    "fecha": "2026-11-09",
+    "fecha_captura": "2026-11-09",
+    "hora": "21:40",
+    "fecha_corte": "2026-11-09",
+    "created_at_iso": "2026-11-09 21:40:10",
+    "timestamp": 1794282010.0,
+    "tipo": "CAJA",
+    "identificador": "LPZ0027",
+    "modelo": "TRADICIONAL SENCILLA",
+    "estado": "BAJA CALIFORNIA SUR",
+    "area_trabajo": "LA PAZ",
+    "contratista": "Luis Jose Vasquez Briceño",
+    "tecnico": "Ramon Nuñez Victoria",
+    "oferta": "250_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v9 - Android",
+    "latitud": 24.1457983,
+    "longitud": -110.3043333,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af292168cf803d5b9b00638.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16160279-1259",
     "fecha": "2026-11-09",
@@ -25990,32 +26016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 28.6494484,
     "longitud": -106.1487307,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af2131a50a762f534cb8d68.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16158176-1259",
-    "fecha": "2026-11-09",
-    "fecha_captura": "2026-11-09",
-    "hora": "12:38",
-    "fecha_corte": "2026-11-09",
-    "created_at_iso": "2026-11-09 12:38:16",
-    "timestamp": 1794249496.0,
-    "tipo": "CAJA",
-    "identificador": "PIA0026",
-    "modelo": "SIECOR SENCILLA 2 PTAS",
-    "estado": "CHIHUAHUA",
-    "area_trabajo": "CHIHUAHUA",
-    "contratista": "Jesús José romero peres",
-    "tecnico": "Efraín romero torres",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 2.0,
-    "version": "v8 - Android",
-    "latitud": 28.6494658,
-    "longitud": -106.1486619,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af21314500d4467525fae21.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
