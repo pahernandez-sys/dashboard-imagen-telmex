@@ -1,24 +1,50 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-10 08:44:06
- * Estado de corte: Jornada en vivo activa (10/11/2026, 08:43 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-10 08:54:07
+ * Estado de corte: Jornada en vivo activa (10/11/2026, 08:53 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 14863 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-10 08:43:57",
+  "now": "2026-11-10 08:53:58",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-10",
-  "max_visible_dt": "2026-11-10 08:43:57",
-  "max_visible_datetime_str": "2026-11-10 08:43:57",
+  "max_visible_dt": "2026-11-10 08:53:58",
+  "max_visible_datetime_str": "2026-11-10 08:53:58",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (10/11/2026, 08:43 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (10/11/2026, 08:53 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16160750-1259",
+    "fecha": "2026-11-10",
+    "fecha_captura": "2026-11-10",
+    "hora": "08:41",
+    "fecha_corte": "2026-11-10",
+    "created_at_iso": "2026-11-10 08:41:39",
+    "timestamp": 1794321699.0,
+    "tipo": "CAJA",
+    "identificador": "AME0070",
+    "modelo": "TRADICIONAL SENCILLA",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Directo",
+    "tecnico": "Abraham Antonio Morales Olarte",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v8 - Android",
+    "latitud": 19.5469312,
+    "longitud": -96.9403515,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af32d1fcd4cb2639c5fae31.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16160723-1259",
     "fecha": "2026-11-10",
@@ -156912,7 +156938,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-6035",
+    "identificador": "S/ID-6036",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -157094,7 +157120,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-6042",
+    "identificador": "S/ID-6043",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -157562,7 +157588,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-6060",
+    "identificador": "S/ID-6061",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -157900,7 +157926,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-6073",
+    "identificador": "S/ID-6074",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -181990,32 +182016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.5249377,
     "longitud": -102.241034,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeb9c2599bd210df576252f.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16142329-1259",
-    "fecha": "2026-11-04",
-    "fecha_captura": "2026-11-04",
-    "hora": "14:57",
-    "fecha_corte": "2026-11-04",
-    "created_at_iso": "2026-11-04 14:57:08",
-    "timestamp": 1793825828.0,
-    "tipo": "CAJA",
-    "identificador": "ENC0004",
-    "modelo": "SIECOR SENCILLA 2 PTAS",
-    "estado": "JALISCO",
-    "area_trabajo": "AGUASCALIENTES",
-    "contratista": "Adrian Valenzuela",
-    "tecnico": "Guillermo Antonio Torres Ruiz",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v7 - Android",
-    "latitud": 21.5263497,
-    "longitud": -102.2409879,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aeb9c1fb421bb9d9998a6c9.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
