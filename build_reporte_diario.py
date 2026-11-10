@@ -446,8 +446,6 @@ def recalculate_with_excel_com(file_path):
     except Exception as e:
         print(f"  [Aviso Excel COM] No se pudo invocar recálculo COM: {e}")
 
-if __name__ == "__main__":
-    build_reporte_diario()
 
 
 def add_trabajos_de_campo_sheet(wb, cutoff_info=None):
@@ -589,3 +587,6 @@ def add_trabajos_de_campo_sheet(wb, cutoff_info=None):
     for col_idx, width in col_widths.items():
         col_letter = openpyxl.utils.get_column_letter(col_idx)
         ws.column_dimensions[col_letter].width = width
+
+if __name__ == "__main__":
+    build_reporte_diario()
