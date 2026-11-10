@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-09 23:44:00
+ * Sincronización: 2026-11-09 23:53:59
  * Estado de corte: Corte oficial de las 10:00 PM activo (09/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM.
  * Trabajos de campo visibles: 14789 (Retenidos por corte: 24)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-09 23:43:51",
+  "now": "2026-11-09 23:53:50",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-09",
