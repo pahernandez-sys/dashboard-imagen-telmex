@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-09 20:53:38
- * Estado de corte: Jornada en vivo activa (09/11/2026, 20:53 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-09 20:54:13
+ * Estado de corte: Jornada en vivo activa (09/11/2026, 20:54 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 14776 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 291 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-09 20:53:35",
+  "now": "2026-11-09 20:54:04",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-09",
-  "max_visible_dt": "2026-11-09 20:53:35",
-  "max_visible_datetime_str": "2026-11-09 20:53:35",
+  "max_visible_dt": "2026-11-09 20:54:04",
+  "max_visible_datetime_str": "2026-11-09 20:54:04",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (09/11/2026, 20:53 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (09/11/2026, 20:54 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -104020,6 +104020,32 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16148416-1259",
+    "fecha": "2026-11-06",
+    "fecha_captura": "2026-11-06",
+    "hora": "13:18",
+    "fecha_corte": "2026-11-06",
+    "created_at_iso": "2026-11-06 13:18:11",
+    "timestamp": 1793992691.0,
+    "tipo": "CAJA",
+    "identificador": "DEF0010",
+    "modelo": "TRADICIONAL SENCILLA",
+    "estado": "PUEBLA",
+    "area_trabajo": "PUEBLA",
+    "contratista": "IVAN CRUZ ROSAS",
+    "tecnico": "Jose alberto alvarez vazquez",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "No hay caja en el lugar pero se ve que existio caja o caseta",
+    "num_viniles": 1.0,
+    "version": "v8 - Android",
+    "latitud": 19.0787087,
+    "longitud": -98.1952473,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aee27ef22b9eb89705d1708.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16148415-1259",
     "fecha": "2026-11-06",
     "fecha_captura": "2026-11-06",
@@ -154650,7 +154676,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5948",
+    "identificador": "S/ID-5949",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -154832,7 +154858,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5955",
+    "identificador": "S/ID-5956",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -155300,7 +155326,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5973",
+    "identificador": "S/ID-5974",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -155638,7 +155664,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-5986",
+    "identificador": "S/ID-5987",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -155990,32 +156016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.8808874,
     "longitud": -102.23531,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aecaed814fcf8bbbf039563.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16144526-1259",
-    "fecha": "2026-11-05",
-    "fecha_captura": "2026-11-05",
-    "hora": "10:28",
-    "fecha_corte": "2026-11-05",
-    "created_at_iso": "2026-11-05 10:28:53",
-    "timestamp": 1793896133.0,
-    "tipo": "CASETA",
-    "identificador": "6677133278",
-    "modelo": "NORMAL",
-    "estado": "SINALOA",
-    "area_trabajo": "CULIACAN",
-    "contratista": "Alejandro Adrian Obeso",
-    "tecnico": "Eduardo Alonzo Rodriguez Miranda",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v7 - Android",
-    "latitud": 24.8143476,
-    "longitud": -107.4025698,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aecaec1e56aa6a616c24759.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
