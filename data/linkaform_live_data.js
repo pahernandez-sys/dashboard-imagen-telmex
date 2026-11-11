@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-10 23:04:25
+ * Sincronización: 2026-11-10 23:14:30
  * Estado de corte: Corte oficial de las 10:00 PM activo (10/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM.
- * Trabajos de campo visibles: 16164 (Retenidos por corte: 42)
+ * Trabajos de campo visibles: 16166 (Retenidos por corte: 42)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-10 23:04:16",
+  "now": "2026-11-10 23:14:21",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-10",
@@ -310928,6 +310928,58 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16125579-1259",
+    "fecha": "2026-10-30",
+    "fecha_captura": "2026-10-30",
+    "hora": "17:18",
+    "fecha_corte": "2026-10-30",
+    "created_at_iso": "2026-10-30 17:18:37",
+    "timestamp": 1793402317.0,
+    "tipo": "CASETA",
+    "identificador": "3336573949",
+    "modelo": "SEMICIRCULAR",
+    "estado": "JALISCO",
+    "area_trabajo": "GUADALAJARA ORIENTE",
+    "contratista": "Adrian Valenzuela",
+    "tecnico": "Juan Carlos Cortez",
+    "oferta": "200_mb",
+    "existe_bd": "No",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 20.6493406,
+    "longitud": -103.3100677,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae525c8066cdccc567b74bd.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16125578-1259",
+    "fecha": "2026-10-30",
+    "fecha_captura": "2026-10-30",
+    "hora": "17:18",
+    "fecha_corte": "2026-10-30",
+    "created_at_iso": "2026-10-30 17:18:36",
+    "timestamp": 1793402316.0,
+    "tipo": "CAJA",
+    "identificador": "SAJ0001",
+    "modelo": "SIECOR SENCILLA 2 PTAS",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "INGENIERÍA AVANZADA EN CONSTRUCCIÓN",
+    "tecnico": "LUIS ALECXIS DELGADO",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin detalles",
+    "num_viniles": 2.0,
+    "version": "v6 - Android",
+    "latitud": 17.5683134,
+    "longitud": -101.3438564,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae525c72a10b3609c94fc52.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16125577-1259",
     "fecha": "2026-10-30",
     "fecha_captura": "2026-10-30",
@@ -339458,7 +339510,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13098",
+    "identificador": "S/ID-13100",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -339484,7 +339536,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13099",
+    "identificador": "S/ID-13101",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -339510,7 +339562,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13100",
+    "identificador": "S/ID-13102",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
