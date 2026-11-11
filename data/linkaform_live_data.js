@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-10 18:44:29
- * Estado de corte: Jornada en vivo activa (10/11/2026, 18:44 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 15981 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-10 18:48:54
+ * Estado de corte: Jornada en vivo activa (10/11/2026, 18:48 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 15982 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-10 18:44:19",
+  "now": "2026-11-10 18:48:47",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-10",
-  "max_visible_dt": "2026-11-10 18:44:19",
-  "max_visible_datetime_str": "2026-11-10 18:44:19",
+  "max_visible_dt": "2026-11-10 18:48:47",
+  "max_visible_datetime_str": "2026-11-10 18:48:47",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (10/11/2026, 18:44 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (10/11/2026, 18:48 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -389990,6 +389990,32 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.983525,
     "longitud": -99.102153,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adfb6a7205134d262afdb10.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16100607-1259",
+    "fecha": "2026-10-26",
+    "fecha_captura": "2026-10-26",
+    "hora": "14:22",
+    "fecha_corte": "2026-10-26",
+    "created_at_iso": "2026-10-26 14:22:43",
+    "timestamp": 1793046163.0,
+    "tipo": "CAJA",
+    "identificador": "ABE0003",
+    "modelo": "SIECOR DOBLE",
+    "estado": "MEXICO",
+    "area_trabajo": "ESTADO DE MEXICO SUR",
+    "contratista": "PC INDUSTRIAL",
+    "tecnico": "Luis Carrillo Cortés",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "ABE003",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 19.249895,
+    "longitud": -100.031633,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6adfb692531159387d6507a9.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
