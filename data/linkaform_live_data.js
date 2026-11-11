@@ -1,24 +1,50 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-10 19:48:28
- * Estado de corte: Jornada en vivo activa (10/11/2026, 19:48 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-10 19:54:19
+ * Estado de corte: Jornada en vivo activa (10/11/2026, 19:54 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 16032 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-10 19:48:22",
+  "now": "2026-11-10 19:54:11",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-10",
-  "max_visible_dt": "2026-11-10 19:48:22",
-  "max_visible_datetime_str": "2026-11-10 19:48:22",
+  "max_visible_dt": "2026-11-10 19:54:11",
+  "max_visible_datetime_str": "2026-11-10 19:54:11",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (10/11/2026, 19:48 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (10/11/2026, 19:54 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16165528-1259",
+    "fecha": "2026-11-10",
+    "fecha_captura": "2026-11-10",
+    "hora": "19:46",
+    "fecha_corte": "2026-11-10",
+    "created_at_iso": "2026-11-10 19:46:58",
+    "timestamp": 1794361618.0,
+    "tipo": "CAJA",
+    "identificador": "LOM0001",
+    "modelo": "SIECOR SENCILLA 2 PTAS",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrian Valenzuela",
+    "tecnico": "Carlos Alfonso Yañez Talamantes",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v8 - Android",
+    "latitud": 20.9548506,
+    "longitud": -105.3532159,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3c90db9c61ecd19cb8d68.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16165519-1259",
     "fecha": "2026-11-10",
@@ -187306,7 +187332,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7204",
+    "identificador": "S/ID-7205",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -187488,7 +187514,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7211",
+    "identificador": "S/ID-7212",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -187956,7 +187982,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7229",
+    "identificador": "S/ID-7230",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -188294,7 +188320,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-7242",
+    "identificador": "S/ID-7243",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -218766,7 +218792,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-8414",
+    "identificador": "S/ID-8415",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -285990,32 +286016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 20.5582541,
     "longitud": -100.3887032,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae6943e2094e4b5a61f7c85.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16128547-1259",
-    "fecha": "2026-10-31",
-    "fecha_captura": "2026-10-31",
-    "hora": "19:22",
-    "fecha_corte": "2026-10-31",
-    "created_at_iso": "2026-10-31 19:22:05",
-    "timestamp": 1793496125.0,
-    "tipo": "CAJA",
-    "identificador": "CIR0013",
-    "modelo": "TRADICIONAL SENCILLA",
-    "estado": "QUERETARO",
-    "area_trabajo": "QUERETARO",
-    "contratista": "Victor Hugo Lopez Garcia",
-    "tecnico": "Pablo Emmanuel Reyes Hernandez",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v6 - Android",
-    "latitud": 20.5611602,
-    "longitud": -100.3833991,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae694389be926bb7894fc42.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
