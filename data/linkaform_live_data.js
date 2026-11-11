@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-10 19:18:43
- * Estado de corte: Jornada en vivo activa (10/11/2026, 19:18 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 16008 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-10 19:24:25
+ * Estado de corte: Jornada en vivo activa (10/11/2026, 19:24 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 16009 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-10 19:18:35",
+  "now": "2026-11-10 19:24:16",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-10",
-  "max_visible_dt": "2026-11-10 19:18:35",
-  "max_visible_datetime_str": "2026-11-10 19:18:35",
+  "max_visible_dt": "2026-11-10 19:24:16",
+  "max_visible_datetime_str": "2026-11-10 19:24:16",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (10/11/2026, 19:18 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (10/11/2026, 19:24 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -363990,6 +363990,32 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.2722206,
     "longitud": -99.4577256,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae253fc09fb02c74284f54a.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117033-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "13:58",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 13:58:36",
+    "timestamp": 1793217516.0,
+    "tipo": "CASETA",
+    "identificador": "7771005295",
+    "modelo": "NORMAL",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo Lopez Garcia",
+    "tecnico": "Samuel Romero Sanchez",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 18.92371,
+    "longitud": -99.1856867,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae253ea796391fc5684f548.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
