@@ -694,12 +694,24 @@ function normalizeMaterialStr(str) {
 // Normalizador estándar para claves de Áreas Operativas y Estados de Telmex
 function normalizeAreaKey(str) {
   if (!str) return "";
-  return String(str)
+  let norm = String(str)
     .toUpperCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^A-Z0-9]/g, "")
     .trim();
+  const ALIAS_MAP = {
+    "MICHOACAN": "MICHOACANMORELIA",
+    "MORELIA": "MICHOACANMORELIA",
+    "CIUDADOBREGON": "CIUDADOBREGONLOSMOCH",
+    "CIUDADOBREGONLOSMOCHIS": "CIUDADOBREGONLOSMOCH",
+    "LOSMOCHIS": "CIUDADOBREGONLOSMOCH",
+    "OBREGON": "CIUDADOBREGONLOSMOCH",
+    "ESTADODEMEXICO": "ESTADODEMEXICOSUR",
+    "EDOMEX": "ESTADODEMEXICOSUR",
+    "TEPIC": "NAYARIT"
+  };
+  return ALIAS_MAP[norm] || norm;
 }
 
 // Recalcular Suministros de Materiales a partir de las entregas reales registradas
