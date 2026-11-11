@@ -1,7 +1,7 @@
 const CATALOGO_METAS = {
-  "total_general": 96353,
-  "total_cajas": 50477,
-  "total_casetas": 45876,
+  "total_general": 94748,
+  "total_cajas": 49829,
+  "total_casetas": 44919,
   "estados": {
     "MORELOS": {
       "MORELOS": {
