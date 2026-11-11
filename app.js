@@ -313,11 +313,14 @@ async function fetchPagedFromSupabase(table, select = "*", orderBy = "id.desc") 
 function deduplicateOfficialRecords(rawList) {
   if (!Array.isArray(rawList)) return { valid: [], raw: [], rawCount: 0, dupsCount: 0 };
 
+  // Excluir registros de Guadalajara Poniente (territorio EULEN fuera de alcance IASA)
+  const filteredList = rawList.filter(r => !String(r.area_trabajo || "").toUpperCase().includes("PONIENTE"));
+
   const START_DATE = "2026-10-26";
   const seenAssets = new Set();
 
   // 1. Activos registrados en la línea base oficial antes de START_DATE
-  for (const r of rawList) {
+  for (const r of filteredList) {
     if (r.fecha && r.fecha < START_DATE) {
       const id = String(r.identificador || "").trim().toUpperCase();
       const tipo = String(r.tipo || "CAJA").trim().toUpperCase();
@@ -328,7 +331,7 @@ function deduplicateOfficialRecords(rawList) {
   }
 
   // 2. Orden cronológico para preservar el primer folio oficial
-  const sorted = [...rawList].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+  const sorted = [...filteredList].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
   const valid = [];
   const dups = [];

@@ -268,6 +268,10 @@ def build_reporte_diario(current_dt=None):
         
         tipo = (rec.get("tipo") or "CAJA").upper().strip()
         area = rec.get("area_trabajo") or ""
+
+        # Excluir explícitamente Guadalajara Poniente (territorio EULEN fuera de alcance IASA)
+        if "PONIENTE" in area.upper():
+            continue
         identificador = str(rec.get("identificador") or "").strip().upper()
 
         # Si el activo tiene identificador válido, deduplicar para no inflar avances
@@ -531,6 +535,9 @@ def add_trabajos_de_campo_sheet(wb, cutoff_info=None):
         modelo = normalize_model_name(raw_modelo, tipo) if "normalize_model_name" in globals() else raw_modelo
         estado = (ans.get("6ad52fc6bc424ea79992eac0") or "").upper()
         area = (ans.get("6ad52fc6bc424ea79992eac1") or estado).upper()
+        # Excluir Guadalajara Poniente de la hoja de Trabajos de campo
+        if "PONIENTE" in area:
+            continue
         contratista = ans.get("6abe9357bef08742fcf94020") or "Victor Hugo Lopez Garcia"
         tecnico = (ans.get("6abe9357bef08742fcf94021") or "").strip() or "Sin Técnico"
 
