@@ -1,24 +1,50 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-10 20:54:24
- * Estado de corte: Jornada en vivo activa (10/11/2026, 20:54 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-10 21:02:29
+ * Estado de corte: Jornada en vivo activa (10/11/2026, 21:02 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 16115 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-10 20:54:14",
+  "now": "2026-11-10 21:02:26",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-10",
-  "max_visible_dt": "2026-11-10 20:54:14",
-  "max_visible_datetime_str": "2026-11-10 20:54:14",
+  "max_visible_dt": "2026-11-10 21:02:26",
+  "max_visible_datetime_str": "2026-11-10 21:02:26",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (10/11/2026, 20:54 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (10/11/2026, 21:02 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16165791-1259",
+    "fecha": "2026-11-10",
+    "fecha_captura": "2026-11-10",
+    "hora": "20:51",
+    "fecha_corte": "2026-11-10",
+    "created_at_iso": "2026-11-10 20:51:10",
+    "timestamp": 1794365470.0,
+    "tipo": "CAJA",
+    "identificador": "RUL0018",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "PUEBLA",
+    "area_trabajo": "PUEBLA",
+    "contratista": "Ivan rosas cruz",
+    "tecnico": "Daniel Alfonso Alcántara cruz",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin acceso a fraccionamiento",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 19.05691,
+    "longitud": -98.1305353,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3d8183c4eb17001cb8d83.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16165786-1259",
     "fecha": "2026-11-10",
@@ -35,7 +61,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "contratista": "PROPIO",
     "tecnico": "Humberto Hernández Velazquez",
     "oferta": "200_mb",
-    "existe_bd": "Sí",
+    "existe_bd": "SÍ",
     "comentarios": "No hay acceso al complejo, no permiten colocar publicidad, informan los guardias de seguridad",
     "num_viniles": 0.0,
     "version": "v8 - Android",
@@ -61,7 +87,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "contratista": "PROPIO",
     "tecnico": "Humberto Hernández Velazquez",
     "oferta": "200_mb",
-    "existe_bd": "Sí",
+    "existe_bd": "SÍ",
     "comentarios": "No hay acceso al complejo, no permiten colocar publicidad, informan los guardias de seguridad",
     "num_viniles": 0.0,
     "version": "v8 - Android",
@@ -87,7 +113,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "contratista": "PROPIO",
     "tecnico": "Humberto Hernández Velazquez",
     "oferta": "200_mb",
-    "existe_bd": "Sí",
+    "existe_bd": "SÍ",
     "comentarios": "No hay acceso al complejo, no permiten colocar publicidad, informan los guardias de seguridad",
     "num_viniles": 0.0,
     "version": "v8 - Android",
@@ -113,7 +139,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "contratista": "PROPIO",
     "tecnico": "Humberto Hernández Velazquez",
     "oferta": "200_mb",
-    "existe_bd": "Sí",
+    "existe_bd": "SÍ",
     "comentarios": "No hay acceso al complejo, no permiten colocar publicidad, informan los guardias de seguridad",
     "num_viniles": 0.0,
     "version": "v8 - Android",
@@ -139,7 +165,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "contratista": "PROPIO",
     "tecnico": "Humberto Hernández Velazquez",
     "oferta": "200_mb",
-    "existe_bd": "Sí",
+    "existe_bd": "SÍ",
     "comentarios": "No existe caja ni infraestructura",
     "num_viniles": 0.0,
     "version": "v8 - Android",
@@ -129990,32 +130016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.0705954,
     "longitud": -98.19516,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aee48331e1fc6a8dee083b7.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16148896-1259",
-    "fecha": "2026-11-06",
-    "fecha_captura": "2026-11-06",
-    "hora": "15:35",
-    "fecha_corte": "2026-11-06",
-    "created_at_iso": "2026-11-06 15:35:46",
-    "timestamp": 1794000946.0,
-    "tipo": "CAJA",
-    "identificador": "DEF0029",
-    "modelo": "TRADICIONAL SENCILLA",
-    "estado": "PUEBLA",
-    "area_trabajo": "PUEBLA",
-    "contratista": "IVAN CRUZ ROSAS",
-    "tecnico": "Jose alberto alvarez vazquez",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "La caja o caseta existe pero esta dañada",
-    "num_viniles": 0.0,
-    "version": "v8 - Android",
-    "latitud": 19.065937,
-    "longitud": -98.1939127,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aee482df57b70aa897fac58.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
