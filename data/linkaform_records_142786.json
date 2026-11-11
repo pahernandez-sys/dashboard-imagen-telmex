@@ -3,6 +3,197 @@
     "answers": {
       "6a99e764f9c750d6db214c54": [
         {
+          "file_name": "despues_RUL0018.jpg",
+          "file_url": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3d8183c4eb17001cb8d83.jpg"
+        }
+      ],
+      "6a99eb60a20e4f1d25581b71": "SÍ",
+      "6a99eb60a20e4f1d25581b72": "1",
+      "6a99eb8af9c750d6db214c5d": "120_mb",
+      "6ab6f3a4c472baf119e176e7": "CAJ_PUE_0132",
+      "6ab6f3a4c472baf119e176e8": 19.05691,
+      "6ab6f3a4c472baf119e176e9": -98.1305353,
+      "6ab9cdfec4fc804d8c8e088c": "imagen",
+      "6ab9d647dba7a0c191e6a0f6": "Siecor Sencilla 1 Puerta",
+      "6abe9357bef08742fcf94020": "Ivan rosas cruz",
+      "6abe9357bef08742fcf94021": "Daniel Alfonso Alcántara cruz",
+      "6ad4df593c0c04d9bb25556e": "Sin acceso a fraccionamiento",
+      "6ad52fc6bc424ea79992eabe": "CAJA",
+      "6ad52fc6bc424ea79992eabf": "RUL0018",
+      "6ad52fc6bc424ea79992eac0": "PUEBLA",
+      "6ad52fc6bc424ea79992eac1": "PUEBLA",
+      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6adaa11601dfe84563e2253b": "v6 - Android"
+    },
+    "assets": {
+      "followers": [
+        {
+          "asset_id": 18348,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "pahernandez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Hernandez Pelcastre Pablo Arturo",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1372,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "jgloriaromero@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Gloria Romero Joaquin",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 7288,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "mrcarmona@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Carmona Lozada Maria del Rosario",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1373,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "luisaramirez@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ramirez Lopez Maria Luisa",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1350,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "rortega@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Ortega Gonzalez Raul",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 1821,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "kdelgado@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Delgado Romero Ana Karen",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 3387,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "csolares@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Solares Barron Cristel",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 31542,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "esbautista@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Bautista Diaz Eddie Santiago",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        },
+        {
+          "asset_id": 2650,
+          "catalog_id": null,
+          "connection_id": null,
+          "email": "galfaro@operacionpci.com.mx",
+          "form_field": null,
+          "form_id": null,
+          "group_id": null,
+          "name": "Alfaro Gomez Maria Guadalupe",
+          "rtype": "user",
+          "rules": [],
+          "username": null
+        }
+      ],
+      "groups": [],
+      "performers": [],
+      "supervisors": [],
+      "template_conf": null
+    },
+    "comments": {},
+    "connection": null,
+    "connection_email": null,
+    "connection_id": null,
+    "connection_name": null,
+    "connection_record_id": "6af3d81b90efb9da82b00645",
+    "created_at": 1794365470.0,
+    "created_by_email": "pahernandez@operacionpci.com.mx",
+    "created_by_id": 18348,
+    "created_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "created_by_username": "pahernandez@operacionpci.com.mx",
+    "deleted_at": null,
+    "deleted_by": null,
+    "duration": 0,
+    "end_date": 1794365470.0,
+    "folio": "16165791-1259",
+    "form_id": 142786,
+    "form_name": "Imagen Telmex 2026 -2",
+    "geofence_evaluated": false,
+    "geolocation": [
+      19.43000030517578,
+      -99.12999725341797
+    ],
+    "id": "6af3d81b90efb9da82b00645",
+    "media": {},
+    "mobile_record_id": null,
+    "points": null,
+    "resource_uri": "/api/infosync/form_answer/6af3d81b90efb9da82b00645/",
+    "start_date": 1794365470.0,
+    "timezone": "America/Mexico_City",
+    "tz_offset": -360.0,
+    "updated_at": 1794365509.0,
+    "updated_by": null,
+    "updated_by_email": null,
+    "updated_by_name": null,
+    "updated_by_username": null,
+    "user_id": 2650,
+    "user_name": "Alfaro Gomez Maria Guadalupe",
+    "version": 1
+  },
+  {
+    "answers": {
+      "6a99e764f9c750d6db214c54": [
+        {
           "file_name": "despues_9848735437.jpg",
           "file_url": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3d6da5dd77be775b0063c.jpg"
         }
@@ -21,8 +212,8 @@
       "6ad52fc6bc424ea79992eabe": "CASETA",
       "6ad52fc6bc424ea79992eabf": "9848735437",
       "6ad52fc6bc424ea79992eac0": "QUINTANA ROO",
-      "6ad52fc6bc424ea79992eac1": "QUINTANA ROO",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "QUINTANA ROO NORTE",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -181,14 +372,14 @@
     "start_date": 1794365151.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794365191.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794365752.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -212,8 +403,8 @@
       "6ad52fc6bc424ea79992eabe": "CASETA",
       "6ad52fc6bc424ea79992eabf": "9848735800",
       "6ad52fc6bc424ea79992eac0": "QUINTANA ROO",
-      "6ad52fc6bc424ea79992eac1": "QUINTANA ROO",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "QUINTANA ROO NORTE",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -372,14 +563,14 @@
     "start_date": 1794365145.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794365185.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794365757.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -403,8 +594,8 @@
       "6ad52fc6bc424ea79992eabe": "CAJA",
       "6ad52fc6bc424ea79992eabf": "PAV0007",
       "6ad52fc6bc424ea79992eac0": "QUINTANA ROO",
-      "6ad52fc6bc424ea79992eac1": "QUINTANA ROO",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "QUINTANA ROO NORTE",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -563,14 +754,14 @@
     "start_date": 1794364829.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794364868.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794365761.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -594,8 +785,8 @@
       "6ad52fc6bc424ea79992eabe": "CAJA",
       "6ad52fc6bc424ea79992eabf": "PAV0001",
       "6ad52fc6bc424ea79992eac0": "QUINTANA ROO",
-      "6ad52fc6bc424ea79992eac1": "QUINTANA ROO",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "QUINTANA ROO NORTE",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -754,14 +945,14 @@
     "start_date": 1794364821.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794364861.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794365765.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -771,7 +962,7 @@
           "file_url": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3d585c3083c750f5fae1e.jpg"
         }
       ],
-      "6a99eb60a20e4f1d25581b71": "No",
+      "6a99eb60a20e4f1d25581b71": "SÍ",
       "6a99eb60a20e4f1d25581b72": "0",
       "6a99eb8af9c750d6db214c5d": "200_mb",
       "6ab6f3a4c472baf119e176e7": "CAJ_QUI_0032",
@@ -785,8 +976,8 @@
       "6ad52fc6bc424ea79992eabe": "CAJA",
       "6ad52fc6bc424ea79992eabf": "PAV0014",
       "6ad52fc6bc424ea79992eac0": "QUINTANA ROO",
-      "6ad52fc6bc424ea79992eac1": "QUINTANA ROO",
-      "6ad530403c0c04d9bb2555b2": "Sí",
+      "6ad52fc6bc424ea79992eac1": "QUINTANA ROO NORTE",
+      "6ad530403c0c04d9bb2555b2": "SÍ",
       "6adaa11601dfe84563e2253b": "v8 - Android"
     },
     "assets": {
@@ -945,14 +1136,14 @@
     "start_date": 1794364810.0,
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
-    "updated_at": 1794364850.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
+    "updated_at": 1794365770.0,
+    "updated_by": 18348,
+    "updated_by_email": "pahernandez@operacionpci.com.mx",
+    "updated_by_name": "Hernandez Pelcastre Pablo Arturo",
+    "updated_by_username": "pahernandez@operacionpci.com.mx",
     "user_id": 2650,
     "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
+    "version": 2
   },
   {
     "answers": {
@@ -945871,194 +946062,6 @@
     "timezone": "America/Mexico_City",
     "tz_offset": -360.0,
     "updated_at": 1794000990.0,
-    "updated_by": null,
-    "updated_by_email": null,
-    "updated_by_name": null,
-    "updated_by_username": null,
-    "user_id": 2650,
-    "user_name": "Alfaro Gomez Maria Guadalupe",
-    "version": 1
-  },
-  {
-    "answers": {
-      "6a99e764f9c750d6db214c54": [
-        {
-          "file_name": "despues_DEF0029.jpg",
-          "file_url": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aee482df57b70aa897fac58.jpg"
-        }
-      ],
-      "6a99eb60a20e4f1d25581b71": "SÍ",
-      "6a99eb60a20e4f1d25581b72": "0",
-      "6a99eb8af9c750d6db214c5d": "200_mb",
-      "6ab6f3a4c472baf119e176e7": "CAJ_PUE_0031",
-      "6ab6f3a4c472baf119e176e8": 19.065937,
-      "6ab6f3a4c472baf119e176e9": -98.1939127,
-      "6ab9cdfec4fc804d8c8e088c": "imagen",
-      "6ab9d647dba7a0c191e6a0f6": "Tradicional Sencilla",
-      "6abe9357bef08742fcf94020": "IVAN CRUZ ROSAS",
-      "6abe9357bef08742fcf94021": "Jose alberto alvarez vazquez",
-      "6ad4df593c0c04d9bb25556e": "La caja o caseta existe pero esta dañada",
-      "6ad52fc6bc424ea79992eabe": "CAJA",
-      "6ad52fc6bc424ea79992eabf": "DEF0029",
-      "6ad52fc6bc424ea79992eac0": "PUEBLA",
-      "6ad52fc6bc424ea79992eac1": "PUEBLA",
-      "6ad530403c0c04d9bb2555b2": "Sí",
-      "6adaa11601dfe84563e2253b": "v8 - Android"
-    },
-    "assets": {
-      "followers": [
-        {
-          "asset_id": 18348,
-          "catalog_id": null,
-          "connection_id": null,
-          "email": "pahernandez@operacionpci.com.mx",
-          "form_field": null,
-          "form_id": null,
-          "group_id": null,
-          "name": "Hernandez Pelcastre Pablo Arturo",
-          "rtype": "user",
-          "rules": [],
-          "username": null
-        },
-        {
-          "asset_id": 1372,
-          "catalog_id": null,
-          "connection_id": null,
-          "email": "jgloriaromero@operacionpci.com.mx",
-          "form_field": null,
-          "form_id": null,
-          "group_id": null,
-          "name": "Gloria Romero Joaquin",
-          "rtype": "user",
-          "rules": [],
-          "username": null
-        },
-        {
-          "asset_id": 7288,
-          "catalog_id": null,
-          "connection_id": null,
-          "email": "mrcarmona@operacionpci.com.mx",
-          "form_field": null,
-          "form_id": null,
-          "group_id": null,
-          "name": "Carmona Lozada Maria del Rosario",
-          "rtype": "user",
-          "rules": [],
-          "username": null
-        },
-        {
-          "asset_id": 1373,
-          "catalog_id": null,
-          "connection_id": null,
-          "email": "luisaramirez@operacionpci.com.mx",
-          "form_field": null,
-          "form_id": null,
-          "group_id": null,
-          "name": "Ramirez Lopez Maria Luisa",
-          "rtype": "user",
-          "rules": [],
-          "username": null
-        },
-        {
-          "asset_id": 1350,
-          "catalog_id": null,
-          "connection_id": null,
-          "email": "rortega@operacionpci.com.mx",
-          "form_field": null,
-          "form_id": null,
-          "group_id": null,
-          "name": "Ortega Gonzalez Raul",
-          "rtype": "user",
-          "rules": [],
-          "username": null
-        },
-        {
-          "asset_id": 1821,
-          "catalog_id": null,
-          "connection_id": null,
-          "email": "kdelgado@operacionpci.com.mx",
-          "form_field": null,
-          "form_id": null,
-          "group_id": null,
-          "name": "Delgado Romero Ana Karen",
-          "rtype": "user",
-          "rules": [],
-          "username": null
-        },
-        {
-          "asset_id": 3387,
-          "catalog_id": null,
-          "connection_id": null,
-          "email": "csolares@operacionpci.com.mx",
-          "form_field": null,
-          "form_id": null,
-          "group_id": null,
-          "name": "Solares Barron Cristel",
-          "rtype": "user",
-          "rules": [],
-          "username": null
-        },
-        {
-          "asset_id": 31542,
-          "catalog_id": null,
-          "connection_id": null,
-          "email": "esbautista@operacionpci.com.mx",
-          "form_field": null,
-          "form_id": null,
-          "group_id": null,
-          "name": "Bautista Diaz Eddie Santiago",
-          "rtype": "user",
-          "rules": [],
-          "username": null
-        },
-        {
-          "asset_id": 2650,
-          "catalog_id": null,
-          "connection_id": null,
-          "email": "galfaro@operacionpci.com.mx",
-          "form_field": null,
-          "form_id": null,
-          "group_id": null,
-          "name": "Alfaro Gomez Maria Guadalupe",
-          "rtype": "user",
-          "rules": [],
-          "username": null
-        }
-      ],
-      "groups": [],
-      "performers": [],
-      "supervisors": [],
-      "template_conf": null
-    },
-    "comments": {},
-    "connection": null,
-    "connection_email": null,
-    "connection_id": null,
-    "connection_name": null,
-    "connection_record_id": "6aee482f6c0858aeac7fac51",
-    "created_at": 1794000946.0,
-    "created_by_email": "pahernandez@operacionpci.com.mx",
-    "created_by_id": 18348,
-    "created_by_name": "Hernandez Pelcastre Pablo Arturo",
-    "created_by_username": "pahernandez@operacionpci.com.mx",
-    "deleted_at": null,
-    "deleted_by": null,
-    "duration": 0,
-    "end_date": 1794000946.0,
-    "folio": "16148896-1259",
-    "form_id": 142786,
-    "form_name": "Imagen Telmex 2026 -2",
-    "geofence_evaluated": false,
-    "geolocation": null,
-    "id": "6aee482f6c0858aeac7fac51",
-    "media": {},
-    "mobile_record_id": null,
-    "points": null,
-    "resource_uri": "/api/infosync/form_answer/6aee482f6c0858aeac7fac51/",
-    "start_date": 1794000946.0,
-    "timezone": "America/Mexico_City",
-    "tz_offset": -360.0,
-    "updated_at": 1794000986.0,
     "updated_by": null,
     "updated_by_email": null,
     "updated_by_name": null,
