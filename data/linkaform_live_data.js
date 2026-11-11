@@ -1,24 +1,76 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-10 20:14:28
- * Estado de corte: Jornada en vivo activa (10/11/2026, 20:14 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-10 20:18:02
+ * Estado de corte: Jornada en vivo activa (10/11/2026, 20:17 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 16035 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-10 20:14:19",
+  "now": "2026-11-10 20:17:54",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-10",
-  "max_visible_dt": "2026-11-10 20:14:19",
-  "max_visible_datetime_str": "2026-11-10 20:14:19",
+  "max_visible_dt": "2026-11-10 20:17:54",
+  "max_visible_datetime_str": "2026-11-10 20:17:54",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (10/11/2026, 20:14 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (10/11/2026, 20:17 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16165553-1259",
+    "fecha": "2026-11-10",
+    "fecha_captura": "2026-11-10",
+    "hora": "20:10",
+    "fecha_corte": "2026-11-10",
+    "created_at_iso": "2026-11-10 20:10:33",
+    "timestamp": 1794363033.0,
+    "tipo": "CAJA",
+    "identificador": "XOA0007",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "PUEBLA",
+    "area_trabajo": "PUEBLA",
+    "contratista": "Ivan Rosas Cruz",
+    "tecnico": "Marlon Brandon Sánchez Mora",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v7 - Android",
+    "latitud": 19.0889224,
+    "longitud": -98.1023612,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3ce9505dd3c19b4b00638.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16165552-1259",
+    "fecha": "2026-11-10",
+    "fecha_captura": "2026-11-10",
+    "hora": "20:10",
+    "fecha_corte": "2026-11-10",
+    "created_at_iso": "2026-11-10 20:10:28",
+    "timestamp": 1794363028.0,
+    "tipo": "CAJA",
+    "identificador": "XOA0002",
+    "modelo": "KRONE",
+    "estado": "PUEBLA",
+    "area_trabajo": "PUEBLA",
+    "contratista": "Ivan Rosas Cruz",
+    "tecnico": "Marlon Brandon Sánchez Mora",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v7 - Android",
+    "latitud": 19.0856952,
+    "longitud": -98.105253,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3ce8e42cddd17cb5fae1c.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16165538-1259",
     "fecha": "2026-11-10",
@@ -51964,58 +52016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.2946409,
     "longitud": -98.2374512,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af22d9ded777004055fae34.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16158626-1259",
-    "fecha": "2026-11-09",
-    "fecha_captura": "2026-11-09",
-    "hora": "14:30",
-    "fecha_corte": "2026-11-09",
-    "created_at_iso": "2026-11-09 14:30:24",
-    "timestamp": 1794256224.0,
-    "tipo": "CASETA",
-    "identificador": "2464681140",
-    "modelo": "NORMAL",
-    "estado": "TLAXCALA",
-    "area_trabajo": "TLAXCALA",
-    "contratista": "Erick Mauricio Herrera Quiroz",
-    "tecnico": "Jose Manuel Gonzalez Sosa",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 1.0,
-    "version": "v8 - Android",
-    "latitud": 19.2945809,
-    "longitud": -98.2373199,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af22d5c278d92a736cb8d80.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16158620-1259",
-    "fecha": "2026-11-09",
-    "fecha_captura": "2026-11-09",
-    "hora": "14:29",
-    "fecha_corte": "2026-11-09",
-    "created_at_iso": "2026-11-09 14:29:17",
-    "timestamp": 1794256157.0,
-    "tipo": "CAJA",
-    "identificador": "FUR0196",
-    "modelo": "TRADICIONAL SENCILLA",
-    "estado": "PUEBLA",
-    "area_trabajo": "PUEBLA",
-    "contratista": "IVAN CRUZ ROSAS",
-    "tecnico": "Jose alberto alvarez vazquez",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 1.0,
-    "version": "v8 - Android",
-    "latitud": 19.0513822,
-    "longitud": -98.1674894,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af22d1842b893c7d4b0063a.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
