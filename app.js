@@ -1125,9 +1125,9 @@ function mapMaterialDescToId(desc) {
 function getAreaMetas(areaName) {
   if (!areaName || typeof CATALOGO_METAS === "undefined" || !CATALOGO_METAS.estados) {
     return {
-      cajas: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_cajas : 92844,
-      casetas: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_casetas : 45876,
-      total: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_general : 138720
+      cajas: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_cajas : 49829,
+      casetas: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_casetas : 44919,
+      total: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_general : 94748
     };
   }
 
