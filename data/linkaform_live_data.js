@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-12 02:44:45
+ * Sincronización: 2026-11-12 02:54:52
  * Estado de corte: Reporte matutino cerrado al 11/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 17627 (Retenidos por corte: 76)
+ * Trabajos de campo visibles: 17626 (Retenidos por corte: 77)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-12 02:44:34",
+  "now": "2026-11-12 02:54:42",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-11",
@@ -26783,35 +26783,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.0800014,
     "longitud": -98.2280418,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af4b1165b532be2a0adc0c9.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16167530-1259",
-    "fecha": "2026-11-11",
-    "fecha_captura": "2026-11-11",
-    "hora": "12:16",
-    "fecha_corte": "2026-11-11",
-    "created_at_iso": "2026-11-11 12:16:45",
-    "timestamp": 1794421005.0,
-    "tipo": "CAJA",
-    "identificador": "FNS0015",
-    "modelo": "SIECOR SENCILLA 2 PTAS",
-    "estado": "SINALOA",
-    "area_trabajo": "CULIACAN",
-    "contratista": "Alejandro Adrián Obeso",
-    "tecnico": "Eduardo Alonzo Rodríguez Miranda",
-    "contratista_original": "Alejandro Adrian Obeso",
-    "tecnico_original": "Eduardo Alonzo Rodriguez Miranda",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af4b10989b9b8b938adc0d0.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 1.0,
-    "version": "v8 - Android",
-    "latitud": 24.8382049,
-    "longitud": -107.4149987,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af4b10989b9b8b938adc0d0.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
