@@ -16,3 +16,6 @@ __pycache__/
 supabase_config.json
 .env
 
+
+data/linkaform_records_142786.json
+

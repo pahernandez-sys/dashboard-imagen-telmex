@@ -2680,7 +2680,7 @@ function formatNumber(num) {
 let pagosState = {
   tipo: "CAJA", // "CAJA" o "CASETA"
   tarifaCaja: 60.00,
-  tarifaCaseta: 35.00,
+  tarifaCaseta: 36.00,
   tarifaActiva: 60.00,
   selectedAreas: new Set(), // Nombres de áreas seleccionadas
   contratista: "TODOS",
@@ -2851,7 +2851,7 @@ function setPagosTipo(tipo) {
   populatePagosTecnicos();
   applyPagosFilter();
 
-  showToast(`🎯 Tipo cambiado a: ${tipo === "CASETA" ? "Casetas ($35.00)" : "Cajas ($60.00)"}`, "info", 2000);
+  showToast(`🎯 Tipo cambiado a: ${tipo === "CASETA" ? "Casetas ($36.00)" : "Cajas ($60.00)"}`, "info", 2000);
 }
 
 function updateTipoButtonsVisual() {
@@ -2898,8 +2898,8 @@ function onTarifaChanged() {
 
 function resetDefaultTarifa() {
   pagosState.tarifaCaja = 60.00;
-  pagosState.tarifaCaseta = 35.00;
-  pagosState.tarifaActiva = pagosState.tipo === "CASETA" ? 35.00 : 60.00;
+  pagosState.tarifaCaseta = 36.00;
+  pagosState.tarifaActiva = pagosState.tipo === "CASETA" ? 36.00 : 60.00;
   
   const inp = document.getElementById("pagosInputTarifa");
   if (inp) inp.value = pagosState.tarifaActiva;
@@ -3173,6 +3173,8 @@ function applyPagosFilter() {
 
   const dStart = document.getElementById("pagosDateStart")?.value || "";
   const dEnd = document.getElementById("pagosDateEnd")?.value || "";
+  pagosState.dateStart = dStart;
+  pagosState.dateEnd = dEnd;
 
   const allRecords = state.records || [];
 
@@ -3681,6 +3683,28 @@ function printPagosSummary() {
   const total = pagosFilteredRecords.length;
   const totalDinero = total * tarifa;
   const conName = pagosState.contratista !== "TODOS" ? pagosState.contratista : "TODOS LOS CONTRATISTAS";
+
+  function formatFechaMX(dateStr) {
+    if (!dateStr) return "";
+    const parts = dateStr.split("-");
+    if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    return dateStr;
+  }
+
+  const dStart = pagosState.dateStart || document.getElementById("pagosDateStart")?.value || "";
+  const dEnd = pagosState.dateEnd || document.getElementById("pagosDateEnd")?.value || "";
+  let periodoTexto = "Histórico Completo (Sin filtro de fechas)";
+  if (dStart && dEnd) {
+    if (dStart === dEnd) {
+      periodoTexto = formatFechaMX(dStart);
+    } else {
+      periodoTexto = `Del ${formatFechaMX(dStart)} al ${formatFechaMX(dEnd)}`;
+    }
+  } else if (dStart) {
+    periodoTexto = `A partir del ${formatFechaMX(dStart)}`;
+  } else if (dEnd) {
+    periodoTexto = `Hasta el ${formatFechaMX(dEnd)}`;
+  }
   
   // Agrupar por áreas para la carátula
   const areaCounts = {};
@@ -3703,7 +3727,7 @@ function printPagosSummary() {
         .header { border-bottom: 3px solid #0055a5; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         h1 { color: #0055a5; font-size: 20px; margin: 0; font-weight: 900; }
         .subtitle { font-size: 11px; color: #475569; margin-top: 4px; }
-        .box-info { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .box-info { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
         .box-item strong { display: block; font-size: 10px; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
         .box-item span { font-size: 13px; font-weight: bold; color: #0f172a; }
         .kpi-row { display: flex; gap: 16px; margin-bottom: 24px; }
@@ -3731,7 +3755,8 @@ function printPagosSummary() {
         </div>
         <div style="text-align: right;">
           <div style="font-weight: 900; color: #0055a5; font-size: 14px;">TELMEX / PCI</div>
-          <div style="font-size: 10px; color: #64748b;">Fecha Emisión: ${new Date().toLocaleDateString('es-MX')}</div>
+          <div style="font-size: 10px; color: #64748b; margin-top: 2px;">Fecha Emisión: ${new Date().toLocaleDateString('es-MX')}</div>
+          <div style="font-size: 10px; font-weight: 800; color: #0055a5; margin-top: 2px;">Periodo: ${periodoTexto}</div>
         </div>
       </div>
 
@@ -3743,6 +3768,10 @@ function printPagosSummary() {
         <div class="box-item">
           <strong>Tipo de Activo:</strong>
           <span>${tipo === 'CASETA' ? 'Casetas Públicas' : 'Cajas (Distritos)'}</span>
+        </div>
+        <div class="box-item">
+          <strong>Rango de Fechas:</strong>
+          <span style="color: #0055a5; font-size: 12px;">${periodoTexto}</span>
         </div>
         <div class="box-item">
           <strong>Tarifa Autorizada:</strong>
