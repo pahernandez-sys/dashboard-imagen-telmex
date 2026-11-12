@@ -2695,7 +2695,13 @@ let pagosState = {
 let pagosFilteredRecords = [];
 
 function getPagosNip() {
-  return localStorage.getItem("TELMEX_PAGOS_NIP") || "2026";
+  const stored = localStorage.getItem("TELMEX_PAGOS_NIP");
+  // Si no está definido o sigue siendo el valor anterior "2026", actualiza al nuevo PIN por defecto "20262"
+  if (!stored || stored === "2026") {
+    localStorage.setItem("TELMEX_PAGOS_NIP", "20262");
+    return "20262";
+  }
+  return stored;
 }
 
 function openPagosModule() {
