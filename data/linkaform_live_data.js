@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-12 03:54:48
+ * Sincronización: 2026-11-12 04:04:46
  * Estado de corte: Reporte matutino cerrado al 11/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 17627 (Retenidos por corte: 78)
+ * Trabajos de campo visibles: 17626 (Retenidos por corte: 79)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-12 03:54:38",
+  "now": "2026-11-12 04:04:36",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-11",
@@ -171725,35 +171725,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.428571,
     "longitud": -100.3433194,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aee8c743c455be6aa5d1709.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16149822-1259",
-    "fecha": "2026-11-06",
-    "fecha_captura": "2026-11-06",
-    "hora": "20:26",
-    "fecha_corte": "2026-11-06",
-    "created_at_iso": "2026-11-06 20:26:58",
-    "timestamp": 1794018418.0,
-    "tipo": "CASETA",
-    "identificador": "7151568309",
-    "modelo": "NORMAL",
-    "estado": "MICHOACAN",
-    "area_trabajo": "MICHOACAN",
-    "contratista": "Roberto Melchor Frutos Fuentes",
-    "tecnico": "Osvaldo Sánchez Hernández",
-    "contratista_original": "Roberto Melchor Frutos Fuentes",
-    "tecnico_original": "Osvaldo Sánchez Hernández",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aee8c6db7d69c3d0be083c0.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Nosé encuentra en el lugar",
-    "num_viniles": 1.0,
-    "version": "v5 - Android",
-    "latitud": 19.433155,
-    "longitud": -100.3331133,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aee8c6db7d69c3d0be083c0.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
