@@ -2800,11 +2800,8 @@ function initPagosModule() {
   // Contadores globales de tipo en botones
   updateGlobalTipoCounters();
 
-  // Seleccionar todas las áreas activas por defecto en la primera carga si está vacío
-  const allAreasForTipo = getAvailableAreasForTipo(pagosState.tipo);
-  if (pagosState.selectedAreas.size === 0) {
-    allAreasForTipo.forEach(a => pagosState.selectedAreas.add(a));
-  }
+  // Inicializar sin ningún área seleccionada por defecto (como solicita el usuario para evitar confusión)
+  pagosState.selectedAreas.clear();
 
   // Renderizar componentes
   updateTipoButtonsVisual();
@@ -2845,10 +2842,8 @@ function setPagosTipo(tipo) {
     badge.innerText = `$${pagosState.tarifaActiva.toFixed(2)} MXN / pieza`;
   }
 
-  // Seleccionar todas las áreas disponibles de este nuevo tipo
-  const newAreas = getAvailableAreasForTipo(tipo);
+  // Al cambiar tipo, inicializar sin ningún área seleccionada
   pagosState.selectedAreas.clear();
-  newAreas.forEach(a => pagosState.selectedAreas.add(a));
 
   updateTipoButtonsVisual();
   renderAreasBoard();
@@ -2991,8 +2986,8 @@ function updateAreasBoardHeader(totalAreasCount) {
       lbl.innerText = "Todas las plazas seleccionadas (Proyecto Completo)";
       lbl.className = "font-extrabold text-blue-700";
     } else if (selCount === 0) {
-      lbl.innerText = "Ninguna plaza seleccionada (Haz clic en un área para comenzar)";
-      lbl.className = "font-bold text-rose-600";
+      lbl.innerText = "Ninguna plaza seleccionada (Selecciona una o varias plazas abajo para liquidar, o pulsa '✓ Todas')";
+      lbl.className = "font-bold text-amber-600";
     } else if (selCount === 1) {
       const singleArea = Array.from(pagosState.selectedAreas)[0];
       lbl.innerText = `Solo 1 plaza: ${singleArea}`;
@@ -3187,7 +3182,10 @@ function applyPagosFilter() {
 
     // 2. Tablero de Áreas (Conjunto)
     const area = (r.area_trabajo || "").trim().toUpperCase();
-    if (pagosState.selectedAreas.size > 0 && !pagosState.selectedAreas.has(area)) {
+    if (pagosState.selectedAreas.size === 0) {
+      return false; // Si no hay áreas seleccionadas, mostrar 0 hasta que el usuario elija
+    }
+    if (!pagosState.selectedAreas.has(area)) {
       return false;
     }
 
@@ -3315,9 +3313,10 @@ function renderPagosSubtotalesAreas() {
   }
 
   if (areasSorted.length === 0) {
+    const isNoArea = pagosState.selectedAreas.size === 0;
     container.innerHTML = `
       <div class="text-center py-6 text-slate-400 text-xs">
-        No hay trabajos que coincidan con la combinación de filtros seleccionada.
+        ${isNoArea ? 'Selecciona una o más plazas en el tablero para ver el desglose por área, o pulsa "✓ Todas".' : 'No hay trabajos que coincidan con la combinación de filtros seleccionada.'}
       </div>
     `;
     return;
@@ -3479,12 +3478,13 @@ function renderPagosTable() {
   }
 
   if (total === 0) {
+    const isNoArea = pagosState.selectedAreas.size === 0;
     tbody.innerHTML = `
       <tr>
         <td colspan="13" class="text-center py-12 text-slate-400">
-          <div class="text-3xl mb-2">🔍</div>
-          <div class="font-bold text-sm text-slate-600">No se encontraron trabajos con los filtros seleccionados</div>
-          <div class="text-xs text-slate-400 mt-1">Prueba seleccionando más áreas en el tablero o cambiando el contratista</div>
+          <div class="text-3xl mb-2">${isNoArea ? '🗺️' : '🔍'}</div>
+          <div class="font-bold text-sm text-slate-700">${isNoArea ? 'Ninguna plaza seleccionada en el Paso 2' : 'No se encontraron trabajos con los filtros seleccionados'}</div>
+          <div class="text-xs text-slate-500 mt-1">${isNoArea ? 'Haz clic en una o varias plazas del tablero para consultar sus folios y calcular el pago, o pulsa "✓ Todas" para el costo total.' : 'Prueba seleccionando más áreas en el tablero o cambiando el contratista'}</div>
         </td>
       </tr>
     `;
