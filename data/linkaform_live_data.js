@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-12 06:14:43
+ * Sincronización: 2026-11-12 06:24:40
  * Estado de corte: Reporte matutino cerrado al 11/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 17628 (Retenidos por corte: 90)
+ * Trabajos de campo visibles: 17626 (Retenidos por corte: 92)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-12 06:14:33",
+  "now": "2026-11-12 06:24:30",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-11",
@@ -229348,64 +229348,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.9498361,
     "longitud": -102.3431316,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed16b985acdd4377c44e74.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16146224-1259",
-    "fecha": "2026-11-05",
-    "fecha_captura": "2026-11-05",
-    "hora": "17:51",
-    "fecha_corte": "2026-11-05",
-    "created_at_iso": "2026-11-05 17:51:23",
-    "timestamp": 1793922683.0,
-    "tipo": "CAJA",
-    "identificador": "LPZ0020",
-    "modelo": "TRADICIONAL SENCILLA",
-    "estado": "BAJA CALIFORNIA SUR",
-    "area_trabajo": "LA PAZ",
-    "contratista": "Luis Jose Vasquez Briceño",
-    "tecnico": "Ramon Nuñez Victoria",
-    "contratista_original": "Luis Jose Vasquez Briceño",
-    "tecnico_original": "Ramon Nuñez Victoria",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed1676d3e503694ac44e64.jpg",
-    "oferta": "120_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 0.0,
-    "version": "v7 - Android",
-    "latitud": 24.1558477,
-    "longitud": -110.3243018,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed1676d3e503694ac44e64.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16146222-1259",
-    "fecha": "2026-11-05",
-    "fecha_captura": "2026-11-05",
-    "hora": "17:47",
-    "fecha_corte": "2026-11-05",
-    "created_at_iso": "2026-11-05 17:47:57",
-    "timestamp": 1793922477.0,
-    "tipo": "CAJA",
-    "identificador": "PAB0024",
-    "modelo": "SIECOR SENCILLA 2 PTAS",
-    "estado": "AGUASCALIENTES",
-    "area_trabajo": "AGUASCALIENTES",
-    "contratista": "Adrián Valenzuela",
-    "tecnico": "Oscar Uriel Luna Baltazar",
-    "contratista_original": "Adrian Valenzuela",
-    "tecnico_original": "Oscar Uriel Luna Baltazar",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed15a826eec13d1adaec4c.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "LE FALTA UNA PUERTA",
-    "num_viniles": 1.0,
-    "version": "v7 - Android",
-    "latitud": 22.1425351,
-    "longitud": -102.2868051,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed15a826eec13d1adaec4c.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
