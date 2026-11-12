@@ -3040,22 +3040,6 @@ function deselectAllAreas() {
   showToast("✕ Tablero de áreas deseleccionado.", "info", 1500);
 }
 
-// Preset rápido solicitado: Monterrey 1, 2, 3 y Hermosillo
-function selectPresetComboMtyHermosillo() {
-  pagosState.selectedAreas.clear();
-  const combo = ["MONTERREY 1", "MONTERREY 2", "MONTERREY 3", "HERMOSILLO"];
-  const available = new Set(getAvailableAreasForTipo(pagosState.tipo));
-
-  combo.forEach(a => {
-    if (available.has(a)) pagosState.selectedAreas.add(a);
-  });
-
-  renderAreasBoard();
-  populatePagosContratistas();
-  populatePagosTecnicos();
-  applyPagosFilter();
-  showToast("⚡ Combo Monterrey (1, 2, 3) + Hermosillo activado.", "success", 2500);
-}
 
 // Paso 3: Llenar Contratistas
 function populatePagosContratistas() {
