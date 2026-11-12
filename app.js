@@ -2671,13 +2671,28 @@ function formatNumber(num) {
 }
 
 
+
+
 // =========================================================
-// MÓDULO ESPECIAL DE VALIDACIÓN DE TRABAJOS Y PAGOS (CON NIP)
+// MÓDULO ESPECIAL DE VALIDACIÓN DE TRABAJOS Y PAGOS A CONTRATISTAS
 // =========================================================
 
+let pagosState = {
+  tipo: "CAJA", // "CAJA" o "CASETA"
+  tarifaCaja: 60.00,
+  tarifaCaseta: 35.00,
+  tarifaActiva: 60.00,
+  selectedAreas: new Set(), // Nombres de áreas seleccionadas
+  contratista: "TODOS",
+  tecnico: "TODOS",
+  presetDate: "TODO",
+  dateStart: "",
+  dateEnd: "",
+  currentPage: 1,
+  pageSize: 50
+};
+
 let pagosFilteredRecords = [];
-let pagosCurrentPage = 1;
-const PAGOS_PAGE_SIZE = 50;
 
 function getPagosNip() {
   return localStorage.getItem("TELMEX_PAGOS_NIP") || "2026";
@@ -2715,7 +2730,7 @@ function verifyNip() {
     closeNipModal();
     switchTab("tab-pagos");
     initPagosModule();
-    showToast("🔓 Sesión de Pagos y Facturación Autorizada.", "success", 3000);
+    showToast("🔓 Sesión de Finanzas y Pagos Autorizada.", "success", 3000);
   } else {
     if (err) {
       err.innerText = "❌ NIP Incorrecto. Acceso denegado.";
@@ -2771,163 +2786,431 @@ function saveNewNip() {
   showToast("✅ NIP de Pagos actualizado exitosamente.", "success", 3500);
 }
 
-// Inicialización del módulo de pagos al ingresar
+// Inicializar el Módulo de Pagos
 function initPagosModule() {
-  populatePagosDropdowns();
+  // Configurar tarifas por defecto
+  pagosState.tarifaActiva = pagosState.tipo === "CASETA" ? pagosState.tarifaCaseta : pagosState.tarifaCaja;
+  
+  // Contadores globales de tipo en botones
+  updateGlobalTipoCounters();
+
+  // Seleccionar todas las áreas activas por defecto en la primera carga si está vacío
+  const allAreasForTipo = getAvailableAreasForTipo(pagosState.tipo);
+  if (pagosState.selectedAreas.size === 0) {
+    allAreasForTipo.forEach(a => pagosState.selectedAreas.add(a));
+  }
+
+  // Renderizar componentes
+  updateTipoButtonsVisual();
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
   applyPagosFilter();
 }
 
-function populatePagosDropdowns() {
+function updateGlobalTipoCounters() {
   const records = state.records || [];
-  
-  // Técnicos Homologados únicos
-  const tecSelect = document.getElementById("pagosFilterTecnico");
-  if (tecSelect) {
-    const currentVal = tecSelect.value;
-    const tecSet = new Set();
-    records.forEach(r => {
-      const t = (r.tecnico_homologado || r.tecnico || "").trim();
-      if (t && t !== "Sin Técnico") tecSet.add(t);
-    });
-    const sortedTecs = Array.from(tecSet).sort();
-    
-    tecSelect.innerHTML = '<option value="TODOS">👥 Todos los Técnicos (' + sortedTecs.length + ')</option>';
-    sortedTecs.forEach(t => {
-      const opt = document.createElement("option");
-      opt.value = t;
-      opt.innerText = t;
-      tecSelect.appendChild(opt);
-    });
-    if (currentVal && tecSet.has(currentVal)) tecSelect.value = currentVal;
+  let cajas = 0;
+  let casetas = 0;
+  records.forEach(r => {
+    if (r.tipo === "CASETA") casetas++;
+    else cajas++;
+  });
+
+  const cCajas = document.getElementById("pagosCounterCajasTotal");
+  if (cCajas) cCajas.innerText = `${formatNumber(cajas)} folios totales`;
+
+  const cCasetas = document.getElementById("pagosCounterCasetasTotal");
+  if (cCasetas) cCasetas.innerText = `${formatNumber(casetas)} folios totales`;
+}
+
+// Paso 1: Cambiar Tipo (CAJA vs CASETA)
+function setPagosTipo(tipo) {
+  pagosState.tipo = tipo;
+  pagosState.tarifaActiva = tipo === "CASETA" ? pagosState.tarifaCaseta : pagosState.tarifaCaja;
+
+  // Actualizar input de tarifa
+  const inpTarifa = document.getElementById("pagosInputTarifa");
+  if (inpTarifa) inpTarifa.value = pagosState.tarifaActiva;
+
+  // Actualizar badge de tarifa
+  const badge = document.getElementById("pagosTarifaBadge");
+  if (badge) {
+    badge.innerText = `$${pagosState.tarifaActiva.toFixed(2)} MXN / pieza`;
   }
 
-  // Áreas únicas
-  const areaSelect = document.getElementById("pagosFilterArea");
-  if (areaSelect) {
-    const currentVal = areaSelect.value;
-    const areaSet = new Set();
-    records.forEach(r => {
-      const a = (r.area_trabajo || "").trim();
-      if (a) areaSet.add(a.toUpperCase());
-    });
-    const sortedAreas = Array.from(areaSet).sort();
-    
-    areaSelect.innerHTML = '<option value="TODOS">🗺️ Todas las Áreas (' + sortedAreas.length + ')</option>';
-    sortedAreas.forEach(a => {
-      const opt = document.createElement("option");
-      opt.value = a;
-      opt.innerText = a;
-      areaSelect.appendChild(opt);
-    });
-    if (currentVal && areaSet.has(currentVal)) areaSelect.value = currentVal;
-  }
+  // Seleccionar todas las áreas disponibles de este nuevo tipo
+  const newAreas = getAvailableAreasForTipo(tipo);
+  pagosState.selectedAreas.clear();
+  newAreas.forEach(a => pagosState.selectedAreas.add(a));
 
-  // Contratistas únicos
-  const conSelect = document.getElementById("pagosFilterContratista");
-  if (conSelect) {
-    const currentVal = conSelect.value;
-    const conSet = new Set();
-    records.forEach(r => {
-      const c = (r.contratista_homologado || r.contratista || "").trim();
-      if (c && c !== "Directo") conSet.add(c);
-    });
-    const sortedCons = Array.from(conSet).sort();
-    
-    conSelect.innerHTML = '<option value="TODOS">🏢 Todos los Contratistas (' + sortedCons.length + ')</option>';
-    sortedCons.forEach(c => {
-      const opt = document.createElement("option");
-      opt.value = c;
-      opt.innerText = c;
-      conSelect.appendChild(opt);
-    });
-    if (currentVal && conSet.has(currentVal)) conSelect.value = currentVal;
+  updateTipoButtonsVisual();
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+
+  showToast(`🎯 Tipo cambiado a: ${tipo === "CASETA" ? "Casetas ($35.00)" : "Cajas ($60.00)"}`, "info", 2000);
+}
+
+function updateTipoButtonsVisual() {
+  const btnCaja = document.getElementById("btnPagosTipoCaja");
+  const btnCaseta = document.getElementById("btnPagosTipoCaseta");
+
+  if (pagosState.tipo === "CAJA") {
+    if (btnCaja) {
+      btnCaja.className = "p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-blue-600 bg-blue-50/90 shadow-md ring-2 ring-blue-500/20";
+    }
+    if (btnCaseta) {
+      btnCaseta.className = "p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50";
+    }
+  } else {
+    if (btnCaja) {
+      btnCaja.className = "p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50";
+    }
+    if (btnCaseta) {
+      btnCaseta.className = "p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-amber-600 bg-amber-50/90 shadow-md ring-2 ring-amber-500/20";
+    }
   }
 }
 
+function toggleEditTarifa() {
+  const row = document.getElementById("pagosEditTarifaRow");
+  if (row) row.classList.toggle("hidden");
+}
+
+function onTarifaChanged() {
+  const inp = document.getElementById("pagosInputTarifa");
+  const val = parseFloat(inp?.value);
+  if (!isNaN(val) && val > 0) {
+    pagosState.tarifaActiva = val;
+    if (pagosState.tipo === "CASETA") pagosState.tarifaCaseta = val;
+    else pagosState.tarifaCaja = val;
+    
+    const badge = document.getElementById("pagosTarifaBadge");
+    if (badge) badge.innerText = `$${val.toFixed(2)} MXN / pieza`;
+
+    applyPagosFilter();
+    showToast(`💰 Tarifa actualizada a: $${val.toFixed(2)} MXN`, "success", 2000);
+  }
+}
+
+function resetDefaultTarifa() {
+  pagosState.tarifaCaja = 60.00;
+  pagosState.tarifaCaseta = 35.00;
+  pagosState.tarifaActiva = pagosState.tipo === "CASETA" ? 35.00 : 60.00;
+  
+  const inp = document.getElementById("pagosInputTarifa");
+  if (inp) inp.value = pagosState.tarifaActiva;
+
+  const badge = document.getElementById("pagosTarifaBadge");
+  if (badge) badge.innerText = `$${pagosState.tarifaActiva.toFixed(2)} MXN / pieza`;
+
+  applyPagosFilter();
+  showToast("Tarifa oficial restablecida.", "info", 2000);
+}
+
+// Obtener todas las áreas que tengan al menos 1 registro del tipo activo
+function getAvailableAreasForTipo(tipo) {
+  const records = state.records || [];
+  const areaCounts = {};
+  records.forEach(r => {
+    if (r.tipo === tipo) {
+      const a = (r.area_trabajo || "").trim().toUpperCase();
+      if (a) areaCounts[a] = (areaCounts[a] || 0) + 1;
+    }
+  });
+  return Object.keys(areaCounts).sort();
+}
+
+// Paso 2: Renderizar el Tablero de Áreas
+function renderAreasBoard() {
+  const grid = document.getElementById("pagosAreasGrid");
+  if (!grid) return;
+
+  const records = state.records || [];
+  const areaCounts = {};
+  records.forEach(r => {
+    if (r.tipo === pagosState.tipo) {
+      const a = (r.area_trabajo || "").trim().toUpperCase();
+      if (a) areaCounts[a] = (areaCounts[a] || 0) + 1;
+    }
+  });
+
+  const allAreas = Object.keys(areaCounts).sort();
+  grid.innerHTML = "";
+
+  allAreas.forEach(area => {
+    const count = areaCounts[area] || 0;
+    const isSelected = pagosState.selectedAreas.has(area);
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.onclick = () => togglePagosArea(area);
+
+    if (isSelected) {
+      btn.className = "flex items-center justify-between p-2.5 rounded-xl border-2 border-blue-600 bg-blue-50 text-blue-950 font-bold shadow-sm transition-all text-left text-xs";
+      btn.innerHTML = `
+        <div class="truncate mr-1">
+          <span class="block truncate">${area}</span>
+          <span class="text-[10px] text-blue-700 font-semibold">${formatNumber(count)} ${pagosState.tipo === "CASETA" ? "casetas" : "cajas"}</span>
+        </div>
+        <span class="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] shrink-0 font-black">✓</span>
+      `;
+    } else {
+      btn.className = "flex items-center justify-between p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition-all text-left text-xs";
+      btn.innerHTML = `
+        <div class="truncate mr-1">
+          <span class="block truncate">${area}</span>
+          <span class="text-[10px] text-slate-400 font-medium">${formatNumber(count)} ${pagosState.tipo === "CASETA" ? "casetas" : "cajas"}</span>
+        </div>
+        <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-[10px] shrink-0 font-bold">+</span>
+      `;
+    }
+    grid.appendChild(btn);
+  });
+
+  updateAreasBoardHeader(allAreas.length);
+}
+
+function updateAreasBoardHeader(totalAreasCount) {
+  const lbl = document.getElementById("pagosAreasSelectedLabel");
+  const countBadge = document.getElementById("pagosAreasCountBadge");
+
+  const selCount = pagosState.selectedAreas.size;
+  if (countBadge) countBadge.innerText = `${selCount} / ${totalAreasCount}`;
+
+  if (lbl) {
+    if (selCount === totalAreasCount) {
+      lbl.innerText = "Todas las plazas seleccionadas (Proyecto Completo)";
+      lbl.className = "font-extrabold text-blue-700";
+    } else if (selCount === 0) {
+      lbl.innerText = "Ninguna plaza seleccionada (Haz clic en un área para comenzar)";
+      lbl.className = "font-bold text-rose-600";
+    } else if (selCount === 1) {
+      const singleArea = Array.from(pagosState.selectedAreas)[0];
+      lbl.innerText = `Solo 1 plaza: ${singleArea}`;
+      lbl.className = "font-extrabold text-amber-700";
+    } else {
+      const arr = Array.from(pagosState.selectedAreas);
+      if (arr.length <= 4) {
+        lbl.innerText = `Plazas conjuntas: ${arr.join(" + ")}`;
+      } else {
+        lbl.innerText = `${selCount} plazas seleccionadas conjuntamente`;
+      }
+      lbl.className = "font-extrabold text-emerald-700";
+    }
+  }
+}
+
+function togglePagosArea(area) {
+  if (pagosState.selectedAreas.has(area)) {
+    pagosState.selectedAreas.delete(area);
+  } else {
+    pagosState.selectedAreas.add(area);
+  }
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+}
+
+function selectAllAreas() {
+  const all = getAvailableAreasForTipo(pagosState.tipo);
+  all.forEach(a => pagosState.selectedAreas.add(a));
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+  showToast("✓ Todas las áreas seleccionadas.", "info", 1500);
+}
+
+function deselectAllAreas() {
+  pagosState.selectedAreas.clear();
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+  showToast("✕ Tablero de áreas deseleccionado.", "info", 1500);
+}
+
+// Preset rápido solicitado: Monterrey 1, 2, 3 y Hermosillo
+function selectPresetComboMtyHermosillo() {
+  pagosState.selectedAreas.clear();
+  const combo = ["MONTERREY 1", "MONTERREY 2", "MONTERREY 3", "HERMOSILLO"];
+  const available = new Set(getAvailableAreasForTipo(pagosState.tipo));
+
+  combo.forEach(a => {
+    if (available.has(a)) pagosState.selectedAreas.add(a);
+  });
+
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+  showToast("⚡ Combo Monterrey (1, 2, 3) + Hermosillo activado.", "success", 2500);
+}
+
+// Paso 3: Llenar Contratistas
+function populatePagosContratistas() {
+  const records = state.records || [];
+  const conSelect = document.getElementById("pagosFilterContratista");
+  if (!conSelect) return;
+
+  const currentVal = conSelect.value || pagosState.contratista || "TODOS";
+  const conSet = new Set();
+
+  records.forEach(r => {
+    if (r.tipo === pagosState.tipo) {
+      const area = (r.area_trabajo || "").trim().toUpperCase();
+      // Filtrar si el área está en las seleccionadas (o si no hay ninguna seleccionada, todas)
+      if (pagosState.selectedAreas.size === 0 || pagosState.selectedAreas.has(area)) {
+        const c = (r.contratista_homologado || r.contratista || "").trim();
+        if (c && c !== "Directo") conSet.add(c);
+      }
+    }
+  });
+
+  const sorted = Array.from(conSet).sort();
+  conSelect.innerHTML = `<option value="TODOS">🏢 Todos los Contratistas (${sorted.length} con trabajos)</option>`;
+  sorted.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.innerText = c;
+    conSelect.appendChild(opt);
+  });
+
+  if (currentVal && conSet.has(currentVal)) {
+    conSelect.value = currentVal;
+    pagosState.contratista = currentVal;
+  } else {
+    conSelect.value = "TODOS";
+    pagosState.contratista = "TODOS";
+  }
+}
+
+// Llenar Técnicos secundarios
+function populatePagosTecnicos() {
+  const records = state.records || [];
+  const tecSelect = document.getElementById("pagosFilterTecnico");
+  if (!tecSelect) return;
+
+  const currentVal = tecSelect.value || pagosState.tecnico || "TODOS";
+  const tecSet = new Set();
+
+  records.forEach(r => {
+    if (r.tipo === pagosState.tipo) {
+      const area = (r.area_trabajo || "").trim().toUpperCase();
+      if (pagosState.selectedAreas.size === 0 || pagosState.selectedAreas.has(area)) {
+        const c = (r.contratista_homologado || r.contratista || "").trim();
+        if (pagosState.contratista === "TODOS" || c === pagosState.contratista) {
+          const t = (r.tecnico_homologado || r.tecnico || "").trim();
+          if (t && t !== "Sin Técnico") tecSet.add(t);
+        }
+      }
+    }
+  });
+
+  const sorted = Array.from(tecSet).sort();
+  tecSelect.innerHTML = `<option value="TODOS">👥 Todas las Cuadrillas (${sorted.length} técnicos)</option>`;
+  sorted.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.innerText = t;
+    tecSelect.appendChild(opt);
+  });
+
+  if (currentVal && tecSet.has(currentVal)) {
+    tecSelect.value = currentVal;
+  } else {
+    tecSelect.value = "TODOS";
+  }
+}
+
+// Rango de Fechas
 function onPagosPresetDateChange() {
   const preset = document.getElementById("pagosFilterPresetDate")?.value || "TODO";
+  pagosState.presetDate = preset;
   const startEl = document.getElementById("pagosDateStart");
   const endEl = document.getElementById("pagosDateEnd");
-  const today = new Date();
-  
-  const formatDate = (d) => {
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  };
+  const customRow = document.getElementById("pagosCustomDateRow");
 
-  if (preset === "HOY") {
-    const tStr = formatDate(today);
-    if (startEl) startEl.value = tStr;
-    if (endEl) endEl.value = tStr;
+  if (!startEl || !endEl) return;
+
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+
+  if (preset === "TODO") {
+    startEl.value = "";
+    endEl.value = "";
+    if (customRow) customRow.classList.add("hidden");
+  } else if (preset === "HOY") {
+    startEl.value = todayStr;
+    endEl.value = todayStr;
+    if (customRow) customRow.classList.add("hidden");
   } else if (preset === "AYER") {
     const yest = new Date(today);
     yest.setDate(yest.getDate() - 1);
-    const yStr = formatDate(yest);
-    if (startEl) startEl.value = yStr;
-    if (endEl) endEl.value = yStr;
+    const yStr = `${yest.getFullYear()}-${String(yest.getMonth() + 1).padStart(2, "0")}-${String(yest.getDate()).padStart(2, "0")}`;
+    startEl.value = yStr;
+    endEl.value = yStr;
+    if (customRow) customRow.classList.add("hidden");
   } else if (preset === "ESTA_SEMANA") {
     const curr = new Date(today);
-    const dayOfWeek = curr.getDay() || 7; // Lunes=1, Domingo=7
-    const monday = new Date(curr);
-    monday.setDate(curr.getDate() - dayOfWeek + 1);
-    if (startEl) startEl.value = formatDate(monday);
-    if (endEl) endEl.value = formatDate(today);
+    const day = curr.getDay(); // 0 domingo, 1 lunes
+    const diff = curr.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(curr.setDate(diff));
+    const mStr = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+    startEl.value = mStr;
+    endEl.value = todayStr;
+    if (customRow) customRow.classList.add("hidden");
   } else if (preset === "MES_ACTUAL") {
-    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-    if (startEl) startEl.value = formatDate(firstDay);
-    if (endEl) endEl.value = formatDate(today);
-  } else if (preset === "TODO") {
-    if (startEl) startEl.value = "";
-    if (endEl) endEl.value = "";
+    startEl.value = `${yyyy}-${mm}-01`;
+    endEl.value = todayStr;
+    if (customRow) customRow.classList.add("hidden");
+  } else if (preset === "PERSONALIZADO") {
+    if (customRow) customRow.classList.remove("hidden");
   }
-  
+
   applyPagosFilter();
 }
 
-function resetPagosFilters() {
-  document.getElementById("pagosFilterTipo").value = "TODOS";
-  document.getElementById("pagosFilterTecnico").value = "TODOS";
-  document.getElementById("pagosFilterArea").value = "TODOS";
-  document.getElementById("pagosFilterContratista").value = "TODOS";
-  document.getElementById("pagosFilterPresetDate").value = "TODO";
-  document.getElementById("pagosDateStart").value = "";
-  document.getElementById("pagosDateEnd").value = "";
-  applyPagosFilter();
-  showToast("🔄 Filtros restablecidos a la vista total.", "info", 2000);
-}
-
+// Filtro Principal
 function applyPagosFilter() {
-  const tipo = document.getElementById("pagosFilterTipo")?.value || "TODOS";
-  const tecnico = document.getElementById("pagosFilterTecnico")?.value || "TODOS";
-  const area = document.getElementById("pagosFilterArea")?.value || "TODOS";
-  const contratista = document.getElementById("pagosFilterContratista")?.value || "TODOS";
+  const conSelect = document.getElementById("pagosFilterContratista");
+  if (conSelect) pagosState.contratista = conSelect.value;
+
+  const tecSelect = document.getElementById("pagosFilterTecnico");
+  if (tecSelect) pagosState.tecnico = tecSelect.value;
+
   const dStart = document.getElementById("pagosDateStart")?.value || "";
   const dEnd = document.getElementById("pagosDateEnd")?.value || "";
 
   const allRecords = state.records || [];
-  
+
   pagosFilteredRecords = allRecords.filter(r => {
-    // 1. Tipo
-    if (tipo !== "TODOS" && r.tipo !== tipo) return false;
+    // 1. Tipo (CAJA o CASETA)
+    if (r.tipo !== pagosState.tipo) return false;
 
-    // 2. Técnico Homologado
-    if (tecnico !== "TODOS") {
-      const t = (r.tecnico_homologado || r.tecnico || "").trim();
-      if (t !== tecnico) return false;
+    // 2. Tablero de Áreas (Conjunto)
+    const area = (r.area_trabajo || "").trim().toUpperCase();
+    if (pagosState.selectedAreas.size > 0 && !pagosState.selectedAreas.has(area)) {
+      return false;
     }
 
-    // 3. Área
-    if (area !== "TODOS") {
-      const a = (r.area_trabajo || "").trim().toUpperCase();
-      if (a !== area) return false;
-    }
-
-    // 4. Contratista Homologado
-    if (contratista !== "TODOS") {
+    // 3. Contratista a Liquidar
+    if (pagosState.contratista !== "TODOS") {
       const c = (r.contratista_homologado || r.contratista || "").trim();
-      if (c !== contratista) return false;
+      if (c !== pagosState.contratista) return false;
+    }
+
+    // 4. Técnico secundario
+    if (pagosState.tecnico !== "TODOS") {
+      const t = (r.tecnico_homologado || r.tecnico || "").trim();
+      if (t !== pagosState.tecnico) return false;
     }
 
     // 5. Rango de Fechas
@@ -2938,206 +3221,398 @@ function applyPagosFilter() {
     return true;
   });
 
-  pagosCurrentPage = 1;
+  pagosState.currentPage = 1;
   updatePagosSummaryCards();
+  renderPagosSubtotalesAreas();
+  renderPagosModelosGrid();
   renderPagosTable();
 }
 
+// Tarjetas KPI Financieras
 function updatePagosSummaryCards() {
-  const total = pagosFilteredRecords.length;
-  let cajas = 0;
-  let casetas = 0;
+  const cantidad = pagosFilteredRecords.length;
+  const tarifa = pagosState.tarifaActiva;
+  const montoTotal = cantidad * tarifa;
+
+  // Tarjeta 1: Dinero Total a Pagar
+  const mDineroEl = document.getElementById("pagosKpiMontoDinero");
+  if (mDineroEl) {
+    mDineroEl.innerText = formatMoney(montoTotal);
+  }
+
+  const fEl = document.getElementById("pagosKpiFormula");
+  if (fEl) {
+    const labelPieza = pagosState.tipo === "CASETA" ? "casetas" : "cajas";
+    fEl.innerText = `${formatNumber(cantidad)} ${labelPieza} x $${tarifa.toFixed(2)} MXN`;
+  }
+
+  // Tarjeta 2: Número de Cajas o Casetas
+  const pCountEl = document.getElementById("pagosKpiCantidadPiezas");
+  if (pCountEl) pCountEl.innerText = formatNumber(cantidad);
+
+  const pLabelEl = document.getElementById("pagosKpiPiezasLabel");
+  if (pLabelEl) {
+    pLabelEl.innerHTML = pagosState.tipo === "CASETA" ? "<span>📞</span> CASETAS VALIDADAS" : "<span>📦</span> CAJAS VALIDADAS";
+  }
+
+  const pIconEl = document.getElementById("pagosKpiPiezasIcon");
+  if (pIconEl) {
+    pIconEl.innerText = pagosState.tipo === "CASETA" ? "📞" : "📦";
+  }
+
+  // Tarjeta 3: Plazas en este Pago
+  const areaSet = new Set();
   const tecSet = new Set();
   const conSet = new Set();
-  const modelCounts = {};
 
   pagosFilteredRecords.forEach(r => {
-    if (r.tipo === "CASETA") casetas++;
-    else cajas++;
-
+    const a = (r.area_trabajo || "").trim().toUpperCase();
+    if (a) areaSet.add(a);
     const t = (r.tecnico_homologado || r.tecnico || "").trim();
     if (t) tecSet.add(t);
-
     const c = (r.contratista_homologado || r.contratista || "").trim();
     if (c) conSet.add(c);
+  });
 
+  const plazasCountEl = document.getElementById("pagosKpiPlazasCount");
+  if (plazasCountEl) plazasCountEl.innerText = formatNumber(areaSet.size);
+
+  const plazasSubEl = document.getElementById("pagosKpiPlazasSubtitle");
+  if (plazasSubEl) plazasSubEl.innerText = `${formatNumber(areaSet.size)} áreas agrupadas en este corte`;
+
+  // Tarjeta 4: Contratista
+  const conTitleEl = document.getElementById("pagosKpiContratistaTitle");
+  if (conTitleEl) {
+    if (pagosState.contratista === "TODOS") {
+      conTitleEl.innerText = `${conSet.size} Contratistas`;
+    } else {
+      conTitleEl.innerText = pagosState.contratista;
+    }
+  }
+
+  const cuadCountEl = document.getElementById("pagosKpiCuadrillasCount");
+  if (cuadCountEl) {
+    cuadCountEl.innerText = `${tecSet.size} cuadrillas / técnicos en sitio`;
+  }
+}
+
+// Desglose por Plaza / Área (Matriz de Subtotales)
+function renderPagosSubtotalesAreas() {
+  const container = document.getElementById("pagosSubtotalesAreasContainer");
+  const tag = document.getElementById("pagosMatrizTotalTag");
+  if (!container) return;
+
+  const areaMap = {};
+  pagosFilteredRecords.forEach(r => {
+    const a = (r.area_trabajo || "").trim().toUpperCase() || "SIN ÁREA";
+    if (!areaMap[a]) {
+      areaMap[a] = { count: 0, tecnicos: new Set(), contratistas: new Set() };
+    }
+    areaMap[a].count++;
+    const t = (r.tecnico_homologado || r.tecnico || "").trim();
+    if (t) areaMap[a].tecnicos.add(t);
+    const c = (r.contratista_homologado || r.contratista || "").trim();
+    if (c) areaMap[a].contratistas.add(c);
+  });
+
+  const areasSorted = Object.keys(areaMap).sort((a, b) => areaMap[b].count - areaMap[a].count);
+  const totalGeneral = pagosFilteredRecords.length;
+  const tarifa = pagosState.tarifaActiva;
+  const granTotalDinero = totalGeneral * tarifa;
+
+  if (tag) {
+    tag.innerText = `${formatMoney(granTotalDinero)} en ${areasSorted.length} plazas conjuntas`;
+  }
+
+  if (areasSorted.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-6 text-slate-400 text-xs">
+        No hay trabajos que coincidan con la combinación de filtros seleccionada.
+      </div>
+    `;
+    return;
+  }
+
+  let html = `
+    <table class="w-full text-left border-collapse text-xs">
+      <thead class="bg-slate-100 text-slate-700 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+        <tr>
+          <th class="p-2.5">Plaza / Área</th>
+          <th class="p-2.5 text-center">${pagosState.tipo === "CASETA" ? "Casetas" : "Cajas"}</th>
+          <th class="p-2.5 text-right">Tarifa Unitaria</th>
+          <th class="p-2.5 text-right font-black">Subtotal a Facturar ($)</th>
+          <th class="p-2.5 text-center">% del Pago</th>
+          <th class="p-2.5 text-center">Cuadrillas</th>
+          <th class="p-2.5 text-center">Acción</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+  `;
+
+  areasSorted.forEach(area => {
+    const data = areaMap[area];
+    const subtotal = data.count * tarifa;
+    const pct = totalGeneral > 0 ? ((data.count / totalGeneral) * 100).toFixed(1) : 0;
+
+    html += `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="p-2.5 font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="text-amber-500">📍</span> ${area}
+        </td>
+        <td class="p-2.5 text-center font-extrabold text-slate-800">
+          ${formatNumber(data.count)}
+        </td>
+        <td class="p-2.5 text-right text-slate-600 font-semibold">
+          $${tarifa.toFixed(2)} MXN
+        </td>
+        <td class="p-2.5 text-right font-black text-emerald-700 text-sm">
+          ${formatMoney(subtotal)}
+        </td>
+        <td class="p-2.5 text-center text-slate-500 font-semibold">
+          <div class="flex items-center justify-center gap-1.5">
+            <div class="w-12 bg-slate-200 rounded-full h-1.5 overflow-hidden">
+              <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
+            </div>
+            <span class="text-[10px]">${pct}%</span>
+          </div>
+        </td>
+        <td class="p-2.5 text-center text-slate-600">
+          ${data.tecnicos.size} técnicos
+        </td>
+        <td class="p-2.5 text-center">
+          <button type="button" onclick="focusOnlyThisArea('${area}')" class="px-2 py-0.5 text-[10px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 transition-colors">
+            Filtrar Solo Esta
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  // Fila Totalizadora
+  html += `
+      <tr class="bg-amber-50/80 font-black text-slate-900 border-t-2 border-amber-300">
+        <td class="p-2.5 text-amber-950 font-black">
+          TOTAL CONJUNTO (${areasSorted.length} PLAZAS)
+        </td>
+        <td class="p-2.5 text-center text-base font-black text-blue-800">
+          ${formatNumber(totalGeneral)}
+        </td>
+        <td class="p-2.5 text-right text-slate-700">
+          $${tarifa.toFixed(2)} MXN
+        </td>
+        <td class="p-2.5 text-right text-base font-black text-emerald-800">
+          ${formatMoney(granTotalDinero)}
+        </td>
+        <td class="p-2.5 text-center text-slate-700">
+          100%
+        </td>
+        <td class="p-2.5 text-center text-slate-700" colspan="2">
+          Factura Lista para Liquidación
+        </td>
+      </tr>
+    </tbody>
+    </table>
+  `;
+
+  container.innerHTML = html;
+}
+
+function focusOnlyThisArea(area) {
+  pagosState.selectedAreas.clear();
+  pagosState.selectedAreas.add(area);
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+  showToast(`🔍 Filtrado solo plaza: ${area}`, "info", 2000);
+}
+
+// Desglose por Modelo
+function renderPagosModelosGrid() {
+  const grid = document.getElementById("pagosModelosGrid");
+  const totalTag = document.getElementById("pagosModelosTotalTag");
+  if (!grid) return;
+
+  const modelCounts = {};
+  pagosFilteredRecords.forEach(r => {
     const m = (r.modelo || "Sencilla").trim();
     modelCounts[m] = (modelCounts[m] || 0) + 1;
   });
 
-  const cajasPct = total > 0 ? ((cajas / total) * 100).toFixed(1) : 0;
-  const casetasPct = total > 0 ? ((casetas / total) * 100).toFixed(1) : 0;
-
-  // Actualizar Cards
-  const totalEl = document.getElementById("pagosKpiTotal");
-  if (totalEl) totalEl.innerText = formatNumber(total);
-
-  const subEl = document.getElementById("pagosKpiSubtitle");
-  if (subEl) subEl.innerText = `${formatNumber(total)} folios listos para conciliar`;
-
-  const cajasEl = document.getElementById("pagosKpiCajas");
-  if (cajasEl) cajasEl.innerText = formatNumber(cajas);
-
-  const cajasPctEl = document.getElementById("pagosKpiCajasPct");
-  if (cajasPctEl) cajasPctEl.innerText = `${cajasPct}% del total filtrado`;
-
-  const casetasEl = document.getElementById("pagosKpiCasetas");
-  if (casetasEl) casetasEl.innerText = formatNumber(casetas);
-
-  const casetasPctEl = document.getElementById("pagosKpiCasetasPct");
-  if (casetasPctEl) casetasPctEl.innerText = `${casetasPct}% del total filtrado`;
-
-  const tecEl = document.getElementById("pagosKpiTecnicos");
-  if (tecEl) tecEl.innerText = `${tecSet.size} Técnicos`;
-
-  const conEl = document.getElementById("pagosKpiContratistas");
-  if (conEl) conEl.innerText = `${conSet.size} empresa(s) contratista(s)`;
-
-  // Desglose de Modelos
-  const grid = document.getElementById("pagosModelosGrid");
-  const totalTag = document.getElementById("pagosModelosTotalTag");
-  if (totalTag) totalTag.innerText = `${formatNumber(total)} folios auditados`;
-
-  if (grid) {
-    grid.innerHTML = "";
-    const sortedModels = Object.entries(modelCounts).sort((a, b) => b[1] - a[1]);
-    if (sortedModels.length === 0) {
-      grid.innerHTML = '<div class="col-span-full text-center text-slate-400 py-2 italic text-xs">No hay folios en este criterio.</div>';
-    } else {
-      sortedModels.forEach(([model, count]) => {
-        const pct = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
-        const card = document.createElement("div");
-        card.className = "p-2 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between";
-        card.innerHTML = `
-          <div class="min-w-0 pr-2">
-            <div class="text-[11px] font-bold text-slate-800 truncate" title="${model}">${model}</div>
-            <div class="text-[10px] text-slate-500">${pct}%</div>
-          </div>
-          <span class="px-2 py-0.5 bg-amber-100 text-amber-900 rounded font-black text-xs">${formatNumber(count)}</span>
-        `;
-        grid.appendChild(card);
-      });
-    }
-  }
-
-  const countInfo = document.getElementById("pagosTableCounterInfo");
-  if (countInfo) {
-    countInfo.innerText = `Mostrando ${formatNumber(total)} registros validados listos para facturación.`;
-  }
-}
-
-function renderPagosTable() {
-  const tbody = document.getElementById("pagosTableBody");
-  if (!tbody) return;
-  tbody.innerHTML = "";
-
+  const sortedModels = Object.keys(modelCounts).sort((a, b) => modelCounts[b] - modelCounts[a]);
   const total = pagosFilteredRecords.length;
-  if (total === 0) {
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="11" class="py-12 text-center text-slate-400 italic">
-          <div class="text-3xl mb-2">🔍</div>
-          <p class="font-bold text-slate-600">No se encontraron trabajos con los filtros seleccionados.</p>
-          <p class="text-xs text-slate-400 mt-1">Ajusta el rango de fechas, el técnico o el tipo para ver los registros.</p>
-        </td>
-      </tr>
-    `;
-    updatePagosPagination(0, 0);
+
+  if (totalTag) {
+    totalTag.innerText = `${formatNumber(total)} piezas en ${sortedModels.length} modelos`;
+  }
+
+  grid.innerHTML = "";
+  if (sortedModels.length === 0) {
+    grid.innerHTML = '<div class="col-span-5 text-center text-slate-400 text-xs py-3">Sin modelos</div>';
     return;
   }
 
-  const totalPages = Math.ceil(total / PAGOS_PAGE_SIZE);
-  if (pagosCurrentPage > totalPages) pagosCurrentPage = totalPages;
-  if (pagosCurrentPage < 1) pagosCurrentPage = 1;
+  sortedModels.forEach(m => {
+    const c = modelCounts[m];
+    const pct = total > 0 ? ((c / total) * 100).toFixed(1) : 0;
 
-  const startIdx = (pagosCurrentPage - 1) * PAGOS_PAGE_SIZE;
-  const endIdx = Math.min(startIdx + PAGOS_PAGE_SIZE, total);
-  const pageItems = pagosFilteredRecords.slice(startIdx, endIdx);
-
-  pageItems.forEach((r, idx) => {
-    const rowNum = startIdx + idx + 1;
-    const isCaseta = r.tipo === "CASETA";
-    const badgeType = isCaseta 
-      ? '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">CASETA</span>' 
-      : '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300">CAJA</span>';
-
-    const photoUrl = r.foto_evidencia || r.foto_despues || r.foto_antes || "";
-    let photoCell = '<span class="text-slate-400 italic text-[11px]">Sin foto</span>';
-    if (photoUrl) {
-      const safeTec = (r.tecnico_homologado || r.tecnico || '').replace(/'/g, "\'");
-      const safeFolio = (r.folio || '').replace(/'/g, "\'");
-      const safeFecha = (r.fecha_corte || r.fecha_captura || '').replace(/'/g, "\'");
-      photoCell = `
-        <button type="button" onclick="openPaymentPhotoModal('${photoUrl}', '${safeFolio}', '${safeTec}', '${safeFecha}')" 
-                class="group relative inline-block rounded border border-slate-300 overflow-hidden hover:border-amber-500 transition-colors shadow-sm" title="Ver foto de evidencia">
-          <img src="${photoUrl}" alt="Evidencia" class="w-9 h-9 object-cover group-hover:scale-110 transition-transform">
-          <span class="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 text-[10px] text-white">🔍</span>
-        </button>
-      `;
-    }
-
-    const tr = document.createElement("tr");
-    tr.className = "hover:bg-amber-50/40 transition-colors";
-    tr.innerHTML = `
-      <td class="p-2.5 text-center text-slate-400 text-[11px]">${rowNum}</td>
-      <td class="p-2.5 font-bold text-slate-900 whitespace-nowrap">${r.folio || '-'}</td>
-      <td class="p-2.5 text-slate-600 whitespace-nowrap">${r.fecha_corte || r.fecha_captura || '-'} ${r.hora ? `<span class="text-slate-400 text-[10px]">${r.hora}</span>` : ''}</td>
-      <td class="p-2.5 font-bold text-slate-800 whitespace-nowrap">${r.tecnico_homologado || r.tecnico || 'Sin Técnico'}</td>
-      <td class="p-2.5 text-slate-600 whitespace-nowrap">${r.contratista_homologado || r.contratista || 'Directo'}</td>
-      <td class="p-2.5 text-center whitespace-nowrap">${badgeType}</td>
-      <td class="p-2.5 text-slate-700 whitespace-nowrap font-medium">${r.modelo || 'Sencilla'}</td>
-      <td class="p-2.5 font-mono text-slate-800 whitespace-nowrap">${r.identificador || '-'}</td>
-      <td class="p-2.5 text-slate-600 whitespace-nowrap">${r.area_trabajo || '-'}</td>
-      <td class="p-2.5 text-center whitespace-nowrap">${photoCell}</td>
-      <td class="p-2.5 text-slate-500 max-w-xs truncate" title="${r.comentarios || ''}">${r.comentarios || '-'}</td>
+    const div = document.createElement("div");
+    div.className = "p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex flex-col justify-between";
+    div.innerHTML = `
+      <div class="flex items-start justify-between gap-1 mb-1">
+        <span class="font-bold text-slate-800 text-[11px] truncate" title="${m}">${m}</span>
+        <span class="text-[10px] font-bold text-blue-700 bg-blue-100 px-1.5 py-0.2 rounded">${pct}%</span>
+      </div>
+      <div class="flex items-baseline justify-between">
+        <span class="text-sm font-black text-slate-900">${formatNumber(c)}</span>
+        <span class="text-[10px] text-slate-500 font-semibold">${formatMoney(c * pagosState.tarifaActiva)}</span>
+      </div>
     `;
-    tbody.appendChild(tr);
+    grid.appendChild(div);
   });
-
-  updatePagosPagination(startIdx + 1, endIdx, total, totalPages);
 }
 
-function updatePagosPagination(start, end, total, totalPages) {
-  const info = document.getElementById("pagosPaginationInfo");
-  if (info) {
-    if (total === 0) info.innerText = "0 registros";
-    else info.innerText = `Mostrando ${start} a ${end} de ${formatNumber(total)} registros (Página ${pagosCurrentPage} de ${totalPages})`;
+// Renderizar Tabla Detallada con Miniaturas de Evidencias
+function renderPagosTable() {
+  const tbody = document.getElementById("pagosTableBody");
+  const counterInfo = document.getElementById("pagosTableCounterInfo");
+  const pagInfo = document.getElementById("pagosPaginationInfo");
+  const btnPrev = document.getElementById("btnPagosPrev");
+  const btnNext = document.getElementById("btnPagosNext");
+
+  if (!tbody) return;
+
+  const total = pagosFilteredRecords.length;
+  if (counterInfo) {
+    const conName = pagosState.contratista !== "TODOS" ? `para ${pagosState.contratista}` : "generales";
+    counterInfo.innerText = `Mostrando ${formatNumber(total)} trabajos validados ${conName} (${formatMoney(total * pagosState.tarifaActiva)})`;
   }
-  const prevBtn = document.getElementById("btnPagosPrevPage");
-  const nextBtn = document.getElementById("btnPagosNextPage");
-  if (prevBtn) prevBtn.disabled = pagosCurrentPage <= 1;
-  if (nextBtn) nextBtn.disabled = pagosCurrentPage >= totalPages;
+
+  if (total === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="13" class="text-center py-12 text-slate-400">
+          <div class="text-3xl mb-2">🔍</div>
+          <div class="font-bold text-sm text-slate-600">No se encontraron trabajos con los filtros seleccionados</div>
+          <div class="text-xs text-slate-400 mt-1">Prueba seleccionando más áreas en el tablero o cambiando el contratista</div>
+        </td>
+      </tr>
+    `;
+    if (pagInfo) pagInfo.innerText = "Página 1 de 1";
+    if (btnPrev) btnPrev.disabled = true;
+    if (btnNext) btnNext.disabled = true;
+    return;
+  }
+
+  const totalPages = Math.ceil(total / pagosState.pageSize) || 1;
+  if (pagosState.currentPage > totalPages) pagosState.currentPage = totalPages;
+  if (pagosState.currentPage < 1) pagosState.currentPage = 1;
+
+  const startIdx = (pagosState.currentPage - 1) * pagosState.pageSize;
+  const endIdx = Math.min(startIdx + pagosState.pageSize, total);
+  const pageRecords = pagosFilteredRecords.slice(startIdx, endIdx);
+
+  const tarifa = pagosState.tarifaActiva;
+
+  let html = "";
+  pageRecords.forEach((r, idx) => {
+    const num = startIdx + idx + 1;
+    const folio = r.folio || "S/F";
+    const fecha = r.fecha_captura || r.fecha || "S/F";
+    const hora = r.hora || "";
+    const area = r.area_trabajo || "S/A";
+    const contratista = r.contratista_homologado || r.contratista || "S/C";
+    const tecnico = r.tecnico_homologado || r.tecnico || "Sin Técnico";
+    const tipo = r.tipo || "CAJA";
+    const modelo = r.modelo || "Sencilla";
+    const identificador = r.identificador || r.distrito || r.telefono || "S/D";
+    const comentarios = r.comentarios || "";
+    const foto = r.foto_evidencia || r.foto_despues || r.foto_antes || "";
+
+    const fotoHtml = foto ? `
+      <div class="flex items-center justify-center">
+        <img src="${foto}" 
+             alt="Evidencia" 
+             class="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:opacity-80 hover:scale-110 transition-transform shadow-xs"
+             loading="lazy"
+             onclick="openPaymentPhotoModal('${foto}', '${folio}', '${identificador}', '${area}', '${tecnico}', '${contratista}')">
+      </div>
+    ` : `
+      <span class="text-[10px] text-slate-300 italic block text-center">Sin foto</span>
+    `;
+
+    html += `
+      <tr class="hover:bg-amber-50/40 transition-colors">
+        <td class="p-2.5 text-center text-slate-400 font-medium">${num}</td>
+        <td class="p-2.5 font-mono text-[11px] font-bold text-slate-800">${folio}</td>
+        <td class="p-2.5 whitespace-nowrap text-slate-600">
+          <div>${fecha}</div>
+          <div class="text-[10px] text-slate-400 font-mono">${hora}</div>
+        </td>
+        <td class="p-2.5 font-bold text-slate-900">${area}</td>
+        <td class="p-2.5 font-bold text-amber-900">${contratista}</td>
+        <td class="p-2.5 text-slate-700">${tecnico}</td>
+        <td class="p-2.5 text-center">
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${tipo === 'CASETA' ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-blue-100 text-blue-800 border border-blue-300'}">
+            ${tipo}
+          </span>
+        </td>
+        <td class="p-2.5 font-medium text-slate-700">${modelo}</td>
+        <td class="p-2.5 font-mono text-[11px] font-semibold text-slate-900">${identificador}</td>
+        <td class="p-2.5 text-right font-medium text-slate-600">$${tarifa.toFixed(2)}</td>
+        <td class="p-2.5 text-right font-black text-emerald-700">$${tarifa.toFixed(2)}</td>
+        <td class="p-2.5">${fotoHtml}</td>
+        <td class="p-2.5 text-slate-500 max-w-[150px] truncate" title="${comentarios}">
+          ${comentarios || "-"}
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+
+  if (pagInfo) {
+    pagInfo.innerText = `Página ${pagosState.currentPage} de ${totalPages} (Mostrando ${startIdx + 1}-${endIdx} de ${formatNumber(total)})`;
+  }
+  if (btnPrev) btnPrev.disabled = pagosState.currentPage <= 1;
+  if (btnNext) btnNext.disabled = pagosState.currentPage >= totalPages;
 }
 
 function changePagosPage(delta) {
-  pagosCurrentPage += delta;
-  renderPagosTable();
-  const tableContainer = document.querySelector("#tab-pagos .overflow-x-auto");
-  if (tableContainer) tableContainer.scrollTop = 0;
+  const totalPages = Math.ceil(pagosFilteredRecords.length / pagosState.pageSize) || 1;
+  const newPage = pagosState.currentPage + delta;
+  if (newPage >= 1 && newPage <= totalPages) {
+    pagosState.currentPage = newPage;
+    renderPagosTable();
+    // Scroll suave a la tabla
+    document.getElementById("tab-pagos")?.scrollIntoView({ behavior: "smooth" });
+  }
 }
 
-function openPaymentPhotoModal(url, folio, tec, fecha) {
+// Modal para Visualizar Foto de Evidencia con Zoom Completo
+function openPaymentPhotoModal(url, folio, iden, area, tec, con) {
   const modal = document.getElementById("paymentPhotoModal");
-  const img = document.getElementById("photoModalImg");
-  const title = document.getElementById("photoModalTitle");
-  const sub = document.getElementById("photoModalSubtitle");
-  const details = document.getElementById("photoModalDetails");
-  const link = document.getElementById("photoModalFullLink");
+  const img = document.getElementById("paymentPhotoImg");
+  const fEl = document.getElementById("paymentPhotoFolio");
+  const dEl = document.getElementById("paymentPhotoDetails");
+  const link = document.getElementById("paymentPhotoFullLink");
 
-  if (img) img.src = url;
-  if (title) title.innerText = `Evidencia: Folio ${folio}`;
-  if (sub) sub.innerText = `Técnico: ${tec} • Fecha: ${fecha}`;
-  if (details) details.innerText = `Imagen original almacenada en servidor seguro`;
+  if (!modal || !img) return;
+
+  img.src = url;
+  if (fEl) fEl.innerText = `Folio Linkaform: ${folio} (${iden})`;
+  if (dEl) dEl.innerText = `Plaza: ${area} | Contratista: ${con} | Técnico: ${tec}`;
   if (link) link.href = url;
-  if (modal) modal.classList.remove("hidden");
+
+  modal.classList.remove("hidden");
 }
 
-function closePhotoModal() {
+function closePaymentPhotoModal() {
   const modal = document.getElementById("paymentPhotoModal");
   if (modal) modal.classList.add("hidden");
 }
 
-// Exportar Reporte de Pago en CSV compatible con Excel
+// Exportar Liquidación Oficial a Excel (CSV)
 function exportPagosCSV() {
   if (pagosFilteredRecords.length === 0) {
     showToast("⚠️ No hay registros con los filtros actuales para exportar.", "warning", 3000);
@@ -3146,6 +3621,7 @@ function exportPagosCSV() {
 
   showToast("📊 Generando archivo de liquidación para Excel...", "info", 2000);
 
+  const tarifa = pagosState.tarifaActiva;
   const headers = [
     "No",
     "Folio Linkaform",
@@ -3153,14 +3629,15 @@ function exportPagosCSV() {
     "Hora",
     "Fecha Corte Contable",
     "Tipo Activo",
-    "Modelo Colocado",
-    "Distrito / Telefono",
     "Plaza / Area",
-    "Estado",
-    "Tecnico Homologado",
-    "Contratista Homologado",
+    "Empresa / Contratista",
+    "Tecnico en Sitio",
+    "Modelo Instalado",
+    "Distrito / Telefono",
+    "Tarifa Unitaria MXN",
+    "Importe a Pagar MXN",
     "Oferta Colocada",
-    "Comentarios de Campo",
+    "Comentarios",
     "URL Evidencia Fotografica"
   ];
 
@@ -3171,12 +3648,13 @@ function exportPagosCSV() {
     `"${r.hora || ''}"`,
     `"${r.fecha_corte || ''}"`,
     `"${r.tipo || ''}"`,
+    `"${(r.area_trabajo || '').replace(/"/g, '""')}"`,
+    `"${(r.contratista_homologado || r.contratista || '').replace(/"/g, '""')}"`,
+    `"${(r.tecnico_homologado || r.tecnico || '').replace(/"/g, '""')}"`,
     `"${(r.modelo || '').replace(/"/g, '""')}"`,
     `"${(r.identificador || '').replace(/"/g, '""')}"`,
-    `"${(r.area_trabajo || '').replace(/"/g, '""')}"`,
-    `"${(r.estado || '').replace(/"/g, '""')}"`,
-    `"${(r.tecnico_homologado || r.tecnico || '').replace(/"/g, '""')}"`,
-    `"${(r.contratista_homologado || r.contratista || '').replace(/"/g, '""')}"`,
+    tarifa.toFixed(2),
+    tarifa.toFixed(2),
     `"${(r.oferta || '').replace(/"/g, '""')}"`,
     `"${(r.comentarios || '').replace(/"/g, '""')}"`,
     `"${(r.foto_evidencia || r.foto_despues || r.foto_antes || '').replace(/"/g, '""')}"`
@@ -3187,40 +3665,41 @@ function exportPagosCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   
-  const tecFilter = document.getElementById("pagosFilterTecnico")?.value || "TODOS";
-  const safeTecName = tecFilter !== "TODOS" ? tecFilter.replace(/\s+/g, '_') : 'General';
+  const conSafe = pagosState.contratista !== "TODOS" ? pagosState.contratista.replace(/\s+/g, '_') : 'General';
+  const tipoStr = pagosState.tipo;
   const dateStr = getLocalDateStr();
   
   a.href = url;
-  a.download = `Validacion_Pagos_Telmex_${safeTecName}_${dateStr}.csv`;
+  a.download = `Liquidacion_${tipoStr}_${conSafe}_${dateStr}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  showToast(`✅ ¡Archivo de liquidación descargado exitosamente (${formatNumber(pagosFilteredRecords.length)} trabajos)!`, "success", 4000);
+  showToast(`✅ ¡Archivo de liquidación descargado exitosamente (${formatNumber(pagosFilteredRecords.length)} folios)!`, "success", 4000);
 }
 
-// Imprimir Carátula de Liquidación / Factura en PDF
+// Imprimir Carátula Oficial de Pago en PDF
 function printPagosSummary() {
   if (pagosFilteredRecords.length === 0) {
     showToast("⚠️ No hay registros filtrados para imprimir.", "warning", 3000);
     return;
   }
 
-  const tecFilter = document.getElementById("pagosFilterTecnico")?.value || "TODOS";
-  const areaFilter = document.getElementById("pagosFilterArea")?.value || "TODAS";
-  const conFilter = document.getElementById("pagosFilterContratista")?.value || "TODOS";
-  const dStart = document.getElementById("pagosDateStart")?.value || "Inicio";
-  const dEnd = document.getElementById("pagosDateEnd")?.value || "Actual";
-  
+  const tipo = pagosState.tipo;
+  const tarifa = pagosState.tarifaActiva;
   const total = pagosFilteredRecords.length;
-  let cajas = 0;
-  let casetas = 0;
+  const totalDinero = total * tarifa;
+  const conName = pagosState.contratista !== "TODOS" ? pagosState.contratista : "TODOS LOS CONTRATISTAS";
+  
+  // Agrupar por áreas para la carátula
+  const areaCounts = {};
   pagosFilteredRecords.forEach(r => {
-    if (r.tipo === "CASETA") casetas++;
-    else cajas++;
+    const a = (r.area_trabajo || "").trim().toUpperCase() || "SIN ÁREA";
+    areaCounts[a] = (areaCounts[a] || 0) + 1;
   });
+
+  const sortedAreas = Object.keys(areaCounts).sort((a, b) => areaCounts[b] - areaCounts[a]);
 
   const printWindow = window.open("", "_blank");
   printWindow.document.write(`
@@ -3228,104 +3707,137 @@ function printPagosSummary() {
     <html lang="es">
     <head>
       <meta charset="UTF-8">
-      <title>Respaldo de Liquidación y Pago - Telmex 2026</title>
+      <title>Carátula de Liquidación Oficial - Imagen Telmex 2026</title>
       <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 24px; color: #0f172a; }
-        .header { border-bottom: 2px solid #0055a5; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        h1 { color: #0055a5; font-size: 18px; margin: 0; }
-        .subtitle { font-size: 12px; color: #64748b; margin-top: 4px; }
-        .box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
-        .box-item { font-size: 12px; }
-        .box-item strong { display: block; font-size: 10px; color: #64748b; text-transform: uppercase; }
-        .kpi-row { display: flex; gap: 16px; margin-bottom: 20px; }
-        .kpi { flex: 1; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; text-align: center; }
-        .kpi-num { font-size: 22px; font-weight: 900; color: #0f172a; }
-        .kpi-lbl { font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase; }
-        table { width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 30px; }
-        th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
-        th { background: #f1f5f9; font-weight: bold; }
-        .footer-sig { display: flex; justify-content: space-around; margin-top: 50px; }
-        .sig-box { width: 200px; border-top: 1px solid #0f172a; text-align: center; padding-top: 6px; font-size: 11px; font-weight: bold; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 28px; color: #0f172a; margin: 0; }
+        .header { border-bottom: 3px solid #0055a5; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { color: #0055a5; font-size: 20px; margin: 0; font-weight: 900; }
+        .subtitle { font-size: 11px; color: #475569; margin-top: 4px; }
+        .box-info { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .box-item strong { display: block; font-size: 10px; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+        .box-item span { font-size: 13px; font-weight: bold; color: #0f172a; }
+        .kpi-row { display: flex; gap: 16px; margin-bottom: 24px; }
+        .kpi { flex: 1; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center; background: #fff; }
+        .kpi-num { font-size: 24px; font-weight: 900; color: #0055a5; }
+        .kpi-lbl { font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase; margin-top: 2px; }
+        .table-title { font-size: 12px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 30px; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+        th { background: #f1f5f9; font-weight: bold; color: #334155; }
+        .signatures { display: flex; justify-content: space-around; margin-top: 60px; page-break-inside: avoid; }
+        .sig-box { width: 220px; border-top: 1.5px solid #0f172a; text-align: center; padding-top: 8px; font-size: 11px; font-weight: bold; }
+        .sig-sub { font-size: 10px; color: #64748b; font-weight: normal; margin-top: 2px; }
+        @media print {
+          body { padding: 10px; }
+          .no-print { display: none; }
+        }
       </style>
     </head>
     <body>
       <div class="header">
         <div>
-          <h1>Telmex Campaña Imagen 2026 • Carátula de Validación de Pago</h1>
-          <div class="subtitle">Auditoría Oficial de Evidencias y Folios de Facturación</div>
+          <h1>ESTADO DE CUENTA Y CARÁTULA DE LIQUIDACIÓN OFICIAL</h1>
+          <div class="subtitle">Proyecto Imagen Telmex 2026 · Conciliación Oficial de Trabajos y Facturación</div>
         </div>
-        <div style="text-align: right; font-size: 11px; color: #64748b;">
-          Impresión: ${new Date().toLocaleDateString('es-MX')} ${new Date().toLocaleTimeString('es-MX', {hour:'2-digit', minute:'2-digit'})}
+        <div style="text-align: right;">
+          <div style="font-weight: 900; color: #0055a5; font-size: 14px;">TELMEX / PCI</div>
+          <div style="font-size: 10px; color: #64748b;">Fecha Emisión: ${new Date().toLocaleDateString('es-MX')}</div>
         </div>
       </div>
 
-      <div class="box">
-        <div class="box-item"><strong>Técnico:</strong> ${tecFilter}</div>
-        <div class="box-item"><strong>Contratista:</strong> ${conFilter}</div>
-        <div class="box-item"><strong>Plaza / Área:</strong> ${areaFilter}</div>
-        <div class="box-item"><strong>Periodo de Corte:</strong> ${dStart} al ${dEnd}</div>
+      <div class="box-info">
+        <div class="box-item">
+          <strong>Contratista a Liquidar:</strong>
+          <span>${conName}</span>
+        </div>
+        <div class="box-item">
+          <strong>Tipo de Activo:</strong>
+          <span>${tipo === 'CASETA' ? 'Casetas Públicas' : 'Cajas (Distritos)'}</span>
+        </div>
+        <div class="box-item">
+          <strong>Tarifa Autorizada:</strong>
+          <span>$${tarifa.toFixed(2)} MXN c/u</span>
+        </div>
+        <div class="box-item">
+          <strong>Plazas Agrupadas:</strong>
+          <span>${sortedAreas.length} Áreas Conjuntas</span>
+        </div>
       </div>
 
       <div class="kpi-row">
-        <div class="kpi"><div class="kpi-num">${formatNumber(total)}</div><div class="kpi-lbl">Total Trabajos Validados</div></div>
-        <div class="kpi"><div class="kpi-num" style="color:#0284c7;">${formatNumber(cajas)}</div><div class="kpi-lbl">Cajas Autorizadas</div></div>
-        <div class="kpi"><div class="kpi-num" style="color:#d97706;">${formatNumber(casetas)}</div><div class="kpi-lbl">Casetas Autorizadas</div></div>
+        <div class="kpi" style="border-color: #10b981; background: #f0fdf4;">
+          <div class="kpi-num" style="color: #059669;">${formatMoney(totalDinero)}</div>
+          <div class="kpi-lbl">Importe Total a Liquidar (MXN)</div>
+        </div>
+        <div class="kpi" style="border-color: #3b82f6; background: #eff6ff;">
+          <div class="kpi-num" style="color: #1d4ed8;">${formatNumber(total)}</div>
+          <div class="kpi-lbl">${tipo === 'CASETA' ? 'Casetas Validadas' : 'Cajas Validadas'}</div>
+        </div>
+        <div class="kpi" style="border-color: #f59e0b; background: #fffbeb;">
+          <div class="kpi-num" style="color: #d97706;">$${tarifa.toFixed(2)}</div>
+          <div class="kpi-lbl">Costo Unitario por Pieza</div>
+        </div>
       </div>
 
+      <div class="table-title">Desglose de Facturación por Área Agrupada:</div>
       <table>
         <thead>
           <tr>
             <th>#</th>
-            <th>Folio</th>
-            <th>Fecha</th>
-            <th>Técnico</th>
-            <th>Tipo</th>
-            <th>Modelo</th>
-            <th>ID / Teléfono</th>
-            <th>Plaza</th>
+            <th>Plaza / Área</th>
+            <th style="text-align: center;">Cantidad (${tipo === 'CASETA' ? 'Casetas' : 'Cajas'})</th>
+            <th style="text-align: right;">Tarifa Unitaria</th>
+            <th style="text-align: right;">Subtotal a Pagar</th>
+            <th style="text-align: center;">% Participación</th>
           </tr>
         </thead>
         <tbody>
-          ${pagosFilteredRecords.slice(0, 150).map((r, i) => `
-            <tr>
-              <td>${i + 1}</td>
-              <td><strong>${r.folio || '-'}</strong></td>
-              <td>${r.fecha_corte || r.fecha_captura || '-'}</td>
-              <td>${r.tecnico_homologado || r.tecnico || '-'}</td>
-              <td>${r.tipo || '-'}</td>
-              <td>${r.modelo || '-'}</td>
-              <td>${r.identificador || '-'}</td>
-              <td>${r.area_trabajo || '-'}</td>
-            </tr>
-          `).join('')}
+          ${sortedAreas.map((a, idx) => {
+            const cnt = areaCounts[a];
+            const sub = cnt * tarifa;
+            const pct = ((cnt / total) * 100).toFixed(1);
+            return `
+              <tr>
+                <td style="text-align: center; color: #64748b;">${idx + 1}</td>
+                <td style="font-weight: bold;">${a}</td>
+                <td style="text-align: center; font-weight: bold;">${formatNumber(cnt)}</td>
+                <td style="text-align: right;">$${tarifa.toFixed(2)} MXN</td>
+                <td style="text-align: right; font-weight: bold; color: #059669;">${formatMoney(sub)}</td>
+                <td style="text-align: center;">${pct}%</td>
+              </tr>
+            `;
+          }).join('')}
+          <tr style="background: #f8fafc; font-weight: 900; font-size: 12px;">
+            <td colspan="2" style="text-align: right;">TOTAL GENERAL LIQUIDADO:</td>
+            <td style="text-align: center; color: #1d4ed8;">${formatNumber(total)}</td>
+            <td style="text-align: right;">-</td>
+            <td style="text-align: right; color: #059669; font-size: 13px;">${formatMoney(totalDinero)}</td>
+            <td style="text-align: center;">100%</td>
+          </tr>
         </tbody>
       </table>
-      ${total > 150 ? `<p style="font-size:10px; color:#64748b; text-align:center;">* Mostrando los primeros 150 folios en la carátula impresa. El detalle completo de los ${formatNumber(total)} folios se encuentra en el archivo CSV.</p>` : ''}
 
-      <div class="footer-sig">
-        <div class="sig-box">Validó / Revisó Técnico</div>
-        <div class="sig-box">Autorizó Pago / Facturación</div>
+      <div class="signatures">
+        <div class="sig-box">
+          Autorizó Pago
+          <div class="sig-sub">Validación y Finanzas Telmex / PCI</div>
+        </div>
+        <div class="sig-box">
+          Recibió de Conformidad
+          <div class="sig-sub">${conName}</div>
+        </div>
       </div>
+
+      <script>
+        window.onload = function() { window.print(); }
+      </script>
     </body>
     </html>
   `);
   printWindow.document.close();
-  printWindow.focus();
-  setTimeout(() => { printWindow.print(); }, 500);
 }
 
-window.openPagosModule = openPagosModule;
-window.closeNipModal = closeNipModal;
-window.verifyNip = verifyNip;
-window.logoutPagos = logoutPagos;
-window.openChangeNipModal = openChangeNipModal;
-window.closeChangeNipModal = closeChangeNipModal;
-window.saveNewNip = saveNewNip;
-window.applyPagosFilter = applyPagosFilter;
-window.resetPagosFilters = resetPagosFilters;
-window.onPagosPresetDateChange = onPagosPresetDateChange;
-window.changePagosPage = changePagosPage;
-window.openPaymentPhotoModal = openPaymentPhotoModal;
-window.closePhotoModal = closePhotoModal;
-window.exportPagosCSV = exportPagosCSV;
-window.printPagosSummary = printPagosSummary;
+function formatMoney(num) {
+  if (isNaN(num)) return "$0.00 MXN";
+  return new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(num);
+}
