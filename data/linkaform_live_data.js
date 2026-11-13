@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-13 00:45:22
+ * Sincronización: 2026-11-13 01:05:23
  * Estado de corte: Reporte matutino cerrado al 12/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 19068 (Retenidos por corte: 128)
+ * Trabajos de campo visibles: 19067 (Retenidos por corte: 129)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-13 00:45:10",
+  "now": "2026-11-13 01:05:11",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-12",
@@ -54275,35 +54275,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.9777674,
     "longitud": -98.2769889,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af4e4827c2d292dbf54429c.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16168443-1259",
-    "fecha": "2026-11-11",
-    "fecha_captura": "2026-11-11",
-    "hora": "15:55",
-    "fecha_corte": "2026-11-11",
-    "created_at_iso": "2026-11-11 15:55:54",
-    "timestamp": 1794434154.0,
-    "tipo": "CAJA",
-    "identificador": "KTI0017",
-    "modelo": "DESPLAZAMIENTO SENCILLA",
-    "estado": "PUEBLA",
-    "area_trabajo": "PUEBLA",
-    "contratista": "Iván Rosas Cruz",
-    "tecnico": "Marlon Brandon Sánchez Mora",
-    "contratista_original": "Ivan Rosas Cruz",
-    "tecnico_original": "Marlon Brandon Sánchez Mora",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af4e466546eafd64b0ccc65.jpg",
-    "oferta": "120_mb",
-    "existe_bd": "Sí",
-    "comentarios": "CAJA NO EXISTE EN SITIO",
-    "num_viniles": 1.0,
-    "version": "v7 - Android",
-    "latitud": 18.9781216,
-    "longitud": -98.2717108,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af4e466546eafd64b0ccc65.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
