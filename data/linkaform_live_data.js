@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-13 00:15:24
+ * Sincronización: 2026-11-13 00:25:21
  * Estado de corte: Reporte matutino cerrado al 12/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 19069 (Retenidos por corte: 122)
+ * Trabajos de campo visibles: 19067 (Retenidos por corte: 124)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-13 00:15:12",
+  "now": "2026-11-13 00:25:09",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-12",
@@ -199482,35 +199482,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
-    "folio": "16150931-1259",
-    "fecha": "2026-11-07",
-    "fecha_captura": "2026-11-07",
-    "hora": "10:33",
-    "fecha_corte": "2026-11-07",
-    "created_at_iso": "2026-11-07 10:33:53",
-    "timestamp": 1794069233.0,
-    "tipo": "CASETA",
-    "identificador": "9616139339",
-    "modelo": "MINI",
-    "estado": "CHIAPAS",
-    "area_trabajo": "CHIAPAS",
-    "contratista": "José Miguel Prats Coutiño",
-    "tecnico": "Emilio Cruz",
-    "contratista_original": "Jose Miguel Prats Coutiño",
-    "tecnico_original": "Emilio Cruz",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef52edd129b3ac4d5d1722.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "No",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 2.0,
-    "version": "v8 - Android",
-    "latitud": 16.7500417,
-    "longitud": -93.1152217,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aef52edd129b3ac4d5d1722.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
     "folio": "16150930-1259",
     "fecha": "2026-11-07",
     "fecha_captura": "2026-11-07",
@@ -257449,35 +257420,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.8604281,
     "longitud": -99.1835728,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed643a6789199322c44e62.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16147081-1259",
-    "fecha": "2026-11-06",
-    "fecha_captura": "2026-11-05",
-    "hora": "23:23",
-    "fecha_corte": "2026-11-06",
-    "created_at_iso": "2026-11-05 23:23:04",
-    "timestamp": 1793942584.0,
-    "tipo": "CASETA",
-    "identificador": "7773686817",
-    "modelo": "NORMAL",
-    "estado": "MORELOS",
-    "area_trabajo": "MORELOS",
-    "contratista": "Victor Hugo López García",
-    "tecnico": "Samuel Romero Sánchez",
-    "contratista_original": "Victor Hugo Lopez Garcia",
-    "tecnico_original": "Samuel Romero Sanchez",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed643215414f0ddddaec3f.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 2.0,
-    "version": "v7 - Android",
-    "latitud": 18.8603907,
-    "longitud": -99.1836033,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aed643215414f0ddddaec3f.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
