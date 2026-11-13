@@ -1,24 +1,53 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-12 18:45:14
- * Estado de corte: Jornada en vivo activa (12/11/2026, 18:45 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 18902 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-12 18:55:17
+ * Estado de corte: Jornada en vivo activa (12/11/2026, 18:55 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 18903 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-12 18:45:03",
+  "now": "2026-11-12 18:55:06",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-12",
-  "max_visible_dt": "2026-11-12 18:45:03",
-  "max_visible_datetime_str": "2026-11-12 18:45:03",
+  "max_visible_dt": "2026-11-12 18:55:06",
+  "max_visible_datetime_str": "2026-11-12 18:55:06",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (12/11/2026, 18:45 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (12/11/2026, 18:55 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16172646-1259",
+    "fecha": "2026-11-12",
+    "fecha_captura": "2026-11-12",
+    "hora": "18:42",
+    "fecha_corte": "2026-11-12",
+    "created_at_iso": "2026-11-12 18:42:33",
+    "timestamp": 1794530553.0,
+    "tipo": "CAJA",
+    "identificador": "KMR0003",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "BAJA CALIFORNIA SUR",
+    "area_trabajo": "LA PAZ",
+    "contratista": "Luis Jose Vasquez Briceño",
+    "tecnico": "Ramon Nuñez Victoria",
+    "contratista_original": "Luis Jose Vasquez Briceño",
+    "tecnico_original": "Ramon Nuñez Victoria",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af65cf33bffadebcc687b7c.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v9 - Android",
+    "latitud": 24.0505298,
+    "longitud": -110.2934532,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af65cf33bffadebcc687b7c.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16172639-1259",
     "fecha": "2026-11-12",
@@ -290020,35 +290049,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
-    "folio": "16144791-1259",
-    "fecha": "2026-11-05",
-    "fecha_captura": "2026-11-05",
-    "hora": "12:05",
-    "fecha_corte": "2026-11-05",
-    "created_at_iso": "2026-11-05 12:05:23",
-    "timestamp": 1793901923.0,
-    "tipo": "CAJA",
-    "identificador": "PBS0001",
-    "modelo": "SIECOR SENCILLA 1PTA",
-    "estado": "PUEBLA",
-    "area_trabajo": "PUEBLA",
-    "contratista": "Iván Rosas Cruz",
-    "tecnico": "Marlon Brandon Sánchez Mora",
-    "contratista_original": "Ivan Rosas Cruz",
-    "tecnico_original": "Marlon Brandon Sánchez Mora",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aecc55f92a16217917ec4bc.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v7 - Android",
-    "latitud": 19.0524933,
-    "longitud": -98.1209483,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aecc55f92a16217917ec4bc.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
     "folio": "16144790-1259",
     "fecha": "2026-11-05",
     "fecha_captura": "2026-11-05",
@@ -463987,6 +463987,35 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.0078167,
     "longitud": -98.2043034,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3b9e0f96d029d2116e8ea.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16120595-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "15:25",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 15:25:51",
+    "timestamp": 1793309151.0,
+    "tipo": "CASETA",
+    "identificador": "2222444908",
+    "modelo": "NORMAL",
+    "estado": "PUEBLA",
+    "area_trabajo": "PUEBLA",
+    "contratista": "Sergio Becerra Franco",
+    "tecnico": "José Antonio Esquivel",
+    "contratista_original": "Sergio Beccerra Franco",
+    "tecnico_original": "Jose Antonio Esquive",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3b9dd1e63a33e6d6f45f2.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.0087211,
+    "longitud": -98.2037105,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3b9dd1e63a33e6d6f45f2.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
