@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-14 04:15:38
+ * Sincronización: 2026-11-14 04:25:36
  * Estado de corte: Reporte matutino cerrado al 13/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 20637 (Retenidos por corte: 91)
+ * Trabajos de campo visibles: 20634 (Retenidos por corte: 94)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-14 04:15:24",
+  "now": "2026-11-14 04:25:22",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-13",
@@ -26348,35 +26348,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 24.17104,
     "longitud": -110.2910733,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af75b7e1545f9b930b46bea.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16174513-1259",
-    "fecha": "2026-11-13",
-    "fecha_captura": "2026-11-13",
-    "hora": "12:48",
-    "fecha_corte": "2026-11-13",
-    "created_at_iso": "2026-11-13 12:48:30",
-    "timestamp": 1794595710.0,
-    "tipo": "CASETA",
-    "identificador": "2288403620",
-    "modelo": "MINI",
-    "estado": "VERACRUZ",
-    "area_trabajo": "JALAPA",
-    "contratista": "PC Directo",
-    "tecnico": "Mario Perez Mestizo",
-    "contratista_original": "PC directo",
-    "tecnico_original": "Mario perez mestizo",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af75b7961dde43e4cb46bdd.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "No hay caja en el lugar pero se ve que existio caja o caseta",
-    "num_viniles": 0.0,
-    "version": "v9 - Android",
-    "latitud": 19.5617389,
-    "longitud": -96.9467665,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af75b7961dde43e4cb46bdd.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -55381,35 +55352,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
-    "folio": "16172304-1259",
-    "fecha": "2026-11-12",
-    "fecha_captura": "2026-11-12",
-    "hora": "16:33",
-    "fecha_corte": "2026-11-12",
-    "created_at_iso": "2026-11-12 16:33:47",
-    "timestamp": 1794522827.0,
-    "tipo": "CASETA",
-    "identificador": "7343410655",
-    "modelo": "NORMAL",
-    "estado": "MORELOS",
-    "area_trabajo": "MORELOS",
-    "contratista": "Victor Hugo López García",
-    "tecnico": "Victor Hugo López García",
-    "contratista_original": "Victor Hugo Lopez Garcia",
-    "tecnico_original": "Victor Hugo Lopez Garcia",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af63ec71e6574cdd2231d3a.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 1.0,
-    "version": "v9 - Android",
-    "latitud": 18.5589969,
-    "longitud": -99.2715405,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af63ec71e6574cdd2231d3a.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
     "folio": "16172303-1259",
     "fecha": "2026-11-12",
     "fecha_captura": "2026-11-12",
@@ -84348,35 +84290,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.6526357,
     "longitud": -99.1953092,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af5c17b60144eeb6dadc0cb.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16169836-1259",
-    "fecha": "2026-11-12",
-    "fecha_captura": "2026-11-12",
-    "hora": "07:39",
-    "fecha_corte": "2026-11-12",
-    "created_at_iso": "2026-11-12 07:39:05",
-    "timestamp": 1794490745.0,
-    "tipo": "CAJA",
-    "identificador": "ZCA0006",
-    "modelo": "SIECOR DOBLE",
-    "estado": "MORELOS",
-    "area_trabajo": "MORELOS",
-    "contratista": "Victor Hugo López García",
-    "tecnico": "Victor Hugo López García",
-    "contratista_original": "Victor Hugo Lopez Garcia",
-    "tecnico_original": "Victor Hugo Lopez Garcia",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af5c1744fc6f73f940ccc5c.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 1.0,
-    "version": "v8 - Android",
-    "latitud": 18.6502638,
-    "longitud": -99.1924887,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af5c1744fc6f73f940ccc5c.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
