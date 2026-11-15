@@ -1,24 +1,53 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-15 14:56:05
- * Estado de corte: Jornada en vivo activa (15/11/2026, 14:55 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-15 15:05:51
+ * Estado de corte: Jornada en vivo activa (15/11/2026, 15:05 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 22222 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-15 14:55:51",
+  "now": "2026-11-15 15:05:37",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-15",
-  "max_visible_dt": "2026-11-15 14:55:51",
-  "max_visible_datetime_str": "2026-11-15 14:55:51",
+  "max_visible_dt": "2026-11-15 15:05:37",
+  "max_visible_datetime_str": "2026-11-15 15:05:37",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (15/11/2026, 14:55 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (15/11/2026, 15:05 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16180111-1259",
+    "fecha": "2026-11-15",
+    "fecha_captura": "2026-11-15",
+    "hora": "14:52",
+    "fecha_corte": "2026-11-15",
+    "created_at_iso": "2026-11-15 14:52:02",
+    "timestamp": 1794775922.0,
+    "tipo": "CASETA",
+    "identificador": "9515152945",
+    "modelo": "NORMAL",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "tecnico": "Roberto Merino Merino",
+    "contratista_original": "Roberto Merino Merino",
+    "tecnico_original": "Roberto Merino Merino",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afa1b6dbefeafcb637bdd7e.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v9 - Android",
+    "latitud": 17.0835263,
+    "longitud": -96.7075199,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afa1b6dbefeafcb637bdd7e.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16180109-1259",
     "fecha": "2026-11-15",
@@ -231987,35 +232016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.3224282,
     "longitud": -98.2124843,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af23df0c0621741f85fae1e.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16158911-1259",
-    "fecha": "2026-11-09",
-    "fecha_captura": "2026-11-09",
-    "hora": "15:40",
-    "fecha_corte": "2026-11-09",
-    "created_at_iso": "2026-11-09 15:40:24",
-    "timestamp": 1794260424.0,
-    "tipo": "CAJA",
-    "identificador": "JAL0031",
-    "modelo": "ENVOLVENTE DOBLE",
-    "estado": "VERACRUZ",
-    "area_trabajo": "JALAPA",
-    "contratista": "Wendy Magaly Castro Herrera",
-    "tecnico": "Luis Alberto Lucido Cabrera",
-    "contratista_original": "Wendy Magaly castro herrera",
-    "tecnico_original": "Luis Alberto Lucido Cabrera",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af23dc3c7173a677c5fae1e.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "En buen estado",
-    "num_viniles": 2.0,
-    "version": "v7 - Android",
-    "latitud": 19.5294317,
-    "longitud": -96.9104833,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af23dc3c7173a677c5fae1e.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
