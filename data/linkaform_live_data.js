@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-15 07:35:52
+ * Sincronización: 2026-11-15 07:45:51
  * Estado de corte: Reporte matutino cerrado al 14/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 22020 (Retenidos por corte: 10)
+ * Trabajos de campo visibles: 22020 (Retenidos por corte: 11)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-15 07:35:38",
+  "now": "2026-11-15 07:45:37",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-14",
@@ -173697,35 +173697,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 31.314211499614306,
     "longitud": -110.94560241386411,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3c693c18c7554905fae1c.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16165518-1259",
-    "fecha": "2026-11-10",
-    "fecha_captura": "2026-11-10",
-    "hora": "19:36",
-    "fecha_corte": "2026-11-10",
-    "created_at_iso": "2026-11-10 19:36:17",
-    "timestamp": 1794360977.0,
-    "tipo": "CAJA",
-    "identificador": "CRT0001",
-    "modelo": "SIECOR SENCILLA 2 PTAS",
-    "estado": "SONORA",
-    "area_trabajo": "NOGALES",
-    "contratista": "Noé Gastélum López",
-    "tecnico": "Noé Gastélum López",
-    "contratista_original": "Noe Gastelum Lopez",
-    "tecnico_original": "Noe Gastelum Lopez",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3c68d528553d554b00638.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 2.0,
-    "version": "v9 - IPhone",
-    "latitud": 31.313202745797714,
-    "longitud": -110.94693971526485,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3c68d528553d554b00638.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -579697,6 +579668,35 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 19.530892,
     "longitud": -96.924416,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae25a222287546cb6da8b98.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117106-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "14:25",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 14:25:04",
+    "timestamp": 1793219104.0,
+    "tipo": "CAJA",
+    "identificador": "JAL0004",
+    "modelo": "ENVOLVENTE SENCILLA",
+    "estado": "VERACRUZ",
+    "area_trabajo": "JALAPA",
+    "contratista": "Wendy Magaly Castro Herrera",
+    "tecnico": "Ángel López Reyes",
+    "contratista_original": "Wendy Magaly Castro Herrera",
+    "tecnico_original": "Ángel Lopez Reyes",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae25a1eb08987a1e0c85cb0.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 19.5314469,
+    "longitud": -96.9243484,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae25a1eb08987a1e0c85cb0.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
