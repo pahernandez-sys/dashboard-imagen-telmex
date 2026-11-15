@@ -1,24 +1,53 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-15 17:05:52
- * Estado de corte: Jornada en vivo activa (15/11/2026, 17:05 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 22240 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-15 17:15:51
+ * Estado de corte: Jornada en vivo activa (15/11/2026, 17:15 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 22241 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-15 17:05:38",
+  "now": "2026-11-15 17:15:37",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-15",
-  "max_visible_dt": "2026-11-15 17:05:38",
-  "max_visible_datetime_str": "2026-11-15 17:05:38",
+  "max_visible_dt": "2026-11-15 17:15:37",
+  "max_visible_datetime_str": "2026-11-15 17:15:37",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (15/11/2026, 17:05 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (15/11/2026, 17:15 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16180194-1259",
+    "fecha": "2026-11-15",
+    "fecha_captura": "2026-11-15",
+    "hora": "17:06",
+    "fecha_corte": "2026-11-15",
+    "created_at_iso": "2026-11-15 17:06:54",
+    "timestamp": 1794784014.0,
+    "tipo": "CAJA",
+    "identificador": "BEL0013",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "tecnico": "Roberto Merino Merino",
+    "contratista_original": "Roberto Merino Merino",
+    "tecnico_original": "Roberto Merino Merino",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afa3b0a359089650f7bdd81.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v9 - Android",
+    "latitud": 17.0790222,
+    "longitud": -96.7178892,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afa3b0a359089650f7bdd81.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16180192-1259",
     "fecha": "2026-11-15",
@@ -388976,7 +389005,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13413",
+    "identificador": "S/ID-13414",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -389179,7 +389208,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13420",
+    "identificador": "S/ID-13421",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -389701,7 +389730,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13438",
+    "identificador": "S/ID-13439",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -390078,7 +390107,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13451",
+    "identificador": "S/ID-13452",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -424066,7 +424095,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-14623",
+    "identificador": "S/ID-14624",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -554827,7 +554856,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19132",
+    "identificador": "S/ID-19133",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -554856,7 +554885,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19133",
+    "identificador": "S/ID-19134",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -554885,7 +554914,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19134",
+    "identificador": "S/ID-19135",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
