@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-15 16:17:06
- * Estado de corte: Jornada en vivo activa (15/11/2026, 16:16 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 22230 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-15 16:26:57
+ * Estado de corte: Jornada en vivo activa (15/11/2026, 16:26 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 22232 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-15 16:16:53",
+  "now": "2026-11-15 16:26:43",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-15",
-  "max_visible_dt": "2026-11-15 16:16:53",
-  "max_visible_datetime_str": "2026-11-15 16:16:53",
+  "max_visible_dt": "2026-11-15 16:26:43",
+  "max_visible_datetime_str": "2026-11-15 16:26:43",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (15/11/2026, 16:16 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (15/11/2026, 16:26 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -377020,6 +377020,35 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16145532-1259",
+    "fecha": "2026-11-05",
+    "fecha_captura": "2026-11-05",
+    "hora": "14:32",
+    "fecha_corte": "2026-11-05",
+    "created_at_iso": "2026-11-05 14:32:02",
+    "timestamp": 1793910722.0,
+    "tipo": "CAJA",
+    "identificador": "SSC0007",
+    "modelo": "DESPLAZAMIENTO DOBLE",
+    "estado": "PUEBLA",
+    "area_trabajo": "PUEBLA",
+    "contratista": "Iván Rosas Cruz",
+    "tecnico": "Marlon Brandon Sánchez Mora",
+    "contratista_original": "Ivan Rosas Cruz",
+    "tecnico_original": "Marlon Brandon Sánchez Mora",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aece7a8244fa5486a039530.jpg",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Comenta el guardia del fraccionamiento que no puedo pegar la imagen, que en el fraccionamiento no lo permiten y que ya iban a quitar  la Caja",
+    "num_viniles": 1.0,
+    "version": "v7 - Android",
+    "latitud": 19.0426169,
+    "longitud": -98.1105476,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aece7a8244fa5486a039530.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16145531-1259",
     "fecha": "2026-11-05",
     "fecha_captura": "2026-11-05",
@@ -388686,7 +388715,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13403",
+    "identificador": "S/ID-13404",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -388889,7 +388918,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13410",
+    "identificador": "S/ID-13411",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -389411,7 +389440,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13428",
+    "identificador": "S/ID-13429",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -389788,7 +389817,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13441",
+    "identificador": "S/ID-13442",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -423776,7 +423805,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-14613",
+    "identificador": "S/ID-14614",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -554537,7 +554566,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19122",
+    "identificador": "S/ID-19123",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -554566,7 +554595,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19123",
+    "identificador": "S/ID-19124",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -554595,7 +554624,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19124",
+    "identificador": "S/ID-19125",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -579958,6 +579987,35 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.5083167,
     "longitud": -104.8840917,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae282633525acbf1eda8b99.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16117603-1259",
+    "fecha": "2026-10-28",
+    "fecha_captura": "2026-10-28",
+    "hora": "17:11",
+    "fecha_corte": "2026-10-28",
+    "created_at_iso": "2026-10-28 17:11:36",
+    "timestamp": 1793229096.0,
+    "tipo": "CAJA",
+    "identificador": "OUA0001",
+    "modelo": "DESPLAZAMIENTO DOBLE",
+    "estado": "MORELOS",
+    "area_trabajo": "MORELOS",
+    "contratista": "Victor Hugo López García",
+    "tecnico": "Samuel Romero Sánchez",
+    "contratista_original": "Victor Hugo Lopez Garcia",
+    "tecnico_original": "Samuel Romero Sanchez",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2812627d4fae3a984f548.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 1.0,
+    "version": "v4 - Android",
+    "latitud": 18.9237996,
+    "longitud": -99.1780195,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae2812627d4fae3a984f548.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
