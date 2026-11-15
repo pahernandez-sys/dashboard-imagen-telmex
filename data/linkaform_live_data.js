@@ -1,24 +1,53 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-15 08:05:53
- * Estado de corte: Jornada en vivo activa (15/11/2026, 08:05 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-15 08:15:52
+ * Estado de corte: Jornada en vivo activa (15/11/2026, 08:15 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 22034 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-15 08:05:39",
+  "now": "2026-11-15 08:15:39",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-15",
-  "max_visible_dt": "2026-11-15 08:05:39",
-  "max_visible_datetime_str": "2026-11-15 08:05:39",
+  "max_visible_dt": "2026-11-15 08:15:39",
+  "max_visible_datetime_str": "2026-11-15 08:15:39",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (15/11/2026, 08:05 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (15/11/2026, 08:15 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16179726-1259",
+    "fecha": "2026-11-15",
+    "fecha_captura": "2026-11-15",
+    "hora": "08:02",
+    "fecha_corte": "2026-11-15",
+    "created_at_iso": "2026-11-15 08:02:09",
+    "timestamp": 1794751329.0,
+    "tipo": "CASETA",
+    "identificador": "6144101728",
+    "modelo": "NORMAL",
+    "estado": "CHIHUAHUA",
+    "area_trabajo": "CHIHUAHUA",
+    "contratista": "Jesús José Romero Pérez",
+    "tecnico": "Hermilo González Torres",
+    "contratista_original": "Jesús José Romero Pérez",
+    "tecnico_original": "Hermilo Gonzalez Torres",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af9bb5d21feaae2950507f2.jpg",
+    "oferta": "120_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 2.0,
+    "version": "v8 - Android",
+    "latitud": 28.6403077,
+    "longitud": -106.0715466,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af9bb5d21feaae2950507f2.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16179723-1259",
     "fecha": "2026-11-15",
@@ -260987,35 +261016,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.7555888,
     "longitud": -98.8811963,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aefcc993eac1574ca7fac4f.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16152115-1259",
-    "fecha": "2026-11-07",
-    "fecha_captura": "2026-11-07",
-    "hora": "19:12",
-    "fecha_corte": "2026-11-07",
-    "created_at_iso": "2026-11-07 19:12:56",
-    "timestamp": 1794100376.0,
-    "tipo": "CASETA",
-    "identificador": "7353485317",
-    "modelo": "NORMAL",
-    "estado": "MORELOS",
-    "area_trabajo": "MORELOS",
-    "contratista": "Victor Hugo López García",
-    "tecnico": "Lucio Leonardo Castillo Coronel",
-    "contratista_original": "Victor Hugo Lopez Garcia",
-    "tecnico_original": "Lucio Leonardo Catillo Coronel",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aefcc93986d94b17ee083b7.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 0.0,
-    "version": "v8 - Android",
-    "latitud": 18.7612849,
-    "longitud": -98.8831883,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aefcc93986d94b17ee083b7.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
