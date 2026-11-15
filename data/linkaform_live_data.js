@@ -1,24 +1,53 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-15 13:45:55
- * Estado de corte: Jornada en vivo activa (15/11/2026, 13:45 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 22217 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-15 13:56:00
+ * Estado de corte: Jornada en vivo activa (15/11/2026, 13:55 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 22219 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-15 13:45:41",
+  "now": "2026-11-15 13:55:46",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-15",
-  "max_visible_dt": "2026-11-15 13:45:41",
-  "max_visible_datetime_str": "2026-11-15 13:45:41",
+  "max_visible_dt": "2026-11-15 13:55:46",
+  "max_visible_datetime_str": "2026-11-15 13:55:46",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (15/11/2026, 13:45 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (15/11/2026, 13:55 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16180090-1259",
+    "fecha": "2026-11-15",
+    "fecha_captura": "2026-11-15",
+    "hora": "13:46",
+    "fecha_corte": "2026-11-15",
+    "created_at_iso": "2026-11-15 13:46:30",
+    "timestamp": 1794771990.0,
+    "tipo": "CAJA",
+    "identificador": "BEL0146",
+    "modelo": "DESPLAZAMIENTO SENCILLA",
+    "estado": "OAXACA",
+    "area_trabajo": "OAXACA",
+    "contratista": "Roberto Merino Merino",
+    "tecnico": "Roberto Merino Merino",
+    "contratista_original": "Roberto Merino Merino",
+    "tecnico_original": "Roberto Merino Merino",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afa0c109233267e4f7bdd86.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v9 - Android",
+    "latitud": 17.0947794,
+    "longitud": -96.7010339,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afa0c109233267e4f7bdd86.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16180089-1259",
     "fecha": "2026-11-15",
@@ -388309,7 +388338,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13390",
+    "identificador": "S/ID-13391",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -388512,7 +388541,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13397",
+    "identificador": "S/ID-13398",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -389034,7 +389063,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13415",
+    "identificador": "S/ID-13416",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -389411,7 +389440,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13428",
+    "identificador": "S/ID-13429",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -423399,7 +423428,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-14600",
+    "identificador": "S/ID-14601",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -554160,7 +554189,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19109",
+    "identificador": "S/ID-19110",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -554189,7 +554218,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19110",
+    "identificador": "S/ID-19111",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -554218,7 +554247,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19111",
+    "identificador": "S/ID-19112",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -637958,6 +637987,35 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.9280378,
     "longitud": -99.1868413,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad934e73c74de2170bacdcb.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16029864-1259",
+    "fecha": "2026-10-21",
+    "fecha_captura": "2026-10-21",
+    "hora": "15:53",
+    "fecha_corte": "2026-10-21",
+    "created_at_iso": "2026-10-21 15:53:09",
+    "timestamp": 1792619589.0,
+    "tipo": "CAJA",
+    "identificador": "NEV0105",
+    "modelo": "TRADICIONAL DOBLE",
+    "estado": "MEXICO",
+    "area_trabajo": "TOLUCA",
+    "contratista": "PC Industrial",
+    "tecnico": "Pedro Mereles Valdés",
+    "contratista_original": "Pc Industrial",
+    "tecnico_original": "Pedro Mereles Valdés",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad9344392a99e248cbacdc9.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 2.0,
+    "version": "Sin versión",
+    "latitud": 19.2802969,
+    "longitud": -99.6301709,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ad9344392a99e248cbacdc9.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
