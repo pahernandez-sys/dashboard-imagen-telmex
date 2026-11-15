@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-15 14:35:57
- * Estado de corte: Jornada en vivo activa (15/11/2026, 14:35 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 22220 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-15 14:45:57
+ * Estado de corte: Jornada en vivo activa (15/11/2026, 14:45 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 22221 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-15 14:35:43",
+  "now": "2026-11-15 14:45:43",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-15",
-  "max_visible_dt": "2026-11-15 14:35:43",
-  "max_visible_datetime_str": "2026-11-15 14:35:43",
+  "max_visible_dt": "2026-11-15 14:45:43",
+  "max_visible_datetime_str": "2026-11-15 14:45:43",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (15/11/2026, 14:35 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (15/11/2026, 14:45 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -551020,6 +551020,35 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16121199-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "18:21",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 18:21:35",
+    "timestamp": 1793319695.0,
+    "tipo": "CASETA",
+    "identificador": "3115913241",
+    "modelo": "NORMAL",
+    "estado": "NAYARIT",
+    "area_trabajo": "NAYARIT",
+    "contratista": "Adrián Valenzuela",
+    "tecnico": "Saúl Alejandro Gutiérrez González",
+    "contratista_original": "Adrian Valenzuela",
+    "tecnico_original": "Saúl Alejandro Gutiérrez González",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3e30d5071b72f896f45f9.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v4 - Android",
+    "latitud": 21.4708977,
+    "longitud": -104.8834274,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae3e30d5071b72f896f45f9.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16121191-1259",
     "fecha": "2026-10-29",
     "fecha_captura": "2026-10-29",
@@ -554247,7 +554276,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19112",
+    "identificador": "S/ID-19113",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -554276,7 +554305,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19113",
+    "identificador": "S/ID-19114",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -554305,7 +554334,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19114",
+    "identificador": "S/ID-19115",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
