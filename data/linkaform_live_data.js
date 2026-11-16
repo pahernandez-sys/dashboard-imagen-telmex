@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-15 23:45:45
+ * Sincronización: 2026-11-15 23:55:51
  * Estado de corte: Corte oficial de las 10:00 PM activo (15/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM.
- * Trabajos de campo visibles: 22391 (Retenidos por corte: 31)
+ * Trabajos de campo visibles: 22392 (Retenidos por corte: 31)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-15 23:45:31",
+  "now": "2026-11-15 23:55:37",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-15",
@@ -463121,6 +463121,35 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16138619-1259",
+    "fecha": "2026-11-03",
+    "fecha_captura": "2026-11-03",
+    "hora": "12:35",
+    "fecha_corte": "2026-11-03",
+    "created_at_iso": "2026-11-03 12:35:59",
+    "timestamp": 1793730959.0,
+    "tipo": "CAJA",
+    "identificador": "UNI0048",
+    "modelo": "TRADICIONAL DOBLE",
+    "estado": "CHIHUAHUA",
+    "area_trabajo": "CHIHUAHUA",
+    "contratista": "Jesús José Romero Pérez",
+    "tecnico": "Efraín Romero Torres",
+    "contratista_original": "Jesús José romero peres",
+    "tecnico_original": "Efraín romero torres",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aea298a25adf739b814a8c0.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin observaciones",
+    "num_viniles": 2.0,
+    "version": "v6 - Android",
+    "latitud": 28.6581674,
+    "longitud": -106.0938837,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aea298a25adf739b814a8c0.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16138618-1259",
     "fecha": "2026-11-03",
     "fecha_captura": "2026-11-03",
@@ -559206,7 +559235,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19314",
+    "identificador": "S/ID-19315",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -559235,7 +559264,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19315",
+    "identificador": "S/ID-19316",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -559264,7 +559293,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-19316",
+    "identificador": "S/ID-19317",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
