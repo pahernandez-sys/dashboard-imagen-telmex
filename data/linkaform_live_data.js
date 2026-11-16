@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-15 23:55:51
- * Estado de corte: Corte oficial de las 10:00 PM activo (15/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM.
- * Trabajos de campo visibles: 22392 (Retenidos por corte: 31)
+ * Sincronización: 2026-11-16 00:06:46
+ * Estado de corte: Reporte matutino cerrado al 15/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
+ * Trabajos de campo visibles: 22391 (Retenidos por corte: 32)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-15 23:55:37",
+  "now": "2026-11-16 00:06:32",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-15",
   "max_visible_dt": "2026-11-15 22:00:00",
   "max_visible_datetime_str": "2026-11-15 22:00:00",
   "is_frozen": true,
-  "badge": "[CORTE 22:00] CORTE OFICIAL ACTIVO",
-  "description": "Corte oficial de las 10:00 PM activo (15/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM."
+  "badge": "[CERRADO] REPORTE OFICIAL CERRADO",
+  "description": "Reporte matutino cerrado al 15/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -393355,7 +393355,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13595",
+    "identificador": "S/ID-13596",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -393558,7 +393558,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13602",
+    "identificador": "S/ID-13603",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -394080,7 +394080,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13620",
+    "identificador": "S/ID-13621",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -394457,7 +394457,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-13633",
+    "identificador": "S/ID-13634",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -428445,7 +428445,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-14805",
+    "identificador": "S/ID-14806",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -463088,35 +463088,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.9685275,
     "longitud": -102.3006758,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aea29e00076772ca214a8bf.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16138619-1259",
-    "fecha": "2026-11-03",
-    "fecha_captura": "2026-11-03",
-    "hora": "12:35",
-    "fecha_corte": "2026-11-03",
-    "created_at_iso": "2026-11-03 12:35:59",
-    "timestamp": 1793730959.0,
-    "tipo": "CAJA",
-    "identificador": "UNI0048",
-    "modelo": "TRADICIONAL DOBLE",
-    "estado": "CHIHUAHUA",
-    "area_trabajo": "CHIHUAHUA",
-    "contratista": "Jesús José Romero Pérez",
-    "tecnico": "Efraín Romero Torres",
-    "contratista_original": "Jesús José romero peres",
-    "tecnico_original": "Efraín romero torres",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aea298a25adf739b814a8c0.jpg",
-    "oferta": "200_mb",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 2.0,
-    "version": "v6 - Android",
-    "latitud": 28.6581674,
-    "longitud": -106.0938837,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aea298a25adf739b814a8c0.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
