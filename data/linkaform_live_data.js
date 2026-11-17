@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-17 08:16:27
- * Estado de corte: Jornada en vivo activa (17/11/2026, 08:16 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 23616 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-17 08:27:28
+ * Estado de corte: Jornada en vivo activa (17/11/2026, 08:27 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Trabajos de campo visibles: 23618 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-17 08:16:12",
+  "now": "2026-11-17 08:27:13",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-17",
-  "max_visible_dt": "2026-11-17 08:16:12",
-  "max_visible_datetime_str": "2026-11-17 08:16:12",
+  "max_visible_dt": "2026-11-17 08:27:13",
+  "max_visible_datetime_str": "2026-11-17 08:27:13",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (17/11/2026, 08:16 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (17/11/2026, 08:27 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -29020,6 +29020,35 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
+    "folio": "16181773-1259",
+    "fecha": "2026-11-16",
+    "fecha_captura": "2026-11-16",
+    "hora": "11:07",
+    "fecha_corte": "2026-11-16",
+    "created_at_iso": "2026-11-16 11:07:55",
+    "timestamp": 1794848875.0,
+    "tipo": "CAJA",
+    "identificador": "NOG0008",
+    "modelo": "TRADICIONAL DOBLE",
+    "estado": "SONORA",
+    "area_trabajo": "NOGALES",
+    "contratista": "Noé Gastélum López",
+    "tecnico": "Noé Gastélum López",
+    "contratista_original": "Noe Gastelum Lopez",
+    "tecnico_original": "Noe Gastelum Lopez",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afb3866ee9d9c6cce050808.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 2.0,
+    "version": "v9 - IPhone",
+    "latitud": 31.331715805520467,
+    "longitud": -110.94635610091194,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afb3866ee9d9c6cce050808.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
     "folio": "16181772-1259",
     "fecha": "2026-11-16",
     "fecha_captura": "2026-11-16",
@@ -57958,6 +57987,35 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.1753595,
     "longitud": -86.8343117,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af8e244da7d98545b7bdd87.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16178824-1259",
+    "fecha": "2026-11-14",
+    "fecha_captura": "2026-11-14",
+    "hora": "16:35",
+    "fecha_corte": "2026-11-14",
+    "created_at_iso": "2026-11-14 16:35:47",
+    "timestamp": 1794695747.0,
+    "tipo": "CAJA",
+    "identificador": "PUJ0002",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "QUINTANA ROO",
+    "area_trabajo": "QUINTANA ROO NORTE",
+    "contratista": "IASA",
+    "tecnico": "Lucila Yazmín Ortega Hernández",
+    "contratista_original": "IASA",
+    "tecnico_original": "Lucila yazmin ortega hernandez",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af8e23d04bda30849dacea4.jpg",
+    "oferta": "200_mb",
+    "existe_bd": "SÍ",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v8 - Android",
+    "latitud": 21.1734478,
+    "longitud": -86.8354368,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af8e23d04bda30849dacea4.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
@@ -428880,7 +428938,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:10:54",
     "timestamp": 1793898654.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-14789",
+    "identificador": "S/ID-14791",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -429083,7 +429141,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 11:01:37",
     "timestamp": 1793898097.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-14796",
+    "identificador": "S/ID-14798",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -429605,7 +429663,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:50:07",
     "timestamp": 1793897407.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-14814",
+    "identificador": "S/ID-14816",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -429982,7 +430040,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-05 10:37:16",
     "timestamp": 1793896636.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-14827",
+    "identificador": "S/ID-14829",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -463970,7 +464028,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-04 12:57:03",
     "timestamp": 1793818623.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-15999",
+    "identificador": "S/ID-16001",
     "modelo": "TRADICIONAL SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "GUADALAJARA CENTRO",
@@ -594731,7 +594789,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:45",
     "timestamp": 1793315085.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-20508",
+    "identificador": "S/ID-20510",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -594760,7 +594818,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:41",
     "timestamp": 1793315081.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-20509",
+    "identificador": "S/ID-20511",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -594789,7 +594847,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-10-29 17:04:38",
     "timestamp": 1793315078.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-20510",
+    "identificador": "S/ID-20512",
     "modelo": "DESPLAZAMIENTO SENCILLA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
