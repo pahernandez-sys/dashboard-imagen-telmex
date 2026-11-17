@@ -1,21 +1,21 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-16 20:37:00
- * Estado de corte: Jornada en vivo activa (16/11/2026, 20:36 hrs). Próximo corte oficial hoy a las 10:00 PM.
+ * Sincronización: 2026-11-16 20:46:57
+ * Estado de corte: Jornada en vivo activa (16/11/2026, 20:46 hrs). Próximo corte oficial hoy a las 10:00 PM.
  * Trabajos de campo visibles: 23385 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 297 (Retenidos por corte: 0)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-16 20:36:46",
+  "now": "2026-11-16 20:46:42",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-16",
-  "max_visible_dt": "2026-11-16 20:36:46",
-  "max_visible_datetime_str": "2026-11-16 20:36:46",
+  "max_visible_dt": "2026-11-16 20:46:42",
+  "max_visible_datetime_str": "2026-11-16 20:46:42",
   "is_frozen": false,
   "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (16/11/2026, 20:36 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "description": "Jornada en vivo activa (16/11/2026, 20:46 hrs). Próximo corte oficial hoy a las 10:00 PM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
@@ -38,7 +38,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "tecnico_original": "Jose antonio Esquivel",
     "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afbbc103898bc90b1dacea9.jpg",
     "oferta": "200_mb",
-    "existe_bd": "Sí",
+    "existe_bd": "SÍ",
     "comentarios": "Se encontró una plaza comercial no se ve evidencia de que existiera obexiste",
     "num_viniles": 0.0,
     "version": "v8 - Android",
@@ -67,7 +67,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "tecnico_original": "Jose antonio Esquivel",
     "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afbbaccbd1575dcf80507f3.jpg",
     "oferta": "200_mb",
-    "existe_bd": "Sí",
+    "existe_bd": "SÍ",
     "comentarios": "Sin acceso a fraccionamiento",
     "num_viniles": 1.0,
     "version": "v8 - Android",
