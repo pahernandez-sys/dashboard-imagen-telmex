@@ -276,6 +276,12 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
 
         tipo = (ans.get("6ad52fc6bc424ea79992eabe") or "CAJA").upper()
         identificador = ans.get("6ad52fc6bc424ea79992eabf") or f"S/ID-{i+1}"
+
+        # Restricción de distritos prohibidos
+        ident_clean = str(identificador).strip().upper()
+        if ident_clean in ["PIX0001", "PIX0002", "PIX0003"]:
+            print(f"[RESTRICCION TELMEX] Omitiendo distrito restringido: {ident_clean}")
+            continue
         estado = (ans.get("6ad52fc6bc424ea79992eac0") or "MORELOS").upper()
         area = (ans.get("6ad52fc6bc424ea79992eac1") or estado).upper()
         # Auto-mapeo dinámico de áreas genéricas a sub-áreas oficiales

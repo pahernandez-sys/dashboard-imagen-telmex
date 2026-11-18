@@ -4,6 +4,9 @@
  */
 
 // Estado Global
+// Restricción de Distritos No Permitidos
+const RESTRICTED_DISTRICTS = new Set(["PIX0001", "PIX0002", "PIX0003"]);
+
 let state = {
   config: null,
   records: [],
@@ -937,6 +940,8 @@ function applyFilters() {
   state.filteredRecords = [];
 
   for (const r of (state.records || [])) {
+    const ident = String(r.identificador || r.id || "").trim().toUpperCase();
+    if (RESTRICTED_DISTRICTS.has(ident)) continue;
     if (arVal && !recordMatchesArea(r, arVal)) continue;
     if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) continue;
     
@@ -955,6 +960,8 @@ function applyFilters() {
   let totalRawFolios = 0;
   const rawList = (state.rawRecords && state.rawRecords.length > 0) ? state.rawRecords : (state.records || []);
   for (const r of rawList) {
+    const ident = String(r.identificador || r.id || "").trim().toUpperCase();
+    if (RESTRICTED_DISTRICTS.has(ident)) continue;
     if (arVal && !recordMatchesArea(r, arVal)) continue;
     if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) continue;
     if (cutoffInfo.isFrozen && isRecordAfterCutoff(r, cutoffInfo)) continue;
