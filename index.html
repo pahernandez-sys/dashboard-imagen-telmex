@@ -291,6 +291,11 @@
         <span>📋</span>
         <span>Detalle de Registros</span>
       </button>
+      <button type="button" class="tab-btn bg-slate-900 text-white hover:bg-slate-800 font-bold flex items-center gap-2 border-b-2 border-cyan-400 shadow-sm" onclick="switchTab('tab-gerencial')">
+        <span>👔</span>
+        <span>Mando Gerencial</span>
+        <span style="font-size: 0.65rem; background: #0284c7; color: white; padding: 1px 7px; border-radius: 9999px; font-weight: 800;">DIRECCIÓN</span>
+      </button>
       <button type="button" id="tabBtnPagos" class="tab-btn ml-auto bg-amber-50 text-amber-900 border-b-2 border-amber-600 font-bold hover:bg-amber-100 transition-all flex items-center gap-1.5 shadow-sm" onclick="openPagosModule()">
         <span>🔐</span>
         <span>Validación y Pagos</span>
@@ -911,6 +916,353 @@
             </button>
           </div>
         </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== PESTAÑA 6: MÓDULO EXCLUSIVO DE MANDO GERENCIAL & RESUMEN OPERATIVO ==================== -->
+    <section id="tab-gerencial" class="tab-content hidden flex flex-col gap-6">
+
+      <!-- Encabezado Directivo -->
+      <div class="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 text-white rounded-2xl p-5 card-shadow flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-indigo-500/30">
+        <div class="flex items-center gap-3.5">
+          <div class="p-3 bg-indigo-500/20 text-indigo-400 rounded-xl text-3xl border border-indigo-500/40 shadow-inner">
+            👔
+          </div>
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <h2 class="text-lg font-black tracking-tight text-slate-100">Tablero de Control Gerencial & Resumen Operativo</h2>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-sky-500 text-slate-950 uppercase tracking-wider">Alta Dirección</span>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">En Vivo</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-1">
+              Monitoreo ejecutivo de cumplimiento de metas Telmex: Avance Real vs Objetivos por Contratista, Plaza y Entidad Federativa.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap">
+          <button type="button" onclick="exportBossSummaryExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center gap-1.5 transition-all">
+            <span>📥</span>
+            <span>Descargar Resumen (Excel)</span>
+          </button>
+          <button type="button" onclick="printBossSummary()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center gap-1.5 transition-all">
+            <span>🖨️</span>
+            <span>Imprimir</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- BARRA DE FILTROS GERENCIALES (INTERACTIVA) -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 card-shadow flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-base">🎛️</span>
+            <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-700">Filtros Operativos de Consulta:</h3>
+          </div>
+          <span id="bossFilterMatchCount" class="text-xs font-bold text-telmex bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200">
+            Cargando registros...
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          
+          <!-- Filtro Contratista -->
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">🏢 Contratista:</label>
+            <select id="bossFilterContratista" onchange="applyBossFilters()" class="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-telmex focus:outline-none">
+              <option value="TODOS">-- Todos los Contratistas --</option>
+            </select>
+          </div>
+
+          <!-- Filtro Estado -->
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">🗺️ Entidad Federativa (Estado):</label>
+            <select id="bossFilterEstado" onchange="onBossEstadoChange()" class="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-telmex focus:outline-none">
+              <option value="TODOS">-- Todos los Estados --</option>
+            </select>
+          </div>
+
+          <!-- Filtro Plaza / Área -->
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">📍 Plaza / Área de Trabajo:</label>
+            <select id="bossFilterArea" onchange="applyBossFilters()" class="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-telmex focus:outline-none">
+              <option value="TODOS">-- Todas las Plazas --</option>
+            </select>
+          </div>
+
+          <!-- Filtro Tipo Activo -->
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">🏷️ Tipo de Activo:</label>
+            <select id="bossFilterTipo" onchange="applyBossFilters()" class="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-telmex focus:outline-none">
+              <option value="TODOS">-- Todos (Cajas y Casetas) --</option>
+              <option value="CAJA">📦 Cajas (Distritos)</option>
+              <option value="CASETA">📞 Casetas Públicas</option>
+            </select>
+          </div>
+
+          <!-- Filtro Semáforo -->
+          <div>
+            <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">🚦 Estatus de Cumplimiento:</label>
+            <select id="bossFilterSemaforo" onchange="applyBossFilters()" class="w-full text-xs font-bold bg-slate-50 border border-slate-300 rounded-lg p-2 text-slate-800 focus:ring-2 focus:ring-telmex focus:outline-none">
+              <option value="TODOS">-- Todos los Estatus --</option>
+              <option value="critico">🔴 Rezago Crítico (&lt; 30%)</option>
+              <option value="proceso">🟡 En Progreso (30% - 70%)</option>
+              <option value="avanzado">🟢 Avanzado / Meta (&gt; 70%)</option>
+            </select>
+          </div>
+
+        </div>
+
+        <!-- Fila Secundaria: Periodo y Acciones -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2 border-t border-slate-100">
+          <div class="flex items-center gap-3 flex-wrap text-xs">
+            <span class="font-bold text-slate-600">📅 Periodo:</span>
+            <select id="bossFilterPeriodo" onchange="onBossPeriodoChange()" class="text-xs font-semibold bg-slate-50 border border-slate-300 rounded-lg p-1.5 text-slate-700">
+              <option value="all">Histórico Completo</option>
+              <option value="today">Hoy</option>
+              <option value="7days">Últimos 7 días</option>
+              <option value="30days">Últimos 30 días</option>
+              <option value="custom">Rango Personalizado...</option>
+            </select>
+
+            <div id="bossCustomDateRow" class="hidden flex items-center gap-2">
+              <input type="date" id="bossDateStart" onchange="applyBossFilters()" class="border border-slate-300 rounded p-1 text-xs">
+              <span>a</span>
+              <input type="date" id="bossDateEnd" onchange="applyBossFilters()" class="border border-slate-300 rounded p-1 text-xs">
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 self-end sm:self-auto">
+            <button type="button" onclick="resetBossFilters()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg border border-slate-300 transition flex items-center gap-1">
+              <span>🔄</span>
+              <span>Limpiar Filtros</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- KPI CARDS EJECUTIVOS (AVANCE VS OBJETIVO DINÁMICO) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- KPI 1: Avance Global vs Meta -->
+        <div class="bg-white border-l-4 border-telmex rounded-2xl p-4 card-shadow flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">CUMPLIMIENTO GLOBAL VS META</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="bossKpiTotalDone" class="text-3xl font-black text-slate-900">0</span>
+                <span class="text-xs font-bold text-slate-400">/ <span id="bossKpiTotalMeta">0</span> meta</span>
+              </div>
+            </div>
+            <div id="bossKpiGlobalBadge" class="p-2.5 rounded-xl bg-blue-50 text-telmex text-xl font-bold">
+              📊
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span id="bossKpiFaltanteLabel" class="text-slate-500">Faltan: <b id="bossKpiTotalFaltante" class="text-slate-700">0</b></span>
+              <span id="bossKpiTotalPercent" class="text-telmex font-extrabold text-sm">0.0%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+              <div id="bossKpiTotalBar" class="h-2.5 rounded-full transition-all duration-500 bg-telmex" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 2: Cajas (Distritos) -->
+        <div class="bg-white border-l-4 border-cyan-500 rounded-2xl p-4 card-shadow flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">CAJAS (DISTRITOS)</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="bossKpiCajasDone" class="text-3xl font-black text-slate-900">0</span>
+                <span class="text-xs font-bold text-slate-400">/ <span id="bossKpiCajasMeta">0</span></span>
+              </div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-cyan-50 text-cyan-600 text-xl font-bold">
+              📦
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-slate-500">Faltan: <b id="bossKpiCajasFaltante" class="text-slate-700">0</b></span>
+              <span id="bossKpiCajasPercent" class="text-cyan-600 font-extrabold text-sm">0.0%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+              <div id="bossKpiCajasBar" class="h-2.5 rounded-full transition-all duration-500 bg-cyan-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 3: Casetas Públicas -->
+        <div class="bg-white border-l-4 border-indigo-500 rounded-2xl p-4 card-shadow flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">CASETAS PÚBLICAS</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="bossKpiCasetasDone" class="text-3xl font-black text-slate-900">0</span>
+                <span class="text-xs font-bold text-slate-400">/ <span id="bossKpiCasetasMeta">0</span></span>
+              </div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-indigo-50 text-indigo-600 text-xl font-bold">
+              📞
+            </div>
+          </div>
+          <div class="mt-3">
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-slate-500">Faltan: <b id="bossKpiCasetasFaltante" class="text-slate-700">0</b></span>
+              <span id="bossKpiCasetasPercent" class="text-indigo-600 font-extrabold text-sm">0.0%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+              <div id="bossKpiCasetasBar" class="h-2.5 rounded-full transition-all duration-500 bg-indigo-500" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI 4: Fuerza Operativa & Plazas -->
+        <div class="bg-white border-l-4 border-emerald-500 rounded-2xl p-4 card-shadow flex flex-col justify-between">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">FUERZA OPERATIVA EN CAMPO</span>
+              <div class="flex items-baseline gap-2 mt-1">
+                <span id="bossKpiContratistasCount" class="text-3xl font-black text-slate-900">0</span>
+                <span class="text-xs font-bold text-slate-500">empresas contratistas</span>
+              </div>
+            </div>
+            <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 text-xl font-bold">
+              👷
+            </div>
+          </div>
+          <div class="mt-3 text-xs text-slate-600 flex justify-between border-t border-slate-100 pt-2 font-medium">
+            <span>Técnicos activos: <b id="bossKpiTecnicosCount" class="text-slate-800">0</b></span>
+            <span>Plazas con avance: <b id="bossKpiPlazasActivasCount" class="text-emerald-700">0</b></span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- NAVEGACIÓN SECUNDARIA DE VISTAS GERENCIALES -->
+      <div class="flex border-b border-slate-200 bg-white rounded-xl px-2 shadow-sm overflow-x-auto gap-1">
+        <button type="button" id="bossSubTabBtnPlazas" onclick="switchBossSubTab('plazas')" class="px-4 py-2.5 text-xs font-extrabold text-telmex border-b-2 border-telmex flex items-center gap-2">
+          <span>🗺️</span>
+          <span>Avance vs Objetivo por Plaza y Estado</span>
+        </button>
+        <button type="button" id="bossSubTabBtnContratistas" onclick="switchBossSubTab('contratistas')" class="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-2">
+          <span>🏢</span>
+          <span>Rendimiento por Contratista</span>
+        </button>
+        <button type="button" id="bossSubTabBtnGraficas" onclick="switchBossSubTab('graficas')" class="px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-2">
+          <span>📈</span>
+          <span>Gráficas Ejecutivas</span>
+        </button>
+      </div>
+
+      <!-- VISTA 1: TABLA MATRIZ DE AVANCE VS OBJETIVO (POR ESTADO Y PLAZA) -->
+      <div id="bossSubTabPlazas" class="bg-white border border-slate-200 rounded-2xl card-shadow overflow-hidden flex flex-col">
+        <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <div class="relative flex-1 sm:w-72">
+              <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
+              <input type="text" id="bossSearchPlaza" onkeyup="filterBossPlazasTable()" placeholder="Buscar plaza, estado o contratista..." class="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 bg-white focus:ring-2 focus:ring-telmex focus:outline-none">
+            </div>
+            <span id="bossPlazasTableCount" class="text-xs text-slate-500 font-semibold whitespace-nowrap">0 plazas</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs">
+            <span class="font-bold text-slate-500">Semáforos:</span>
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">🟢 &gt;70%</span>
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">🟡 30-70%</span>
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">🔴 &lt;30%</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-slate-100 text-slate-700 font-bold sticky top-0 z-10 border-b border-slate-200 uppercase text-[10px] tracking-wider">
+              <tr>
+                <th class="p-2.5">Estado</th>
+                <th class="p-2.5">Plaza / Área</th>
+                <th class="p-2.5">Contratistas en Plaza</th>
+                <th class="p-2.5 text-center">Cajas (Hecho / Meta)</th>
+                <th class="p-2.5 text-center">Casetas (Hecho / Meta)</th>
+                <th class="p-2.5 text-center">Total (Hecho / Meta)</th>
+                <th class="p-2.5 text-center">% Cumplimiento</th>
+                <th class="p-2.5 text-center">Semáforo</th>
+                <th class="p-2.5 text-right">Faltante</th>
+              </tr>
+            </thead>
+            <tbody id="bossPlazasTableBody" class="divide-y divide-slate-100">
+              <!-- Inyectado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VISTA 2: TABLA DE RENDIMIENTO POR CONTRATISTA -->
+      <div id="bossSubTabContratistas" class="hidden bg-white border border-slate-200 rounded-2xl card-shadow overflow-hidden flex flex-col">
+        <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+              <span>🏢</span> Ranking y Productividad por Contratista
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">Volumen consolidado, desglose de activos y cuadrillas por empresa</p>
+          </div>
+          <span id="bossContractorsTableCount" class="text-xs text-slate-500 font-semibold">0 contratistas</span>
+        </div>
+
+        <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-slate-100 text-slate-700 font-bold sticky top-0 z-10 border-b border-slate-200 uppercase text-[10px] tracking-wider">
+              <tr>
+                <th class="p-2.5 text-center w-12">#</th>
+                <th class="p-2.5">Empresa Contratista</th>
+                <th class="p-2.5">Plazas Asignadas / Activas</th>
+                <th class="p-2.5 text-right">Cajas ($60)</th>
+                <th class="p-2.5 text-right">Casetas ($36)</th>
+                <th class="p-2.5 text-right font-black">Total Realizado</th>
+                <th class="p-2.5 text-center">% Aportación</th>
+                <th class="p-2.5 text-center">Técnicos</th>
+                <th class="p-2.5 text-right">Promedio / Día</th>
+                <th class="p-2.5 text-center">Estatus</th>
+              </tr>
+            </thead>
+            <tbody id="bossContractorsTableBody" class="divide-y divide-slate-100">
+              <!-- Inyectado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VISTA 3: GRÁFICAS EJECUTIVAS -->
+      <div id="bossSubTabGraficas" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-4">
+        
+        <!-- Gráfica 1: Meta vs Realizado por Plaza -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 card-shadow">
+          <div class="flex justify-between items-center mb-3">
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <span>📊</span> Avance vs Objetivo (Top Plazas)
+            </h4>
+            <span class="text-[10px] text-slate-400">Meta vs Realizado</span>
+          </div>
+          <div class="h-80 relative">
+            <canvas id="chartBossAvanceMetas"></canvas>
+          </div>
+        </div>
+
+        <!-- Gráfica 2: Participación de Contratistas -->
+        <div class="bg-white border border-slate-200 rounded-2xl p-4 card-shadow">
+          <div class="flex justify-between items-center mb-3">
+            <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <span>🏢</span> Volumen por Empresa Contratista
+            </h4>
+            <span class="text-[10px] text-slate-400">Cajas vs Casetas</span>
+          </div>
+          <div class="h-80 relative">
+            <canvas id="chartBossContractors"></canvas>
+          </div>
+        </div>
+
       </div>
 
     </section>

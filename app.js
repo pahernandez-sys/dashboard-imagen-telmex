@@ -254,6 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
   try { initDatePresets(); } catch (e) { console.error("Error en initDatePresets:", e); }
   try { renderCutoffBanner(); } catch (e) { console.error("Error en renderCutoffBanner:", e); }
   try { applyFilters(); } catch (e) { console.error("Error en applyFilters:", e); }
+  try { initBossModule(); } catch (e) { console.error("Error en initBossModule:", e); }
   try { renderMaterialsConfigTable(); } catch (e) { console.error("Error en renderMaterialsConfigTable:", e); }
   try { renderMaterialsLogTable(); } catch (e) { console.error("Error en renderMaterialsLogTable:", e); }
   try { updateSyncLabel(); } catch (e) { console.error("Error en updateSyncLabel:", e); }
@@ -974,6 +975,7 @@ function applyFilters() {
   renderAreasTab();
   renderFechasTab();
   renderRecordsTable();
+  if (typeof renderBossModule === "function") { renderBossModule(); }
 }
 
 // =========================================================
@@ -3860,3 +3862,944 @@ function formatMoney(num) {
   if (isNaN(num)) return "$0.00 MXN";
   return new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(num);
 }
+
+
+// =========================================================
+// MÓDULO EXCLUSIVO DE MANDO GERENCIAL & RESUMEN OPERATIVO
+// =========================================================
+
+let bossState = {
+  contratista: "TODOS",
+  estado: "TODOS",
+  area: "TODOS",
+  tipo: "TODOS",
+  semaforo: "TODOS",
+  periodo: "all",
+  dateStart: "",
+  dateEnd: "",
+  searchPlaza: "",
+  activeSubTab: "plazas",
+  isInitialized: false,
+  charts: {}
+};
+
+function initBossModule() {
+  populateBossFilters();
+  applyBossFilters();
+  bossState.isInitialized = true;
+}
+
+function renderBossModule() {
+  if (!bossState.isInitialized) {
+    initBossModule();
+    return;
+  }
+  populateBossFilters(true); // preservar selección
+  applyBossFilters();
+}
+
+function populateBossFilters(preserveSelection = false) {
+  const records = state.records || [];
+
+  // 1. Contratistas
+  const conSelect = document.getElementById("bossFilterContratista");
+  if (conSelect) {
+    const curVal = preserveSelection ? (conSelect.value || bossState.contratista) : "TODOS";
+    const conSet = new Set();
+    records.forEach(r => {
+      const c = (r.contratista_homologado || r.contratista || "").trim();
+      if (c && c !== "Directo" && c !== "S/C") conSet.add(c);
+    });
+    const sortedCon = Array.from(conSet).sort();
+    conSelect.innerHTML = `<option value="TODOS">🏢 Todos los Contratistas (${sortedCon.length})</option>`;
+    sortedCon.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.innerText = c;
+      conSelect.appendChild(opt);
+    });
+    if (curVal && (curVal === "TODOS" || conSet.has(curVal))) {
+      conSelect.value = curVal;
+      bossState.contratista = curVal;
+    }
+  }
+
+  // 2. Estados
+  const edoSelect = document.getElementById("bossFilterEstado");
+  if (edoSelect) {
+    const curEdo = preserveSelection ? (edoSelect.value || bossState.estado) : "TODOS";
+    const edoSet = new Set();
+    if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
+      Object.keys(CATALOGO_METAS.estados).forEach(e => edoSet.add(e.trim().toUpperCase()));
+    }
+    records.forEach(r => {
+      if (r.estado) edoSet.add(r.estado.trim().toUpperCase());
+    });
+    const sortedEdo = Array.from(edoSet).filter(Boolean).sort();
+    edoSelect.innerHTML = `<option value="TODOS">🗺️ Todos los Estados (${sortedEdo.length})</option>`;
+    sortedEdo.forEach(e => {
+      const opt = document.createElement("option");
+      opt.value = e;
+      opt.innerText = e;
+      edoSelect.appendChild(opt);
+    });
+    if (curEdo && (curEdo === "TODOS" || edoSet.has(curEdo))) {
+      edoSelect.value = curEdo;
+      bossState.estado = curEdo;
+    }
+  }
+
+  // 3. Plazas / Áreas
+  updateBossAreaOptions(preserveSelection);
+}
+
+function updateBossAreaOptions(preserveSelection = false) {
+  const arSelect = document.getElementById("bossFilterArea");
+  if (!arSelect) return;
+
+  const curArea = preserveSelection ? (arSelect.value || bossState.area) : "TODOS";
+  const areaSet = new Set();
+  const selEdoNorm = bossState.estado !== "TODOS" ? normalizeAreaKey(bossState.estado) : null;
+
+  if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
+    for (let edo in CATALOGO_METAS.estados) {
+      const edoNorm = normalizeAreaKey(edo);
+      if (!selEdoNorm || edoNorm === selEdoNorm) {
+        Object.keys(CATALOGO_METAS.estados[edo]).forEach(ar => areaSet.add(ar.trim().toUpperCase()));
+      }
+    }
+  }
+
+  (state.records || []).forEach(r => {
+    const rEdoNorm = r.estado ? normalizeAreaKey(r.estado) : "";
+    if (!selEdoNorm || rEdoNorm === selEdoNorm) {
+      if (r.area_trabajo) areaSet.add(r.area_trabajo.trim().toUpperCase());
+    }
+  });
+
+  const sortedAr = Array.from(areaSet).filter(Boolean).sort();
+  arSelect.innerHTML = `<option value="TODOS">📍 Todas las Plazas (${sortedAr.length})</option>`;
+  sortedAr.forEach(a => {
+    const opt = document.createElement("option");
+    opt.value = a;
+    opt.innerText = a;
+    arSelect.appendChild(opt);
+  });
+
+  if (curArea && (curArea === "TODOS" || areaSet.has(curArea))) {
+    arSelect.value = curArea;
+    bossState.area = curArea;
+  } else {
+    arSelect.value = "TODOS";
+    bossState.area = "TODOS";
+  }
+}
+
+function onBossEstadoChange() {
+  const edoSelect = document.getElementById("bossFilterEstado");
+  bossState.estado = edoSelect ? edoSelect.value : "TODOS";
+  updateBossAreaOptions(false);
+  applyBossFilters();
+}
+
+function onBossPeriodoChange() {
+  const sel = document.getElementById("bossFilterPeriodo");
+  const row = document.getElementById("bossCustomDateRow");
+  const val = sel ? sel.value : "all";
+  bossState.periodo = val;
+
+  if (val === "custom") {
+    if (row) row.classList.remove("hidden");
+  } else {
+    if (row) row.classList.add("hidden");
+    const today = new Date();
+    if (val === "today") {
+      bossState.dateStart = getLocalDateStr(today);
+      bossState.dateEnd = getLocalDateStr(today);
+    } else if (val === "7days") {
+      const past = new Date(today);
+      past.setDate(today.getDate() - 7);
+      bossState.dateStart = getLocalDateStr(past);
+      bossState.dateEnd = getLocalDateStr(today);
+    } else if (val === "30days") {
+      const past = new Date(today);
+      past.setDate(today.getDate() - 30);
+      bossState.dateStart = getLocalDateStr(past);
+      bossState.dateEnd = getLocalDateStr(today);
+    } else {
+      bossState.dateStart = "";
+      bossState.dateEnd = "";
+    }
+  }
+  applyBossFilters();
+}
+
+function resetBossFilters() {
+  bossState.contratista = "TODOS";
+  bossState.estado = "TODOS";
+  bossState.area = "TODOS";
+  bossState.tipo = "TODOS";
+  bossState.semaforo = "TODOS";
+  bossState.periodo = "all";
+  bossState.dateStart = "";
+  bossState.dateEnd = "";
+  bossState.searchPlaza = "";
+
+  const c1 = document.getElementById("bossFilterContratista"); if (c1) c1.value = "TODOS";
+  const c2 = document.getElementById("bossFilterEstado"); if (c2) c2.value = "TODOS";
+  const c3 = document.getElementById("bossFilterArea"); if (c3) c3.value = "TODOS";
+  const c4 = document.getElementById("bossFilterTipo"); if (c4) c4.value = "TODOS";
+  const c5 = document.getElementById("bossFilterSemaforo"); if (c5) c5.value = "TODOS";
+  const c6 = document.getElementById("bossFilterPeriodo"); if (c6) c6.value = "all";
+  const c7 = document.getElementById("bossSearchPlaza"); if (c7) c7.value = "";
+  const row = document.getElementById("bossCustomDateRow"); if (row) row.classList.add("hidden");
+
+  updateBossAreaOptions(false);
+  applyBossFilters();
+  showToast("🔄 Filtros gerenciales restablecidos", "info", 1500);
+}
+
+function applyBossFilters() {
+  const c1 = document.getElementById("bossFilterContratista"); if (c1) bossState.contratista = c1.value;
+  const c2 = document.getElementById("bossFilterEstado"); if (c2) bossState.estado = c2.value;
+  const c3 = document.getElementById("bossFilterArea"); if (c3) bossState.area = c3.value;
+  const c4 = document.getElementById("bossFilterTipo"); if (c4) bossState.tipo = c4.value;
+  const c5 = document.getElementById("bossFilterSemaforo"); if (c5) bossState.semaforo = c5.value;
+  
+  if (bossState.periodo === "custom") {
+    const dS = document.getElementById("bossDateStart"); if (dS) bossState.dateStart = dS.value;
+    const dE = document.getElementById("bossDateEnd"); if (dE) bossState.dateEnd = dE.value;
+  }
+
+  const allRecords = state.records || [];
+  const selCon = bossState.contratista !== "TODOS" ? bossState.contratista.trim().toLowerCase() : null;
+  const selEdoNorm = bossState.estado !== "TODOS" ? normalizeAreaKey(bossState.estado) : null;
+  const selAreaNorm = bossState.area !== "TODOS" ? normalizeAreaKey(bossState.area) : null;
+  const selTipo = bossState.tipo !== "TODOS" ? bossState.tipo : null;
+
+  // Filtrar registros
+  const matchingRecords = [];
+  for (let i = 0; i < allRecords.length; i++) {
+    const r = allRecords[i];
+    
+    // Filtro Tipo
+    if (selTipo && r.tipo !== selTipo) continue;
+
+    // Filtro Contratista
+    if (selCon) {
+      const conName = (r.contratista_homologado || r.contratista || "").trim().toLowerCase();
+      if (!conName.includes(selCon)) continue;
+    }
+
+    // Filtro Estado
+    if (selEdoNorm) {
+      const rEdoNorm = r.estado ? normalizeAreaKey(r.estado) : "";
+      if (rEdoNorm !== selEdoNorm) {
+        // Verificar si el estado coincide con el área o región de metas
+        if (!isRecordInArea(r, bossState.estado)) continue;
+      }
+    }
+
+    // Filtro Área
+    if (selAreaNorm) {
+      if (!isRecordInArea(r, bossState.area)) continue;
+    }
+
+    // Filtro Fechas
+    if (bossState.dateStart || bossState.dateEnd) {
+      const f = r.fecha || r.fecha_captura || "";
+      if (bossState.dateStart && f < bossState.dateStart) continue;
+      if (bossState.dateEnd && f > bossState.dateEnd) continue;
+    }
+
+    matchingRecords.push(r);
+  }
+
+  // Actualizar contador
+  const countBadge = document.getElementById("bossFilterMatchCount");
+  if (countBadge) {
+    countBadge.innerText = `${formatNumber(matchingRecords.length)} registros filtrados de ${formatNumber(allRecords.length)}`;
+  }
+
+  // Calcular Metas y Cumplimiento
+  const targets = computeBossTargets();
+  renderBossKPIs(matchingRecords, targets);
+  renderBossPlazasTable(matchingRecords);
+  renderBossContractorsTable(matchingRecords);
+  renderBossCharts(matchingRecords);
+}
+
+function computeBossTargets() {
+  let metaCajas = 0;
+  let metaCasetas = 0;
+  let metaTotal = 0;
+
+  if (typeof CATALOGO_METAS === "undefined" || !CATALOGO_METAS.estados) {
+    return { cajas: 49829, casetas: 44919, total: 94748 };
+  }
+
+  const selEdoNorm = bossState.estado !== "TODOS" ? normalizeAreaKey(bossState.estado) : null;
+  const selAreaNorm = bossState.area !== "TODOS" ? normalizeAreaKey(bossState.area) : null;
+
+  for (let edo in CATALOGO_METAS.estados) {
+    const edoNorm = normalizeAreaKey(edo);
+    if (!selEdoNorm || edoNorm === selEdoNorm) {
+      for (let ar in CATALOGO_METAS.estados[edo]) {
+        const arNorm = normalizeAreaKey(ar);
+        if (!selAreaNorm || arNorm === selAreaNorm) {
+          const m = CATALOGO_METAS.estados[edo][ar];
+          metaCajas += (m.cajas || 0);
+          metaCasetas += (m.casetas || 0);
+          metaTotal += (m.total || 0);
+        }
+      }
+    }
+  }
+
+  if (metaTotal === 0) {
+    metaTotal = CATALOGO_METAS.total_general || 94748;
+    metaCajas = CATALOGO_METAS.total_cajas || 49829;
+    metaCasetas = CATALOGO_METAS.total_casetas || 44919;
+  }
+
+  return { cajas: metaCajas, casetas: metaCasetas, total: metaTotal };
+}
+
+function renderBossKPIs(matchingRecords, targets) {
+  let cajasDone = 0;
+  let casetasDone = 0;
+  const contratistasSet = new Set();
+  const tecnicosSet = new Set();
+  const plazasActivasSet = new Set();
+
+  matchingRecords.forEach(r => {
+    if (r.tipo === "CASETA") casetasDone++;
+    else cajasDone++;
+
+    const con = (r.contratista_homologado || r.contratista || "").trim();
+    if (con && con !== "Directo" && con !== "S/C") contratistasSet.add(con);
+
+    const tec = (r.tecnico || "").trim();
+    if (tec && tec !== "N/A") tecnicosSet.add(tec);
+
+    const ar = (r.area_trabajo || "").trim().toUpperCase();
+    if (ar) plazasActivasSet.add(ar);
+  });
+
+  const totalDone = matchingRecords.length;
+  const totalMeta = targets.total;
+  const cajasMeta = targets.cajas;
+  const casetasMeta = targets.casetas;
+
+  const totalPct = totalMeta > 0 ? (totalDone / totalMeta) * 100 : 0;
+  const cajasPct = cajasMeta > 0 ? (cajasDone / cajasMeta) * 100 : 0;
+  const casetasPct = casetasMeta > 0 ? (casetasDone / casetasMeta) * 100 : 0;
+
+  const totalFaltante = Math.max(0, totalMeta - totalDone);
+  const cajasFaltante = Math.max(0, cajasMeta - cajasDone);
+  const casetasFaltante = Math.max(0, casetasMeta - casetasDone);
+
+  // KPI 1: Global
+  setTextSafe("bossKpiTotalDone", formatNumber(totalDone));
+  setTextSafe("bossKpiTotalMeta", formatNumber(totalMeta));
+  setTextSafe("bossKpiTotalPercent", `${totalPct.toFixed(1)}%`);
+  setTextSafe("bossKpiTotalFaltante", formatNumber(totalFaltante));
+  setBarSafe("bossKpiTotalBar", Math.min(100, totalPct), totalPct >= 70 ? "#16a34a" : totalPct >= 30 ? "#eab308" : "#0284c7");
+
+  // KPI 2: Cajas
+  setTextSafe("bossKpiCajasDone", formatNumber(cajasDone));
+  setTextSafe("bossKpiCajasMeta", formatNumber(cajasMeta));
+  setTextSafe("bossKpiCajasPercent", `${cajasPct.toFixed(1)}%`);
+  setTextSafe("bossKpiCajasFaltante", formatNumber(cajasFaltante));
+  setBarSafe("bossKpiCajasBar", Math.min(100, cajasPct), "#06b6d4");
+
+  // KPI 3: Casetas
+  setTextSafe("bossKpiCasetasDone", formatNumber(casetasDone));
+  setTextSafe("bossKpiCasetasMeta", formatNumber(casetasMeta));
+  setTextSafe("bossKpiCasetasPercent", `${casetasPct.toFixed(1)}%`);
+  setTextSafe("bossKpiCasetasFaltante", formatNumber(casetasFaltante));
+  setBarSafe("bossKpiCasetasBar", Math.min(100, casetasPct), "#6366f1");
+
+  // KPI 4: Fuerza Operativa
+  setTextSafe("bossKpiContratistasCount", formatNumber(contratistasSet.size));
+  setTextSafe("bossKpiTecnicosCount", formatNumber(tecnicosSet.size));
+  setTextSafe("bossKpiPlazasActivasCount", formatNumber(plazasActivasSet.size));
+}
+
+function setTextSafe(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = val;
+}
+
+function setBarSafe(id, pct, color) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.width = `${pct}%`;
+    if (color) el.style.backgroundColor = color;
+  }
+}
+
+function renderBossPlazasTable(matchingRecords) {
+  const tbody = document.getElementById("bossPlazasTableBody");
+  if (!tbody) return;
+
+  // 1. Agrupar registros por Plaza
+  const recordsByArea = {};
+  matchingRecords.forEach(r => {
+    const ar = (r.area_trabajo || "").trim().toUpperCase();
+    if (!recordsByArea[ar]) recordsByArea[ar] = { cajas: 0, casetas: 0, contratistas: new Set(), total: 0 };
+    if (r.tipo === "CASETA") recordsByArea[ar].casetas++;
+    else recordsByArea[ar].cajas++;
+    recordsByArea[ar].total++;
+
+    const con = (r.contratista_homologado || r.contratista || "").trim();
+    if (con && con !== "Directo" && con !== "S/C") recordsByArea[ar].contratistas.add(con);
+  });
+
+  // 2. Construir lista consolidada de Plazas con Metas
+  const rows = [];
+  const selEdoNorm = bossState.estado !== "TODOS" ? normalizeAreaKey(bossState.estado) : null;
+  const selAreaNorm = bossState.area !== "TODOS" ? normalizeAreaKey(bossState.area) : null;
+
+  if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
+    for (let edo in CATALOGO_METAS.estados) {
+      const edoNorm = normalizeAreaKey(edo);
+      if (!selEdoNorm || edoNorm === selEdoNorm) {
+        for (let ar in CATALOGO_METAS.estados[edo]) {
+          const arNorm = normalizeAreaKey(ar);
+          if (!selAreaNorm || arNorm === selAreaNorm) {
+            const meta = CATALOGO_METAS.estados[edo][ar];
+            
+            // Buscar datos hechos
+            let doneData = { cajas: 0, casetas: 0, contratistas: new Set(), total: 0 };
+            for (let recAr in recordsByArea) {
+              if (normalizeAreaKey(recAr) === arNorm || normalizeAreaKey(recAr) === edoNorm) {
+                const sub = recordsByArea[recAr];
+                doneData.cajas += sub.cajas;
+                doneData.casetas += sub.casetas;
+                doneData.total += sub.total;
+                sub.contratistas.forEach(c => doneData.contratistas.add(c));
+              }
+            }
+
+            const mTotal = meta.total || 0;
+            const pct = mTotal > 0 ? (doneData.total / mTotal) * 100 : 0;
+            const faltante = Math.max(0, mTotal - doneData.total);
+
+            // Semáforo
+            let semStatus = "critico";
+            let semBadge = `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">🔴 Crítico (&lt;30%)</span>`;
+            if (pct >= 70) {
+              semStatus = "avanzado";
+              semBadge = `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">🟢 Avanzado (${pct.toFixed(0)}%)</span>`;
+            } else if (pct >= 30) {
+              semStatus = "proceso";
+              semBadge = `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">🟡 En Proceso (${pct.toFixed(0)}%)</span>`;
+            }
+
+            rows.push({
+              estado: edo,
+              area: ar,
+              contratistas: Array.from(doneData.contratistas),
+              cajasDone: doneData.cajas,
+              cajasMeta: meta.cajas || 0,
+              casetasDone: doneData.casetas,
+              casetasMeta: meta.casetas || 0,
+              totalDone: doneData.total,
+              totalMeta: mTotal,
+              pct: pct,
+              semStatus: semStatus,
+              semBadge: semBadge,
+              faltante: faltante
+            });
+          }
+        }
+      }
+    }
+  }
+
+  // Guardar en caché para filtrado de texto rápido
+  bossState.cachedPlazasData = rows;
+  renderPlazasTableRows(rows);
+}
+
+function renderPlazasTableRows(rows) {
+  const tbody = document.getElementById("bossPlazasTableBody");
+  if (!tbody) return;
+
+  const search = (bossState.searchPlaza || "").trim().toLowerCase();
+  const selSem = bossState.semaforo;
+
+  // Filtrar
+  const filteredRows = rows.filter(r => {
+    if (selSem !== "TODOS" && r.semStatus !== selSem) return false;
+    if (search) {
+      const matchEdo = r.estado.toLowerCase().includes(search);
+      const matchAr = r.area.toLowerCase().includes(search);
+      const matchCon = r.contratistas.some(c => c.toLowerCase().includes(search));
+      if (!matchEdo && !matchAr && !matchCon) return false;
+    }
+    return true;
+  });
+
+  // Ordenar por volumen hecho (descendente)
+  filteredRows.sort((a, b) => b.totalDone - a.totalDone || b.pct - a.pct);
+
+  setTextSafe("bossPlazasTableCount", `${filteredRows.length} plazas mostradas`);
+
+  if (filteredRows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 font-semibold">No se encontraron plazas con los filtros seleccionados</td></tr>`;
+    return;
+  }
+
+  let html = "";
+  filteredRows.forEach((r, idx) => {
+    const bgRow = idx % 2 === 0 ? "bg-white" : "bg-slate-50/50";
+    const cPct = r.cajasMeta > 0 ? (r.cajasDone / r.cajasMeta * 100).toFixed(0) : 0;
+    const casPct = r.casetasMeta > 0 ? (r.casetasDone / r.casetasMeta * 100).toFixed(0) : 0;
+
+    let conBadges = `<span class="text-slate-400 italic text-[11px]">Sin asignación</span>`;
+    if (r.contratistas.length > 0) {
+      conBadges = r.contratistas.slice(0, 2).map(c => 
+        `<span class="inline-block bg-slate-100 text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded border border-slate-200 mr-1 mb-1 truncate max-w-[130px]" title="${c}">${c}</span>`
+      ).join("");
+      if (r.contratistas.length > 2) {
+        conBadges += `<span class="text-[10px] font-bold text-telmex" title="${r.contratistas.join(', ')}">+${r.contratistas.length - 2} más</span>`;
+      }
+    }
+
+    html += `
+      <tr class="${bgRow} hover:bg-sky-50/60 transition-colors">
+        <td class="p-2.5 font-bold text-slate-700 whitespace-nowrap">${r.estado}</td>
+        <td class="p-2.5 font-black text-slate-900 whitespace-nowrap">${r.area}</td>
+        <td class="p-2.5">${conBadges}</td>
+        <td class="p-2.5 text-center">
+          <div class="font-bold text-slate-800">${formatNumber(r.cajasDone)} <span class="text-slate-400 font-normal">/ ${formatNumber(r.cajasMeta)}</span></div>
+          <div class="text-[10px] font-semibold text-cyan-700">${cPct}%</div>
+        </td>
+        <td class="p-2.5 text-center">
+          <div class="font-bold text-slate-800">${formatNumber(r.casetasDone)} <span class="text-slate-400 font-normal">/ ${formatNumber(r.casetasMeta)}</span></div>
+          <div class="text-[10px] font-semibold text-indigo-700">${casPct}%</div>
+        </td>
+        <td class="p-2.5 text-center font-black text-slate-900">
+          <div>${formatNumber(r.totalDone)} <span class="text-slate-400 font-normal">/ ${formatNumber(r.totalMeta)}</span></div>
+        </td>
+        <td class="p-2.5 text-center">
+          <div class="font-black text-xs ${r.pct >= 70 ? 'text-emerald-700' : r.pct >= 30 ? 'text-amber-700' : 'text-slate-600'}">${r.pct.toFixed(1)}%</div>
+          <div class="w-16 mx-auto bg-slate-200 rounded-full h-1.5 overflow-hidden mt-1">
+            <div class="h-1.5 rounded-full ${r.pct >= 70 ? 'bg-emerald-500' : r.pct >= 30 ? 'bg-amber-500' : 'bg-telmex'}" style="width: ${Math.min(100, r.pct)}%"></div>
+          </div>
+        </td>
+        <td class="p-2.5 text-center whitespace-nowrap">${r.semBadge}</td>
+        <td class="p-2.5 text-right font-black text-slate-700 whitespace-nowrap">${formatNumber(r.faltante)} pzas</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+function filterBossPlazasTable() {
+  const inp = document.getElementById("bossSearchPlaza");
+  bossState.searchPlaza = inp ? inp.value : "";
+  renderPlazasTableRows(bossState.cachedPlazasData || []);
+}
+
+function renderBossContractorsTable(matchingRecords) {
+  const tbody = document.getElementById("bossContractorsTableBody");
+  if (!tbody) return;
+
+  const conMap = {};
+  const totalGlobal = matchingRecords.length || 1;
+
+  matchingRecords.forEach(r => {
+    let c = (r.contratista_homologado || r.contratista || "SIN ASIGNAR").trim();
+    if (!c) c = "SIN ASIGNAR";
+
+    if (!conMap[c]) {
+      conMap[c] = {
+        name: c,
+        cajas: 0,
+        casetas: 0,
+        total: 0,
+        plazas: new Set(),
+        tecnicos: new Set(),
+        fechas: new Set()
+      };
+    }
+
+    if (r.tipo === "CASETA") conMap[c].casetas++;
+    else conMap[c].cajas++;
+    conMap[c].total++;
+
+    if (r.area_trabajo) conMap[c].plazas.add(r.area_trabajo.trim().toUpperCase());
+    if (r.tecnico && r.tecnico !== "N/A") conMap[c].tecnicos.add(r.tecnico.trim());
+    if (r.fecha) conMap[c].fechas.add(r.fecha);
+  });
+
+  const list = Object.values(conMap);
+  list.sort((a, b) => b.total - a.total);
+
+  setTextSafe("bossContractorsTableCount", `${list.length} contratistas activos`);
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400 font-semibold">No se encontraron contratistas con los filtros seleccionados</td></tr>`;
+    return;
+  }
+
+  let html = "";
+  list.forEach((c, idx) => {
+    const bgRow = idx % 2 === 0 ? "bg-white" : "bg-slate-50/50";
+    const share = (c.total / totalGlobal * 100).toFixed(1);
+    const daysCount = Math.max(1, c.fechas.size);
+    const avgPerDay = (c.total / daysCount).toFixed(1);
+
+    // Estatus
+    let statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Activo</span>`;
+    if (c.total >= 1000) {
+      statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">Alto Volumen</span>`;
+    } else if (c.total >= 300) {
+      statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200">Producción Media</span>`;
+    }
+
+    const plazasPreview = Array.from(c.plazas).slice(0, 3).join(", ") + (c.plazas.size > 3 ? ` (+${c.plazas.size - 3})` : "");
+
+    html += `
+      <tr class="${bgRow} hover:bg-sky-50/60 transition-colors">
+        <td class="p-2.5 text-center font-bold text-slate-400">#${idx + 1}</td>
+        <td class="p-2.5 font-black text-slate-900">${c.name}</td>
+        <td class="p-2.5 text-slate-600 text-xs" title="${Array.from(c.plazas).join(', ')}">
+          <span class="font-bold text-telmex">${c.plazas.size} plazas:</span> ${plazasPreview}
+        </td>
+        <td class="p-2.5 text-right font-bold text-cyan-700">${formatNumber(c.cajas)}</td>
+        <td class="p-2.5 text-right font-bold text-indigo-700">${formatNumber(c.casetas)}</td>
+        <td class="p-2.5 text-right font-black text-slate-900 text-sm">${formatNumber(c.total)}</td>
+        <td class="p-2.5 text-center font-bold text-slate-700">${share}%</td>
+        <td class="p-2.5 text-center">
+          <span class="bg-slate-100 text-slate-800 font-bold px-2 py-0.5 rounded-full text-xs">${c.tecnicos.size}</span>
+        </td>
+        <td class="p-2.5 text-right font-bold text-slate-700">${avgPerDay} / día</td>
+        <td class="p-2.5 text-center whitespace-nowrap">${statusPill}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+function renderBossCharts(matchingRecords) {
+  if (typeof Chart === "undefined") return;
+
+  // 1. Gráfica de Avance vs Objetivo (Top Plazas)
+  const ctxMetas = document.getElementById("chartBossAvanceMetas");
+  if (ctxMetas) {
+    if (state.charts['bossAvanceChart']) {
+      state.charts['bossAvanceChart'].destroy();
+    }
+
+    // Obtener top 8 plazas por meta
+    const plazasList = (bossState.cachedPlazasData || []).slice(0, 8);
+    const labels = plazasList.map(p => p.area);
+    const dataMetas = plazasList.map(p => p.totalMeta);
+    const dataReal = plazasList.map(p => p.totalDone);
+
+    state.charts['bossAvanceChart'] = new Chart(ctxMetas, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Meta Oficial Telmex",
+            data: dataMetas,
+            backgroundColor: "#cbd5e1",
+            borderRadius: 6
+          },
+          {
+            label: "Avance Realizado",
+            data: dataReal,
+            backgroundColor: "#0055a5",
+            borderRadius: 6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "top", labels: { font: { size: 10, weight: "bold" } } },
+          tooltip: {
+            callbacks: {
+              afterBody: (items) => {
+                const idx = items[0].dataIndex;
+                const pct = plazasList[idx] ? plazasList[idx].pct.toFixed(1) : 0;
+                return `Cumplimiento: ${pct}%`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: "#f1f5f9" } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // 2. Gráfica por Contratista (Top 8)
+  const ctxCon = document.getElementById("chartBossContractors");
+  if (ctxCon) {
+    if (state.charts['bossContractorsChart']) {
+      state.charts['bossContractorsChart'].destroy();
+    }
+
+    const conMap = {};
+    matchingRecords.forEach(r => {
+      let c = (r.contratista_homologado || r.contratista || "S/A").trim();
+      if (!conMap[c]) conMap[c] = { cajas: 0, casetas: 0, total: 0 };
+      if (r.tipo === "CASETA") conMap[c].casetas++;
+      else conMap[c].cajas++;
+      conMap[c].total++;
+    });
+
+    const topCon = Object.entries(conMap).sort((a, b) => b[1].total - a[1].total).slice(0, 8);
+    const conLabels = topCon.map(x => x[0].length > 18 ? x[0].substring(0, 18) + "..." : x[0]);
+    const conCajas = topCon.map(x => x[1].cajas);
+    const conCasetas = topCon.map(x => x[1].casetas);
+
+    state.charts['bossContractorsChart'] = new Chart(ctxCon, {
+      type: "bar",
+      data: {
+        labels: conLabels,
+        datasets: [
+          {
+            label: "Cajas ($60)",
+            data: conCajas,
+            backgroundColor: "#06b6d4",
+            borderRadius: 6
+          },
+          {
+            label: "Casetas ($36)",
+            data: conCasetas,
+            backgroundColor: "#6366f1",
+            borderRadius: 6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "top", labels: { font: { size: 10, weight: "bold" } } }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false } },
+          y: { stacked: true, beginAtZero: true, grid: { color: "#f1f5f9" } }
+        }
+      }
+    });
+  }
+}
+
+function switchBossSubTab(subTabId) {
+  bossState.activeSubTab = subTabId;
+
+  // Botones
+  const btnP = document.getElementById("bossSubTabBtnPlazas");
+  const btnC = document.getElementById("bossSubTabBtnContratistas");
+  const btnG = document.getElementById("bossSubTabBtnGraficas");
+
+  [btnP, btnC, btnG].forEach(b => {
+    if (b) {
+      b.className = "px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-2";
+    }
+  });
+
+  // Paneles
+  const viewP = document.getElementById("bossSubTabPlazas");
+  const viewC = document.getElementById("bossSubTabContratistas");
+  const viewG = document.getElementById("bossSubTabGraficas");
+
+  if (viewP) viewP.classList.add("hidden");
+  if (viewC) viewC.classList.add("hidden");
+  if (viewG) viewG.classList.add("hidden");
+
+  if (subTabId === "plazas") {
+    if (btnP) btnP.className = "px-4 py-2.5 text-xs font-extrabold text-telmex border-b-2 border-telmex flex items-center gap-2";
+    if (viewP) viewP.classList.remove("hidden");
+  } else if (subTabId === "contratistas") {
+    if (btnC) btnC.className = "px-4 py-2.5 text-xs font-extrabold text-telmex border-b-2 border-telmex flex items-center gap-2";
+    if (viewC) viewC.classList.remove("hidden");
+  } else if (subTabId === "graficas") {
+    if (btnG) btnG.className = "px-4 py-2.5 text-xs font-extrabold text-telmex border-b-2 border-telmex flex items-center gap-2";
+    if (viewG) viewG.classList.remove("hidden");
+    setTimeout(() => {
+      if (state.charts['bossAvanceChart']) state.charts['bossAvanceChart'].resize();
+      if (state.charts['bossContractorsChart']) state.charts['bossContractorsChart'].resize();
+    }, 100);
+  }
+}
+
+function exportBossSummaryExcel() {
+  if (typeof XLSX === "undefined") {
+    showToast("⚠️ Librería Excel (XLSX) no disponible", "error");
+    return;
+  }
+
+  showToast("⏳ Generando libro de Excel ejecutivo...", "info", 2000);
+
+  const wb = XLSX.utils.book_new();
+
+  // Hoja 1: Avance por Plaza vs Objetivo
+  const plazasData = (bossState.cachedPlazasData || []).map(p => ({
+    "Estado": p.estado,
+    "Plaza / Área": p.area,
+    "Contratistas Asignados": p.contratistas.join(", "),
+    "Meta Cajas": p.cajasMeta,
+    "Cajas Hechas": p.cajasDone,
+    "% Avance Cajas": p.cajasMeta > 0 ? (p.cajasDone / p.cajasMeta * 100).toFixed(1) + "%" : "0%",
+    "Meta Casetas": p.casetasMeta,
+    "Casetas Hechas": p.casetasDone,
+    "% Avance Casetas": p.casetasMeta > 0 ? (p.casetasDone / p.casetasMeta * 100).toFixed(1) + "%" : "0%",
+    "Meta Total": p.totalMeta,
+    "Total Hecho": p.totalDone,
+    "% Cumplimiento Global": p.pct.toFixed(1) + "%",
+    "Faltante Meta (Pzas)": p.faltante,
+    "Estatus": p.pct >= 70 ? "Avanzado / Concluido" : p.pct >= 30 ? "En Proceso" : "Crítico / Rezago"
+  }));
+  const wsPlazas = XLSX.utils.json_to_sheet(plazasData);
+  XLSX.utils.book_append_sheet(wb, wsPlazas, "Avance vs Objetivo Plazas");
+
+  // Hoja 2: Rendimiento por Contratista
+  const allRecords = state.records || [];
+  const conMap = {};
+  allRecords.forEach(r => {
+    let c = (r.contratista_homologado || r.contratista || "S/A").trim();
+    if (!conMap[c]) conMap[c] = { name: c, cajas: 0, casetas: 0, total: 0, plazas: new Set(), tecnicos: new Set() };
+    if (r.tipo === "CASETA") conMap[c].casetas++;
+    else conMap[c].cajas++;
+    conMap[c].total++;
+    if (r.area_trabajo) conMap[c].plazas.add(r.area_trabajo);
+    if (r.tecnico) conMap[c].tecnicos.add(r.tecnico);
+  });
+  const conData = Object.values(conMap).sort((a,b) => b.total - a.total).map((c, idx) => ({
+    "Ranking": idx + 1,
+    "Empresa Contratista": c.name,
+    "Plazas Atendidas": c.plazas.size,
+    "Detalle de Plazas": Array.from(c.plazas).join(", "),
+    "Cajas Intervenidas ($60)": c.cajas,
+    "Casetas Intervenidas ($36)": c.casetas,
+    "Total Piezas": c.total,
+    "Técnicos Activos": c.tecnicos.size,
+    "% Aportación": (c.total / allRecords.length * 100).toFixed(1) + "%"
+  }));
+  const wsCon = XLSX.utils.json_to_sheet(conData);
+  XLSX.utils.book_append_sheet(wb, wsCon, "Ranking Contratistas");
+
+  const todayStr = getLocalDateStr(new Date());
+  XLSX.writeFile(wb, `Resumen_Operativo_Gerencial_Telmex_${todayStr}.xlsx`);
+  showToast("✅ Archivo de Excel gerencial descargado con éxito", "success", 3000);
+}
+
+function printBossSummary() {
+  const printWindow = window.open("", "_blank");
+  const todayStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+  const totalDone = document.getElementById("bossKpiTotalDone")?.innerText || "0";
+  const totalMeta = document.getElementById("bossKpiTotalMeta")?.innerText || "0";
+  const totalPct = document.getElementById("bossKpiTotalPercent")?.innerText || "0%";
+  const cajasDone = document.getElementById("bossKpiCajasDone")?.innerText || "0";
+  const casetasDone = document.getElementById("bossKpiCasetasDone")?.innerText || "0";
+  const conCount = document.getElementById("bossKpiContratistasCount")?.innerText || "0";
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Resumen Operativo Gerencial - Telmex 2026</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 30px; color: #0f172a; font-size: 11px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #0055a5; padding-bottom: 12px; margin-bottom: 20px; }
+        .title { font-size: 18px; font-weight: 900; color: #0055a5; }
+        .subtitle { font-size: 11px; color: #64748b; margin-top: 2px; }
+        .kpis { display: flex; gap: 15px; margin-bottom: 20px; }
+        .kpi-card { flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background: #f8fafc; }
+        .kpi-label { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+        .kpi-val { font-size: 20px; font-weight: 900; color: #0f172a; margin-top: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 10px; }
+        th { background: #0055a5; color: white; padding: 6px; text-align: left; }
+        td { padding: 6px; border-bottom: 1px solid #e2e8f0; }
+        tr:nth-child(even) { background: #f8fafc; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <div class="title">IASA / PCI | PROYECTO IMAGEN TELMEX 2026</div>
+          <div class="subtitle">Tablero de Control Gerencial & Avance Operativo vs Metas</div>
+        </div>
+        <div style="text-align: right;">
+          <div><b>Fecha de Emisión:</b> ${todayStr}</div>
+          <div style="color: #64748b;">Filtros: Contratista [${bossState.contratista}], Estado [${bossState.estado}], Área [${bossState.area}]</div>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi-card">
+          <div class="kpi-label">Avance Global</div>
+          <div class="kpi-val">${totalDone} / ${totalMeta} (${totalPct})</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Cajas Realizadas</div>
+          <div class="kpi-val">${cajasDone}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Casetas Realizadas</div>
+          <div class="kpi-val">${casetasDone}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Contratistas Activos</div>
+          <div class="kpi-val">${conCount}</div>
+        </div>
+      </div>
+
+      <h3>Avance vs Objetivo por Plaza y Estado:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>Plaza</th>
+            <th>Contratistas</th>
+            <th style="text-align: right;">Cajas</th>
+            <th style="text-align: right;">Casetas</th>
+            <th style="text-align: right;">Total Hecho</th>
+            <th style="text-align: right;">Meta Total</th>
+            <th style="text-align: center;">% Cumplimiento</th>
+            <th style="text-align: right;">Faltante</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${(bossState.cachedPlazasData || []).slice(0, 30).map(p => `
+            <tr>
+              <td><b>${p.estado}</b></td>
+              <td>${p.area}</td>
+              <td>${p.contratistas.slice(0, 2).join(', ')}</td>
+              <td style="text-align: right;">${p.cajasDone} / ${p.cajasMeta}</td>
+              <td style="text-align: right;">${p.casetasDone} / ${p.casetasMeta}</td>
+              <td style="text-align: right; font-weight: bold;">${p.totalDone}</td>
+              <td style="text-align: right;">${p.totalMeta}</td>
+              <td style="text-align: center; font-weight: bold; color: ${p.pct >= 70 ? '#16a34a' : p.pct >= 30 ? '#d97706' : '#dc2626'};">${p.pct.toFixed(1)}%</td>
+              <td style="text-align: right;">${p.faltante}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      <script>
+        window.onload = function() { window.print(); }
+      </script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
