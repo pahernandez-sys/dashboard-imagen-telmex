@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-18 22:28:45
+ * Sincronización: 2026-11-18 22:48:18
  * Estado de corte: Corte oficial de las 10:00 PM activo (18/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM.
- * Trabajos de campo visibles: 26938 (Retenidos por corte: 4)
+ * Trabajos de campo visibles: 26937 (Retenidos por corte: 5)
  * Movimientos de materiales visibles: 306 (Retenidos por corte: 1)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-18 22:28:29",
+  "now": "2026-11-18 22:48:03",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-18",
@@ -84898,7 +84898,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-17 13:16:34",
     "timestamp": 1794942994.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-2834",
+    "identificador": "S/ID-2835",
     "modelo": "SIECOR SENCILLA 1PTA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -419866,36 +419866,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 20.5338569,
     "longitud": -100.82921,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aefb548297ae2e0287fac52.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16151940-1259",
-    "fecha": "2026-11-07",
-    "fecha_captura": "2026-11-07",
-    "hora": "17:33",
-    "fecha_corte": "2026-11-07",
-    "created_at_iso": "2026-11-07 17:33:27",
-    "timestamp": 1794094407.0,
-    "tipo": "CAJA",
-    "identificador": "AZT0035",
-    "modelo": "ENVOLVENTE DOBLE",
-    "estado": "GUANAJUATO",
-    "area_trabajo": "CELAYA",
-    "contratista": "Arturo Zavala Fuentes",
-    "tecnico": "Raul Ruenes Malagón",
-    "contratista_original": "Arturo Zavala Fuentes",
-    "tecnico_original": "Raul Ruenes Malagon",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aefb542ccd8c4c14fe083c2.jpg",
-    "oferta": "200_mb",
-    "hay_caja_caseta": "SÍ",
-    "existe_bd": "Sí",
-    "comentarios": "Buena",
-    "num_viniles": 2.0,
-    "version": "v6 - Android",
-    "latitud": 20.5373841,
-    "longitud": -100.8306457,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aefb542ccd8c4c14fe083c2.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
