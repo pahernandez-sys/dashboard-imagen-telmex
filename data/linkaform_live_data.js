@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-19 01:58:22
+ * Sincronización: 2026-11-19 02:18:30
  * Estado de corte: Reporte matutino cerrado al 18/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
- * Trabajos de campo visibles: 26938 (Retenidos por corte: 27)
+ * Trabajos de campo visibles: 26937 (Retenidos por corte: 28)
  * Movimientos de materiales visibles: 306 (Retenidos por corte: 1)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-19 01:58:04",
+  "now": "2026-11-19 02:18:13",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-18",
@@ -29176,36 +29176,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 21.106817,
     "longitud": -101.6714021,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afe04130f11ee378295a91d.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16189722-1259",
-    "fecha": "2026-11-18",
-    "fecha_captura": "2026-11-18",
-    "hora": "14:01",
-    "fecha_corte": "2026-11-18",
-    "created_at_iso": "2026-11-18 14:01:22",
-    "timestamp": 1795032082.0,
-    "tipo": "CAJA",
-    "identificador": "PSU0002",
-    "modelo": "TRADICIONAL SENCILLA",
-    "estado": "GUANAJUATO",
-    "area_trabajo": "LEON",
-    "contratista": "Victor Hugo López García",
-    "tecnico": "Pablo Emmanuel Reyes Hernandez",
-    "contratista_original": "Victor Hugo Lopez Garcia",
-    "tecnico_original": "Pablo Emmanuel Reyes Hernandez",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afe040dffe768640c5d89a7.jpg",
-    "oferta": "200_mb",
-    "hay_caja_caseta": "SÍ",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 1.0,
-    "version": "v9 - Android",
-    "latitud": 21.1086013,
-    "longitud": -101.6649354,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6afe040dffe768640c5d89a7.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
