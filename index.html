@@ -768,60 +768,66 @@
 
       <!-- TARJETAS DE RESULTADOS FINANCIEROS (LIQUIDACIÓN MONETARIA EN TIEMPO REAL) -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- Tarjeta 1: MONTO TOTAL A PAGAR ($ MXN) -->
+        <!-- Tarjeta 1: SALDO PENDIENTE POR PAGAR ($ MXN) -->
         <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 text-white rounded-2xl p-5 card-shadow flex items-center justify-between border border-emerald-400/30">
           <div>
             <p class="text-[11px] font-black uppercase tracking-wider text-emerald-100 flex items-center gap-1">
-              <span>💵</span> TOTAL A PAGAR (CONJUNTO)
+              <span>💵</span> SALDO PENDIENTE A LIQUIDAR
             </p>
             <h3 id="pagosKpiMontoDinero" class="text-3xl font-black mt-1 text-white tracking-tight">$0.00</h3>
-            <p id="pagosKpiFormula" class="text-xs text-emerald-100 font-semibold mt-1">0 piezas x $60.00 MXN</p>
+            <p id="pagosKpiFormula" class="text-xs text-emerald-100 font-semibold mt-1">0 piezas pendientes x $60.00 MXN</p>
           </div>
           <div class="p-3.5 bg-white/15 rounded-2xl text-3xl shadow-inner">
             💰
           </div>
         </div>
 
-        <!-- Tarjeta 2: Número de Piezas / Cajas Validadas -->
+        <!-- Tarjeta 2: BALANCE DE TRABAJOS (HECHAS vs PAGADAS) -->
         <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-2xl p-5 card-shadow flex items-center justify-between border border-blue-400/30">
           <div>
             <p id="pagosKpiPiezasLabel" class="text-[11px] font-black uppercase tracking-wider text-blue-100 flex items-center gap-1">
-              <span>📦</span> CAJAS VALIDADAS
+              <span>📦</span> PIEZAS PENDIENTES
             </p>
             <h3 id="pagosKpiCantidadPiezas" class="text-3xl font-black mt-1 text-white">0</h3>
-            <p id="pagosKpiPiezasDesc" class="text-xs text-blue-100 font-semibold mt-1">Folios confirmados para pago</p>
+            <p id="pagosKpiPiezasDesc" class="text-xs text-blue-100 font-semibold mt-1">0 hechas en campo | 0 pagadas</p>
           </div>
           <div id="pagosKpiPiezasIcon" class="p-3.5 bg-white/15 rounded-2xl text-3xl shadow-inner">
             📦
           </div>
         </div>
 
-        <!-- Tarjeta 3: Áreas Conjuntas Incluidas -->
-        <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-2xl p-5 card-shadow flex items-center justify-between border border-slate-700">
+        <!-- Tarjeta 3: TOTAL HISTÓRICO LIQUIDADO ($ MXN) -->
+        <div class="bg-gradient-to-br from-indigo-700 to-indigo-950 text-white rounded-2xl p-5 card-shadow flex items-center justify-between border border-indigo-400/30">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-wider text-slate-300 flex items-center gap-1">
-              <span>🗺️</span> PLAZAS EN ESTE PAGO
+            <p class="text-[11px] font-black uppercase tracking-wider text-indigo-200 flex items-center gap-1">
+              <span>✅</span> TOTAL YA PAGADO HISTÓRICO
             </p>
-            <h3 id="pagosKpiPlazasCount" class="text-3xl font-black mt-1 text-amber-300">0</h3>
-            <p id="pagosKpiPlazasSubtitle" class="text-xs text-slate-300 font-semibold mt-1">Áreas agrupadas</p>
+            <h3 id="pagosKpiMontoPagado" class="text-3xl font-black mt-1 text-indigo-100">$0.00</h3>
+            <p id="pagosKpiPiezasPagadasDesc" class="text-xs text-indigo-200 font-semibold mt-1">0 piezas liquidadas</p>
           </div>
-          <div class="p-3.5 bg-white/10 rounded-2xl text-3xl shadow-inner text-amber-400">
-            🗺️
+          <div class="p-3.5 bg-white/10 rounded-2xl text-3xl shadow-inner text-indigo-300">
+            💳
           </div>
         </div>
 
-        <!-- Tarjeta 4: Contratista / Cuadrillas -->
-        <div class="bg-gradient-to-br from-amber-600 to-amber-700 text-white rounded-2xl p-5 card-shadow flex items-center justify-between border border-amber-400/30">
-          <div>
-            <p id="pagosKpiContratistaLabel" class="text-[11px] font-black uppercase tracking-wider text-amber-100 flex items-center gap-1">
-              <span>🏢</span> CONTRATISTA
-            </p>
-            <h3 id="pagosKpiContratistaTitle" class="text-lg font-black mt-1 text-white truncate max-w-[190px]">Todos</h3>
-            <p id="pagosKpiCuadrillasCount" class="text-xs text-amber-100 font-semibold mt-1">0 técnicos involucrados</p>
+        <!-- Tarjeta 4: Contratista / Cuadrillas & Botón de Acción -->
+        <div class="bg-gradient-to-br from-amber-600 to-amber-700 text-white rounded-2xl p-4 card-shadow flex flex-col justify-between border border-amber-400/30">
+          <div class="flex items-center justify-between">
+            <div>
+              <p id="pagosKpiContratistaLabel" class="text-[11px] font-black uppercase tracking-wider text-amber-100 flex items-center gap-1">
+                <span>🏢</span> CONTRATISTA
+              </p>
+              <h3 id="pagosKpiContratistaTitle" class="text-base font-black mt-0.5 text-white truncate max-w-[170px]">Todos</h3>
+              <p id="pagosKpiCuadrillasCount" class="text-[11px] text-amber-100 font-semibold">0 técnicos involucrados</p>
+            </div>
+            <div class="p-2.5 bg-white/15 rounded-xl text-2xl shadow-inner">
+              🏢
+            </div>
           </div>
-          <div class="p-3.5 bg-white/15 rounded-2xl text-3xl shadow-inner">
-            🏢
-          </div>
+          <button type="button" onclick="openRegistrarPagoModal()" class="mt-2 w-full py-1.5 bg-white hover:bg-amber-50 text-amber-950 font-black text-xs rounded-xl shadow flex items-center justify-center gap-1.5 transition-all">
+            <span>💳</span>
+            <span>Registrar Pago / Liquidar</span>
+          </button>
         </div>
       </div>
 
@@ -841,6 +847,63 @@
           <!-- Inyectado dinámicamente con tabla de subtotales por plaza -->
         </div>
       </div>
+
+
+      <!-- BITÁCORA HISTÓRICA DE PAGOS REGISTRADOS Y CONCILIACIONES (CONTROL ANTI-DUPLICIDAD) -->
+      <div id="pagosHistorialSection" class="bg-white border-2 border-indigo-200 rounded-2xl p-5 card-shadow flex flex-col gap-3">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-indigo-100 pb-3">
+          <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-indigo-100 text-indigo-700 rounded-xl text-xl font-bold">📜</div>
+            <div>
+              <h4 class="font-black text-sm text-slate-900 flex items-center gap-2">
+                <span>Bitácora de Pagos Efectuados a Contratistas</span>
+                <span id="pagosHistorialTotalBadge" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">0 pagos registrados</span>
+              </h4>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Historial de liquidaciones conciliadas. Cada pago registrado se descuenta de los trabajos en campo para evitar duplicar pagos en futuros cortes.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" onclick="exportarBitacoraPagosCSV()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1 transition-colors">
+              <span>📥</span> Exportar a Excel
+            </button>
+            <button type="button" onclick="exportarRespaldoPagosJSON()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 flex items-center gap-1 transition-colors" title="Descargar copia de seguridad en JSON">
+              <span>💾</span> Respaldo
+            </button>
+            <label class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 flex items-center gap-1 cursor-pointer transition-colors" title="Restaurar copia de seguridad en JSON">
+              <span>📤</span> Restaurar
+              <input type="file" id="inputRestaurarPagosJSON" accept=".json" class="hidden" onchange="importarRespaldoPagosJSON(event)">
+            </label>
+          </div>
+        </div>
+
+        <!-- Tabla de la Bitácora -->
+        <div class="overflow-x-auto max-h-[350px] overflow-y-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-indigo-50 text-indigo-950 font-bold uppercase text-[10px] tracking-wider border-b border-indigo-200 sticky top-0 z-10">
+              <tr>
+                <th class="p-2.5">Folio Pago</th>
+                <th class="p-2.5">Fecha Pago</th>
+                <th class="p-2.5">Plaza / Área</th>
+                <th class="p-2.5">Contratista</th>
+                <th class="p-2.5 text-center">Tipo</th>
+                <th class="p-2.5 text-center font-extrabold text-blue-900">Piezas Pagadas</th>
+                <th class="p-2.5 text-right">Tarifa</th>
+                <th class="p-2.5 text-right font-black text-emerald-700">Monto Liquidado ($)</th>
+                <th class="p-2.5 text-center text-amber-800">Quedaron Pendientes</th>
+                <th class="p-2.5">Factura / Ref</th>
+                <th class="p-2.5">Autorizó / Notas</th>
+                <th class="p-2.5 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="pagosHistorialTableBody" class="divide-y divide-slate-100 font-medium">
+              <!-- Inyectado dinámicamente con pagos guardados -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
 
       <!-- DESGLOSE POR MODELO COLOCADO -->
       <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow flex flex-col gap-3">
@@ -866,14 +929,22 @@
             <p id="pagosTableCounterInfo" class="text-xs text-slate-500 mt-0.5">Mostrando 0 registros</p>
           </div>
 
-          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <button type="button" onclick="exportPagosCSV()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
-              <span>📥</span>
-              <span>Exportar Liquidación a Excel (CSV)</span>
+          <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+            <button type="button" onclick="openRegistrarPagoModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
+              <span>💳</span>
+              <span>Registrar Pago</span>
             </button>
-            <button type="button" onclick="printPagosSummary()" class="px-4 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
+            <button type="button" onclick="toggleHistorialPagosSection()" id="btnToggleHistorialPagos" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
+              <span>📜</span>
+              <span>Bitácora de Pagos (<span id="pagosHistorialBadgeCount">0</span>)</span>
+            </button>
+            <button type="button" onclick="exportPagosCSV()" class="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
+              <span>📥</span>
+              <span>Exportar Trabajos (CSV)</span>
+            </button>
+            <button type="button" onclick="printPagosSummary()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
               <span>🖨️</span>
-              <span>Imprimir Carátula de Pago</span>
+              <span>Imprimir Carátula</span>
             </button>
           </div>
         </div>
@@ -1384,6 +1455,146 @@
   </div>
 
   <!-- ==================== FOOTER ==================== -->
+  
+  <!-- ==================== MODAL DE REGISTRO DE PAGO / LIQUIDACIÓN ==================== -->
+  <div id="modalRegistrarPago" class="modal-overlay hidden" style="z-index: 99999;">
+    <div class="modal-container max-w-lg p-6 text-left animate-popIn bg-white rounded-2xl shadow-2xl border border-slate-200">
+      
+      <!-- Encabezado Modal -->
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold border border-emerald-300">
+            💳
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-800">Registrar Pago a Contratista</h3>
+            <p class="text-xs text-slate-500">Conciliación de trabajos y registro oficial para evitar duplicidades</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeRegistrarPagoModal()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold">✕</button>
+      </div>
+
+      <!-- Formulario de Liquidación -->
+      <div class="flex flex-col gap-3.5 text-xs">
+        
+        <!-- Fila 1: Tipo y Tarifa -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tipo de Activo:</label>
+            <div id="modalPagoTipoBadge" class="p-2 rounded-lg font-bold text-center border text-xs bg-blue-50 text-blue-900 border-blue-300">
+              CAJA ($60.00 MXN)
+            </div>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Fecha del Pago:</label>
+            <input type="date" id="modalPagoFecha" class="w-full p-2 border border-slate-300 rounded-lg font-semibold bg-slate-50">
+          </div>
+        </div>
+
+        <!-- Fila 2: Plaza y Contratista -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Plaza / Área:</label>
+            <select id="modalPagoSelectArea" onchange="onModalPagoAreaOrConChange()" class="w-full p-2 border border-slate-300 rounded-lg font-bold bg-slate-50">
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Contratista a Pagar:</label>
+            <select id="modalPagoSelectContratista" onchange="onModalPagoAreaOrConChange()" class="w-full p-2 border border-slate-300 rounded-lg font-bold bg-slate-50">
+            </select>
+          </div>
+        </div>
+
+        <!-- Fila 3: Caja de Conciliación en Vivo -->
+        <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3 grid grid-cols-3 gap-2 text-center">
+          <div>
+            <span class="text-[10px] font-bold text-slate-500 uppercase block">Hechas a la fecha</span>
+            <span id="modalPagoRealizadasCount" class="text-base font-black text-slate-800">0</span>
+          </div>
+          <div>
+            <span class="text-[10px] font-bold text-slate-500 uppercase block">Pagadas Previas</span>
+            <span id="modalPagoPagadasPreviasCount" class="text-base font-black text-indigo-700">0</span>
+          </div>
+          <div class="bg-emerald-100/60 rounded-lg p-1 border border-emerald-200">
+            <span class="text-[10px] font-black text-emerald-800 uppercase block">Por Pagar Hoy</span>
+            <span id="modalPagoDisponiblesCount" class="text-base font-black text-emerald-700">0</span>
+          </div>
+        </div>
+
+        <!-- Fila 4: Piezas a Pagar y Monto en Vivo -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <label for="modalPagoInputPiezas" class="font-black text-slate-800">
+              Piezas a Pagar en esta Emisión:
+            </label>
+            <span class="text-[11px] text-slate-500">
+              Tarifa: <b id="modalPagoTarifaLabel">$60.00 MXN</b>
+            </span>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <input type="number" id="modalPagoInputPiezas" min="1" step="1" 
+                   class="w-32 p-2.5 text-center text-lg font-black border-2 border-emerald-500 rounded-xl bg-white shadow-sm focus:ring-4 focus:ring-emerald-500/20 outline-none"
+                   oninput="onModalPagoPiezasInput()">
+            
+            <div class="flex-1 text-right">
+              <span class="text-[10px] uppercase font-bold text-slate-500 block">Total a Transferir</span>
+              <span id="modalPagoMontoCalculado" class="text-xl font-black text-emerald-700">$0.00 MXN</span>
+            </div>
+          </div>
+
+          <!-- Mensaje Dinámico de Saldo Remanente -->
+          <div id="modalPagoRemanenteInfo" class="text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-200 mt-1">
+            Quedan 0 piezas pendientes para el próximo pago.
+          </div>
+        </div>
+
+        <!-- Fila 5: Factura / Referencia y Método de Pago -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Factura / Recibo / Ref Fiscal:</label>
+            <input type="text" id="modalPagoFactura" placeholder="ej. FACT-2026-PUE-01" class="w-full p-2 border border-slate-300 rounded-lg bg-white font-medium">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Método de Pago:</label>
+            <select id="modalPagoMetodo" class="w-full p-2 border border-slate-300 rounded-lg bg-white font-semibold">
+              <option value="Transferencia Electrónica (SPEI)">Transferencia Electrónica (SPEI)</option>
+              <option value="Cheque Bancario">Cheque Bancario</option>
+              <option value="Caja Chica / Efectivo">Caja Chica / Efectivo</option>
+              <option value="Compensación Contable">Compensación Contable</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fila 6: Autorizado por y Notas -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Autorizado / Registrado por:</label>
+            <input type="text" id="modalPagoAutorizo" value="Responsable de Pagos" class="w-full p-2 border border-slate-300 rounded-lg bg-white font-medium">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Observaciones / Notas:</label>
+            <input type="text" id="modalPagoNotas" placeholder="ej. Pago parcial autorizado" class="w-full p-2 border border-slate-300 rounded-lg bg-white font-medium">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Botones de Acción del Modal -->
+      <div class="grid grid-cols-2 gap-3 mt-5 pt-3 border-t border-slate-100">
+        <button type="button" onclick="closeRegistrarPagoModal()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors">
+          Cancelar
+        </button>
+        <button type="button" onclick="confirmarRegistroPago()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5">
+          <span>💾</span>
+          <span>Guardar Pago y Conciliar</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
   <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 mt-auto">
     <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-2">
       <div>Campaña de Imagen Telmex 2026 • Sistema de Control y Materiales</div>
