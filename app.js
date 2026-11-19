@@ -4097,16 +4097,45 @@ function renderPagosTable() {
   if (!tbody) return;
 
   const total = pagosFilteredRecords.length;
+
+  // Precalcular el estatus de pago de cada registro basado en FIFO (más antiguos primero)
+  const sortedRecords = [...pagosFilteredRecords].sort((a, b) => {
+    const fa = (a.fecha_corte || a.fecha_captura || a.fecha || "") + " " + (a.hora || "");
+    const fb = (b.fecha_corte || b.fecha_captura || b.fecha || "") + " " + (b.hora || "");
+    return fa.localeCompare(fb);
+  });
+
+  const recordPaidStatus = new Map();
+  const counterPerKey = {};
+
+  sortedRecords.forEach(r => {
+    const area = (r.area_trabajo || "").trim().toUpperCase();
+    const con = (r.contratista_homologado || r.contratista || "").trim();
+    const key = `${pagosState.tipo}|${area}|${con}`;
+
+    counterPerKey[key] = (counterPerKey[key] || 0) + 1;
+    const pagadas = getPiezasPagadasAcumuladas(pagosState.tipo, area, con);
+
+    const isPaid = counterPerKey[key] <= pagadas;
+    recordPaidStatus.set(r, isPaid);
+  });
+
+  let totalPagadosFiltrados = 0;
+  pagosFilteredRecords.forEach(r => {
+    if (recordPaidStatus.get(r)) totalPagadosFiltrados++;
+  });
+  const totalPendientesFiltrados = Math.max(0, total - totalPagadosFiltrados);
+
   if (counterInfo) {
     const conName = pagosState.contratista !== "TODOS" ? `para ${pagosState.contratista}` : "generales";
-    counterInfo.innerText = `Mostrando ${formatNumber(total)} trabajos validados ${conName} (${formatMoney(total * pagosState.tarifaActiva)})`;
+    counterInfo.innerText = `Mostrando ${formatNumber(total)} trabajos ${conName} (${formatNumber(totalPendientesFiltrados)} por pagar: ${formatMoney(totalPendientesFiltrados * pagosState.tarifaActiva)} | ${formatNumber(totalPagadosFiltrados)} ya liquidados)`;
   }
 
   if (total === 0) {
     const isNoArea = pagosState.selectedAreas.size === 0;
     tbody.innerHTML = `
       <tr>
-        <td colspan="13" class="text-center py-12 text-slate-400">
+        <td colspan="14" class="text-center py-12 text-slate-400">
           <div class="text-3xl mb-2">${isNoArea ? '🗺️' : '🔍'}</div>
           <div class="font-bold text-sm text-slate-700">${isNoArea ? 'Ninguna plaza seleccionada en el Paso 2' : 'No se encontraron trabajos con los filtros seleccionados'}</div>
           <div class="text-xs text-slate-500 mt-1">${isNoArea ? 'Haz clic en una o varias plazas del tablero para consultar sus folios y calcular el pago, o pulsa "✓ Todas" para el costo total.' : 'Prueba seleccionando más áreas en el tablero o cambiando el contratista'}</div>
@@ -4144,6 +4173,11 @@ function renderPagosTable() {
     const comentarios = r.comentarios || "";
     const foto = r.foto_evidencia || r.foto_despues || r.foto_antes || "";
 
+    const isPaid = recordPaidStatus.get(r);
+    const badgeEstatus = isPaid
+      ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">✅ Liquidado</span>'
+      : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">⏳ Por Pagar</span>';
+
     const fotoHtml = foto ? `
       <div class="flex items-center justify-center">
         <img src="${foto}" 
@@ -4157,7 +4191,7 @@ function renderPagosTable() {
     `;
 
     html += `
-      <tr class="hover:bg-amber-50/40 transition-colors">
+      <tr class="${isPaid ? 'hover:bg-slate-50' : 'bg-amber-50/20 hover:bg-amber-50/60'} transition-colors">
         <td class="p-2.5 text-center text-slate-400 font-medium">${num}</td>
         <td class="p-2.5 font-mono text-[11px] font-bold text-slate-800">${folio}</td>
         <td class="p-2.5 whitespace-nowrap text-slate-600">
@@ -4175,7 +4209,8 @@ function renderPagosTable() {
         <td class="p-2.5 font-medium text-slate-700">${modelo}</td>
         <td class="p-2.5 font-mono text-[11px] font-semibold text-slate-900">${identificador}</td>
         <td class="p-2.5 text-right font-medium text-slate-600">$${tarifa.toFixed(2)}</td>
-        <td class="p-2.5 text-right font-black text-emerald-700">$${tarifa.toFixed(2)}</td>
+        <td class="p-2.5 text-right font-black ${isPaid ? 'text-slate-400' : 'text-emerald-700'}">$${tarifa.toFixed(2)}</td>
+        <td class="p-2.5 text-center">${badgeEstatus}</td>
         <td class="p-2.5">${fotoHtml}</td>
         <td class="p-2.5 text-slate-500 max-w-[150px] truncate" title="${comentarios}">
           ${comentarios || "-"}
