@@ -130,7 +130,7 @@ def add_resumen_general_sheet(wb, cutoff_info):
     ws["H5"].alignment = al_center
 
     ws.merge_cells("H6:I6")
-    ws["H6"] = "='Programa CASETAS REPORTE DIARIO'!CU79+'Programa CAJAS REPORTE DIARIO'!CO77"
+    ws["H6"] = "='Programa CASETAS REPORTE DIARIO'!CS79+'Programa CAJAS REPORTE DIARIO'!CM77"
     ws["H6"].font = f_kpi_val_mat
     ws["H6"].alignment = al_center
     ws["H6"].number_format = "#,##0"

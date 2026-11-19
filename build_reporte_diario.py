@@ -404,11 +404,10 @@ def build_reporte_diario(current_dt=None):
     fill_si_hdr = PatternFill(start_color="D1E7DD", end_color="D1E7DD", fill_type="solid") # Verde tenue
     fill_no_hdr = PatternFill(start_color="F8D7DA", end_color="F8D7DA", fill_type="solid") # Rojo tenue
 
-    # 1. Actualizar Hoja CASETAS (Col CO = SÍ CASETA, Col CP = NO CASETA, Col CQ = TOTAL COLOCADAS, Col CR = ATENDIDAS)
+    # 1. Actualizar Hoja CASETAS (Col CO = SÍ CASETA, Col CP = NO CASETA)
+    # Se eliminan las columnas TOTAL COLOCADAS y ATENDIDAS
     ws_cas.column_dimensions["CO"].width = 13.0
     ws_cas.column_dimensions["CP"].width = 13.0
-    ws_cas.column_dimensions["CQ"].width = 16.0
-    ws_cas.column_dimensions["CR"].width = 14.0
 
     ws_cas["CO12"].value = "SÍ CASETA"
     ws_cas["CO12"].font = font_hdr
@@ -420,14 +419,6 @@ def build_reporte_diario(current_dt=None):
     ws_cas["CP12"].alignment = align_center
     ws_cas["CP12"].fill = fill_no_hdr
 
-    ws_cas["CQ12"].value = "TOTAL COLOCADAS"
-    ws_cas["CQ12"].font = font_hdr
-    ws_cas["CQ12"].alignment = align_center
-
-    ws_cas["CR12"].value = "ATENDIDAS"
-    ws_cas["CR12"].font = font_hdr
-    ws_cas["CR12"].alignment = align_center
-
     ws_cas["CO13"].value = "=+CO79"
     ws_cas["CO13"].font = font_tot
     ws_cas["CO13"].alignment = align_center
@@ -437,16 +428,6 @@ def build_reporte_diario(current_dt=None):
     ws_cas["CP13"].font = font_tot
     ws_cas["CP13"].alignment = align_center
     ws_cas["CP13"].number_format = "#,##0"
-
-    ws_cas["CQ13"].value = "=+CQ79"
-    ws_cas["CQ13"].font = font_tot
-    ws_cas["CQ13"].alignment = align_center
-    ws_cas["CQ13"].number_format = "#,##0"
-
-    ws_cas["CR13"].value = "=+CR79"
-    ws_cas["CR13"].font = font_tot
-    ws_cas["CR13"].alignment = align_center
-    ws_cas["CR13"].number_format = "#,##0"
 
     for r in range(14, 79):
         # CO: SÍ CASETA
@@ -463,23 +444,6 @@ def build_reporte_diario(current_dt=None):
         c_no.alignment = align_right
         c_no.number_format = "#,##0"
 
-        # CQ: TOTAL COLOCADAS
-        c_cp = ws_cas.cell(r, 95)
-        c_cp.value = f"=CN{r}"
-        c_cp.font = font_data
-        c_cp.alignment = align_right
-        c_cp.number_format = "#,##0"
-
-        # CR: ATENDIDAS (COLOCADAS + NO)
-        c_cr = ws_cas.cell(r, 96)
-        c_cr.value = f"=CQ{r}+CP{r}"
-        c_cr.font = font_data
-        c_cr.alignment = align_right
-        c_cr.number_format = "#,##0"
-
-        # CW: MATERIAL DISPONIBLE (CV - CQ)
-        ws_cas.cell(r, 101).value = f"=CV{r}-CQ{r}"
-
     ws_cas["CO79"].value = "=+SUM(CO14:CO78)"
     ws_cas["CO79"].font = font_tot
     ws_cas["CO79"].alignment = align_right
@@ -490,26 +454,25 @@ def build_reporte_diario(current_dt=None):
     ws_cas["CP79"].alignment = align_right
     ws_cas["CP79"].number_format = "#,##0"
 
-    ws_cas["CQ79"].value = "=+SUM(CQ14:CQ78)"
-    ws_cas["CQ79"].font = font_tot
-    ws_cas["CQ79"].alignment = align_right
-    ws_cas["CQ79"].number_format = "#,##0"
+    # Eliminar físicamente las 2 columnas TOTAL COLOCADAS y ATENDIDAS (cols 95 y 96)
+    ws_cas.delete_cols(95, 2)
 
-    ws_cas["CR79"].value = "=+SUM(CR14:CR78)"
-    ws_cas["CR79"].font = font_tot
-    ws_cas["CR79"].alignment = align_right
-    ws_cas["CR79"].number_format = "#,##0"
+    # Actualizar fórmulas desplazadas en CASETAS
+    for r in range(14, 79):
+        ws_cas.cell(r, 106).value = f"=SUM(CW{r}:DA{r})"  # TOTAL RECIBIDO
+        ws_cas.cell(r, 97).value = f"=DB{r}"              # MATERIAL RECIBIDO
+        ws_cas.cell(r, 98).value = f"=CS{r}/2"             # MATERIAL CASETAS
+        ws_cas.cell(r, 99).value = f"=CT{r}-CN{r}"        # MATERIAL DISPONIBLE
 
-    ws_cas["CW79"].value = "=+SUM(CW14:CW78)"
-    ws_cas["CW79"].font = font_tot
-    ws_cas["CW79"].alignment = align_right
-    ws_cas["CW79"].number_format = "#,##0"
+    ws_cas["CS79"].value = "=+SUM(CS14:CS78)"
+    ws_cas["CT79"].value = "=+SUM(CT14:CT78)"
+    ws_cas["CU79"].value = "=+SUM(CU14:CU78)"
+    ws_cas["DB79"].value = "=+SUM(DB14:DB78)"
 
-    # 2. Actualizar Hoja CAJAS (Col CI = SÍ CAJA, Col CJ = NO CAJA, Col CK = TOTAL COLOCADAS, Col CL = ATENDIDAS)
+    # 2. Actualizar Hoja CAJAS (Col CI = SÍ CAJA, Col CJ = NO CAJA)
+    # Se eliminan las columnas TOTAL COLOCADAS y ATENDIDAS
     ws_caj.column_dimensions["CI"].width = 13.0
     ws_caj.column_dimensions["CJ"].width = 13.0
-    ws_caj.column_dimensions["CK"].width = 16.0
-    ws_caj.column_dimensions["CL"].width = 14.0
 
     ws_caj["CI12"].value = "SÍ CAJA"
     ws_caj["CI12"].font = font_hdr
@@ -521,14 +484,6 @@ def build_reporte_diario(current_dt=None):
     ws_caj["CJ12"].alignment = align_center
     ws_caj["CJ12"].fill = fill_no_hdr
 
-    ws_caj["CK12"].value = "TOTAL COLOCADAS"
-    ws_caj["CK12"].font = font_hdr
-    ws_caj["CK12"].alignment = align_center
-
-    ws_caj["CL12"].value = "ATENDIDAS"
-    ws_caj["CL12"].font = font_hdr
-    ws_caj["CL12"].alignment = align_center
-
     ws_caj["CI13"].value = "=+CI77"
     ws_caj["CI13"].font = font_tot
     ws_caj["CI13"].alignment = align_center
@@ -538,16 +493,6 @@ def build_reporte_diario(current_dt=None):
     ws_caj["CJ13"].font = font_tot
     ws_caj["CJ13"].alignment = align_center
     ws_caj["CJ13"].number_format = "#,##0"
-
-    ws_caj["CK13"].value = "=+CK77"
-    ws_caj["CK13"].font = font_tot
-    ws_caj["CK13"].alignment = align_center
-    ws_caj["CK13"].number_format = "#,##0"
-
-    ws_caj["CL13"].value = "=+CL77"
-    ws_caj["CL13"].font = font_tot
-    ws_caj["CL13"].alignment = align_center
-    ws_caj["CL13"].number_format = "#,##0"
 
     for r in range(14, 77):
         # CI: SÍ CAJA
@@ -564,23 +509,6 @@ def build_reporte_diario(current_dt=None):
         c_no.alignment = align_right
         c_no.number_format = "#,##0"
 
-        # CK: TOTAL COLOCADAS
-        c_cj = ws_caj.cell(r, 89)
-        c_cj.value = f"=CH{r}"
-        c_cj.font = font_data
-        c_cj.alignment = align_right
-        c_cj.number_format = "#,##0"
-
-        # CL: ATENDIDAS (COLOCADAS + NO)
-        c_cl = ws_caj.cell(r, 90)
-        c_cl.value = f"=CK{r}+CJ{r}"
-        c_cl.font = font_data
-        c_cl.alignment = align_right
-        c_cl.number_format = "#,##0"
-
-        # CQ: MATERIAL DISPONIBLE (CP - CK)
-        ws_caj.cell(r, 95).value = f"=CP{r}-CK{r}"
-
     ws_caj["CI77"].value = "=+SUM(CI14:CI76)"
     ws_caj["CI77"].font = font_tot
     ws_caj["CI77"].alignment = align_right
@@ -591,20 +519,21 @@ def build_reporte_diario(current_dt=None):
     ws_caj["CJ77"].alignment = align_right
     ws_caj["CJ77"].number_format = "#,##0"
 
-    ws_caj["CK77"].value = "=+SUM(CK14:CK76)"
-    ws_caj["CK77"].font = font_tot
-    ws_caj["CK77"].alignment = align_right
-    ws_caj["CK77"].number_format = "#,##0"
+    # Eliminar físicamente las 2 columnas TOTAL COLOCADAS y ATENDIDAS (cols 89 y 90)
+    ws_caj.delete_cols(89, 2)
 
-    ws_caj["CL77"].value = "=+SUM(CL14:CL76)"
-    ws_caj["CL77"].font = font_tot
-    ws_caj["CL77"].alignment = align_right
-    ws_caj["CL77"].number_format = "#,##0"
+    # Actualizar fórmulas desplazadas en CAJAS
+    for r in range(14, 77):
+        ws_caj.cell(r, 105).value = f"=SUM(CQ{r}:CZ{r})" # TOTAL RECIBIDO
+        ws_caj.cell(r, 91).value = f"=DA{r}"              # MATERIAL RECIBIDO
+        ws_caj.cell(r, 92).value = f"=CM{r}"              # MATERIAL Cajas
+        ws_caj.cell(r, 93).value = f"=CN{r}-CH{r}"        # MATERIAL DISPONIBLE
 
-    ws_caj["CQ77"].value = "=+SUM(CQ14:CQ76)"
-    ws_caj["CQ77"].font = font_tot
-    ws_caj["CQ77"].alignment = align_right
-    ws_caj["CQ77"].number_format = "#,##0"
+    ws_caj["CM77"].value = "=+SUM(CM14:CM76)"
+    ws_caj["CN77"].value = "=+SUM(CN14:CN76)"
+    ws_caj["CO77"].value = "=+SUM(CO14:CO76)"
+    ws_caj["DA77"].value = "=+SUM(DA14:DA76)"
+
 
 
 
@@ -642,7 +571,7 @@ def build_reporte_diario(current_dt=None):
     ws_cas["K3"] = "TOTAL MATERIAL RECIBIDO:"
     ws_cas["K3"].font = Font(name="Calibri", size=11, bold=True, color="B45309")
     ws_cas["K3"].alignment = Alignment(horizontal="right", vertical="center")
-    ws_cas["N3"] = "=+CU79+'Programa CAJAS REPORTE DIARIO'!CO77"
+    ws_cas["N3"] = "=+CS79+'Programa CAJAS REPORTE DIARIO'!CM77"
     ws_cas["N3"].font = f_kpi_mat_top
     ws_cas["N3"].alignment = Alignment(horizontal="center", vertical="center")
     ws_cas["N3"].fill = fill_mat_top
