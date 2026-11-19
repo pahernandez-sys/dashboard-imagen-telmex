@@ -2815,6 +2815,614 @@ function saveNewNip() {
 }
 
 // Inicializar el Módulo de Pagos
+
+// =========================================================================
+// GESTOR DE BITÁCORA DE PAGOS Y CONCILIACIONES (ANTI-DUPLICIDAD)
+// =========================================================================
+const STORAGE_KEY_PAGOS = "TELMEX_HISTORIAL_PAGOS_V1";
+
+function getPagosRegistrados() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PAGOS);
+    if (!raw) return [];
+    const list = JSON.parse(raw);
+    return Array.isArray(list) ? list : [];
+  } catch (e) {
+    console.error("Error al cargar historial de pagos:", e);
+    return [];
+  }
+}
+
+function savePagosRegistrados(list) {
+  try {
+    localStorage.setItem(STORAGE_KEY_PAGOS, JSON.stringify(list));
+  } catch (e) {
+    console.error("Error al guardar historial de pagos:", e);
+  }
+}
+
+// Retorna el total de piezas pagadas acumuladas para tipo, área y contratista
+function getPiezasPagadasAcumuladas(tipo, area, contratista) {
+  const lista = getPagosRegistrados();
+  const areaNorm = (area || "").trim().toUpperCase();
+  const conNorm = (contratista || "").trim();
+
+  return lista.reduce((acc, p) => {
+    if (p.tipo !== tipo) return acc;
+    if (areaNorm && areaNorm !== "TODAS" && areaNorm !== "TODOS" && p.area.toUpperCase() !== areaNorm) return acc;
+    if (conNorm && conNorm !== "TODOS" && p.contratista !== conNorm) return acc;
+    return acc + (Number(p.piezasPagadasHoy) || 0);
+  }, 0);
+}
+
+// Retorna el total de piezas realizadas en Linkaform para tipo, área y contratista
+function getPiezasRealizadasTotal(tipo, area, contratista) {
+  const allRecords = state.records || [];
+  const areaNorm = (area || "").trim().toUpperCase();
+  const conNorm = (contratista || "").trim();
+
+  return allRecords.reduce((acc, r) => {
+    if (r.tipo !== tipo) return acc;
+    if (areaNorm && areaNorm !== "TODAS" && areaNorm !== "TODOS") {
+      const a = (r.area_trabajo || "").trim().toUpperCase();
+      if (a !== areaNorm) return acc;
+    }
+    if (conNorm && conNorm !== "TODOS") {
+      const c = (r.contratista_homologado || r.contratista || "").trim();
+      if (c !== conNorm) return acc;
+    }
+    return acc + 1;
+  }, 0);
+}
+
+// -------------------------------------------------------------------------
+// MODAL DE REGISTRO DE PAGO
+// -------------------------------------------------------------------------
+function openRegistrarPagoModal(preselectedArea, preselectedContratista) {
+  const modal = document.getElementById("modalRegistrarPago");
+  if (!modal) return;
+
+  const tipo = pagosState.tipo;
+  const tarifa = pagosState.tarifaActiva;
+
+  // Badge de Tipo
+  const badgeTipo = document.getElementById("modalPagoTipoBadge");
+  if (badgeTipo) {
+    badgeTipo.innerText = `${tipo === "CASETA" ? "📞 CASETA" : "📦 CAJA"} ($${tarifa.toFixed(2)} MXN)`;
+    badgeTipo.className = tipo === "CASETA" 
+      ? "p-2 rounded-lg font-bold text-center border text-xs bg-amber-50 text-amber-900 border-amber-300"
+      : "p-2 rounded-lg font-bold text-center border text-xs bg-blue-50 text-blue-900 border-blue-300";
+  }
+
+  const lblTarifa = document.getElementById("modalPagoTarifaLabel");
+  if (lblTarifa) lblTarifa.innerText = `$${tarifa.toFixed(2)} MXN`;
+
+  // Fecha de hoy por defecto
+  const inputFecha = document.getElementById("modalPagoFecha");
+  if (inputFecha) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    inputFecha.value = `${yyyy}-${mm}-${dd}`;
+  }
+
+  // Poblar Áreas
+  const selArea = document.getElementById("modalPagoSelectArea");
+  if (selArea) {
+    const areas = getAvailableAreasForTipo(tipo);
+    selArea.innerHTML = "";
+    areas.forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a;
+      opt.innerText = a;
+      selArea.appendChild(opt);
+    });
+
+    if (preselectedArea && areas.includes(preselectedArea.toUpperCase())) {
+      selArea.value = preselectedArea.toUpperCase();
+    } else if (pagosState.selectedAreas.size === 1) {
+      selArea.value = Array.from(pagosState.selectedAreas)[0];
+    } else if (areas.length > 0) {
+      selArea.value = areas[0];
+    }
+  }
+
+  // Poblar Contratistas para esa área
+  actualizarContratistasEnModal(preselectedContratista);
+
+  // Recalcular saldo y disponibles
+  onModalPagoAreaOrConChange();
+
+  modal.classList.remove("hidden");
+}
+
+function closeRegistrarPagoModal() {
+  const modal = document.getElementById("modalRegistrarPago");
+  if (modal) modal.classList.add("hidden");
+}
+
+function actualizarContratistasEnModal(preselectedContratista) {
+  const tipo = pagosState.tipo;
+  const selArea = document.getElementById("modalPagoSelectArea");
+  const selCon = document.getElementById("modalPagoSelectContratista");
+  if (!selArea || !selCon) return;
+
+  const currentArea = selArea.value;
+  const records = state.records || [];
+  const conSet = new Set();
+
+  records.forEach(r => {
+    if (r.tipo === tipo) {
+      const a = (r.area_trabajo || "").trim().toUpperCase();
+      if (!currentArea || a === currentArea) {
+        const c = (r.contratista_homologado || r.contratista || "").trim();
+        if (c && c !== "Directo") conSet.add(c);
+      }
+    }
+  });
+
+  const sortedCon = Array.from(conSet).sort();
+  selCon.innerHTML = "";
+  if (sortedCon.length === 0) {
+    selCon.innerHTML = '<option value="">Sin contratistas con trabajos</option>';
+  } else {
+    sortedCon.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.innerText = c;
+      selCon.appendChild(opt);
+    });
+  }
+
+  if (preselectedContratista && conSet.has(preselectedContratista)) {
+    selCon.value = preselectedContratista;
+  } else if (pagosState.contratista !== "TODOS" && conSet.has(pagosState.contratista)) {
+    selCon.value = pagosState.contratista;
+  } else if (sortedCon.length > 0) {
+    selCon.value = sortedCon[0];
+  }
+}
+
+function onModalPagoAreaOrConChange() {
+  const tipo = pagosState.tipo;
+  const selArea = document.getElementById("modalPagoSelectArea");
+  const selCon = document.getElementById("modalPagoSelectContratista");
+  if (!selArea || !selCon) return;
+
+  const area = selArea.value;
+  const contratista = selCon.value;
+
+  const hechas = getPiezasRealizadasTotal(tipo, area, contratista);
+  const pagadasPrevias = getPiezasPagadasAcumuladas(tipo, area, contratista);
+  const disponibles = Math.max(0, hechas - pagadasPrevias);
+
+  const elHechas = document.getElementById("modalPagoRealizadasCount");
+  const elPrevias = document.getElementById("modalPagoPagadasPreviasCount");
+  const elDisp = document.getElementById("modalPagoDisponiblesCount");
+
+  if (elHechas) elHechas.innerText = formatNumber(hechas);
+  if (elPrevias) elPrevias.innerText = formatNumber(pagadasPrevias);
+  if (elDisp) elDisp.innerText = formatNumber(disponibles);
+
+  const inputPiezas = document.getElementById("modalPagoInputPiezas");
+  if (inputPiezas) {
+    inputPiezas.max = disponibles > 0 ? disponibles : 1;
+    inputPiezas.value = disponibles;
+  }
+
+  onModalPagoPiezasInput();
+}
+
+function onModalPagoPiezasInput() {
+  const inputPiezas = document.getElementById("modalPagoInputPiezas");
+  const montoEl = document.getElementById("modalPagoMontoCalculado");
+  const remanenteEl = document.getElementById("modalPagoRemanenteInfo");
+  const elDisp = document.getElementById("modalPagoDisponiblesCount");
+
+  const piezasAPagar = parseInt(inputPiezas?.value, 10) || 0;
+  const tarifa = pagosState.tarifaActiva;
+  const disponibles = parseInt(elDisp?.innerText?.replace(/,/g, ""), 10) || 0;
+
+  const totalDinero = piezasAPagar * tarifa;
+  if (montoEl) montoEl.innerText = formatMoney(totalDinero);
+
+  const remanente = disponibles - piezasAPagar;
+  if (remanenteEl) {
+    if (remanente > 0) {
+      remanenteEl.className = "text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-200 mt-1";
+      remanenteEl.innerText = `Quedan ${formatNumber(remanente)} piezas pendientes ($${formatMoney(remanente * tarifa)}) para el próximo pago.`;
+    } else if (remanente === 0) {
+      remanenteEl.className = "text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-200 mt-1";
+      remanenteEl.innerText = `✅ Liquidación total completa (0 piezas pendientes).`;
+    } else {
+      remanenteEl.className = "text-[11px] font-bold text-rose-700 bg-rose-50 px-2.5 py-1.5 rounded-lg border border-rose-200 mt-1";
+      remanenteEl.innerText = `⚠️ Atención: Estás pagando ${formatNumber(piezasAPagar)}, superando las ${formatNumber(disponibles)} piezas validadas en Linkaform.`;
+    }
+  }
+}
+
+function confirmarRegistroPago() {
+  const tipo = pagosState.tipo;
+  const tarifa = pagosState.tarifaActiva;
+  const selArea = document.getElementById("modalPagoSelectArea");
+  const selCon = document.getElementById("modalPagoSelectContratista");
+  const inputPiezas = document.getElementById("modalPagoInputPiezas");
+  const inputFecha = document.getElementById("modalPagoFecha");
+  const inputFactura = document.getElementById("modalPagoFactura");
+  const selMetodo = document.getElementById("modalPagoMetodo");
+  const inputAutorizo = document.getElementById("modalPagoAutorizo");
+  const inputNotas = document.getElementById("modalPagoNotas");
+
+  const area = selArea?.value || "";
+  const contratista = selCon?.value || "";
+  const piezas = parseInt(inputPiezas?.value, 10) || 0;
+  const fecha = inputFecha?.value || new Date().toISOString().split("T")[0];
+
+  if (!area) {
+    showToast("⚠️ Debes seleccionar una plaza.", "warning", 3000);
+    return;
+  }
+  if (!contratista) {
+    showToast("⚠️ Debes seleccionar un contratista.", "warning", 3000);
+    return;
+  }
+  if (piezas <= 0) {
+    showToast("⚠️ La cantidad de piezas a pagar debe ser mayor a 0.", "warning", 3000);
+    return;
+  }
+
+  const hechas = getPiezasRealizadasTotal(tipo, area, contratista);
+  const previas = getPiezasPagadasAcumuladas(tipo, area, contratista);
+  const disponibles = Math.max(0, hechas - previas);
+  const remanente = Math.max(0, disponibles - piezas);
+  const monto = piezas * tarifa;
+
+  const now = new Date();
+  const folioPago = "PAG-" + now.getFullYear() + 
+                    String(now.getMonth() + 1).padStart(2, "0") + 
+                    String(now.getDate()).padStart(2, "0") + "-" + 
+                    String(now.getHours()).padStart(2, "0") + 
+                    String(now.getMinutes()).padStart(2, "0") + 
+                    String(now.getSeconds()).padStart(2, "0");
+
+  const nuevoPago = {
+    id: "PAGO_" + Date.now(),
+    folioPago: folioPago,
+    fecha: fecha,
+    timestamp: now.toISOString(),
+    area: area,
+    contratista: contratista,
+    tipo: tipo,
+    tarifa: tarifa,
+    piezasRealizadas: hechas,
+    piezasPagadasPreviamente: previas,
+    piezasPagadasHoy: piezas,
+    piezasPendientesRemanentes: remanente,
+    montoPagado: monto,
+    folioFactura: (inputFactura?.value || "").trim() || "S/F",
+    metodoPago: selMetodo?.value || "Transferencia Electrónica (SPEI)",
+    autorizadoPor: (inputAutorizo?.value || "").trim() || "Responsable de Pagos",
+    notas: (inputNotas?.value || "").trim()
+  };
+
+  const lista = getPagosRegistrados();
+  lista.unshift(nuevoPago); // Agregar al inicio para orden cronológico inverso
+  savePagosRegistrados(lista);
+
+  closeRegistrarPagoModal();
+
+  showToast(`✅ Pago registrado: ${formatMoney(monto)} a ${contratista} en ${area} (${piezas} piezas). Quedan ${remanente} pendientes.`, "success", 4500);
+
+  // Refrescar vistas del módulo
+  applyPagosFilter();
+  renderHistorialPagosTable();
+}
+
+function eliminarPagoRegistrado(idPago) {
+  const lista = getPagosRegistrados();
+  const item = lista.find(p => p.id === idPago);
+  if (!item) return;
+
+  const conf = confirm(`¿Estás segura de eliminar/anular el pago ${item.folioPago} por ${formatMoney(item.montoPagado)} a ${item.contratista}?\n\nLas ${item.piezasPagadasHoy} piezas pagadas volverán a sumarse al saldo pendiente por pagar.`);
+  if (!conf) return;
+
+  const filtrados = lista.filter(p => p.id !== idPago);
+  savePagosRegistrados(filtrados);
+
+  showToast(`🗑️ Pago ${item.folioPago} anulado. Las piezas regresaron a saldo pendiente.`, "info", 3500);
+
+  applyPagosFilter();
+  renderHistorialPagosTable();
+}
+
+// -------------------------------------------------------------------------
+// RENDERIZADO DE LA BITÁCORA DE PAGOS REGISTRADOS
+// -------------------------------------------------------------------------
+function toggleHistorialPagosSection() {
+  const sec = document.getElementById("pagosHistorialSection");
+  if (!sec) return;
+  sec.scrollIntoView({ behavior: "smooth" });
+}
+
+function renderHistorialPagosTable() {
+  const tbody = document.getElementById("pagosHistorialTableBody");
+  const badgeTotal = document.getElementById("pagosHistorialTotalBadge");
+  const badgeBtn = document.getElementById("pagosHistorialBadgeCount");
+  if (!tbody) return;
+
+  const lista = getPagosRegistrados();
+
+  if (badgeTotal) badgeTotal.innerText = `${lista.length} pago${lista.length === 1 ? "" : "s"} registrado${lista.length === 1 ? "" : "s"}`;
+  if (badgeBtn) badgeBtn.innerText = String(lista.length);
+
+  if (lista.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="12" class="text-center py-8 text-slate-400">
+          <div class="text-2xl mb-1">📜</div>
+          <div class="font-bold text-xs text-slate-600">Aún no hay pagos registrados en la bitácora</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">Usa el botón "Registrar Pago" para liquidar y conciliar piezas con contratistas.</div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  let html = "";
+  lista.forEach((p, idx) => {
+    const tipoBadge = p.tipo === "CASETA" 
+      ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">CASETA</span>'
+      : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300">CAJA</span>';
+
+    html += `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="p-2.5 font-mono text-[11px] font-bold text-slate-800">${p.folioPago}</td>
+        <td class="p-2.5 whitespace-nowrap text-slate-600">${p.fecha}</td>
+        <td class="p-2.5 font-bold text-slate-900">${p.area}</td>
+        <td class="p-2.5 font-bold text-amber-950">${p.contratista}</td>
+        <td class="p-2.5 text-center">${tipoBadge}</td>
+        <td class="p-2.5 text-center font-black text-blue-900 text-sm bg-blue-50/50">
+          ${formatNumber(p.piezasPagadasHoy)}
+        </td>
+        <td class="p-2.5 text-right text-slate-600 font-semibold">$${Number(p.tarifa).toFixed(2)}</td>
+        <td class="p-2.5 text-right font-black text-emerald-700 text-sm bg-emerald-50/50">
+          ${formatMoney(p.montoPagado)}
+        </td>
+        <td class="p-2.5 text-center font-bold text-amber-800">
+          ${formatNumber(p.piezasPendientesRemanentes)} remanentes
+        </td>
+        <td class="p-2.5 font-mono text-[11px] text-slate-700">${p.folioFactura || "-"}</td>
+        <td class="p-2.5 text-[11px] text-slate-500 max-w-[140px] truncate" title="${p.notas || ''} (${p.autorizadoPor || ''})">
+          ${p.notas ? p.notas : (p.autorizadoPor || "-")}
+        </td>
+        <td class="p-2.5 text-center whitespace-nowrap">
+          <div class="flex items-center justify-center gap-1">
+            <button type="button" onclick="imprimirComprobantePago('${p.id}')" title="Imprimir Comprobante Oficial" class="p-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300">
+              🖨️
+            </button>
+            <button type="button" onclick="eliminarPagoRegistrado('${p.id}')" title="Anular este pago" class="p-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded border border-rose-200">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+// -------------------------------------------------------------------------
+// EXPORTACIÓN Y RESPALDO DE LA BITÁCORA
+// -------------------------------------------------------------------------
+function exportarBitacoraPagosCSV() {
+  const lista = getPagosRegistrados();
+  if (lista.length === 0) {
+    showToast("⚠️ No hay pagos registrados para exportar.", "warning", 3000);
+    return;
+  }
+
+  const headers = [
+    "Folio Pago",
+    "Fecha",
+    "Plaza / Area",
+    "Contratista",
+    "Tipo Activo",
+    "Piezas Pagadas",
+    "Tarifa Unitaria MXN",
+    "Monto Liquidado MXN",
+    "Piezas Realizadas al Corte",
+    "Piezas Pagadas Previas",
+    "Piezas Remanentes Pendientes",
+    "Factura / Ref Fiscal",
+    "Metodo de Pago",
+    "Autorizado Por",
+    "Notas"
+  ];
+
+  const rows = lista.map(p => [
+    `"${p.folioPago}"`,
+    `"${p.fecha}"`,
+    `"${p.area}"`,
+    `"${p.contratista}"`,
+    `"${p.tipo}"`,
+    p.piezasPagadasHoy,
+    p.tarifa,
+    p.montoPagado,
+    p.piezasRealizadas,
+    p.piezasPagadasPreviamente,
+    p.piezasPendientesRemanentes,
+    `"${p.folioFactura || ''}"`,
+    `"${p.metodoPago || ''}"`,
+    `"${p.autorizadoPor || ''}"`,
+    `"${(p.notas || '').replace(/"/g, '""')}"`
+  ]);
+
+  const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Bitacora_Pagos_Contratistas_Telmex2026_${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast("📥 Bitácora de pagos descargada exitosamente.", "success", 3000);
+}
+
+function exportarRespaldoPagosJSON() {
+  const lista = getPagosRegistrados();
+  const str = JSON.stringify(lista, null, 2);
+  const blob = new Blob([str], { type: "application/json;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Respaldo_Historial_Pagos_Telmex2026_${new Date().toISOString().split("T")[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("💾 Respaldo JSON de pagos descargado.", "success", 2500);
+}
+
+function importarRespaldoPagosJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (!Array.isArray(parsed)) throw new Error("Formato no válido");
+      savePagosRegistrados(parsed);
+      showToast(`✅ Se restauraron ${parsed.length} pagos correctamente.`, "success", 3500);
+      applyPagosFilter();
+      renderHistorialPagosTable();
+    } catch (err) {
+      showToast("❌ Error al restaurar el archivo JSON: formato inválido.", "error", 4000);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// -------------------------------------------------------------------------
+// IMPRESIÓN DE COMPROBANTE OFICIAL DE PAGO
+// -------------------------------------------------------------------------
+function imprimirComprobantePago(idPago) {
+  const lista = getPagosRegistrados();
+  const p = lista.find(it => it.id === idPago);
+  if (!p) return;
+
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Comprobante Oficial de Liquidación - ${p.folioPago}</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 40px; color: #0f172a; font-size: 12px; line-height: 1.5; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0055a5; padding-bottom: 15px; margin-bottom: 20px; }
+        .logo-title { font-size: 20px; font-weight: 900; color: #0055a5; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; background: #e0f2fe; color: #0369a1; }
+        .box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-bottom: 20px; background: #f8fafc; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th { background: #0055a5; color: white; padding: 8px 10px; text-align: left; font-size: 11px; }
+        td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; }
+        .total-row { font-size: 14px; font-weight: bold; background: #ecfdf5; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 60px; }
+        .sign-box { width: 28%; text-align: center; border-top: 1px solid #64748b; padding-top: 8px; font-size: 11px; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <div class="logo-title">IASA / PCI | CAMPAÑA NACIONAL IMAGEN TELMEX 2026</div>
+          <div style="font-size: 13px; font-weight: bold; color: #334155; margin-top: 3px;">Comprobante Oficial de Conciliación y Pago a Contratistas</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 14px; font-weight: 900; color: #0055a5;">${p.folioPago}</div>
+          <div style="color: #64748b; font-size: 11px;">Fecha de Pago: <b>${p.fecha}</b></div>
+        </div>
+      </div>
+
+      <div class="box">
+        <table style="margin: 0; background: transparent;">
+          <tr>
+            <td style="border:none; width: 50%;"><b>Plaza / Área:</b> ${p.area}</td>
+            <td style="border:none; width: 50%;"><b>Tipo de Activo:</b> ${p.tipo}</td>
+          </tr>
+          <tr>
+            <td style="border:none;"><b>Contratista / Socio:</b> ${p.contratista}</td>
+            <td style="border:none;"><b>Factura / Ref Fiscal:</b> ${p.folioFactura || "S/F"}</td>
+          </tr>
+          <tr>
+            <td style="border:none;"><b>Método de Pago:</b> ${p.metodoPago}</td>
+            <td style="border:none;"><b>Autorizado Por:</b> ${p.autorizadoPor}</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3>Detalle de Conciliación y Liquidación:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Concepto de Trabajo</th>
+            <th style="text-align: center;">Tarifa Unitaria</th>
+            <th style="text-align: center;">Piezas Realizadas</th>
+            <th style="text-align: center;">Piezas Pagadas Hoy</th>
+            <th style="text-align: center;">Saldo Remanente</th>
+            <th style="text-align: right;">Total Liquidado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>${p.tipo === "CASETA" ? "Casetas Telefónicas" : "Cajas de Distribución"}</b> (${p.area})</td>
+            <td style="text-align: center;">$${Number(p.tarifa).toFixed(2)} MXN</td>
+            <td style="text-align: center;">${p.piezasRealizadas}</td>
+            <td style="text-align: center; font-weight: bold; color: #0055a5;">${p.piezasPagadasHoy}</td>
+            <td style="text-align: center; color: #d97706; font-weight: bold;">${p.piezasPendientesRemanentes} piezas</td>
+            <td style="text-align: right; font-weight: 900; color: #059669; font-size: 13px;">$${Number(p.montoPagado).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="5" style="text-align: right; padding-right: 15px;">TOTAL TRANSFERIDO EN ESTA EMISIÓN:</td>
+            <td style="text-align: right; color: #059669; font-size: 16px;">$${Number(p.montoPagado).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background: #f1f5f9; padding: 10px; border-radius: 6px; font-size: 11px; margin-top: 15px;">
+        <b>Nota de Conciliación:</b> ${p.notas ? p.notas : "Liquidación conforme a folios autorizados en Linkaform."} Quedan ${p.piezasPendientesRemanentes} piezas pendientes para la siguiente factura.
+      </div>
+
+      <div class="signatures">
+        <div class="sign-box">
+          <b>Elaboró / Finanzas</b><br>
+          <span style="color: #64748b;">${p.autorizadoPor}</span>
+        </div>
+        <div class="sign-box">
+          <b>Revisó / Auditoría</b><br>
+          <span style="color: #64748b;">PCI / IASA</span>
+        </div>
+        <div class="sign-box">
+          <b>Recibió Contratista</b><br>
+          <span style="color: #64748b;">${p.contratista}</span>
+        </div>
+      </div>
+
+      <script>
+        window.onload = function() { window.print(); }
+      <\/script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
+
 function initPagosModule() {
   // Configurar tarifas por defecto
   pagosState.tarifaActiva = pagosState.tipo === "CASETA" ? pagosState.tarifaCaseta : pagosState.tarifaCaja;
@@ -2831,6 +3439,7 @@ function initPagosModule() {
   populatePagosContratistas();
   populatePagosTecnicos();
   applyPagosFilter();
+  renderHistorialPagosTable();
 }
 
 function updateGlobalTipoCounters() {
@@ -3036,6 +3645,7 @@ function togglePagosArea(area) {
   populatePagosContratistas();
   populatePagosTecnicos();
   applyPagosFilter();
+  renderHistorialPagosTable();
 }
 
 function selectAllAreas() {
@@ -3183,6 +3793,7 @@ function onPagosPresetDateChange() {
   }
 
   applyPagosFilter();
+  renderHistorialPagosTable();
 }
 
 // Filtro Principal
@@ -3241,74 +3852,85 @@ function applyPagosFilter() {
 }
 
 // Tarjetas KPI Financieras
+// Tarjetas KPI Financieras con Control de Pagos y Pendientes
 function updatePagosSummaryCards() {
-  const cantidad = pagosFilteredRecords.length;
+  const cantidadRealizadas = pagosFilteredRecords.length;
   const tarifa = pagosState.tarifaActiva;
-  const montoTotal = cantidad * tarifa;
 
-  // Tarjeta 1: Dinero Total a Pagar
+  // Calcular piezas pagadas acumuladas para los filtros activos
+  let pagadasAcumuladas = 0;
+  if (pagosState.selectedAreas.size > 0) {
+    pagosState.selectedAreas.forEach(area => {
+      pagadasAcumuladas += getPiezasPagadasAcumuladas(pagosState.tipo, area, pagosState.contratista);
+    });
+  } else {
+    pagadasAcumuladas = getPiezasPagadasAcumuladas(pagosState.tipo, "TODAS", pagosState.contratista);
+  }
+
+  const cantidadPendientes = Math.max(0, cantidadRealizadas - pagadasAcumuladas);
+  const montoPendiente = cantidadPendientes * tarifa;
+  const montoPagadoTotal = pagadasAcumuladas * tarifa;
+
+  // Tarjeta 1: Saldo Pendiente por Liquidar
   const mDineroEl = document.getElementById("pagosKpiMontoDinero");
   if (mDineroEl) {
-    mDineroEl.innerText = formatMoney(montoTotal);
+    mDineroEl.innerText = formatMoney(montoPendiente);
   }
 
   const fEl = document.getElementById("pagosKpiFormula");
   if (fEl) {
     const labelPieza = pagosState.tipo === "CASETA" ? "casetas" : "cajas";
-    fEl.innerText = `${formatNumber(cantidad)} ${labelPieza} x $${tarifa.toFixed(2)} MXN`;
+    fEl.innerText = `${formatNumber(cantidadPendientes)} ${labelPieza} pendientes x $${tarifa.toFixed(2)} MXN`;
   }
 
-  // Tarjeta 2: Número de Cajas o Casetas
+  // Tarjeta 2: Número de Piezas Pendientes vs Hechas
   const pCountEl = document.getElementById("pagosKpiCantidadPiezas");
-  if (pCountEl) pCountEl.innerText = formatNumber(cantidad);
+  if (pCountEl) pCountEl.innerText = formatNumber(cantidadPendientes);
 
   const pLabelEl = document.getElementById("pagosKpiPiezasLabel");
   if (pLabelEl) {
-    pLabelEl.innerHTML = pagosState.tipo === "CASETA" ? "<span>📞</span> CASETAS VALIDADAS" : "<span>📦</span> CAJAS VALIDADAS";
+    pLabelEl.innerHTML = pagosState.tipo === "CASETA" ? "<span>📞</span> CASETAS POR LIQUIDAR" : "<span>📦</span> CAJAS POR LIQUIDAR";
   }
 
-  const pIconEl = document.getElementById("pagosKpiPiezasIcon");
-  if (pIconEl) {
-    pIconEl.innerText = pagosState.tipo === "CASETA" ? "📞" : "📦";
+  const pDescEl = document.getElementById("pagosKpiPiezasDesc");
+  if (pDescEl) {
+    pDescEl.innerText = `${formatNumber(cantidadRealizadas)} hechas en campo | ${formatNumber(pagadasAcumuladas)} pagadas`;
   }
 
-  // Tarjeta 3: Plazas en este Pago
-  const areaSet = new Set();
-  const tecSet = new Set();
-  const conSet = new Set();
+  // Tarjeta 3: Total Pagado Histórico
+  const mPagadoEl = document.getElementById("pagosKpiMontoPagado");
+  if (mPagadoEl) {
+    mPagadoEl.innerText = formatMoney(montoPagadoTotal);
+  }
 
-  pagosFilteredRecords.forEach(r => {
-    const a = (r.area_trabajo || "").trim().toUpperCase();
-    if (a) areaSet.add(a);
-    const t = (r.tecnico_homologado || r.tecnico || "").trim();
-    if (t) tecSet.add(t);
-    const c = (r.contratista_homologado || r.contratista || "").trim();
-    if (c) conSet.add(c);
-  });
-
-  const plazasCountEl = document.getElementById("pagosKpiPlazasCount");
-  if (plazasCountEl) plazasCountEl.innerText = formatNumber(areaSet.size);
-
-  const plazasSubEl = document.getElementById("pagosKpiPlazasSubtitle");
-  if (plazasSubEl) plazasSubEl.innerText = `${formatNumber(areaSet.size)} áreas agrupadas en este corte`;
+  const pPagadasDescEl = document.getElementById("pagosKpiPiezasPagadasDesc");
+  if (pPagadasDescEl) {
+    pPagadasDescEl.innerText = `${formatNumber(pagadasAcumuladas)} piezas liquidadas históricamente`;
+  }
 
   // Tarjeta 4: Contratista
   const conTitleEl = document.getElementById("pagosKpiContratistaTitle");
   if (conTitleEl) {
     if (pagosState.contratista === "TODOS") {
-      conTitleEl.innerText = `${conSet.size} Contratistas`;
+      conTitleEl.innerText = "Todos los Contratistas";
     } else {
       conTitleEl.innerText = pagosState.contratista;
     }
   }
 
+  const tecSet = new Set();
+  pagosFilteredRecords.forEach(r => {
+    const t = (r.tecnico_homologado || r.tecnico || "").trim();
+    if (t) tecSet.add(t);
+  });
+
   const cuadCountEl = document.getElementById("pagosKpiCuadrillasCount");
   if (cuadCountEl) {
-    cuadCountEl.innerText = `${tecSet.size} cuadrillas / técnicos en sitio`;
+    cuadCountEl.innerText = `${tecSet.size} técnicos involucrados`;
   }
 }
 
-// Desglose por Plaza / Área (Matriz de Subtotales)
+// Desglose por Plaza / Área con Hechas, Pagadas y Saldo Pendiente
 function renderPagosSubtotalesAreas() {
   const container = document.getElementById("pagosSubtotalesAreasContainer");
   const tag = document.getElementById("pagosMatrizTotalTag");
@@ -3328,12 +3950,21 @@ function renderPagosSubtotalesAreas() {
   });
 
   const areasSorted = Object.keys(areaMap).sort((a, b) => areaMap[b].count - areaMap[a].count);
-  const totalGeneral = pagosFilteredRecords.length;
   const tarifa = pagosState.tarifaActiva;
-  const granTotalDinero = totalGeneral * tarifa;
+
+  let totalGeneralPendiente = 0;
+  let totalGeneralPagado = 0;
+
+  areasSorted.forEach(area => {
+    const hechas = areaMap[area].count;
+    const pagadas = getPiezasPagadasAcumuladas(pagosState.tipo, area, pagosState.contratista);
+    const pendientes = Math.max(0, hechas - pagadas);
+    totalGeneralPendiente += (pendientes * tarifa);
+    totalGeneralPagado += (pagadas * tarifa);
+  });
 
   if (tag) {
-    tag.innerText = `${formatMoney(granTotalDinero)} en ${areasSorted.length} plazas conjuntas`;
+    tag.innerText = `Saldo pendiente: ${formatMoney(totalGeneralPendiente)} | Ya pagado: ${formatMoney(totalGeneralPagado)}`;
   }
 
   if (areasSorted.length === 0) {
@@ -3351,12 +3982,13 @@ function renderPagosSubtotalesAreas() {
       <thead class="bg-slate-100 text-slate-700 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
         <tr>
           <th class="p-2.5">Plaza / Área</th>
-          <th class="p-2.5 text-center">${pagosState.tipo === "CASETA" ? "Casetas" : "Cajas"}</th>
-          <th class="p-2.5 text-right">Tarifa Unitaria</th>
-          <th class="p-2.5 text-right font-black">Subtotal a Facturar ($)</th>
-          <th class="p-2.5 text-center">% del Pago</th>
+          <th class="p-2.5 text-center">Hechas Campo</th>
+          <th class="p-2.5 text-center text-indigo-700">Ya Pagadas</th>
+          <th class="p-2.5 text-center text-emerald-800 font-black">Pendientes Pago</th>
+          <th class="p-2.5 text-right">Tarifa</th>
+          <th class="p-2.5 text-right font-black">Subtotal Pendiente ($)</th>
           <th class="p-2.5 text-center">Cuadrillas</th>
-          <th class="p-2.5 text-center">Acción</th>
+          <th class="p-2.5 text-center">Acciones</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-slate-100">
@@ -3364,83 +3996,52 @@ function renderPagosSubtotalesAreas() {
 
   areasSorted.forEach(area => {
     const data = areaMap[area];
-    const subtotal = data.count * tarifa;
-    const pct = totalGeneral > 0 ? ((data.count / totalGeneral) * 100).toFixed(1) : 0;
+    const hechas = data.count;
+    const pagadas = getPiezasPagadasAcumuladas(pagosState.tipo, area, pagosState.contratista);
+    const pendientes = Math.max(0, hechas - pagadas);
+    const subtotalPendiente = pendientes * tarifa;
 
     html += `
       <tr class="hover:bg-slate-50 transition-colors">
         <td class="p-2.5 font-bold text-slate-900 flex items-center gap-1.5">
           <span class="text-amber-500">📍</span> ${area}
         </td>
-        <td class="p-2.5 text-center font-extrabold text-slate-800">
-          ${formatNumber(data.count)}
+        <td class="p-2.5 text-center font-bold text-slate-700">
+          ${formatNumber(hechas)}
+        </td>
+        <td class="p-2.5 text-center font-bold text-indigo-700 bg-indigo-50/40">
+          ${formatNumber(pagadas)}
+        </td>
+        <td class="p-2.5 text-center font-black ${pendientes > 0 ? 'text-emerald-700 bg-emerald-50/60' : 'text-slate-400'}">
+          ${formatNumber(pendientes)}
         </td>
         <td class="p-2.5 text-right text-slate-600 font-semibold">
           $${tarifa.toFixed(2)} MXN
         </td>
-        <td class="p-2.5 text-right font-black text-emerald-700 text-sm">
-          ${formatMoney(subtotal)}
-        </td>
-        <td class="p-2.5 text-center text-slate-500 font-semibold">
-          <div class="flex items-center justify-center gap-1.5">
-            <div class="w-12 bg-slate-200 rounded-full h-1.5 overflow-hidden">
-              <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
-            </div>
-            <span class="text-[10px]">${pct}%</span>
-          </div>
+        <td class="p-2.5 text-right font-black ${pendientes > 0 ? 'text-emerald-700 text-sm' : 'text-slate-400'}">
+          ${formatMoney(subtotalPendiente)}
         </td>
         <td class="p-2.5 text-center text-slate-600">
           ${data.tecnicos.size} técnicos
         </td>
         <td class="p-2.5 text-center">
-          <button type="button" onclick="focusOnlyThisArea('${area}')" class="px-2 py-0.5 text-[10px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 transition-colors">
-            Filtrar Solo Esta
-          </button>
+          <div class="flex items-center justify-center gap-1">
+            <button type="button" onclick="openRegistrarPagoModal('${area}')" class="px-2.5 py-1 text-[11px] font-black text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition-colors flex items-center gap-1" title="Registrar pago para esta plaza">
+              <span>💳</span> Pagar
+            </button>
+            <button type="button" onclick="focusOnlyThisArea('${area}')" class="px-2 py-0.5 text-[10px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 transition-colors">
+              Filtrar
+            </button>
+          </div>
         </td>
       </tr>
     `;
   });
 
-  // Fila Totalizadora
-  html += `
-      <tr class="bg-amber-50/80 font-black text-slate-900 border-t-2 border-amber-300">
-        <td class="p-2.5 text-amber-950 font-black">
-          TOTAL CONJUNTO (${areasSorted.length} PLAZAS)
-        </td>
-        <td class="p-2.5 text-center text-base font-black text-blue-800">
-          ${formatNumber(totalGeneral)}
-        </td>
-        <td class="p-2.5 text-right text-slate-700">
-          $${tarifa.toFixed(2)} MXN
-        </td>
-        <td class="p-2.5 text-right text-base font-black text-emerald-800">
-          ${formatMoney(granTotalDinero)}
-        </td>
-        <td class="p-2.5 text-center text-slate-700">
-          100%
-        </td>
-        <td class="p-2.5 text-center text-slate-700" colspan="2">
-          Factura Lista para Liquidación
-        </td>
-      </tr>
-    </tbody>
-    </table>
-  `;
-
+  html += "</tbody></table>";
   container.innerHTML = html;
 }
 
-function focusOnlyThisArea(area) {
-  pagosState.selectedAreas.clear();
-  pagosState.selectedAreas.add(area);
-  renderAreasBoard();
-  populatePagosContratistas();
-  populatePagosTecnicos();
-  applyPagosFilter();
-  showToast(`🔍 Filtrado solo plaza: ${area}`, "info", 2000);
-}
-
-// Desglose por Modelo
 function renderPagosModelosGrid() {
   const grid = document.getElementById("pagosModelosGrid");
   const totalTag = document.getElementById("pagosModelosTotalTag");
@@ -3871,7 +4472,7 @@ function printPagosSummary() {
 
       <script>
         window.onload = function() { window.print(); }
-      </script>
+      <\/script>
     </body>
     </html>
   `);
@@ -4877,7 +5478,7 @@ function printBossSummary() {
 
       <script>
         window.onload = function() { window.print(); }
-      </script>
+      <\/script>
     </body>
     </html>
   `);
