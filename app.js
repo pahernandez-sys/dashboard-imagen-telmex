@@ -2121,6 +2121,14 @@ function populateTecnicosFilter() {
 // CAMBIO DE PESTAÑAS (TABS)
 // =========================================================
 function switchTab(tabId) {
+  if (tabId === "tab-gerencial") {
+    const isAuth = sessionStorage.getItem("GERENCIAL_AUTH_OK") === "true";
+    if (!isAuth) {
+      openGerencialNipModal();
+      return;
+    }
+  }
+
   document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
   document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
 
@@ -2129,7 +2137,12 @@ function switchTab(tabId) {
 
   // Activar botón
   const btns = Array.from(document.querySelectorAll(".tab-btn"));
-  const clickedBtn = btns.find(b => b.getAttribute("onclick") && b.getAttribute("onclick").includes(tabId));
+  const clickedBtn = btns.find(b => {
+    const onc = b.getAttribute("onclick") || "";
+    return onc.includes(tabId) || 
+           (tabId === "tab-gerencial" && (onc.includes("openGerencialModule") || onc.includes("tab-gerencial"))) ||
+           (tabId === "tab-pagos" && (onc.includes("openPagosModule") || onc.includes("tab-pagos")));
+  });
   if (clickedBtn) clickedBtn.classList.add("active");
 
   // Redimensionar gráficas de Chart.js al cambiar de pestaña
@@ -3872,6 +3885,67 @@ function formatMoney(num) {
 
 
 // =========================================================
+// =========================================================
+// ACCESO CON NIP: MANDO GERENCIAL
+// =========================================================
+const GERENCIAL_NIP = "1970";
+
+function openGerencialModule() {
+  const isAuth = sessionStorage.getItem("GERENCIAL_AUTH_OK") === "true";
+  if (isAuth) {
+    switchTab("tab-gerencial");
+    if (typeof renderBossModule === "function") renderBossModule();
+  } else {
+    openGerencialNipModal();
+  }
+}
+
+function openGerencialNipModal() {
+  const modal = document.getElementById("gerencialNipModal");
+  const input = document.getElementById("gerencialNipInput");
+  const err = document.getElementById("gerencialNipErrorMsg");
+  if (err) err.classList.add("hidden");
+  if (input) input.value = "";
+  if (modal) modal.classList.remove("hidden");
+  setTimeout(() => { if (input) input.focus(); }, 150);
+}
+
+function closeGerencialNipModal() {
+  const modal = document.getElementById("gerencialNipModal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function verifyGerencialNip() {
+  const input = document.getElementById("gerencialNipInput");
+  const err = document.getElementById("gerencialNipErrorMsg");
+  const entered = (input?.value || "").trim();
+
+  if (entered === GERENCIAL_NIP) {
+    sessionStorage.setItem("GERENCIAL_AUTH_OK", "true");
+    closeGerencialNipModal();
+    switchTab("tab-gerencial");
+    if (typeof renderBossModule === "function") renderBossModule();
+    showToast("Acceso autorizado", "success", 2000);
+  } else {
+    if (err) {
+      err.innerText = "NIP Incorrecto. Acceso denegado.";
+      err.classList.remove("hidden");
+    }
+    if (input) {
+      input.classList.add("border-rose-500");
+      input.select();
+      setTimeout(() => input.classList.remove("border-rose-500"), 1000);
+    }
+  }
+}
+
+function logoutGerencial() {
+  sessionStorage.removeItem("GERENCIAL_AUTH_OK");
+  switchTab("tab-materiales");
+  showToast("Sesión cerrada", "info", 2000);
+}
+
+
 // MÓDULO EXCLUSIVO DE MANDO GERENCIAL & RESUMEN OPERATIVO
 // =========================================================
 

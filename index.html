@@ -291,7 +291,7 @@
         <span>📋</span>
         <span>Detalle de Registros</span>
       </button>
-      <button type="button" class="tab-btn bg-slate-900 text-white hover:bg-slate-800 font-bold flex items-center gap-2 border-b-2 border-cyan-400 shadow-sm" onclick="switchTab('tab-gerencial')">
+      <button type="button" id="tabBtnGerencial" class="tab-btn bg-slate-900 text-white hover:bg-slate-800 font-bold flex items-center gap-2 border-b-2 border-cyan-400 shadow-sm" onclick="openGerencialModule()">
         <span>👔</span>
         <span>Mando Gerencial</span>
         <span style="font-size: 0.65rem; background: #0284c7; color: white; padding: 1px 7px; border-radius: 9999px; font-weight: 800;">DIRECCIÓN</span>
@@ -950,6 +950,10 @@
             <span>🖨️</span>
             <span>Imprimir</span>
           </button>
+          <button type="button" onclick="logoutGerencial()" class="px-3.5 py-2 bg-slate-800 hover:bg-rose-950/80 text-slate-300 hover:text-rose-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center gap-1.5 transition-all" title="Bloquear Mando Gerencial">
+            <span>🔒</span>
+            <span>Bloquear</span>
+          </button>
         </div>
       </div>
 
@@ -1270,6 +1274,35 @@
   </main>
 
   
+  <!-- ==================== MODAL DE ACCESO CON NIP (MANDO GERENCIAL) ==================== -->
+  <div id="gerencialNipModal" class="modal-overlay hidden" style="z-index: 99999;">
+    <div class="modal-container max-w-sm p-6 text-center animate-popIn bg-slate-900 border border-slate-700 shadow-2xl rounded-2xl text-white">
+      <div class="w-14 h-14 bg-cyan-950/80 text-cyan-400 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3 border border-cyan-500/30 shadow-inner">
+        🔒
+      </div>
+      <h3 class="text-base font-black text-slate-100 mb-1">Mando Gerencial</h3>
+      <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+        Ingresa el NIP de acceso:
+      </p>
+
+      <div class="mb-4">
+        <input type="password" id="gerencialNipInput" maxlength="8" placeholder="••••" 
+               class="w-full text-center tracking-[0.5em] text-2xl font-black p-3 border-2 border-slate-700 rounded-xl focus:border-cyan-400 focus:ring-4 focus:ring-cyan-500/20 outline-none bg-slate-800 text-cyan-300"
+               onkeydown="if(event.key==='Enter') verifyGerencialNip()">
+        <p id="gerencialNipErrorMsg" class="text-xs font-bold text-rose-400 mt-2 hidden"></p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" onclick="closeGerencialNipModal()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-colors border border-slate-700">
+          Cancelar
+        </button>
+        <button type="button" onclick="verifyGerencialNip()" class="w-full py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs rounded-xl shadow-md transition-colors">
+          Ingresar ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- ==================== MODAL DE ACCESO CON NIP (PAGOS) ==================== -->
   <div id="nipModal" class="modal-overlay hidden" style="z-index: 99999;">
     <div class="modal-container max-w-sm p-6 text-center animate-popIn">
