@@ -307,6 +307,7 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
         raw_modelo = ans.get("6ab9d647dba7a0c191e6a0f6") or "Sencilla"
         modelo = normalize_model_name(raw_modelo, tipo)
         oferta = ans.get("6a99eb8af9c750d6db214c5d") or "200 MB"
+        hay_caja_caseta = (ans.get("6a99eb60a20e4f1d25581b71") or "SÍ").strip()
         existe_bd = ans.get("6ad530403c0c04d9bb2555b2") or "Sí"
         comentarios = ans.get("6ad4df593c0c04d9bb25556e") or ""
         folio = item.get("folio") or f"LF-{item.get('id', i+1)}"
@@ -346,6 +347,7 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
             "tecnico_original": tecnico_raw,
             "foto_evidencia": foto_despues or foto_antes,
             "oferta": oferta,
+            "hay_caja_caseta": hay_caja_caseta,
             "existe_bd": existe_bd,
             "comentarios": comentarios,
             "num_viniles": num_viniles,

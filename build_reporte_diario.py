@@ -346,6 +346,202 @@ def build_reporte_diario(current_dt=None):
         ws_caj.cell(r_idx, c_idx).value = curr + total_count
 
     # =========================================================
+    # COLUMNAS 'SÍ' Y 'NO' DE REGISTROS '¿HAY CAJA O CASETA?'
+    # =========================================================
+    field_hay_id = "6a99eb60a20e4f1d25581b71"
+    raw_json_path = os.path.join(os.path.dirname(__file__), "data", "linkaform_records_142786.json")
+    all_raw_list = []
+    if os.path.exists(raw_json_path):
+        try:
+            with open(raw_json_path, "r", encoding="utf-8") as f_raw:
+                all_raw_list = json.load(f_raw)
+        except Exception as e:
+            print("  [Aviso] Error leyendo linkaform_records_142786.json:", e)
+
+    cas_si_map = defaultdict(int)
+    cas_no_map = defaultdict(int)
+    caj_si_map = defaultdict(int)
+    caj_no_map = defaultdict(int)
+
+    # Contabilizar de todos los registros válidos de campo
+    source_records = all_raw_list if all_raw_list else records
+    for item in source_records:
+        ans = item.get("answers", {}) if isinstance(item, dict) and "answers" in item else item
+        tipo = (ans.get("6ad52fc6bc424ea79992eabe") or item.get("tipo") or "CAJA").upper().strip()
+        estado = (ans.get("6ad52fc6bc424ea79992eac0") or item.get("estado") or "").upper().strip()
+        area = (ans.get("6ad52fc6bc424ea79992eac1") or item.get("area_trabajo") or estado).upper().strip()
+        if "PONIENTE" in area.upper():
+            continue
+
+        ident = str(ans.get("6ad52fc6bc424ea79992eabf") or item.get("identificador") or "").strip().upper()
+        if ident in ["PIX0001", "PIX0002", "PIX0003"]:
+            continue
+
+        val = str(ans.get(field_hay_id) or item.get("hay_caja_caseta") or "SÍ").strip().upper()
+        is_si = (val in ["SÍ", "SI"])
+        is_no = (val == "NO")
+
+        if tipo == "CASETA":
+            r_idx = find_caseta_row(area)
+            if r_idx:
+                if is_si: cas_si_map[r_idx] += 1
+                elif is_no: cas_no_map[r_idx] += 1
+        else:
+            r_idx = find_caja_row(area)
+            if r_idx:
+                if is_si: caj_si_map[r_idx] += 1
+                elif is_no: caj_no_map[r_idx] += 1
+
+    print(f"  [Conteo ¿Hay caja o caseta?] Casetas -> SÍ: {sum(cas_si_map.values())}, NO: {sum(cas_no_map.values())}")
+    print(f"  [Conteo ¿Hay caja o caseta?] Cajas   -> SÍ: {sum(caj_si_map.values())}, NO: {sum(caj_no_map.values())}")
+
+    # Estilos compartidos para encabezados y totales
+    font_hdr = Font(name="Arial", size=9, bold=True, color="000000")
+    font_tot = Font(name="Calibri", size=11, bold=True, color="000000")
+    font_data = Font(name="Arial", size=10, color="000000")
+    align_center = Alignment(horizontal="center", vertical="center")
+    align_right = Alignment(horizontal="right", vertical="center")
+    fill_si_hdr = PatternFill(start_color="D1E7DD", end_color="D1E7DD", fill_type="solid") # Verde tenue
+    fill_no_hdr = PatternFill(start_color="F8D7DA", end_color="F8D7DA", fill_type="solid") # Rojo tenue
+
+    # 1. Actualizar Hoja CASETAS (Col CO = SÍ CASETA, Col CQ = NO CASETA)
+    ws_cas.column_dimensions["CO"].width = 14.0
+    ws_cas.column_dimensions["CQ"].width = 16.0
+    ws_cas["CO12"].value = "SÍ CASETA"
+    ws_cas["CO12"].font = font_hdr
+    ws_cas["CO12"].alignment = align_center
+    ws_cas["CO12"].fill = fill_si_hdr
+
+    ws_cas["CQ12"].value = "NO CASETA"
+    ws_cas["CQ12"].font = font_hdr
+    ws_cas["CQ12"].alignment = align_center
+    ws_cas["CQ12"].fill = fill_no_hdr
+
+    ws_cas["CO13"].value = "=+CO79"
+    ws_cas["CO13"].font = font_tot
+    ws_cas["CO13"].alignment = align_center
+    ws_cas["CO13"].number_format = "#,##0"
+
+    ws_cas["CQ13"].value = "=+CQ79"
+    ws_cas["CQ13"].font = font_tot
+    ws_cas["CQ13"].alignment = align_center
+    ws_cas["CQ13"].number_format = "#,##0"
+
+    for r in range(14, 79):
+        # CO: SÍ
+        c_si = ws_cas.cell(r, 93)
+        c_si.value = cas_si_map.get(r, 0)
+        c_si.font = font_data
+        c_si.alignment = align_right
+        c_si.number_format = "#,##0"
+
+        # CP: TOTAL COLOCADAS
+        c_cp = ws_cas.cell(r, 94)
+        c_cp.value = f"=CN{r}"
+        c_cp.number_format = "#,##0"
+
+        # CQ: NO CASETA
+        c_no = ws_cas.cell(r, 95)
+        c_no.value = cas_no_map.get(r, 0)
+        c_no.font = font_data
+        c_no.alignment = align_right
+        c_no.number_format = "#,##0"
+
+        # CR: ATENDIDAS (COLOCADAS + NO)
+        c_cr = ws_cas.cell(r, 96)
+        c_cr.value = f"=CP{r}+CQ{r}"
+        c_cr.number_format = "#,##0"
+
+    ws_cas["CO79"].value = "=+SUM(CO14:CO78)"
+    ws_cas["CO79"].font = font_tot
+    ws_cas["CO79"].alignment = align_right
+    ws_cas["CO79"].number_format = "#,##0"
+
+    ws_cas["CP79"].value = "=+SUM(CP14:CP78)"
+    ws_cas["CP79"].font = font_tot
+    ws_cas["CP79"].alignment = align_right
+    ws_cas["CP79"].number_format = "#,##0"
+
+    ws_cas["CQ79"].value = "=+SUM(CQ14:CQ78)"
+    ws_cas["CQ79"].font = font_tot
+    ws_cas["CQ79"].alignment = align_right
+    ws_cas["CQ79"].number_format = "#,##0"
+
+    ws_cas["CR79"].value = "=+SUM(CR14:CR78)"
+    ws_cas["CR79"].font = font_tot
+    ws_cas["CR79"].alignment = align_right
+    ws_cas["CR79"].number_format = "#,##0"
+
+    # 2. Actualizar Hoja CAJAS (Col CI = SÍ CAJA, Col CK = NO CAJA)
+    ws_caj.column_dimensions["CI"].width = 14.0
+    ws_caj.column_dimensions["CK"].width = 16.0
+    ws_caj["CI12"].value = "SÍ CAJA"
+    ws_caj["CI12"].font = font_hdr
+    ws_caj["CI12"].alignment = align_center
+    ws_caj["CI12"].fill = fill_si_hdr
+
+    ws_caj["CK12"].value = "NO CAJA"
+    ws_caj["CK12"].font = font_hdr
+    ws_caj["CK12"].alignment = align_center
+    ws_caj["CK12"].fill = fill_no_hdr
+
+    ws_caj["CI13"].value = "=+CI77"
+    ws_caj["CI13"].font = font_tot
+    ws_caj["CI13"].alignment = align_center
+    ws_caj["CI13"].number_format = "#,##0"
+
+    ws_caj["CK13"].value = "=+CK77"
+    ws_caj["CK13"].font = font_tot
+    ws_caj["CK13"].alignment = align_center
+    ws_caj["CK13"].number_format = "#,##0"
+
+    for r in range(14, 77):
+        # CI: SÍ
+        c_si = ws_caj.cell(r, 87)
+        c_si.value = caj_si_map.get(r, 0)
+        c_si.font = font_data
+        c_si.alignment = align_right
+        c_si.number_format = "#,##0"
+
+        # CJ: TOTAL COLOCADAS
+        c_cj = ws_caj.cell(r, 88)
+        c_cj.value = f"=CH{r}"
+        c_cj.number_format = "#,##0"
+
+        # CK: NO CAJA
+        c_no = ws_caj.cell(r, 89)
+        c_no.value = caj_no_map.get(r, 0)
+        c_no.font = font_data
+        c_no.alignment = align_right
+        c_no.number_format = "#,##0"
+
+        # CL: ATENDIDAS (COLOCADAS + NO)
+        c_cl = ws_caj.cell(r, 90)
+        c_cl.value = f"=CJ{r}+CK{r}"
+        c_cl.number_format = "#,##0"
+
+    ws_caj["CI77"].value = "=+SUM(CI14:CI76)"
+    ws_caj["CI77"].font = font_tot
+    ws_caj["CI77"].alignment = align_right
+    ws_caj["CI77"].number_format = "#,##0"
+
+    ws_caj["CJ77"].value = "=+SUM(CJ14:CJ76)"
+    ws_caj["CJ77"].font = font_tot
+    ws_caj["CJ77"].alignment = align_right
+    ws_caj["CJ77"].number_format = "#,##0"
+
+    ws_caj["CK77"].value = "=+SUM(CK14:CK76)"
+    ws_caj["CK77"].font = font_tot
+    ws_caj["CK77"].alignment = align_right
+    ws_caj["CK77"].number_format = "#,##0"
+
+    ws_caj["CL77"].value = "=+SUM(CL14:CL76)"
+    ws_caj["CL77"].font = font_tot
+    ws_caj["CL77"].alignment = align_right
+    ws_caj["CL77"].number_format = "#,##0"
+
+
+    # =========================================================
     # INDICADORES SUPERIORES VISIBLES EN CASETAS Y CAJAS
     # =========================================================
     f_kpi_lbl = Font(name="Calibri", size=11, bold=True, color="333333")
@@ -477,6 +673,7 @@ def add_trabajos_de_campo_sheet(wb, cutoff_info=None):
         "FECHA",
         "HORA",
         "TIPO",
+        "HAY CAJA O CASETA",
         "IDENTIFICADOR",
         "MODELO",
         "ESTADO",
@@ -530,6 +727,7 @@ def add_trabajos_de_campo_sheet(wb, cutoff_info=None):
             time_str = created_at[11:16]
 
         tipo = (ans.get("6ad52fc6bc424ea79992eabe") or "CAJA").upper()
+        hay_caja_caseta = str(ans.get("6a99eb60a20e4f1d25581b71") or "SÍ").strip()
         identificador = ans.get("6ad52fc6bc424ea79992eabf") or ""
         raw_modelo = ans.get("6ab9d647dba7a0c191e6a0f6") or ""
         modelo = normalize_model_name(raw_modelo, tipo) if "normalize_model_name" in globals() else raw_modelo
@@ -561,6 +759,7 @@ def add_trabajos_de_campo_sheet(wb, cutoff_info=None):
             date_str,
             time_str,
             tipo,
+            hay_caja_caseta,
             identificador,
             modelo,
             estado,
