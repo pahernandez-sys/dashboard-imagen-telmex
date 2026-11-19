@@ -865,7 +865,10 @@
             </div>
           </div>
           <div class="flex items-center gap-2 flex-wrap">
-            <button type="button" onclick="exportarBitacoraPagosCSV()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1 transition-colors">
+            <button type="button" onclick="publicarHistorialEnGitHub()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-bold rounded-lg shadow-sm flex items-center gap-1 transition-colors border border-amber-400/40" title="Sincronizar y publicar la bitácora directamente en GitHub Pages">
+              <span>☁️</span> Publicar a GitHub
+            </button>
+            <button type="button" onclick="exportarBitacoraPagosCSV()"  class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1 transition-colors">
               <span>📥</span> Exportar a Excel
             </button>
             <button type="button" onclick="exportarRespaldoPagosJSON()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 flex items-center gap-1 transition-colors" title="Descargar copia de seguridad en JSON">
@@ -1698,6 +1701,7 @@
   <script src="data/config.js?v=20261109_v17_tecnico"></script>
   <script src="data/linkaform_live_data.js?v=20261109_v17_tecnico"></script>
   <script src="data/sample_records.js?v=20261109_v17_tecnico"></script>
+  <script src="data/historial_pagos.js?v=20261118_v1"></script>
   <script src="app.js?v=20261118_pagos_registro_v5"></script>
 </body>
 </html>

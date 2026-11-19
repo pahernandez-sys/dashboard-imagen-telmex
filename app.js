@@ -2822,14 +2822,128 @@ function saveNewNip() {
 const STORAGE_KEY_PAGOS = "TELMEX_HISTORIAL_PAGOS_V1";
 
 function getPagosRegistrados() {
+  // 1. Cargar pagos oficiales centralizados desde GitHub (window.TELMEX_HISTORIAL_PAGOS)
+  const fromGithub = (typeof window !== "undefined" && Array.isArray(window.TELMEX_HISTORIAL_PAGOS)) 
+    ? window.TELMEX_HISTORIAL_PAGOS 
+    : [];
+
+  // 2. Cargar pagos locales del navegador (localStorage)
+  let fromLocal = [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY_PAGOS);
-    if (!raw) return [];
-    const list = JSON.parse(raw);
-    return Array.isArray(list) ? list : [];
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) fromLocal = parsed;
+    }
   } catch (e) {
-    console.error("Error al cargar historial de pagos:", e);
-    return [];
+    console.error("Error al cargar historial de pagos local:", e);
+  }
+
+  // 3. Fusionar ambas fuentes sin duplicados (clave única: folioPago o id)
+  const map = new Map();
+  // Primero los de GitHub
+  fromGithub.forEach(p => {
+    const k = p.folioPago || p.id;
+    if (k) map.set(k, p);
+  });
+  // Luego los locales (que pueden tener pagos más recientes)
+  fromLocal.forEach(p => {
+    const k = p.folioPago || p.id;
+    if (k) map.set(k, p);
+  });
+
+  return Array.from(map.values()).sort((a, b) => {
+    const ta = new Date(a.fecha || a.timestamp || 0).getTime();
+    const tb = new Date(b.fecha || b.timestamp || 0).getTime();
+    return tb - ta; // Más recientes primero
+  });
+}
+
+// Token de GitHub para sincronización directa desde el navegador (opcional)
+function getGitHubToken() {
+  return localStorage.getItem("TELMEX_GITHUB_TOKEN") || "";
+}
+
+function setGitHubToken(token) {
+  if (token) localStorage.setItem("TELMEX_GITHUB_TOKEN", token.trim());
+  else localStorage.removeItem("TELMEX_GITHUB_TOKEN");
+}
+
+// Publicar historial directamente a GitHub mediante GitHub REST API
+async function publicarHistorialEnGitHub() {
+  const lista = getPagosRegistrados();
+  let token = getGitHubToken();
+
+  if (!token) {
+    token = prompt("🔑 Para publicar directamente a GitHub Pages, ingresa tu GitHub Personal Access Token (PAT):\n\n(Se guardará en este navegador para futuras publicaciones)");
+    if (!token) return;
+    setGitHubToken(token);
+  }
+
+  showToast("☁️ Conectando con GitHub API para publicar pagos...", "info", 3000);
+
+  const owner = "pahernandez-sys";
+  const repo = "dashboard-imagen-telmex";
+  const filePath = "data/historial_pagos.js";
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+
+  try {
+    // 1. Obtener SHA actual del archivo si existe
+    let currentSha = "";
+    const getRes = await fetch(url, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/vnd.github.v3+json"
+      }
+    });
+
+    if (getRes.status === 200) {
+      const fileData = await getRes.json();
+      currentSha = fileData.sha;
+    } else if (getRes.status === 401 || getRes.status === 403) {
+      localStorage.removeItem("TELMEX_GITHUB_TOKEN");
+      showToast("❌ Token de GitHub inválido o sin permisos. Ingresa un token válido.", "error", 4000);
+      return;
+    }
+
+    // 2. Preparar contenido del archivo en base64
+    const jsContent = `/**\n * Bitácora Oficial de Pagos y Liquidaciones a Contratistas\n * Campaña Nacional Imagen Telmex 2026\n * Almacenamiento Centralizado en GitHub\n * Última sincronización: ${new Date().toISOString()}\n */\nwindow.TELMEX_HISTORIAL_PAGOS = ${JSON.stringify(lista, null, 2)};\n`;
+    
+    // Codificar a UTF-8 Base64
+    const utf8Bytes = new TextEncoder().encode(jsContent);
+    let binary = "";
+    utf8Bytes.forEach(b => binary += String.fromCharCode(b));
+    const base64Content = btoa(binary);
+
+    // 3. Hacer PUT a GitHub
+    const putBody = {
+      message: `chore(pagos): sincronizar bitácora oficial de ${lista.length} pagos en GitHub`,
+      content: base64Content,
+      branch: "main"
+    };
+    if (currentSha) putBody.sha = currentSha;
+
+    const putRes = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/vnd.github.v3+json"
+      },
+      body: JSON.stringify(putBody)
+    });
+
+    if (putRes.status === 200 || putRes.status === 201) {
+      // Actualizar variable en memoria
+      window.TELMEX_HISTORIAL_PAGOS = lista;
+      showToast(`✅ ¡Éxito! ${lista.length} pagos publicados y respaldados centralizadamente en GitHub.`, "success", 4500);
+    } else {
+      const errJson = await putRes.json().catch(() => ({}));
+      showToast(`⚠️ Error al subir a GitHub (${putRes.status}): ${errJson.message || "Verifica permisos"}`, "warning", 4500);
+    }
+  } catch (err) {
+    console.error("Error en publicarHistorialEnGitHub:", err);
+    showToast(`❌ Error de conexión con GitHub: ${err.message}`, "error", 4000);
   }
 }
 
