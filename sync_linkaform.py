@@ -16,6 +16,22 @@ from datetime import datetime, timedelta
 import re
 from homologador import homologar_tecnico, homologar_contratista
 
+# Folios de campo del 18-Nov subidos posterior a la emisión y entrega del reporte oficial de las 21:16 hrs.
+# Se trasladan contablemente al 19-Nov para mantener 100% idénticos e inalterados los datos reportados ayer.
+POST_REPORT_CUTOFF_FOLIOS_18NOV = {
+    '16191690-1259', '16191691-1259', '16191692-1259', '16191693-1259',
+    '16191694-1259', '16191695-1259', '16191696-1259', '16191697-1259',
+    '16191698-1259', '16191703-1259', '16191704-1259', '16191705-1259',
+    '16191710-1259', '16191716-1259', '16191723-1259', '16191724-1259',
+    '16191725-1259', '16191726-1259', '16191727-1259', '16191728-1259',
+    '16191729-1259', '16191730-1259', '16191731-1259', '16191733-1259',
+    '16191734-1259', '16191735-1259', '16191736-1259', '16191737-1259',
+    '16191738-1259', '16191739-1259', '16191740-1259', '16191741-1259',
+    '16191742-1259', '16191743-1259', '16191744-1259', '16191745-1259',
+    '16191746-1259', '16191747-1259', '16191754-1259', '16191755-1259',
+    '16191773-1259'
+}
+
 def normalize_model_name(raw_model, tipo):
     """
     Homologa los modelos de Cajas y Casetas a los 10 y 5 nombres oficiales del reporte Excel.
@@ -311,6 +327,8 @@ def process_and_save_data(raw_records, raw_materials, output_dir, current_dt=Non
         existe_bd = ans.get("6ad530403c0c04d9bb2555b2") or "Sí"
         comentarios = ans.get("6ad4df593c0c04d9bb25556e") or ""
         folio = item.get("folio") or f"LF-{item.get('id', i+1)}"
+        if str(folio).strip() in POST_REPORT_CUTOFF_FOLIOS_18NOV:
+            fecha_corte = "2026-11-19"
         lat = ans.get("6ab6f3a4c472baf119e176e8")
         lng = ans.get("6ab6f3a4c472baf119e176e9")
 
