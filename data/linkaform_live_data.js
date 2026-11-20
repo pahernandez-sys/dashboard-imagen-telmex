@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-19 23:28:32
+ * Sincronización: 2026-11-19 23:48:47
  * Estado de corte: Corte oficial de las 10:00 PM activo (19/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM.
- * Trabajos de campo visibles: 28723 (Retenidos por corte: 24)
+ * Trabajos de campo visibles: 28721 (Retenidos por corte: 26)
  * Movimientos de materiales visibles: 318 (Retenidos por corte: 1)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-19 23:28:12",
+  "now": "2026-11-19 23:48:27",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-19",
@@ -138418,7 +138418,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-17 13:16:34",
     "timestamp": 1794942994.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4641",
+    "identificador": "S/ID-4643",
     "modelo": "SIECOR SENCILLA 1PTA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -269210,36 +269210,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
-    "folio": "16174562-1259",
-    "fecha": "2026-11-13",
-    "fecha_captura": "2026-11-13",
-    "hora": "12:59",
-    "fecha_corte": "2026-11-13",
-    "created_at_iso": "2026-11-13 12:59:57",
-    "timestamp": 1794596397.0,
-    "tipo": "CASETA",
-    "identificador": "2288403671",
-    "modelo": "NORMAL",
-    "estado": "VERACRUZ",
-    "area_trabajo": "JALAPA",
-    "contratista": "PC Directo",
-    "tecnico": "Virgilio Olmos Córdoba",
-    "contratista_original": "Pc directos",
-    "tecnico_original": "Virgilio olmos cordoba",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af75e289bb372141d95cbd3.jpg",
-    "oferta": "200_mb",
-    "hay_caja_caseta": "SÍ",
-    "existe_bd": "Sí",
-    "comentarios": "Sin comentarios",
-    "num_viniles": 1.0,
-    "version": "v8 - Android",
-    "latitud": 19.5432545,
-    "longitud": -96.9231323,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af75e289bb372141d95cbd3.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
     "folio": "16174558-1259",
     "fecha": "2026-11-13",
     "fecha_captura": "2026-11-13",
@@ -389176,36 +389146,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 18.8718915,
     "longitud": -99.2090527,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3a197b84de70199b00649.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
-    "folio": "16164427-1259",
-    "fecha": "2026-11-10",
-    "fecha_captura": "2026-11-10",
-    "hora": "16:58",
-    "fecha_corte": "2026-11-10",
-    "created_at_iso": "2026-11-10 16:58:30",
-    "timestamp": 1794351510.0,
-    "tipo": "CASETA",
-    "identificador": "7773261621",
-    "modelo": "NORMAL",
-    "estado": "MORELOS",
-    "area_trabajo": "MORELOS",
-    "contratista": "Victor Hugo López García",
-    "tecnico": "Jair Emmanuel Martínez Morales",
-    "contratista_original": "Victor Hugo Lopez Garcia",
-    "tecnico_original": "Jair Emmanuel Martienez Morales",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3a191802c6ad539cb8d70.jpg",
-    "oferta": "200_mb",
-    "hay_caja_caseta": "SÍ",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 2.0,
-    "version": "v6 - Android",
-    "latitud": 18.8698176,
-    "longitud": -99.2088029,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6af3a191802c6ad539cb8d70.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
