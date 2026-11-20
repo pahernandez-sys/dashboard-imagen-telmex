@@ -1,24 +1,54 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-19 21:49:03
- * Estado de corte: Jornada en vivo activa (19/11/2026, 21:48 hrs). Próximo corte oficial hoy a las 10:00 PM.
- * Trabajos de campo visibles: 28721 (Retenidos por corte: 0)
+ * Sincronización: 2026-11-19 22:08:29
+ * Estado de corte: Corte oficial de las 10:00 PM activo (19/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM.
+ * Trabajos de campo visibles: 28722 (Retenidos por corte: 0)
  * Movimientos de materiales visibles: 318 (Retenidos por corte: 1)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-19 21:48:44",
+  "now": "2026-11-19 22:08:10",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-19",
-  "max_visible_dt": "2026-11-19 21:48:44",
-  "max_visible_datetime_str": "2026-11-19 21:48:44",
-  "is_frozen": false,
-  "badge": "[EN VIVO] JORNADA EN VIVO",
-  "description": "Jornada en vivo activa (19/11/2026, 21:48 hrs). Próximo corte oficial hoy a las 10:00 PM."
+  "max_visible_dt": "2026-11-19 22:00:00",
+  "max_visible_datetime_str": "2026-11-19 22:00:00",
+  "is_frozen": true,
+  "badge": "[CORTE 22:00] CORTE OFICIAL ACTIVO",
+  "description": "Corte oficial de las 10:00 PM activo (19/11/2026). Período de depuración. Registros posteriores se liberan mañana a las 08:00 AM."
 };
 
 const LINKAFORM_LIVE_RECORDS = [
+  {
+    "folio": "16196030-1259",
+    "fecha": "2026-11-19",
+    "fecha_captura": "2026-11-19",
+    "hora": "21:45",
+    "fecha_corte": "2026-11-19",
+    "created_at_iso": "2026-11-19 21:45:13",
+    "timestamp": 1795146313.0,
+    "tipo": "CAJA",
+    "identificador": "INO0049",
+    "modelo": "SIECOR DOBLE",
+    "estado": "YUCATAN",
+    "area_trabajo": "YUCATAN",
+    "contratista": "Victor Chan",
+    "tecnico": "Germán Durán",
+    "contratista_original": "Victor chan",
+    "tecnico_original": "Germán Durán",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6affc244ff2384d3b070b380.jpg",
+    "oferta": "200_mb",
+    "hay_caja_caseta": "SÍ",
+    "existe_bd": "Sí",
+    "comentarios": "Sin comentarios",
+    "num_viniles": 1.0,
+    "version": "v9 - Android",
+    "latitud": 21.07709,
+    "longitud": -89.6558719,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6affc244ff2384d3b070b380.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
   {
     "folio": "16196019-1259",
     "fecha": "2026-11-19",
@@ -138388,7 +138418,7 @@ const LINKAFORM_LIVE_RECORDS = [
     "created_at_iso": "2026-11-17 13:16:34",
     "timestamp": 1794942994.0,
     "tipo": "CAJA",
-    "identificador": "S/ID-4616",
+    "identificador": "S/ID-4617",
     "modelo": "SIECOR SENCILLA 1PTA",
     "estado": "MORELOS",
     "area_trabajo": "MORELOS",
@@ -539930,36 +539960,6 @@ const LINKAFORM_LIVE_RECORDS = [
     "estatus": "Aprobada"
   },
   {
-    "folio": "16148332-1259",
-    "fecha": "2026-11-06",
-    "fecha_captura": "2026-11-06",
-    "hora": "12:59",
-    "fecha_corte": "2026-11-06",
-    "created_at_iso": "2026-11-06 12:59:18",
-    "timestamp": 1793991558.0,
-    "tipo": "CAJA",
-    "identificador": "HOZ0017",
-    "modelo": "SIECOR SENCILLA 2 PTAS",
-    "estado": "SINALOA",
-    "area_trabajo": "CULIACAN",
-    "contratista": "Alejandro Adrián Obeso",
-    "tecnico": "Eduardo Alonzo Rodríguez Miranda",
-    "contratista_original": "Alejandro Adrian Obeso",
-    "tecnico_original": "Eduardo Alonzo Rodriguez Miranda",
-    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aee2382c9870311a05d1710.jpg",
-    "oferta": "200_mb",
-    "hay_caja_caseta": "SÍ",
-    "existe_bd": "Sí",
-    "comentarios": "Sin observaciones",
-    "num_viniles": 1.0,
-    "version": "v7 - Android",
-    "latitud": 24.8200186,
-    "longitud": -107.4308007,
-    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6aee2382c9870311a05d1710.jpg",
-    "foto_despues": "",
-    "estatus": "Aprobada"
-  },
-  {
     "folio": "16148326-1259",
     "fecha": "2026-11-06",
     "fecha_captura": "2026-11-06",
@@ -779896,6 +779896,36 @@ const LINKAFORM_LIVE_RECORDS = [
     "latitud": 20.605212,
     "longitud": -100.4132961,
     "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae39fc7fdf089b7f8d0775a.jpg",
+    "foto_despues": "",
+    "estatus": "Aprobada"
+  },
+  {
+    "folio": "16119748-1259",
+    "fecha": "2026-10-29",
+    "fecha_captura": "2026-10-29",
+    "hora": "13:33",
+    "fecha_corte": "2026-10-29",
+    "created_at_iso": "2026-10-29 13:33:01",
+    "timestamp": 1793302381.0,
+    "tipo": "CAJA",
+    "identificador": "CLS0045",
+    "modelo": "SIECOR SENCILLA 1PTA",
+    "estado": "GUERRERO",
+    "area_trabajo": "ACAPULCO",
+    "contratista": "Ingeniería Avanzada en Construcción",
+    "tecnico": "Brian Aldhair Martinez Ibarra",
+    "contratista_original": "INGENIERÍA AVANZADA EN CONSTRUCCIÓN",
+    "tecnico_original": "Brian aldhair martinez ibarra",
+    "foto_evidencia": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae39f6a885555e29016e901.jpg",
+    "oferta": "200_mb",
+    "hay_caja_caseta": "SÍ",
+    "existe_bd": "Sí",
+    "comentarios": "Rotulo nuevo",
+    "num_viniles": 1.0,
+    "version": "v6 - Android",
+    "latitud": 16.8507926,
+    "longitud": -99.8117186,
+    "foto_antes": "https://f001.backblazeb2.com/file/app-linkaform/public-client-1259/142786/6a99e764f9c750d6db214c55/6ae39f6a885555e29016e901.jpg",
     "foto_despues": "",
     "estatus": "Aprobada"
   },
