@@ -1,7859 +1,5636 @@
-// State Variables
+/**
+ * TELMEX 2026 - Control de Avance & Materiales
+ * Lógica Principal del Dashboard Ejecutivo
+ */
 
-let catalog = [];
-
-let selectedAsset = null;
-
-let currentGpsCoords = null;
-
-let photoAntesBase64 = "";
-
-let photoDespuesBase64 = "";
-
-let dbEvidences = [];
-
-let completedAssetIdsSet = new Set();
-
-let remoteCompletedSet = new Set();
-
-let isSyncingCompletedAssets = false;
-
-const COMPLETED_ASSETS_REMOTE_URL = "https://pahernandez-sys.github.io/imagen-telmex-2026/data/completed_assets.json";
-
-const COMPLETED_ASSETS_LOCAL_URL = "data/completed_assets.json";
-
-let selectedModelFilter = "";
-
-let forceOfflineState = false;
-
-let lastKnownOnlineState = null;
-
-let pendingAsset = null;
-
-let modalSelectedType = "CASETA";
-
-let modalSelectedModel = "";
-
-let userContratista = "";
-
-let userTecnico = "";
-
-// =========================================================
-// DISTRITOS RESTRINGIDOS (SUPERVISIÓN Y NORMATIVIDAD TELMEX)
-// =========================================================
+// Estado Global
+// Restricción de Distritos No Permitidos
 const RESTRICTED_DISTRICTS = new Set(["PIX0001", "PIX0002", "PIX0003"]);
 
-function isRestrictedDistrict(id) {
-  if (!id) return false;
-  return RESTRICTED_DISTRICTS.has(String(id).trim().toUpperCase());
-}
+let state = {
+  config: null,
+  records: [],
+  filteredRecords: [],
+  materialsLog: [],
+  charts: {},
+  selectedMaterialArea: "",
+  currentPage: 1,
+  pageSize: 50
+};
 
+// =========================================================
+const LIVE_DATA_VERSION = "2026-11-03-homologacion-modelos-v14";
 
+// Funciones globales de normalización para homologar con el Reporte Oficial Excel (10 Cajas, 5 Casetas)
+function normalizeModelName(rawModel, tipo) {
+  const s = (rawModel || "").toString().trim().toUpperCase();
+  const t = (tipo || "").toString().trim().toUpperCase();
 
-
-// Versión del Sistema para Auditoría Linkaform (Automática para Campo)
-
-const CURRENT_APP_VERSION_ANDROID = "v10 - Android";
-
-const CURRENT_APP_VERSION_IPHONE = "v10 - IPhone";
-
-
-
-function getAppVersionString() {
-
-  try {
-
-    if (typeof window !== "undefined" && typeof window.AndroidBridge !== "undefined") {
-
-      return CURRENT_APP_VERSION_ANDROID;
-
+  if (t === "CASETA") {
+    if (s.includes("CUICUILCO")) return "CUICUILCO";
+    if (s.includes("REFORMA") || s.includes("DOBLE")) return "DOBLE REFORMA";
+    if (s.includes("SEMI")) return "SEMICIRCULAR";
+    if (s.includes("MINI")) return "MINI";
+    return "NORMAL";
+  } else {
+    // CAJA
+    if (s.includes("KRONE")) return "KRONE";
+    if (s.includes("ENVOLV")) {
+      return s.includes("DOBLE") ? "ENVOLVENTE DOBLE" : "ENVOLVENTE SENCILLA";
     }
-
-    const ua = (typeof navigator !== "undefined" && navigator.userAgent) ? navigator.userAgent.toLowerCase() : "";
-
-    const isAndroid = /android/.test(ua);
-
-    if (isAndroid) {
-
-      return CURRENT_APP_VERSION_ANDROID;
-
+    if (s.includes("DESPLAZ") || s.includes("DEPLAS") || s.includes("DEPLAZ")) {
+      return s.includes("DOBLE") ? "DESPLAZAMIENTO DOBLE" : "DESPLAZAMIENTO SENCILLA";
     }
-
-    // iPhone, iPad, Safari, Mac, Web
-
-    return CURRENT_APP_VERSION_IPHONE;
-
-  } catch (e) {
-
-    return CURRENT_APP_VERSION_IPHONE;
-
+    if (s.includes("SIECOR")) {
+      if (s.includes("DOBLE")) return "SIECOR DOBLE";
+      if (/\b2\s*P/i.test(s) || s.includes("2P") || s.includes("DOS P")) return "SIECOR SENCILLA 2 PTAS";
+      if (/\b1\s*P/i.test(s) || s.includes("1P") || s.includes("UNA P")) return "SIECOR SENCILLA 1PTA";
+      return "SIECOR SENCILLA 1PTA";
+    }
+    if (s.includes("TRADICIONAL")) {
+      return s.includes("DOBLE") ? "TRADICIONAL DOBLE" : "TRADICIONAL SENCILLA";
+    }
+    return s.includes("DOBLE") ? "TRADICIONAL DOBLE" : "TRADICIONAL SENCILLA";
   }
+}
 
+function normalizeMaterialName(rawDesc) {
+  const s = (rawDesc || "").toString().trim().toUpperCase();
+  // Casetas
+  if (s.includes("CUICUILCO")) return "CUICUILCO";
+  if (s.includes("REFORMA") || (s.includes("CASETA") && s.includes("DOBLE"))) return "DOBLE REFORMA";
+  if (s.includes("SEMI")) return "SEMICIRCULAR";
+  if (s.includes("MINI")) return "MINI";
+  if (s.includes("NORMAL") || (s.includes("LATERAL") && s.includes("CASETA"))) return "NORMAL";
+
+  // Cajas
+  if (s.includes("KRONE")) return "KRONE";
+  if (s.includes("ENVOLV")) {
+    return s.includes("DOBLE") ? "ENVOLVENTE DOBLE" : "ENVOLVENTE SENCILLA";
+  }
+  if (s.includes("DESPLAZ") || s.includes("DEPLAS") || s.includes("DEPLAZ")) {
+    return s.includes("DOBLE") ? "DESPLAZAMIENTO DOBLE" : "DESPLAZAMIENTO SENCILLA";
+  }
+  if (s.includes("SIECOR")) {
+    if (s.includes("DOBLE")) return "SIECOR DOBLE";
+    if (/\b2\s*P/i.test(s) || s.includes("2P") || s.includes("DOS P")) return "SIECOR SENCILLA 2 PTAS";
+    if (/\b1\s*P/i.test(s) || s.includes("1P") || s.includes("UNA P")) return "SIECOR SENCILLA 1PTA";
+    return "SIECOR SENCILLA 1PTA";
+  }
+  if (s.includes("TRADICIONAL")) {
+    return s.includes("DOBLE") ? "TRADICIONAL DOBLE" : "TRADICIONAL SENCILLA";
+  }
+  return s;
+}
+const EXCLUDED_MATERIALS = ["pintura_azul", "pintura_gris", "thinner", "sellador"];
+
+// Funciones seguras para localStorage (previenen QuotaExceededError por límite de 5MB con miles de registros)
+function safeSetStorage(key, value) {
+  try {
+    const str = typeof value === 'string' ? value : JSON.stringify(value);
+    localStorage.setItem(key, str);
+  } catch (e) {
+    console.warn(`[Storage Aviso] No se pudo persistir '${key}' en localStorage (límite de cuota):`, e.message);
+  }
+}
+
+function safeGetStorage(key, defaultVal = null) {
+  try {
+    const val = localStorage.getItem(key);
+    return val !== null ? val : defaultVal;
+  } catch (e) {
+    return defaultVal;
+  }
+}
+
+function safeRemoveStorage(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch (e) {}
 }
 
 
+// Obtener fecha local en formato YYYY-MM-DD evitando el desfase de zona horaria UTC
+function getLocalDateStr(date = new Date()) {
+  const d = (date instanceof Date) ? date : new Date(date);
+  if (isNaN(d.getTime())) return "";
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
-// Catálogo Visual de Modelos para Casetas y Cajas
+// Parser seguro de fecha/hora a zona horaria local de México
+function parseDateTimeSafe(val) {
+  if (!val) return { dateStr: "", timeStr: "00:00", dateTimeStr: "", dt: null };
+  let d;
+  if (val instanceof Date) {
+    d = val;
+  } else if (typeof val === "number") {
+    d = new Date(val > 1e11 ? val : val * 1000);
+  } else {
+    let s = String(val).trim();
+    if (!s.includes("Z") && !s.includes("+") && !s.includes("-", 10)) {
+      s = s.replace(" ", "T");
+    }
+    d = new Date(s);
+  }
+  if (isNaN(d.getTime())) return { dateStr: "", timeStr: "00:00", dateTimeStr: "", dt: null };
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const mins = String(d.getMinutes()).padStart(2, '0');
+  const secs = String(d.getSeconds()).padStart(2, '0');
+  return {
+    dateStr: `${year}-${month}-${day}`,
+    timeStr: `${hours}:${mins}`,
+    dateTimeStr: `${year}-${month}-${day} ${hours}:${mins}:${secs}`,
+    dt: d
+  };
+}
 
-const CASETA_MODELS = [
+// =========================================================
+// REGLAS OFICIALES DE CORTE TELMEX 2026 (10 PM - 10 AM)
+// =========================================================
+function getAccountingDate(val) {
+  const timeInfo = parseDateTimeSafe(val);
+  if (!timeInfo.dt) return timeInfo.dateStr || "";
+  const hour = timeInfo.dt.getHours();
+  if (hour >= 22) {
+    const nextDay = new Date(timeInfo.dt);
+    nextDay.setDate(nextDay.getDate() + 1);
+    return getLocalDateStr(nextDay);
+  }
+  return timeInfo.dateStr;
+}
 
-  { id: "NORMAL", title: "Normal", img: "assets/types/caseta_normal.jpg" },
+function getCutoffInfo(date = new Date()) {
+  const d = (date instanceof Date) ? date : new Date(date);
+  const hour = d.getHours();
+  
+  if (hour < 8) {
+    // Antes de las 10:00 AM -> Muestra corte oficial cerrado de ayer a las 22:00
+    const prevDate = new Date(d);
+    prevDate.setDate(prevDate.getDate() - 1);
+    const activeDateStr = getLocalDateStr(prevDate);
+    return {
+      activeReportingDate: activeDateStr,
+      maxVisibleDt: `${activeDateStr} 22:00:00`,
+      isFrozen: true,
+      badgeText: "REPORTE OFICIAL CERRADO",
+      badgeClass: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
+      badgeDotClass: "bg-amber-400",
+      statusMessage: `Reporte matutino cerrado al ${activeDateStr} (22:00 hrs). En período de entrega matutina. La jornada de hoy se liberará a las 08:00 AM.`,
+      cycleLabel: `Ciclo Oficial: ${activeDateStr}`
+    };
+  } else if (hour >= 22) {
+    // A partir de las 22:00 hrs (10 PM) -> Corte cerrado de hoy a las 22:00 para depuración
+    const activeDateStr = getLocalDateStr(d);
+    return {
+      activeReportingDate: activeDateStr,
+      maxVisibleDt: `${activeDateStr} 22:00:00`,
+      isFrozen: true,
+      badgeText: "CORTE 22:00 HRS ACTIVO",
+      badgeClass: "bg-sky-500/20 text-sky-300 border border-sky-500/30",
+      badgeDotClass: "bg-sky-400",
+      statusMessage: `Corte de las 10:00 PM activo (${activeDateStr}). Período de depuración. Registros posteriores se liberan mañana a las 10:00 AM.`,
+      cycleLabel: `Ciclo Oficial: ${activeDateStr}`
+    };
+  } else {
+    // Entre 10:00 AM y 22:00 PM -> Jornada activa en vivo
+    const activeDateStr = getLocalDateStr(d);
+    const hourStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    return {
+      activeReportingDate: activeDateStr,
+      maxVisibleDt: `${activeDateStr} ${hourStr}:59`,
+      isFrozen: false,
+      badgeText: "JORNADA EN VIVO",
+      badgeClass: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
+      badgeDotClass: "bg-emerald-400 animate-pulse",
+      statusMessage: `Jornada del ${activeDateStr} en vivo (${hourStr} hrs). Próximo corte oficial hoy a las 10:00 PM.`,
+      cycleLabel: `Jornada Activa: ${activeDateStr}`
+    };
+  }
+}
 
-  { id: "MINI", title: "Mini", img: "assets/types/caseta_mini.jpg" },
+function renderCutoffBanner(info = null) {
+  const cutoffInfo = info || getCutoffInfo();
+  const banner = document.getElementById("cutoffBanner");
+  const badge = document.getElementById("cutoffBadge");
+  const badgeDot = document.getElementById("cutoffBadgeDot");
+  const badgeText = document.getElementById("cutoffBadgeText");
+  const messageEl = document.getElementById("cutoffMessage");
+  const cycleLabel = document.getElementById("cutoffActiveDateLabel");
 
-  { id: "DOBLE", title: "Doble", img: "assets/types/caseta_doble.jpg" },
+  if (!banner || !badge || !badgeText || !messageEl) return;
 
-  { id: "SEMICIRCULAR", title: "Semicircular", img: "assets/types/caseta_semicircular.jpg" }
+  badge.className = `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold tracking-wide shadow-sm ${cutoffInfo.badgeClass}`;
+  if (badgeDot) badgeDot.className = `w-2 h-2 rounded-full ${cutoffInfo.badgeDotClass}`;
+  badgeText.innerText = cutoffInfo.badgeText;
+  messageEl.innerText = cutoffInfo.statusMessage;
+  if (cycleLabel) cycleLabel.innerText = cutoffInfo.cycleLabel;
+}
 
-];
+function showCutoffExplanationModal() {
+  const modal = document.getElementById("cutoffModal");
+  if (modal) modal.classList.remove("hidden");
+}
 
-
-
-const CAJA_MODELS = [
-
-  { id: "Tradicional Sencilla", title: "Tradicional Sencilla", img: "assets/types/caja_tradicional_sencilla.jpg" },
-
-  { id: "Tradicional Doble", title: "Tradicional Doble", img: "assets/types/caja_tradicional_doble.jpg" },
-
-  { id: "Siecor Sencilla 1 Puerta", title: "Siecor 1 Puerta", img: "assets/types/caja_siecor_1p.jpg" },
-
-  { id: "Siecor Doble", title: "Siecor Doble", img: "assets/types/caja_siecor_doble.jpg" },
-
-  { id: "Siecor Sencilla 2 Puertas", title: "Siecor 2 Puertas", img: "assets/types/caja_siecor_2p.jpg" },
-
-  { id: "Krone Sencilla", title: "Krone Sencilla", img: "assets/types/caja_krone.jpg" },
-
-  { id: "Desplazamiento Sencilla", title: "Desplazamiento Sencilla", img: "assets/types/caja_desplazamiento_sencilla.jpg" },
-
-  { id: "Desplazamiento Doble", title: "Desplazamiento Doble", img: "assets/types/caja_desplazamiento_doble.jpg" },
-
-  { id: "Envolvente Sencilla", title: "Envolvente Sencilla", img: "assets/types/caja_envolvente_sencilla.jpg" },
-
-  { id: "Envolvente Doble", title: "Envolvente Doble", img: "assets/types/caja_envolvente_doble.jpg" }
-
-];
-
-
-
-// Catálogo Oficial de Estados y Áreas de Trabajo (Garantiza opciones en iPhone y offline)
-
-const OFFICIAL_ESTADOS_AREAS = {
-  "AGUASCALIENTES": ["AGUASCALIENTES"],
-  "BAJA CALIFORNIA SUR": ["LA PAZ"],
-  "CHIAPAS": ["CHIAPAS"],
-  "CHIHUAHUA": ["CHIHUAHUA", "CIUDAD JUAREZ"],
-  "COAHUILA": ["TORREON"],
-  "DURANGO": ["DURANGO"],
-  "ESTADO DE MEXICO": ["TOLUCA", "ESTADO DE MEXICO SUR"],
-  "GUANAJUATO": ["CELAYA", "IRAPUATO", "LEON"],
-  "GUERRERO": ["ACAPULCO", "CHILPANCINGO"],
-  "JALISCO": ["GUADALAJARA CENTRO", "GUADALAJARA ORIENTE", "JALISCO"],
-  "MICHOACAN": ["MICHOACAN-MORELIA"],
-  "MORELOS": ["MORELOS"],
-  "NAYARIT": ["NAYARIT"],
-  "NUEVO LEON": ["MONTERREY 1", "MONTERREY 2", "MONTERREY 3"],
-  "OAXACA": ["OAXACA"],
-  "PUEBLA": ["PUEBLA"],
-  "QUERETARO": ["QUERETARO"],
-  "QUINTANA ROO": ["QUINTANA ROO NORTE", "QUINTANA ROO SUR"],
-  "SINALOA": ["CULIACAN"],
-  "SONORA": ["CIUDAD OBREGON-LOS MOCH", "HERMOSILLO", "NOGALES"],
-  "TABASCO": ["TABASCO"],
-  "TLAXCALA": ["TLAXCALA"],
-  "VERACRUZ": ["JALAPA", "VERACRUZ"],
-  "YUCATAN": ["YUCATAN"]
-};
-
-// Coordenadas oficiales de respaldo por Área (37 Áreas Oficiales IASA)
-const AREA_COORDINATES_MAP = {
-  "MORELOS": { lat: 18.9242, lon: -99.2216 },
-  "TOLUCA": { lat: 19.2925, lon: -99.6569 },
-  "GUADALAJARA CENTRO": { lat: 20.6767, lon: -103.3475 },
-  "GUADALAJARA ORIENTE": { lat: 20.6550, lon: -103.2950 },
-  "MONTERREY 1": { lat: 25.6866, lon: -100.3161 },
-  "MONTERREY 2": { lat: 25.7200, lon: -100.3500 },
-  "MONTERREY 3": { lat: 25.6500, lon: -100.2800 },
-  "QUINTANA ROO NORTE": { lat: 21.1619, lon: -86.8515 },
-  "QUINTANA ROO SUR": { lat: 18.5002, lon: -88.2961 },
-  "QUERETARO": { lat: 20.5888, lon: -100.3899 },
-  "ESTADO DE MEXICO SUR": { lat: 19.1570, lon: -100.1470 },
-  "PUEBLA": { lat: 19.0414, lon: -98.2063 },
-  "LEON": { lat: 21.1221, lon: -101.6826 },
-  "CIUDAD JUAREZ": { lat: 31.6904, lon: -106.4245 },
-  "TORREON": { lat: 25.5428, lon: -103.4068 },
-  "NAYARIT": { lat: 21.5042, lon: -104.8946 },
-  "CIUDAD OBREGON-LOS MOCH": { lat: 27.4864, lon: -109.9408 },
-  "VERACRUZ": { lat: 19.1738, lon: -96.1342 },
-  "YUCATAN": { lat: 20.9674, lon: -89.5926 },
-  "MICHOACAN-MORELIA": { lat: 19.7060, lon: -101.1950 },
-  "AGUASCALIENTES": { lat: 21.8853, lon: -102.2916 },
-  "CHIAPAS": { lat: 16.7569, lon: -93.1292 },
-  "CHIHUAHUA": { lat: 28.6330, lon: -106.0691 },
-  "TABASCO": { lat: 17.9892, lon: -92.9281 },
-  "CULIACAN": { lat: 24.8091, lon: -107.3940 },
-  "ACAPULCO": { lat: 16.8531, lon: -99.8237 },
-  "HERMOSILLO": { lat: 29.0729, lon: -110.9559 },
-  "JALAPA": { lat: 19.5438, lon: -96.9102 },
-  "DURANGO": { lat: 24.0277, lon: -104.6532 },
-  "OAXACA": { lat: 17.0732, lon: -96.7266 },
-  "IRAPUATO": { lat: 20.6736, lon: -101.3563 },
-  "CELAYA": { lat: 20.5222, lon: -100.8123 },
-  "LA PAZ": { lat: 24.1426, lon: -110.3128 },
-  "TLAXCALA": { lat: 19.3182, lon: -98.2375 },
-  "CHILPANCINGO": { lat: 17.5516, lon: -99.5005 },
-  "JALISCO": { lat: 20.6767, lon: -103.3475 },
-  "NOGALES": { lat: 31.3086, lon: -110.9422 }
-};
-
-
-
-// Initialize App
+function closeCutoffModal() {
+  const modal = document.getElementById("cutoffModal");
+  if (modal) modal.classList.add("hidden");
+}
 
 document.addEventListener("DOMContentLoaded", () => {
+  // 1. Limpieza preventiva de claves sobredimensionadas en localStorage que saturan la cuota de 5MB
+  safeRemoveStorage("telmex_dashboard_raw_records");
+  safeRemoveStorage("telmex_dashboard_records");
 
-  initApp();
+  try { loadConfig(); } catch (e) { console.error("Error en loadConfig:", e); }
+  try { checkAndMigrateLiveData(); } catch (e) { console.error("Error en checkAndMigrateLiveData:", e); }
+  try { loadRecords(); } catch (e) { console.error("Error en loadRecords:", e); }
+  try { loadMaterialsLog(); } catch (e) { console.error("Error en loadMaterialsLog:", e); }
+  try { recalculateSuministrosFromMaterialsLog(); } catch (e) { console.error("Error en recalculateSuministros:", e); }
+  try { initFilters(); } catch (e) { console.error("Error en initFilters:", e); }
+  try { populateTecnicosFilter(); } catch (e) { console.error("Error en populateTecnicosFilter:", e); }
+  try { initDatePresets(); } catch (e) { console.error("Error en initDatePresets:", e); }
+  try { renderCutoffBanner(); } catch (e) { console.error("Error en renderCutoffBanner:", e); }
+  try { applyFilters(); } catch (e) { console.error("Error en applyFilters:", e); }
+  try { initBossModule(); } catch (e) { console.error("Error en initBossModule:", e); }
+  try { renderMaterialsConfigTable(); } catch (e) { console.error("Error en renderMaterialsConfigTable:", e); }
+  try { renderMaterialsLogTable(); } catch (e) { console.error("Error en renderMaterialsLogTable:", e); }
+  try { updateSyncLabel(); } catch (e) { console.error("Error en updateSyncLabel:", e); }
 
-  initGeolocation();
-
+  // Operación ultra rápida en vivo vía Red CDN (GitHub Pages) sin límites de cuota
+  const badge = document.getElementById("lastSyncLabel");
+  if (badge) {
+    badge.innerHTML = `<span class="inline-flex items-center gap-1 text-emerald-300 font-bold">● En vivo (Red CDN)</span>`;
+  }
 });
 
+// Configuración de Conexión en Tiempo Real con Supabase (PostgreSQL Cloud)
+const SUPABASE_CONFIG = {
+  url: "https://xbbgcmnqtxhpnwjozzrt.supabase.co",
+  anonKey: "sb_publishable_ZlrYYIXOAN_WA6ryCaCNsA_t3zCERLG"
+};
 
-
-let isCheckingNetwork = false;
-
-let customAlertCallback = null;
-
-
-
-function showCustomAlert(message, title = "Imagen Telmex 2026", callback = null) {
-
-  customAlertCallback = callback;
-
-  const modal = document.getElementById("customAlertModal");
-
-  const msgEl = document.getElementById("customAlertMessage");
-
-  const titleEl = document.getElementById("customAlertHeader");
-
-
-
-  if (modal && msgEl) {
-
-    if (titleEl) titleEl.innerHTML = `<span>${title}</span>`;
-
-    msgEl.innerHTML = String(message).replace(/\n/g, "<br>");
-
-    modal.style.display = "flex";
-
-  } else {
-
-    alert(message);
-
-    if (callback) callback();
-
-  }
-
-}
-
-
-
-function closeCustomAlert() {
-
-  const modal = document.getElementById("customAlertModal");
-
-  if (modal) modal.style.display = "none";
-
-  if (customAlertCallback) {
-
-    const cb = customAlertCallback;
-
-    customAlertCallback = null;
-
-    cb();
-
-  }
-
-}
-
-
-
-let customConfirmResolve = null;
-
-
-
-function showCustomConfirm(message, title = "Imagen Telmex 2026", onConfirm = null, onCancel = null, okText = "Aceptar", cancelText = "Cancelar", okColor = "#dc2626") {
-
-  const modal = document.getElementById("customConfirmModal");
-
-  const msgEl = document.getElementById("customConfirmMessage");
-
-  const titleEl = document.getElementById("customConfirmHeader");
-
-  const okBtn = document.getElementById("customConfirmOkBtn");
-
-  const cancelBtn = document.getElementById("customConfirmCancelBtn");
-
-
-
-  if (modal && msgEl && okBtn && cancelBtn) {
-
-    if (titleEl) titleEl.innerHTML = `<span>${title}</span>`;
-
-    msgEl.innerHTML = String(message).replace(/\n/g, "<br>");
-
-    okBtn.innerHTML = okText;
-
-    okBtn.style.backgroundColor = okColor;
-
-    cancelBtn.innerHTML = cancelText;
-
-    modal.style.display = "flex";
-
-
-
-    customConfirmResolve = (confirmed) => {
-
-      modal.style.display = "none";
-
-      if (confirmed && onConfirm) onConfirm();
-
-      else if (!confirmed && onCancel) onCancel();
-
+// Función auxiliar para paginar consultas en Supabase PostgREST (supera el límite de 1000 filas)
+async function fetchPagedFromSupabase(table, select = "*", orderBy = "id.desc") {
+  const headers = {
+    "apikey": SUPABASE_CONFIG.anonKey,
+    "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`
+  };
+  const batchSize = 1000;
+  let offset = 0;
+  let allRows = [];
+  while (true) {
+    const rangeHeaders = {
+      ...headers,
+      "Range": `${offset}-${offset + batchSize - 1}`
     };
-
-  } else {
-
-    const plainMsg = String(message).replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
-
-    const ok = confirm(plainMsg);
-
-    if (ok && onConfirm) onConfirm();
-
-    else if (!ok && onCancel) onCancel();
-
-  }
-
-}
-
-
-
-function closeCustomConfirm(confirmed) {
-
-  if (customConfirmResolve) {
-
-    const cb = customConfirmResolve;
-
-    customConfirmResolve = null;
-
-    cb(confirmed);
-
-  }
-
-}
-
-
-
-// Override global alert to eliminate native browser/WebView "La página file:// indica:"
-
-window.alert = function(msg) {
-
-  showCustomAlert(msg);
-
-};
-
-
-
-// Catálogo Oficial de Contratistas y Técnicos (Fuente: Contratistas.xlsx)
-
-const CONTRATISTAS_TECNICOS = {
-
-  "Adrian Valenzuela": [
-
-    "Leonel Romero Sanchez",
-
-    "Jose Antonio Esquivel",
-
-    "Jesus Antonio Esquivel"
-
-  ],
-
-  "Alejandro Adrian Obeso": [
-
-    "Eduardo Alonzo Rodriguez Miranda",
-
-    "Pedro Damian Peña Bojorquez",
-
-    "Leopoldo Elyud Lopez Rocha",
-
-    "Jose Juan Pico Burgueño",
-
-    "Juan Gabriel Hernandez Hernandez",
-
-    "Ruth Elizabeth Gonzalez Ibarra"
-
-  ],
-
-  "Arturo Zavala Fuentes": [
-
-    "Arturo Zavala Fuentes",
-
-    "Raul Ruenes Malagon"
-
-  ],
-
-  "Ernesto Aparicio Hernandez": [
-
-    "Lucina Villanueva Hernández",
-
-    "Salmon Vega Guerrero"
-
-  ],
-
-  "Jose antonio Esquivel": [
-
-    "Jose antonio Esquivel"
-
-  ],
-
-  "Jose Miguel Prats Coutiño": [
-
-    "Jorge Lopez",
-
-    "Daniel Aguilar Vazquez",
-
-    "Ramon Aguilar",
-
-    "Emilio Cruz"
-
-  ],
-
-  "Lucina Villanueva Hernández": [
-
-    "Ernesto Aparicio Hernandez",
-
-    "Carlos de Dios Hidalgo"
-
-  ],
-
-  "Luis Jose Vasquez Briceño": [
-
-    "Ramon Nuñez Victoria",
-
-    "Criastian de Jesus Vargas Amaro"
-
-  ],
-
-  "Noe Gastelum Lopez": [
-
-    "Noe Gastelum Lopez"
-
-  ],
-
-  "Ricardo Avila Sanchez": [
-
-    "Ricardo Avila Sanchez",
-
-    "Alejandro Navarrte"
-
-  ],
-
-  "Roberto Melchor Frutos Fuentes": [
-
-    "Alfredo Lopez Garnica",
-
-    "Rogelio Yañes Lozano",
-
-    "Marco Antonio Catañeda Garcia",
-
-    "Gabriel Sanchez Barrera",
-
-    "Napoleon Mercado Bautista",
-
-    "Martin Alfonzo Chavez Torres"
-
-  ],
-
-  "Roberto Merino Merino": [
-
-    "Roberto Merino Merino",
-
-    "Diego Lizandro Keno Luna"
-
-  ],
-
-  "Sergio Beccerra Franco": [
-
-    "Jose Antonio Esquive"
-
-  ],
-
-  "TRANSFI COMMERCE & MARKET": [
-
-    "Juan Daniel Gonzales",
-
-    "Johnny Josué Álvarez Alvarado",
-
-    "Juan Raul Hernandez Osuna",
-
-    "Juda Velazquez Jara",
-
-    "Natanael Velazquez Jada"
-
-  ],
-
-  "Victor Hugo Lopez Garcia": [
-
-    "Pablo Emmanuel Reyes Hernandez",
-
-    "Jair Emmanuel Martienez Morales",
-
-    "Samuel Romero Sanchez",
-
-    "Jose Gonzalez Gonzalez",
-
-    "Victor Hugo Lopez Garcia",
-
-    "Cruz Antonio Hernandez Ruiz",
-
-    "Lucio Leonardo Catillo Coronel"
-
-  ]
-
-};
-
-
-
-function populateContratistasDropdown(selectedContratista = "") {
-
-  const select = document.getElementById("setupContratista");
-
-  if (!select) return;
-
-
-
-  const currentVal = selectedContratista || userContratista;
-
-  select.innerHTML = '<option value="">-- Seleccionar Contratista --</option>';
-
-
-
-  const sortedContratistas = Object.keys(CONTRATISTAS_TECNICOS).sort((a, b) => a.localeCompare(b, 'es'));
-
-  sortedContratistas.forEach(c => {
-
-    const opt = document.createElement("option");
-
-    opt.value = c;
-
-    opt.textContent = c;
-
-    if (c === currentVal) opt.selected = true;
-
-    select.appendChild(opt);
-
-  });
-
-
-
-  // Opción "Otro" al final de la lista de contratistas
-
-  const optOtro = document.createElement("option");
-
-  optOtro.value = "OTRO";
-
-  optOtro.textContent = "Otro (Ingresar manualmente)...";
-
-  if (currentVal && !CONTRATISTAS_TECNICOS[currentVal]) {
-
-    optOtro.selected = true;
-
-  }
-
-  select.appendChild(optOtro);
-
-}
-
-
-
-function onSetupContratistaChange() {
-
-  const contratistaSelect = document.getElementById("setupContratista");
-
-  const manualContratistaInput = document.getElementById("setupContratistaManual");
-
-  const tecnicoSelect = document.getElementById("setupTecnico");
-
-  const manualTecnicoInput = document.getElementById("setupTecnicoManual");
-
-
-
-  const selectedContratista = contratistaSelect?.value || "";
-
-
-
-  if (selectedContratista === "OTRO") {
-
-    if (manualContratistaInput) {
-
-      manualContratistaInput.style.display = "block";
-
-      manualContratistaInput.value = "";
-
-      manualContratistaInput.focus();
-
-    }
-
-    if (tecnicoSelect) {
-
-      tecnicoSelect.style.display = "none";
-
-    }
-
-    if (manualTecnicoInput) {
-
-      manualTecnicoInput.style.display = "block";
-
-      manualTecnicoInput.value = "";
-
-    }
-
-  } else {
-
-    if (manualContratistaInput) {
-
-      manualContratistaInput.style.display = "none";
-
-    }
-
-    if (tecnicoSelect) {
-
-      tecnicoSelect.style.display = "block";
-
-    }
-
-    if (manualTecnicoInput) {
-
-      manualTecnicoInput.style.display = "none";
-
-    }
-
-    updateTecnicosDropdown(selectedContratista);
-
-  }
-
-}
-
-
-
-function updateTecnicosDropdown(contratista, preselectedTecnico = "") {
-
-  const select = document.getElementById("setupTecnico");
-
-  const manualTecnicoInput = document.getElementById("setupTecnicoManual");
-
-  if (!select) return;
-
-
-
-  select.innerHTML = "";
-
-
-
-  if (!contratista || contratista === "OTRO" || !CONTRATISTAS_TECNICOS[contratista]) {
-
-    if (contratista === "OTRO") {
-
-      select.style.display = "none";
-
-      if (manualTecnicoInput) {
-
-        manualTecnicoInput.style.display = "block";
-
-        if (preselectedTecnico) manualTecnicoInput.value = preselectedTecnico;
-
-      }
-
-    } else {
-
-      select.style.display = "block";
-
-      select.innerHTML = '<option value="">-- Selecciona primero un Contratista --</option>';
-
-      select.disabled = true;
-
-      if (manualTecnicoInput) {
-
-        manualTecnicoInput.style.display = "none";
-
-      }
-
-    }
-
-    return;
-
-  }
-
-
-
-  select.style.display = "block";
-
-  select.disabled = false;
-
-  const tecnicos = CONTRATISTAS_TECNICOS[contratista];
-
-  select.innerHTML = '<option value="">-- Seleccionar Técnico --</option>';
-
-
-
-  const targetTecnico = preselectedTecnico || userTecnico;
-
-  let isCustomTecnico = targetTecnico && !tecnicos.includes(targetTecnico);
-
-
-
-  tecnicos.forEach(t => {
-
-    const opt = document.createElement("option");
-
-    opt.value = t;
-
-    opt.textContent = t;
-
-    if (t === targetTecnico) opt.selected = true;
-
-    select.appendChild(opt);
-
-  });
-
-
-
-  // Opción "Otro" para técnicos
-
-  const optOtroTec = document.createElement("option");
-
-  optOtroTec.value = "OTRO";
-
-  optOtroTec.textContent = "Otro (Ingresar manualmente)...";
-
-  if (isCustomTecnico) {
-
-    optOtroTec.selected = true;
-
-  }
-
-  select.appendChild(optOtroTec);
-
-
-
-  if (manualTecnicoInput) {
-
-    if (isCustomTecnico) {
-
-      manualTecnicoInput.style.display = "block";
-
-      manualTecnicoInput.value = targetTecnico;
-
-    } else {
-
-      manualTecnicoInput.style.display = "none";
-
-    }
-
-  }
-
-}
-
-
-
-function onSetupTecnicoChange() {
-
-  const tecnicoSelect = document.getElementById("setupTecnico");
-
-  const manualTecnicoInput = document.getElementById("setupTecnicoManual");
-
-  if (!tecnicoSelect || !manualTecnicoInput) return;
-
-
-
-  if (tecnicoSelect.value === "OTRO") {
-
-    manualTecnicoInput.style.display = "block";
-
-    manualTecnicoInput.value = "";
-
-    manualTecnicoInput.focus();
-
-  } else {
-
-    manualTecnicoInput.style.display = "none";
-
-  }
-
-}
-
-
-
-function checkUserConfig() {
-
-  userContratista = localStorage.getItem("TELMEX_CONTRATISTA") || "";
-
-  userTecnico = localStorage.getItem("TELMEX_TECNICO") || "";
-
-
-
-  updateHeaderUserInfo();
-
-  updateFormUserDisplay();
-
-
-
-  if (!userContratista || !userTecnico) {
-
-    openUserSetupModal();
-
-  }
-
-}
-
-
-
-function openUserSetupModal() {
-
-  const manualContratistaInput = document.getElementById("setupContratistaManual");
-
-  const manualTecnicoInput = document.getElementById("setupTecnicoManual");
-
-  const tecnicoSelect = document.getElementById("setupTecnico");
-
-
-
-  populateContratistasDropdown(userContratista);
-
-
-
-  if (userContratista && !CONTRATISTAS_TECNICOS[userContratista]) {
-
-    // Contratista manual personalizado
-
-    if (manualContratistaInput) {
-
-      manualContratistaInput.style.display = "block";
-
-      manualContratistaInput.value = userContratista;
-
-    }
-
-    if (tecnicoSelect) {
-
-      tecnicoSelect.style.display = "none";
-
-    }
-
-    if (manualTecnicoInput) {
-
-      manualTecnicoInput.style.display = "block";
-
-      manualTecnicoInput.value = userTecnico || "";
-
-    }
-
-  } else {
-
-    if (manualContratistaInput) {
-
-      manualContratistaInput.style.display = "none";
-
-      manualContratistaInput.value = "";
-
-    }
-
-    updateTecnicosDropdown(userContratista, userTecnico);
-
-  }
-
-
-
-  const modal = document.getElementById("userSetupModal");
-
-  if (modal) modal.style.display = "flex";
-
-}
-
-
-
-function closeUserSetupModal() {
-
-  const modal = document.getElementById("userSetupModal");
-
-  if (modal) modal.style.display = "none";
-
-}
-
-
-
-function saveUserConfig() {
-
-  const contratistaSelect = document.getElementById("setupContratista");
-
-  const manualContratistaInput = document.getElementById("setupContratistaManual");
-
-  const tecnicoSelect = document.getElementById("setupTecnico");
-
-  const manualTecnicoInput = document.getElementById("setupTecnicoManual");
-
-
-
-  let contratista = "";
-
-  if (contratistaSelect?.value === "OTRO") {
-
-    contratista = manualContratistaInput?.value?.trim() || "";
-
-    if (!contratista) {
-
-      alert("⚠️ Por favor escribe el nombre de tu Contratista / Socio Comercial.");
-
-      manualContratistaInput?.focus();
-
-      return;
-
-    }
-
-  } else {
-
-    contratista = contratistaSelect?.value?.trim() || "";
-
-    if (!contratista) {
-
-      alert("⚠️ Por favor selecciona tu Contratista / Socio Comercial.");
-
-      return;
-
-    }
-
-  }
-
-
-
-  let tecnico = "";
-
-  if (contratistaSelect?.value === "OTRO" || tecnicoSelect?.value === "OTRO") {
-
-    tecnico = manualTecnicoInput?.value?.trim() || "";
-
-    if (!tecnico) {
-
-      alert("⚠️ Por favor escribe el nombre completo del Técnico en Sitio.");
-
-      manualTecnicoInput?.focus();
-
-      return;
-
-    }
-
-  } else {
-
-    tecnico = tecnicoSelect?.value?.trim() || "";
-
-    if (!tecnico) {
-
-      alert("⚠️ Por favor selecciona tu Nombre de Técnico en Sitio.");
-
-      return;
-
-    }
-
-  }
-
-
-
-  userContratista = contratista;
-
-  userTecnico = tecnico;
-
-
-
-  localStorage.setItem("TELMEX_CONTRATISTA", userContratista);
-
-  localStorage.setItem("TELMEX_TECNICO", userTecnico);
-
-
-
-  updateHeaderUserInfo();
-
-  updateFormUserDisplay();
-
-  closeUserSetupModal();
-
-}
-
-
-
-function updateHeaderUserInfo() {
-
-  const el = document.getElementById("headerUserInfo");
-
-  if (el) {
-
-    if (userContratista && userTecnico) {
-
-      const firstTechName = userTecnico.split(" ")[0];
-
-      el.innerText = `${userContratista} (${firstTechName})`;
-
-    } else {
-
-      el.innerText = "Configurar Técnico";
-
-    }
-
-  }
-
-}
-
-
-
-function updateFormUserDisplay() {
-
-  const contratistaEl = document.getElementById("formContratista");
-
-  const tecnicoEl = document.getElementById("formTecnico");
-
-  if (contratistaEl) contratistaEl.value = userContratista || "Sin configurar";
-
-  if (tecnicoEl) tecnicoEl.value = userTecnico || "Sin configurar";
-
-}
-
-
-
-function initApp() {
-
-  setupManualIdInputFilter();
-
-  setupExistenciaRadioListeners();
-
-  populateModelFilter("TODOS");
-
-  checkUserConfig();
-
-  loadEvidencesFromStorage();
-
-  updateDailyGoalUI();
-
-  
-
-  checkNetworkConnectivity();
-
-  
-
-  window.addEventListener("online", () => checkNetworkConnectivity());
-
-  window.addEventListener("offline", () => updateNetworkUI(false));
-
-  setInterval(() => checkNetworkConnectivity(), 3000);
-
-
-
-  initCompletedAssetsSync();
-
-  fetchCatalogData();
-
-}
-
-
-
-function fetchCatalogData() {
-
-  const badge = document.getElementById("catalogCountBadge");
-
-  if (badge) badge.innerText = "⏳ Cargando base de datos...";
-
-
-
-  const globalData = window.CATALOG_DATA || window.catalog;
-
-  if (globalData && Array.isArray(globalData) && globalData.length > 0) {
-
-    catalog = globalData;
-
-    onCatalogLoaded();
-
-    return;
-
-  }
-
-
-
-  // 1. Intentar cargar las partes divididas (catalog_part1.js y catalog_part2.js)
-
-  loadCatalogViaParts()
-
-    .then(() => {
-
-      if (window.CATALOG_DATA && Array.isArray(window.CATALOG_DATA) && window.CATALOG_DATA.length > 0) {
-
-        catalog = window.CATALOG_DATA;
-
-        onCatalogLoaded();
-
-      } else {
-
-        throw new Error("Formato de partes inválido");
-
-      }
-
-    })
-
-    .catch(partsErr => {
-
-      console.warn("Carga de partes falló, intentando XHR/Fetch:", partsErr);
-
-      // 2. Intentar XHR catalog_clean.json
-
-      loadCatalogViaXHR()
-
-        .then(data => {
-
-          catalog = data;
-
-          window.CATALOG_DATA = data;
-
-          onCatalogLoaded();
-
-        })
-
-        .catch(xhrErr => {
-
-          console.warn("Carga XHR falló, intentando script catalog_data.js:", xhrErr);
-
-          // 3. Último fallback: Script Tag único
-
-          loadCatalogViaScript();
-
-        });
-
-    });
-
-}
-
-
-
-function loadCatalogViaParts() {
-
-  return new Promise((resolve, reject) => {
-
-    const scripts = ["data/catalog_part1.js", "data/catalog_part2.js"];
-
-    let loadedCount = 0;
-
-
-
-    function loadNext(index) {
-
-      if (index >= scripts.length) {
-
-        resolve();
-
-        return;
-
-      }
-
-      const script = document.createElement("script");
-
-      script.src = scripts[index];
-
-      script.onload = () => loadNext(index + 1);
-
-      script.onerror = (e) => reject(e);
-
-      document.body.appendChild(script);
-
-    }
-
-
-
-    loadNext(0);
-
-  });
-
-}
-
-
-
-function loadCatalogViaXHR() {
-
-  return new Promise((resolve, reject) => {
-
     try {
-
-      const xhr = new XMLHttpRequest();
-
-      xhr.open("GET", "data/catalog_clean.json", true);
-
-      xhr.onload = function() {
-
-        if ((xhr.status === 200 || xhr.status === 0) && xhr.responseText && xhr.responseText.length > 0) {
-
-          try {
-
-            const data = JSON.parse(xhr.responseText);
-
-            if (Array.isArray(data) && data.length > 0) {
-
-              resolve(data);
-
-            } else {
-
-              reject(new Error("Catálogo vacío o formato no válido"));
-
-            }
-
-          } catch(e) {
-
-            reject(e);
-
-          }
-
-        } else {
-
-          reject(new Error("Respuesta XHR con status " + xhr.status));
-
+      const resp = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/${table}?select=${select}&order=${orderBy}`, { headers: rangeHeaders });
+      if (!resp.ok) {
+        if (resp.status !== 416) {
+          console.warn(`[Supabase Aviso] Status ${resp.status} al leer ${table}`);
         }
-
-      };
-
-      xhr.onerror = function(e) {
-
-        reject(new Error("Error de red XHR"));
-
-      };
-
-      xhr.send();
-
-    } catch(err) {
-
-      reject(err);
-
+        break;
+      }
+      const batch = await resp.json();
+      if (!Array.isArray(batch) || batch.length === 0) break;
+      allRows.push(...batch);
+      if (batch.length < batchSize) break;
+      offset += batchSize;
+    } catch (e) {
+      console.warn(`[Supabase Error Paginación]`, e);
+      break;
     }
-
-  });
-
+  }
+  return allRows;
 }
 
+// =========================================================
+// MOTOR DE CONCILIACIÓN Y DEDUPLICACIÓN CONTABLE TELMEX / IASA
+// Garantiza coincidencia al 100% con el Reporte Diario Excel
+// =========================================================
+function deduplicateOfficialRecords(rawList) {
+  if (!Array.isArray(rawList)) return { valid: [], raw: [], rawCount: 0, dupsCount: 0 };
 
+  // Excluir registros de Guadalajara Poniente (territorio EULEN fuera de alcance IASA)
+  const filteredList = rawList.filter(r => !String(r.area_trabajo || "").toUpperCase().includes("PONIENTE"));
 
-function loadCatalogViaScript() {
+  const START_DATE = "2026-10-26";
+  const seenAssets = new Set();
 
-  const script = document.createElement("script");
+  // 1. Activos registrados en la línea base oficial antes de START_DATE
+  for (const r of filteredList) {
+    if (r.fecha && r.fecha < START_DATE) {
+      const id = String(r.identificador || "").trim().toUpperCase();
+      const tipo = String(r.tipo || "CAJA").trim().toUpperCase();
+      if (id && id !== "S/N" && id !== "N/A" && id !== "0") {
+        seenAssets.add(`${tipo}_${id}`);
+      }
+    }
+  }
 
-  script.src = "data/catalog_data.js";
+  // 2. Orden cronológico para preservar el primer folio oficial
+  const sorted = [...filteredList].sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
 
-  script.onload = () => {
+  const valid = [];
+  const dups = [];
 
-    if (window.CATALOG_DATA && Array.isArray(window.CATALOG_DATA)) {
+  for (const r of sorted) {
+    const id = String(r.identificador || "").trim().toUpperCase();
+    const tipo = String(r.tipo || "CAJA").trim().toUpperCase();
 
-      catalog = window.CATALOG_DATA;
+    let isDup = false;
+    if (r.fecha && r.fecha >= START_DATE && id && id !== "S/N" && id !== "N/A" && id !== "0") {
+      const key = `${tipo}_${id}`;
+      if (seenAssets.has(key)) {
+        isDup = true;
+      } else {
+        seenAssets.add(key);
+      }
+    }
 
-      onCatalogLoaded();
-
+    r.is_duplicate = isDup;
+    if (isDup) {
+      dups.push(r);
     } else {
-
-      const badge = document.getElementById("catalogCountBadge");
-
-      if (badge) badge.innerText = "Error al cargar catálogo";
-
+      valid.push(r);
     }
+  }
 
-  };
-
-  script.onerror = () => {
-
-    const badge = document.getElementById("catalogCountBadge");
-
-    if (badge) badge.innerText = "Error al cargar catálogo";
-
-  };
-
-  document.body.appendChild(script);
-
+  return { valid, raw: sorted, dups, rawCount: rawList.length, dupsCount: dups.length };
 }
 
-
-
-function onCatalogLoaded() {
-
-  if (Array.isArray(catalog)) {
-    catalog = catalog.filter(item => !isRestrictedDistrict(item && item.id));
-  }
-
-  updateCatalogCountBadge();
-
-  populateModelFilter("TODOS");
-
-  applyHierarchyFilter();
-
-}
-
-
-
-function updateCatalogCountBadge() {
-
-  const badge = document.getElementById("catalogCountBadge");
-
-  if (!badge) return;
-
-  if (!Array.isArray(catalog) || catalog.length === 0) {
-
-    badge.innerText = "Cargando...";
-
-    return;
-
-  }
-
-  const completedIds = getCompletedAssetIdsSet();
-
-  const availableCount = catalog.filter(item => {
-
-    const id = String(item.id || "").trim().toUpperCase();
-
-    if (isRestrictedDistrict(id)) return false;
-
-    return !completedIds.has(id);
-
-  }).length;
-
-  badge.innerText = `${availableCount.toLocaleString()} disponibles (${completedIds.size.toLocaleString()} completadas)`;
-
-}
-
-
-
-function checkNetworkConnectivity() {
-
-  if (isCheckingNetwork) return;
-
-  isCheckingNetwork = true;
-
-
-
-  if (!navigator.onLine) {
-
-    isCheckingNetwork = false;
-
-    updateNetworkUI(false);
-
-    return;
-
-  }
-
-
-
-  const controller = new AbortController();
-
-  const timeoutId = setTimeout(() => controller.abort(), 2500);
-
-
-
-  fetch("https://app.linkaform.com/favicon.ico?_=" + Date.now(), {
-
-    method: "HEAD",
-
-    mode: "no-cors",
-
-    cache: "no-store",
-
-    signal: controller.signal
-
-  })
-
-  .then(() => {
-
-    clearTimeout(timeoutId);
-
-    isCheckingNetwork = false;
-
-    forceOfflineState = false; // Restablecer estado cuando hay red activa
-
-    updateNetworkUI(true);
-
-  })
-
-  .catch(() => {
-
-    clearTimeout(timeoutId);
-
-    isCheckingNetwork = false;
-
-    updateNetworkUI(false);
-
-  });
-
-}
-
-
-
-function updateOfflineStatus(forceOffline) {
-
-  if (forceOffline !== undefined) {
-
-    forceOfflineState = Boolean(forceOffline);
-
-  }
-
-
-
-  if (forceOfflineState) {
-
-    updateNetworkUI(false);
-
-  } else {
-
-    checkNetworkConnectivity();
-
-  }
-
-}
-
-
-
-function updateNetworkUI(isCurrentlyOnline) {
-
-  const badge = document.getElementById("networkStatus");
-
-
-
-  if (badge) {
-
-    if (isCurrentlyOnline) {
-
-      badge.innerText = "Conectado";
-
-      badge.classList.remove("offline");
-
-    } else {
-
-      badge.innerText = "Modo Offline";
-
-      badge.classList.add("offline");
-
-    }
-
-  }
-
-
-
-  // Notificar al usuario automáticamente si hubo un cambio de estado en la red
-
-  if (lastKnownOnlineState !== null && lastKnownOnlineState !== isCurrentlyOnline) {
-
-    showNetworkToast(isCurrentlyOnline);
-
-  }
-
-  lastKnownOnlineState = isCurrentlyOnline;
-
-}
-
-
-
-function showNetworkToast(isOnline) {
-
-  let toast = document.getElementById("networkToast");
-
-  if (!toast) {
-
-    toast = document.createElement("div");
-
-    toast.id = "networkToast";
-
-    toast.className = "network-toast";
-
-    document.body.appendChild(toast);
-
-  }
-
-
-
-  if (isOnline) {
-
-    toast.className = "network-toast online";
-
-    toast.innerText = "🟢 Conexión a internet restablecida (En línea)";
-
-  } else {
-
-    toast.className = "network-toast offline";
-
-    toast.innerText = "🔴 Se perdió la conexión a internet (Modo Offline)";
-
-  }
-
-
-
-  toast.style.display = "block";
-
-  toast.style.opacity = "1";
-
-
-
-  setTimeout(() => {
-
-    toast.style.opacity = "0";
-
-    setTimeout(() => {
-
-      toast.style.display = "none";
-
-    }, 350);
-
-  }, 3000);
-
-}
-
-
-
-function showFloatingToast(message, type = 'info') {
-
-  let toast = document.getElementById("appFloatingToast");
-
-  if (!toast) {
-
-    toast = document.createElement("div");
-
-    toast.id = "appFloatingToast";
-
-    document.body.appendChild(toast);
-
-  }
-
-
-
-  toast.className = `network-toast ${type}`;
-
-  toast.innerText = message;
-
-  toast.style.display = "block";
-
-  toast.style.opacity = "1";
-
-
-
-  if (toast._timer) clearTimeout(toast._timer);
-
-  toast._timer = setTimeout(() => {
-
-    toast.style.opacity = "0";
-
-    setTimeout(() => {
-
-      toast.style.display = "none";
-
-    }, 350);
-
-  }, 2500);
-
-}
-
-
-
-// ---------------------------------------------------------
-
-// VISTA Y NAVEGACIÓN
-
-// ---------------------------------------------------------
-
-function switchView(viewName) {
-
-  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-
-  document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
-
-
-
-  if (viewName === 'search') {
-
-    document.getElementById("viewSearch").classList.add("active");
-
-    document.querySelectorAll(".nav-item")[0].classList.add("active");
-
-  } else if (viewName === 'form') {
-
-    if (!selectedAsset) {
-
-      alert("Por favor selecciona primero una caja o caseta en la pestaña de Búsqueda.");
-
-      switchView('search');
-
-      return;
-
-    }
-
-    if (!selectedModelFilter) {
-
-      alert("⚠️ Error: Debes seleccionar y confirmar un modelo de Caseta o Caja en el modal antes de ir a Evidencia.");
-
-      switchView('search');
-
-      return;
-
-    }
-
-    document.getElementById("viewForm").classList.add("active");
-
-    document.querySelectorAll(".nav-item")[1].classList.add("active");
-
-  } else if (viewName === 'sync') {
-
-    document.getElementById("viewSync").classList.add("active");
-
-    document.querySelectorAll(".nav-item")[2].classList.add("active");
-
-    renderSavedEvidences();
-
-  }
-
-}
-
-
-
-function switchSearchMode(mode) {
-
-  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-
-  document.querySelectorAll(".search-mode-content").forEach(c => c.style.display = "none");
-
-
-
-  if (mode === 'gps') {
-
-    document.querySelectorAll(".tab-btn")[0].classList.add("active");
-
-    document.getElementById("modeGps").style.display = "block";
-
-  } else if (mode === 'filter') {
-
-    document.querySelectorAll(".tab-btn")[1].classList.add("active");
-
-    document.getElementById("modeFilter").style.display = "block";
-
-  } else if (mode === 'direct') {
-
-    document.querySelectorAll(".tab-btn")[2].classList.add("active");
-
-    document.getElementById("modeDirect").style.display = "block";
-
-  }
-
-}
-
-
-
-// ---------------------------------------------------------
-
-// ALGORITMO HAVERSINE (DISTANCIA EN METROS)
-
-// ---------------------------------------------------------
-
-function haversineDistance(lat1, lon1, lat2, lon2) {
-
-  const R = 6371000; // metros
-
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-
-  const dLon = (lon2 - lon1) * Math.PI / 180;
-
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-
-            Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  return R * c;
-
-}
-
-
-
-// ---------------------------------------------------------
-
-// GENERADOR DE ID ÚNICA CONSECUTIVO CONTINUO HISTÓRICO (CAS_AGU_0001 / CAJ_AGU_0001)
-
-// ---------------------------------------------------------
-
-function generateUniqueId(tipo, areaTrabajo) {
-
-  const prefix = (tipo === "CAJA") ? "CAJ" : "CAS";
-
-  let cleanArea = (areaTrabajo || "GEN")
-
-    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-
-    .replace(/[^A-Z]/gi, "")
-
-    .toUpperCase();
-
-  
-
-  if (cleanArea.length < 3) {
-
-    cleanArea = (cleanArea + "XXX").substring(0, 3);
-
-  } else {
-
-    cleanArea = cleanArea.substring(0, 3);
-
-  }
-
-
-
-  const matchPattern = `${prefix}_${cleanArea}_`;
-
-  const storageSeqKey = `TELMEX_LAST_FOLIO_SEQ_${matchPattern}`;
-
-
-
-  // 1. Obtener consecutivo histórico permanente de localStorage
-
-  let maxSeq = 0;
-
-  const savedSeq = parseInt(localStorage.getItem(storageSeqKey) || "0", 10);
-
-  if (!isNaN(savedSeq) && savedSeq > maxSeq) {
-
-    maxSeq = savedSeq;
-
-  }
-
-
-
-  // 2. Revisar historial de todos los activos completados (TELMEX_COMPLETED_ASSETS)
+// =========================================================
+// SISTEMA DE SONDEO INTELIGENTE Y AHORRO DE EGRESS (SUPABASE)
+// Reduce 99.9% el consumo de ancho de banda sin perder velocidad en vivo
+// =========================================================
+const SUPABASE_SYNC_STATE = {
+  lastCheckedId: null,
+  lastTotalCount: 0,
+  lastMaterialsCount: 0,
+  isInitialLoaded: false,
+  isChecking: false
+};
+
+// Columnas optimizadas para evitar descargar campos pesados redundantes
+const SUPABASE_EVIDENCIAS_FIELDS = "id,folio,fecha_captura,tipo_elemento,asset_id,modelo,estado,area_trabajo,contratista,tecnico,oferta_colocada,existencia,comentarios,num_viniles,version_app,lat,lon,foto_despues_url,foto_antes_url";
+const SUPABASE_MATERIALES_FIELDS = "id,folio,area_trabajo,contratista,tecnico,material,cantidad,fecha_entrega";
+
+/**
+ * Micro-consulta a Supabase para verificar si hay nuevos registros en la nube.
+ * Solo transfiere encabezados y 1 fila (~120 bytes), evitando descargar 3.2 MB cada minuto.
+ */
+async function checkSupabaseHasChanges() {
+  if (SUPABASE_SYNC_STATE.isChecking) return false;
+  SUPABASE_SYNC_STATE.isChecking = true;
 
   try {
-
-    const permSaved = localStorage.getItem("TELMEX_COMPLETED_ASSETS");
-
-    if (permSaved) {
-
-      const arr = JSON.parse(permSaved);
-
-      if (Array.isArray(arr)) {
-
-        arr.forEach(item => {
-
-          const str = String(item || "").trim().toUpperCase();
-
-          if (str.startsWith(matchPattern)) {
-
-            const parts = str.split("_");
-
-            const num = parseInt(parts[parts.length - 1], 10);
-
-            if (!isNaN(num) && num > maxSeq) {
-
-              maxSeq = num;
-
-            }
-
-          }
-
-        });
-
-      }
-
-    }
-
-  } catch(e) {}
-
-
-
-  // 3. Revisar evidencias pendientes actuales en memoria
-
-  if (Array.isArray(dbEvidences)) {
-
-    dbEvidences.forEach(ev => {
-
-      const uid = String(ev.unique_id || "").trim().toUpperCase();
-
-      if (uid.startsWith(matchPattern)) {
-
-        const parts = uid.split("_");
-
-        const num = parseInt(parts[parts.length - 1], 10);
-
-        if (!isNaN(num) && num > maxSeq) {
-
-          maxSeq = num;
-
-        }
-
-      }
-
-    });
-
-  }
-
-
-
-  const nextSeq = String(maxSeq + 1).padStart(4, "0");
-
-  return `${prefix}_${cleanArea}_${nextSeq}`;
-
-}
-
-
-
-// ---------------------------------------------------------
-
-// BÚSQUEDA POR GPS (PROXIMIDAD)
-
-// ---------------------------------------------------------
-
-function locateTechnician() {
-
-  const statusDiv = document.getElementById("gpsStatusText");
-
-  statusDiv.innerText = "Obteniendo coordenadas GPS del teléfono...";
-
-
-
-  if (!navigator.geolocation) {
-
-    statusDiv.innerText = "El navegador no soporta Geolocalización.";
-
-    return;
-
-  }
-
-
-
-  navigator.geolocation.getCurrentPosition(
-
-    (pos) => {
-
-      const lat = pos.coords.latitude;
-
-      const lon = pos.coords.longitude;
-
-      currentGpsCoords = { lat, lon, accuracy: pos.coords.accuracy };
-
-      
-
-      statusDiv.innerText = `GPS OK: (${lat.toFixed(5)}, ${lon.toFixed(5)}) ±${Math.round(pos.coords.accuracy)}m`;
-
-      updateFormGpsDisplay();
-
-
-
-      const completedAssetIds = getCompletedAssetIdsSet();
-
-      const elementoRadio = document.querySelector('input[name="filterElemento"]:checked');
-
-      const tipoFilter = elementoRadio ? elementoRadio.value : "TODOS";
-
-      const modelFilter = document.getElementById("filterModeloEspecifico")?.value || "TODOS";
-
-
-
-      // Calcular distancia Haversine a todos los registros del catálogo no completados
-
-      const results = [];
-
-      for (let i = 0; i < catalog.length; i++) {
-
-        const item = catalog[i];
-
-        const itemId = String(item.id || "").trim().toUpperCase();
-
-        const itemUid = item.unique_id ? String(item.unique_id).trim().toUpperCase() : "";
-
-        if (completedAssetIds.has(itemId) || (itemUid && completedAssetIds.has(itemUid))) continue;
-
-        if (tipoFilter !== "TODOS" && item.tipo !== tipoFilter) continue;
-
-        if (modelFilter !== "TODOS") {
-
-          if (!matchesModelFilter(item.modelo_tipo, modelFilter, item.tipo)) continue;
-
-        }
-
-        if (item.lat && item.lon) {
-
-          const dist = haversineDistance(lat, lon, item.lat, item.lon);
-
-          results.push({ ...item, dist_m: dist });
-
-        }
-
-      }
-
-
-
-      // Ordenar de la más cercana a la más lejana y tomar ÚNICAMENTE las 35 más cercanas
-
-      results.sort((a, b) => a.dist_m - b.dist_m);
-
-      const topNearby = results.slice(0, 35);
-
-
-
-      const titleEl = document.getElementById("searchResultsTitle");
-
-      if (titleEl) {
-
-        titleEl.innerText = modelFilter !== "TODOS" 
-
-          ? `📍 35 ${modelFilter.toUpperCase()} Más Cercanas a tu Ubicación` 
-
-          : "📍 35 Opciones Más Cercanas a tu Ubicación";
-
-      }
-
-
-
-      renderSearchResults(topNearby, true, getTodayCompletedCount());
-
-    },
-
-    (err) => {
-
-      statusDiv.innerText = `Error al obtener GPS: ${err.message}. Verifica que la ubicación esté encendida.`;
-
-    },
-
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
-
-  );
-
-}
-
-
-
-function initGeolocation() {
-
-  if (navigator.geolocation) {
-
-    const geoSuccess = (pos) => {
-
-      const isFirst = !currentGpsCoords;
-
-      currentGpsCoords = {
-
-        lat: pos.coords.latitude,
-
-        lon: pos.coords.longitude,
-
-        accuracy: pos.coords.accuracy
-
-      };
-
-      updateFormGpsDisplay();
-
-      if (isFirst) {
-
-        applyHierarchyFilter();
-
-      }
-
+    const headers = {
+      "apikey": SUPABASE_CONFIG.anonKey,
+      "Authorization": `Bearer ${SUPABASE_CONFIG.anonKey}`,
+      "Prefer": "count=exact"
     };
 
-
-
-    navigator.geolocation.getCurrentPosition(
-
-      geoSuccess,
-
-      (err) => console.log("GPS no disponible aún"),
-
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
-
+    // 1. Micro-consulta a evidencias_telmex (1 registro con conteo exacto en el header Content-Range)
+    const resp = await fetch(
+      `${SUPABASE_CONFIG.url}/rest/v1/evidencias_telmex?select=id,fecha_captura&order=id.desc&limit=1`,
+      { headers }
     );
 
-
-
-    // Rastreo continuo mientras el técnico se traslada en campo
-
-    navigator.geolocation.watchPosition(
-
-      geoSuccess,
-
-      (err) => {},
-
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-
-    );
-
-  }
-
-}
-
-
-
-function updateFormGpsDisplay() {
-
-  const el = document.getElementById("formGpsCoords");
-
-  if (currentGpsCoords) {
-
-    el.innerText = `Lat: ${currentGpsCoords.lat.toFixed(6)}, Lon: ${currentGpsCoords.lon.toFixed(6)} (Precisión: ±${Math.round(currentGpsCoords.accuracy)}m)`;
-
-  } else {
-
-    el.innerText = "Buscando señal GPS del teléfono...";
-
-  }
-
-}
-
-
-
-// ---------------------------------------------------------
-
-// FILTROS JERÁRQUICOS Y BÚSQUEDA DIRECTA
-
-// ---------------------------------------------------------
-
-
-
-// ---------------------------------------------------------
-
-// FILTRO POR MODELO / TIPO ESPECÍFICO (v7)
-
-// ---------------------------------------------------------
-
-
-
-function matchesModelFilter(itemModel, filterModel, itemTipo) {
-
-  if (!filterModel || filterModel === "TODOS") return true;
-
-  if (!itemModel) return false;
-
-  
-
-  const im = itemModel.trim().toUpperCase();
-
-  const fm = filterModel.trim().toUpperCase();
-
-  
-
-  if (im === fm) return true;
-
-  
-
-  // Modelos de Caseta
-
-  if (fm === "NORMAL" || fm === "CASETA NORMAL") {
-
-    return im === "NORMAL" || im === "CASETA NORMAL";
-
-  }
-
-  if (fm === "MINI" || fm === "CASETA MINI") {
-
-    return im.includes("MINI");
-
-  }
-
-  if (fm.includes("SEMI") || fm.includes("SEMICIRCULAR")) {
-
-    return im.includes("SEMI");
-
-  }
-
-  if (fm.includes("REFORMA") || fm.includes("DOBLE REFORMA")) {
-
-    return im.includes("REFORMA");
-
-  }
-
-  if (fm.includes("CUICUILCO")) {
-
-    return im.includes("CUICUILCO");
-
-  }
-
-  
-
-  // Modelos de Caja
-
-  if (fm.includes("TRADICIONAL")) {
-
-    if (!im.includes("TRADICIONAL")) return false;
-
-    if (fm.includes("DOBLE")) return im.includes("DOBLE");
-
-    return im.includes("SENCILLA") || !im.includes("DOBLE");
-
-  }
-
-  if (fm.includes("SIECOR")) {
-
-    if (!im.includes("SIECOR")) return false;
-
-    if (fm.includes("DOBLE")) return im.includes("DOBLE");
-
-    if (fm.includes("2") || fm.includes("DOS")) {
-
-      return im.includes("2") || im.includes("DOS");
-
+    if (!resp.ok) {
+      SUPABASE_SYNC_STATE.isChecking = false;
+      return false;
     }
 
-    if (fm.includes("1") || fm.includes("UNA")) {
-
-      return im.includes("1") || im.includes("UNA") || (!im.includes("2") && !im.includes("DOBLE"));
-
-    }
-
-    return true;
-
-  }
-
-  if (fm.includes("KRONE")) {
-
-    return im.includes("KRONE");
-
-  }
-
-  if (fm.includes("ENVOLVENTE") || fm.includes("ENVOLV")) {
-
-    if (!im.includes("ENVOLV")) return false;
-
-    if (fm.includes("DOBLE")) return im.includes("DOBLE");
-
-    return im.includes("SENCILLA") || !im.includes("DOBLE");
-
-  }
-
-  if (fm.includes("DESPLAZ") || fm.includes("DEPLAS")) {
-
-    if (!im.includes("DESPLAZ") && !im.includes("DEPLAS")) return false;
-
-    if (fm.includes("DOBLE")) return im.includes("DOBLE");
-
-    return im.includes("SENCILLA") || !im.includes("DOBLE");
-
-  }
-
-  
-
-  return im === fm || im.includes(fm) || fm.includes(im);
-
-}
-
-
-
-function populateModelFilter(tipo) {
-
-  const select = document.getElementById("filterModeloEspecifico");
-
-  if (!select) return;
-
-
-
-  const prevValue = select.value || "TODOS";
-
-  select.innerHTML = "";
-
-
-
-  if (tipo === "CASETA") {
-
-    select.innerHTML = `
-
-      <option value="TODOS">-- Todas las Casetas (Cualquier Modelo) --</option>
-
-      <option value="NORMAL">📞 Caseta Normal</option>
-
-      <option value="MINI">📞 Caseta Mini</option>
-
-      <option value="SEMICIRCULAR">📞 Caseta Semicircular</option>
-
-      <option value="DOBLE REFORMA">📞 Caseta Doble Reforma</option>
-
-      <option value="CUICUILCO">📞 Caseta Cuicuilco</option>
-
-    `;
-
-  } else if (tipo === "CAJA") {
-
-    select.innerHTML = `
-
-      <option value="TODOS">-- Todas las Cajas (Cualquier Modelo) --</option>
-
-      <option value="Tradicional Sencilla">📦 Tradicional Sencilla</option>
-
-      <option value="Tradicional Doble">📦 Tradicional Doble</option>
-
-      <option value="Siecor Sencilla 1 Puerta">📦 Siecor Sencilla 1 Puerta</option>
-
-      <option value="Siecor Sencilla 2 Puertas">📦 Siecor Sencilla 2 Puertas</option>
-
-      <option value="Siecor Doble">📦 Siecor Doble</option>
-
-      <option value="Krone Sencilla">📦 Krone Sencilla</option>
-
-      <option value="Desplazamiento Sencilla">📦 Desplazamiento Sencilla</option>
-
-      <option value="Desplazamiento Doble">📦 Desplazamiento Doble</option>
-
-      <option value="Envolvente Sencilla">📦 Envolvente Sencilla</option>
-
-      <option value="Envolvente Doble">📦 Envolvente Doble</option>
-
-    `;
-
-  } else {
-
-    select.innerHTML = `
-
-      <option value="TODOS">-- Todos los Modelos (Cajas y Casetas) --</option>
-
-      <optgroup label="📦 Cajas (10 Modelos Oficiales)">
-
-        <option value="Tradicional Sencilla">Tradicional Sencilla</option>
-
-        <option value="Tradicional Doble">Tradicional Doble</option>
-
-        <option value="Siecor Sencilla 1 Puerta">Siecor Sencilla 1 Puerta</option>
-
-        <option value="Siecor Sencilla 2 Puertas">Siecor Sencilla 2 Puertas</option>
-
-        <option value="Siecor Doble">Siecor Doble</option>
-
-        <option value="Krone Sencilla">Krone Sencilla</option>
-
-        <option value="Desplazamiento Sencilla">Desplazamiento Sencilla</option>
-
-        <option value="Desplazamiento Doble">Desplazamiento Doble</option>
-
-        <option value="Envolvente Sencilla">Envolvente Sencilla</option>
-
-        <option value="Envolvente Doble">Envolvente Doble</option>
-
-      </optgroup>
-
-      <optgroup label="📞 Casetas (5 Modelos Oficiales)">
-
-        <option value="NORMAL">Normal</option>
-
-        <option value="MINI">Mini</option>
-
-        <option value="SEMICIRCULAR">Semicircular</option>
-
-        <option value="DOBLE REFORMA">Doble Reforma</option>
-
-        <option value="CUICUILCO">Cuicuilco</option>
-
-      </optgroup>
-
-    `;
-
-  }
-
-
-
-  // Restaurar selección si existe en las nuevas opciones
-
-  let matchedOpt = Array.from(select.options).some(o => o.value === prevValue);
-
-  if (matchedOpt) {
-
-    select.value = prevValue;
-
-  } else {
-
-    select.value = "TODOS";
-
-  }
-
-  updateActiveModelBadge(select.value);
-
-}
-
-
-
-function onFilterModeloChange() {
-
-  const select = document.getElementById("filterModeloEspecifico");
-
-  const val = select ? select.value : "TODOS";
-
-  updateActiveModelBadge(val);
-
-
-
-  if (val !== "TODOS") {
-
-    const isCaja = CAJA_MODELS.some(m => m.id === val || m.title === val || val.includes("Tradicional") || val.includes("Siecor") || val.includes("Krone") || val.includes("Desplazamiento") || val.includes("Envolvente"));
-
-    const isCaseta = CASETA_MODELS.some(m => m.id === val || val === "NORMAL" || val === "MINI" || val === "SEMICIRCULAR" || val.includes("REFORMA") || val.includes("CUICUILCO"));
-
-    
-
-    const elementoRadio = document.querySelector('input[name="filterElemento"]:checked');
-
-    if (isCaja && elementoRadio && elementoRadio.value === "CASETA") {
-
-      const rCaja = document.getElementById("elemento_caja");
-
-      if (rCaja) rCaja.checked = true;
-
-    } else if (isCaseta && elementoRadio && elementoRadio.value === "CAJA") {
-
-      const rCas = document.getElementById("elemento_caseta");
-
-      if (rCas) rCas.checked = true;
-
-    }
-
-  }
-
-
-
-  applyHierarchyFilter();
-
-}
-
-
-
-function updateActiveModelBadge(val) {
-
-  const badge = document.getElementById("activeModelBadge");
-
-  if (!badge) return;
-
-  if (!val || val === "TODOS") {
-
-    badge.innerText = "Todos";
-
-    badge.style.background = "#64748b";
-
-  } else {
-
-    badge.innerText = val;
-
-    badge.style.background = "#16a34a";
-
-  }
-
-}
-
-
-
-function onElementTypeChange() {
-
-  const elementoRadio = document.querySelector('input[name="filterElemento"]:checked');
-
-  const tipo = elementoRadio ? elementoRadio.value : "TODOS";
-
-  populateModelFilter(tipo);
-
-  applyHierarchyFilter();
-
-}
-
-
-
-function onSearchModeToggle() {
-
-  const mode = document.querySelector('input[name="searchSelectionMode"]:checked')?.value || "AUTO";
-
-  const container = document.getElementById("manualFilterContainer");
-
-  const titleEl = document.getElementById("searchResultsTitle");
-
-
-
-  if (mode === "MANUAL") {
-
-    if (container) container.style.display = "block";
-
-    if (titleEl) titleEl.innerText = "🔍 Activos Filtrados por Estado y Área";
-
-    populateEstadosFilter();
-
-  } else {
-
-    if (container) container.style.display = "none";
-
-    if (titleEl) titleEl.innerText = "📍 35 Opciones Más Cercanas a tu Ubicación";
-
-  }
-
-
-
-  applyHierarchyFilter();
-
-}
-
-
-
-function populateEstadosFilter() {
-  const select = document.getElementById("filterEstado");
-  if (!select) return;
-
-  const currentVal = select.value;
-  select.innerHTML = '<option value="">-- Seleccionar Estado --</option>';
-  Object.keys(OFFICIAL_ESTADOS_AREAS).sort().forEach(est => {
-    const opt = document.createElement("option");
-    opt.value = est;
-    opt.innerText = est;
-    if (est === currentVal) opt.selected = true;
-    select.appendChild(opt);
-  });
-}
-
-
-
-function onEstadoChange() {
-  const selectedEstado = document.getElementById("filterEstado")?.value || "";
-  const areaSelect = document.getElementById("filterArea");
-  if (!areaSelect) return;
-
-  areaSelect.innerHTML = '<option value="">-- Seleccionar Área de Trabajo --</option>';
-
-  if (selectedEstado && OFFICIAL_ESTADOS_AREAS[selectedEstado]) {
-    OFFICIAL_ESTADOS_AREAS[selectedEstado].slice().sort().forEach(area => {
-      const opt = document.createElement("option");
-      opt.value = area;
-      opt.innerText = area;
-      areaSelect.appendChild(opt);
-    });
-  }
-
-  applyHierarchyFilter();
-}
-
-
-
-function applyHierarchyFilter() {
-
-  const mode = document.querySelector('input[name="searchSelectionMode"]:checked')?.value || "AUTO";
-
-  const proceso = document.querySelector('input[name="filterProceso"]:checked')?.value || "IMAGEN";
-
-  
-
-  const elementoRadio = document.querySelector('input[name="filterElemento"]:checked');
-
-  const tipoFilter = elementoRadio ? elementoRadio.value : "TODOS";
-
-  const modelFilter = document.getElementById("filterModeloEspecifico")?.value || "TODOS";
-
-
-
-  // Set de IDs ya capturados para evitar duplicados
-
-  const completedAssetIds = getCompletedAssetIdsSet();
-
-
-
-  let estadoVal = "";
-
-  let areaVal = "";
-
-  if (mode === "MANUAL") {
-
-    estadoVal = document.getElementById("filterEstado")?.value || "";
-
-    areaVal = document.getElementById("filterArea")?.value || "";
-
-
-
-    if (!estadoVal && !areaVal) {
-
-      document.getElementById("searchResultsList").innerHTML = 
-
-        '<p style="text-align:center; color:var(--text-muted); padding:20px;">Por favor selecciona Estado y Área de Trabajo en los desplegables de arriba.</p>';
-
-      document.getElementById("resultCount").innerText = '0 activos';
-
-      return;
-
-    }
-
-  }
-
-
-
-  let filtered = catalog.filter(item => {
-
-    const itemId = String(item.id || "").trim().toUpperCase();
-
-    if (isRestrictedDistrict(itemId)) return false;
-
-    const itemUid = item.unique_id ? String(item.unique_id).trim().toUpperCase() : "";
-
-    if (completedAssetIds.has(itemId) || (itemUid && completedAssetIds.has(itemUid))) return false;
-
-    if (tipoFilter !== "TODOS" && item.tipo !== tipoFilter) return false;
-
-    if (modelFilter !== "TODOS") {
-
-      if (!matchesModelFilter(item.modelo_tipo, modelFilter, item.tipo)) return false;
-
-    }
-
-    if (mode === "MANUAL") {
-
-      if (estadoVal && item.estado !== estadoVal) return false;
-
-      if (areaVal && item.area_trabajo !== areaVal) return false;
-
-    }
-
-    return true;
-
-  });
-
-
-
-  // Si se dispone de GPS del dispositivo, calcular distancia y ordenar por cercanía
-
-  if (currentGpsCoords && currentGpsCoords.lat && currentGpsCoords.lon) {
-
-    filtered = filtered.map(item => {
-
-      let dist = 99999999;
-
-      if (item.lat && item.lon) {
-
-        dist = haversineDistance(currentGpsCoords.lat, currentGpsCoords.lon, item.lat, item.lon);
-
-      }
-
-      return { ...item, dist_m: dist };
-
-    });
-
-
-
-    filtered.sort((a, b) => a.dist_m - b.dist_m);
-
-  }
-
-
-
-  // Tomar las 35 más cercanas (o hasta 50 en búsqueda manual)
-
-  const maxResults = (mode === "MANUAL" && (estadoVal || areaVal)) ? 50 : 35;
-
-  const topResults = filtered.slice(0, maxResults);
-  window.lastSearchResults = topResults;
-
-
-
-  const titleEl = document.getElementById("searchResultsTitle");
-
-  if (titleEl) {
-
-    if (mode === "MANUAL") {
-
-      titleEl.innerText = modelFilter !== "TODOS" 
-
-        ? `📋 Activos Filtrados: ${modelFilter.toUpperCase()}` 
-
-        : "📋 Activos Filtrados por Estado y Área";
-
-    } else {
-
-      titleEl.innerText = modelFilter !== "TODOS" 
-
-        ? `📍 35 ${modelFilter.toUpperCase()} Más Cercanas a tu Ubicación` 
-
-        : "📍 35 Opciones Más Cercanas a tu Ubicación";
-
-    }
-
-  }
-
-
-
-  renderSearchResults(topResults, Boolean(currentGpsCoords && currentGpsCoords.lat), getTodayCompletedCount());
-
-}
-
-
-
-function onQueryInput() {
-
-  const q = document.getElementById("inputQuery").value.trim().toUpperCase();
-
-  if (q.length < 2) {
-
-    applyHierarchyFilter();
-
-    return;
-
-  }
-
-
-
-  const elementoRadio = document.querySelector('input[name="filterElemento"]:checked');
-
-  const tipoFilter = elementoRadio ? elementoRadio.value : "TODOS";
-
-  const modelFilter = document.getElementById("filterModeloEspecifico")?.value || "TODOS";
-
-
-
-  const completedAssetIds = getCompletedAssetIdsSet();
-
-
-
-  let matches = catalog.filter(item => {
-
-    const itemId = String(item.id || "").trim().toUpperCase();
-
-    if (isRestrictedDistrict(itemId)) return false;
-
-    const itemUid = item.unique_id ? String(item.unique_id).trim().toUpperCase() : "";
-
-    if (completedAssetIds.has(itemId) || (itemUid && completedAssetIds.has(itemUid))) return false;
-
-    if (tipoFilter !== "TODOS" && item.tipo !== tipoFilter) return false;
-
-    if (modelFilter !== "TODOS") {
-
-      if (!matchesModelFilter(item.modelo_tipo, modelFilter, item.tipo)) return false;
-
-    }
-
-    return (item.id && item.id.toUpperCase().includes(q)) || 
-
-           (item.calle && item.calle.toUpperCase().includes(q)) ||
-
-           (item.municipio && item.municipio.toUpperCase().includes(q)) ||
-
-           (item.area_trabajo && item.area_trabajo.toUpperCase().includes(q)) ||
-
-           (item.modelo_tipo && item.modelo_tipo.toUpperCase().includes(q));
-
-  });
-
-
-
-  if (currentGpsCoords && currentGpsCoords.lat && currentGpsCoords.lon) {
-
-    matches = matches.map(item => {
-
-      let dist = 99999999;
-
-      if (item.lat && item.lon) {
-
-        dist = haversineDistance(currentGpsCoords.lat, currentGpsCoords.lon, item.lat, item.lon);
-
-      }
-
-      return { ...item, dist_m: dist };
-
-    });
-
-    matches.sort((a, b) => a.dist_m - b.dist_m);
-
-  }
-
-
-
-  const topResults = matches.slice(0, 35);
-  window.lastSearchResults = topResults;
-  renderSearchResults(topResults, Boolean(currentGpsCoords && currentGpsCoords.lat), getTodayCompletedCount());
-
-}
-
-
-
-// ---------------------------------------------------------
-
-// FUNCIONES DE UBICACIÓN Y MAPA INTEGRADO (CERO ERRORES DE REDIRECCIÓN)
-
-// ---------------------------------------------------------
-
-let currentMapModalAsset = null;
-
-
-
-function openInGoogleMaps(lat, lon, label) {
-
-  // Buscar el objeto activo por ID o coordenadas
-
-  let found = null;
-
-  if (pendingAsset && (pendingAsset.id === label || (pendingAsset.lat == lat && pendingAsset.lon == lon))) {
-
-    found = pendingAsset;
-
-  }
-
-  if (!found && typeof fullCatalog !== 'undefined' && Array.isArray(fullCatalog)) {
-
-    found = fullCatalog.find(a => a.id === label || (a.lat == lat && a.lon == lon));
-
-  }
-
-  if (!found) {
-
-    found = { id: label || 'Activo', lat: lat, lon: lon, tipo: 'ACTIVO', estado: '', area_trabajo: '', calle: '' };
-
-  }
-
-  openAssetMapModal(found);
-
-}
-
-
-
-function openAssetMapModal(item) {
-
-  if (!item) return;
-
-
-
-  if (item.lat == null || item.lon == null || isNaN(Number(item.lat)) || isNaN(Number(item.lon)) || (Number(item.lat) === 0 && Number(item.lon) === 0)) {
-
-    alert(`⚠️ El activo ${item.id || ''} no cuenta con coordenadas válidas registradas en la base de datos.`);
-
-    return;
-
-  }
-
-
-
-  currentMapModalAsset = item;
-
-  const cleanLat = Number(item.lat);
-
-  const cleanLon = Number(item.lon);
-
-
-
-  // Vibración háptica suave
-
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
-
-    try { navigator.vibrate([50, 30, 50]); } catch (e) {}
-
-  }
-
-
-
-  const titleEl = document.getElementById("mapModalAssetTitle");
-
-  const locEl = document.getElementById("mapModalAssetLocation");
-
-  const coordsEl = document.getElementById("mapModalAssetCoords");
-
-  const distEl = document.getElementById("mapModalDistance");
-
-  const iframeEl = document.getElementById("mapModalIframe");
-
-
-
-  const displayModel = item.modelo_tipo || (item.tipo === 'CASETA' ? 'NORMAL' : 'Sencilla');
-
-  if (titleEl) titleEl.innerText = `${item.id} [${item.tipo === 'CASETA' ? '📞' : '📦'} ${item.tipo} (${displayModel})]`;
-
-  if (locEl) locEl.innerHTML = `📍 <strong>Estado:</strong> ${item.estado || 'N/A'} | 🏢 <strong>Área:</strong> ${item.area_trabajo || item.municipio || 'N/A'}<br>🛣️ <strong>Calle:</strong> ${item.calle || 'S/N'}${item.colonia ? ' | Col: ' + item.colonia : ''}`;
-
-  if (coordsEl) coordsEl.innerHTML = `🌐 <strong>Lat:</strong> ${cleanLat.toFixed(6)} | <strong>Lon:</strong> ${cleanLon.toFixed(6)}`;
-
-
-
-  // Cálculo de distancia en tiempo real con respecto al GPS del técnico
-
-  if (distEl) {
-
-    if (currentGpsCoords && currentGpsCoords.lat && currentGpsCoords.lon) {
-
-      const d = Math.round(haversineDistance(currentGpsCoords.lat, currentGpsCoords.lon, cleanLat, cleanLon));
-
-      const distFormatted = d >= 1000 ? `${(d / 1000).toFixed(1)} km` : `${d.toLocaleString()} metros`;
-
-      distEl.innerText = `📏 Distancia: A ${distFormatted} de tu posición GPS actual`;
-
-      distEl.style.display = "block";
-
-    } else if (item.dist_m && item.dist_m < 99999900) {
-
-      const d = Math.round(item.dist_m);
-
-      const distFormatted = d >= 1000 ? `${(d / 1000).toFixed(1)} km` : `${d.toLocaleString()} metros`;
-
-      distEl.innerText = `📏 Distancia aproximada: A ${distFormatted}`;
-
-      distEl.style.display = "block";
-
-    } else {
-
-      distEl.innerText = `📏 Distancia: Activa tu GPS para calcular cercanía`;
-
-    }
-
-  }
-
-
-
-  // Carga del mapa integrado seguro (OpenStreetMap embed con pin exacto: nunca redirige a intent://)
-
-  if (iframeEl) {
-
-    const delta = 0.003;
-
-    const osmUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${cleanLon - delta}%2C${cleanLat - delta * 0.7}%2C${cleanLon + delta}%2C${cleanLat + delta * 0.7}&layer=mapnik&marker=${cleanLat}%2C${cleanLon}`;
-
-    iframeEl.src = osmUrl;
-
-  }
-
-
-
-  const modal = document.getElementById("assetMapModal");
-
-  if (modal) modal.style.display = "flex";
-
-}
-
-
-
-function closeAssetMapModal() {
-
-  const modal = document.getElementById("assetMapModal");
-
-  if (modal) modal.style.display = "none";
-
-  const iframeEl = document.getElementById("mapModalIframe");
-
-  if (iframeEl) iframeEl.src = "about:blank";
-
-}
-
-
-
-function openExternalNavigationFromModal() {
-
-  if (!currentMapModalAsset) return;
-
-  const lat = Number(currentMapModalAsset.lat);
-
-  const lon = Number(currentMapModalAsset.lon);
-
-  const label = currentMapModalAsset.id || 'Activo Telmex';
-
-
-
-  showFloatingToast(`🚗 Abriendo navegación para ${label}...`, 'info');
-
-
-
-  // Si estamos en la APK de Android (usar Intent nativo geo: sin pasar por la web)
-
-  if (window.AndroidBridge && typeof window.AndroidBridge.openMaps === 'function') {
-
+    const contentRange = resp.headers.get("content-range");
+    const totalCount = contentRange ? parseInt(contentRange.split("/")[1], 10) : 0;
+    const rows = await resp.json();
+    const latestId = (Array.isArray(rows) && rows.length > 0) ? rows[0].id : null;
+
+    // 2. Micro-consulta a materiales_telmex (conteo exacto en header)
+    let matsCount = 0;
     try {
+      const respMats = await fetch(
+        `${SUPABASE_CONFIG.url}/rest/v1/materiales_telmex?select=id&order=id.desc&limit=1`,
+        { headers }
+      );
+      if (respMats.ok) {
+        const matRange = respMats.headers.get("content-range");
+        matsCount = matRange ? parseInt(matRange.split("/")[1], 10) : 0;
+      }
+    } catch (_) {}
 
-      window.AndroidBridge.openMaps(lat, lon, label);
+    // Primera evaluación tras la carga de la página
+    if (!SUPABASE_SYNC_STATE.isInitialLoaded || SUPABASE_SYNC_STATE.lastCheckedId === null) {
+      const localCount = (state.records && state.records.length > 0) ? (state.totalRawRecordsCount || state.records.length) : 0;
+      SUPABASE_SYNC_STATE.lastCheckedId = latestId;
+      SUPABASE_SYNC_STATE.lastTotalCount = totalCount;
+      SUPABASE_SYNC_STATE.lastMaterialsCount = matsCount;
+      SUPABASE_SYNC_STATE.isInitialLoaded = true;
+      SUPABASE_SYNC_STATE.isChecking = false;
 
-      return;
-
-    } catch (e) {
-
-      console.warn("Fallo AndroidBridge.openMaps:", e);
-
+      // Si los datos precargados localmente ya coinciden con la nube, no gastamos egress
+      if (localCount > 0 && Math.abs(localCount - totalCount) === 0) {
+        console.log(`[Supabase Smart-Sync] Datos locales coinciden con Supabase (${localCount} registros). Cero transferencia requerida.`);
+        return false;
+      }
+      return true; // Hay diferencia de registros, requiere sincronizar
     }
 
-  }
+    // Evaluación en sondeo periódico cada 60s
+    const hasEvidenciasChange = (latestId !== SUPABASE_SYNC_STATE.lastCheckedId || totalCount !== SUPABASE_SYNC_STATE.lastTotalCount);
+    const hasMaterialsChange = (matsCount !== SUPABASE_SYNC_STATE.lastMaterialsCount);
 
-
-
-  // En navegador Web o PWA (abrir ruta directa en nueva ventana)
-
-  const navUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
-
-  window.open(navUrl, "_blank");
-
-}
-
-
-
-function proceedFromMapToEvidence() {
-
-  if (currentMapModalAsset) {
-
-    const asset = currentMapModalAsset;
-
-    closeAssetMapModal();
-
-    selectAsset(asset);
-
-  }
-
-}
-
-
-
-function openPendingAssetInGoogleMaps() {
-
-  if (pendingAsset) {
-
-    openAssetMapModal(pendingAsset);
-
-  }
-
-}
-
-
-
-// ---------------------------------------------------------
-
-// RENDERIZADO DE RESULTADOS DE BÚSQUEDA
-
-// ---------------------------------------------------------
-
-function renderSearchResults(items, isGpsSearch, completedCount = 0) {
-
-  const listDiv = document.getElementById("searchResultsList");
-
-  const countSpan = document.getElementById("resultCount");
-
-  
-
-  const completedBadge = completedCount > 0 ? ` (${completedCount} capturados hoy)` : '';
-
-  countSpan.innerText = `${items.length} opciones más cercanas${completedBadge}`;
-
-  listDiv.innerHTML = "";
-
-
-
-  if (items.length === 0) {
-
-    listDiv.innerHTML = `
-
-      <div style="text-align:center; padding:24px 16px;">
-
-        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">No se encontraron activos para los criterios seleccionados.</p>
-
-        <button type="button" class="btn btn-warning" onclick="openManualAssetModal()" style="font-weight:bold; font-size:0.9rem; padding:10px 16px; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer;">
-
-          <span>➕</span>
-
-          <span>¿No existe en base de datos? Agregar manualmente</span>
-
-        </button>
-
-      </div>
-
-    `;
-
-    return;
-
-  }
-
-
-
-  items.forEach(item => {
-
-    const card = document.createElement("div");
-
-    card.className = `asset-item ${selectedAsset && selectedAsset.id === item.id ? 'selected' : ''}`;
-
-    
-
-    let distBadge = '';
-
-    if (item.dist_m && item.dist_m < 99999900) {
-
-      const metersVal = Math.round(item.dist_m);
-
-      const metersFormatted = metersVal.toLocaleString();
-
-      const distLabel = metersVal >= 1000 
-
-        ? `📍 A ${metersFormatted} m (${(item.dist_m / 1000).toFixed(1)} km)` 
-
-        : `📍 A ${metersFormatted} metros`;
-
-      distBadge = `<span class="asset-badge" style="background:#15803d; color:white; font-weight:bold; font-size:0.75rem; padding:3px 8px; border-radius:6px; margin-left:4px;">${distLabel}</span>`;
-
+    if (hasEvidenciasChange || hasMaterialsChange) {
+      console.log(`[Supabase Smart-Sync] ¡Cambios detectados en vivo! Total: ${totalCount} (Prev: ${SUPABASE_SYNC_STATE.lastTotalCount}), Materiales: ${matsCount} (Prev: ${SUPABASE_SYNC_STATE.lastMaterialsCount})`);
+      SUPABASE_SYNC_STATE.lastCheckedId = latestId;
+      SUPABASE_SYNC_STATE.lastTotalCount = totalCount;
+      SUPABASE_SYNC_STATE.lastMaterialsCount = matsCount;
+      SUPABASE_SYNC_STATE.isChecking = false;
+      return true;
     }
 
+    SUPABASE_SYNC_STATE.isChecking = false;
+    return false; // Cero cambios, 0 MB transferidos
+  } catch (err) {
+    console.warn("[Supabase Smart-Sync] Error en micro-chequeo:", err);
+    SUPABASE_SYNC_STATE.isChecking = false;
+    return false;
+  }
+}
 
+/**
+ * Inicialización inteligente: revisa si los datos locales están al día.
+ * Si lo están, evita una descarga de 3.2 MB al abrir la página.
+ */
+async function initSupabaseSmartSync() {
+  try {
+    const needsFetch = await checkSupabaseHasChanges();
+    if (needsFetch || !state.records || state.records.length === 0) {
+      await loadDataFromSupabase(false);
+    } else {
+      const badge = document.getElementById("lastSyncLabel");
+      if (badge) {
+        badge.innerHTML = `<span class="inline-flex items-center gap-1 text-emerald-300 font-bold">🟢 En vivo (Supabase Cloud)</span>`;
+      }
+    }
+  } catch (err) {
+    console.warn("[Supabase Smart-Sync] Inicialización fallback:", err);
+    await loadDataFromSupabase(false);
+  }
+}
 
-    const isCaseta = item.tipo === 'CASETA';
-
-    const typeIcon = isCaseta ? '📞' : '📦';
-
-    const badgeColor = isCaseta ? '#0055a5' : '#0891b2';
-
-    const displayModel = item.modelo_tipo || (isCaseta ? 'NORMAL' : 'Sencilla');
-
-
-
-    card.innerHTML = `
-
-      <div class="asset-header" style="align-items:center;">
-
-        <span style="font-size:1rem; font-weight:bold; color:var(--primary);">${item.id}</span>
-
-        <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap; justify-content:flex-end;">
-
-          <span class="asset-badge" style="background:${badgeColor}; color:white; font-weight:bold;">${typeIcon} ${item.tipo} (${displayModel})</span>
-
-          ${distBadge}
-
-        </div>
-
-      </div>
-
-      <div class="asset-detail" style="margin-top:6px; font-size:0.85rem; color:#334155;">
-
-        📍 <strong>Estado:</strong> ${item.estado} | 🏢 <strong>Área:</strong> ${item.area_trabajo || item.municipio}
-
-      </div>
-
-      <div class="asset-detail" style="font-size:0.8rem; color:#64748b;">
-
-        🛣️ Calle: ${item.calle || 'S/N'} ${item.colonia ? '| Colonia/Distrito: ' + item.colonia : ''}
-
-      </div>
-
-      <div class="asset-detail" style="font-size:0.8rem; color:#0369a1; margin-top:4px; display:flex; justify-content:space-between; align-items:center;">
-
-        <span>🌐 <strong>Lat:</strong> ${item.lat != null ? item.lat : 'N/A'} | <strong>Lon:</strong> ${item.lon != null ? item.lon : 'N/A'}</span>
-
-        <button type="button" class="btn-card-maps" title="Abrir ubicación en Google Maps">
-
-          🗺️ Maps
-
-        </button>
-
-      </div>
-
-    `;
-
-
-
-    // Botón directo para Maps
-
-    const mapsBtn = card.querySelector(".btn-card-maps");
-
-    if (mapsBtn) {
-
-      mapsBtn.addEventListener("click", (e) => {
-
-        e.stopPropagation();
-
-        e.preventDefault();
-
-        openAssetMapModal(item);
-
+async function loadDataFromSupabase(showNotification = false) {
+  try {
+    // 1. Obtener todas las evidencias paginadas en vivo desde Supabase Cloud
+    const dbEvs = await fetchPagedFromSupabase("evidencias_telmex", SUPABASE_EVIDENCIAS_FIELDS, "fecha_captura.desc");
+    let evCount = 0;
+    if (Array.isArray(dbEvs) && dbEvs.length > 0) {
+      const mapped = dbEvs.map(r => {
+        const timeInfo = parseDateTimeSafe(r.fecha_captura);
+        const accDate = getAccountingDate(timeInfo.dt || r.fecha_captura);
+        return {
+          folio: r.folio || "",
+          fecha: accDate,
+          fecha_captura: timeInfo.dateStr,
+          hora: timeInfo.timeStr,
+          fecha_corte: accDate,
+          created_at_iso: timeInfo.dateTimeStr || r.fecha_captura || "",
+          timestamp: timeInfo.dt ? (timeInfo.dt.getTime() / 1000) : 0,
+          tipo: (r.tipo_elemento || "CASETA").toUpperCase(),
+          identificador: r.asset_id || r.folio || "S/N",
+          modelo: normalizeModelName(r.modelo, r.tipo_elemento),
+          estado: r.estado || "",
+          area_trabajo: r.area_trabajo || "",
+          contratista: r.contratista || "",
+          tecnico: r.tecnico || "N/A",
+          oferta: r.oferta_colocada || "120 MB",
+          existe_bd: r.existencia || "Sí",
+          comentarios: r.comentarios || "",
+          num_viniles: r.num_viniles || 1,
+          version: r.version_app || "Sin versión",
+          latitud: r.lat,
+          longitud: r.lon,
+          foto_despues: r.foto_despues_url || "",
+          foto_antes: r.foto_antes_url || "",
+          estatus: "Aprobada"
+        };
       });
 
-      mapsBtn.addEventListener("touchstart", (e) => e.stopPropagation(), { passive: true });
+      const dedupResult = deduplicateOfficialRecords(mapped);
+      state.rawRecords = dedupResult.raw;
+      state.records = dedupResult.valid;
+      state.totalRawRecordsCount = dedupResult.rawCount;
+      state.totalDuplicatesCount = dedupResult.dupsCount;
+      evCount = state.records.length;
 
-      mapsBtn.addEventListener("mousedown", (e) => e.stopPropagation());
-
+      // Evitar saturar cuota de localStorage: la información se mantiene en memoria (state)
+      safeRemoveStorage("telmex_dashboard_records");
+      safeRemoveStorage("telmex_dashboard_raw_records");
     }
 
+    // 2. Obtener todas las entregas de materiales en vivo
+    const dbMats = await fetchPagedFromSupabase("materiales_telmex", SUPABASE_MATERIALES_FIELDS, "fecha_entrega.desc");
+    let matCount = 0;
+    if (Array.isArray(dbMats) && dbMats.length > 0) {
+      state.materialsLog = dbMats.map(m => {
+        const timeInfo = parseDateTimeSafe(m.fecha_entrega);
+        return {
+          id: m.folio || "",
+          area: m.area_trabajo || "",
+          descripcion: normalizeMaterialName(m.material),
+          cantidad: m.cantidad || 0,
+          unidad: "PZAS.",
+          fecha: getAccountingDate(timeInfo.dt || m.fecha_entrega),
+          fecha_captura: timeInfo.dateStr,
+          hora: timeInfo.timeStr,
+          created_at_iso: timeInfo.dateTimeStr || m.fecha_entrega || "",
+          foto: ""
+        };
+      });
+      matCount = state.materialsLog.length;
+      safeRemoveStorage("telmex_dashboard_materials_log");
+    }
 
+    if (evCount > 0 || matCount > 0) {
+      // Actualizar estado del Sondeo Inteligente
+      SUPABASE_SYNC_STATE.lastTotalCount = state.totalRawRecordsCount || state.records.length;
+      SUPABASE_SYNC_STATE.lastMaterialsCount = state.materialsLog ? state.materialsLog.length : 0;
+      if (Array.isArray(dbEvs) && dbEvs.length > 0) {
+        SUPABASE_SYNC_STATE.lastCheckedId = dbEvs[0].id || null;
+      }
+      SUPABASE_SYNC_STATE.isInitialLoaded = true;
+      const syncLabel = `Supabase Cloud (${evCount} trabajos, ${matCount} entregas)`;
+      safeSetStorage("telmex_dashboard_last_sync", syncLabel);
+      recalculateSuministrosFromMaterialsLog();
+      populateAreaFilter();
+      populateContratistasFilter();
+  populateTecnicosFilter();
+      applyFilters();
+      renderMaterialsConfigTable();
+      renderMaterialsLogTable();
+      updateSyncLabel();
 
-    // Detección de Pulsación Prolongada (Long-Press: 550ms sostenido)
-
-    let pressTimer = null;
-
-    let didLongPress = false;
-
-    let startX = 0;
-
-    let startY = 0;
-
-
-
-    const startPress = (clientX, clientY) => {
-
-      didLongPress = false;
-
-      startX = clientX;
-
-      startY = clientY;
-
-      card.classList.add("pressing-feedback");
-
-      clearTimeout(pressTimer);
-
-      pressTimer = setTimeout(() => {
-
-        didLongPress = true;
-
-        card.classList.remove("pressing-feedback");
-
-        openAssetMapModal(item);
-
-      }, 550);
-
-    };
-
-
-
-    const cancelPress = () => {
-
-      clearTimeout(pressTimer);
-
-      card.classList.remove("pressing-feedback");
-
-    };
-
-
-
-    // Eventos táctiles (Móvil / Tablet)
-
-    card.addEventListener("touchstart", (e) => {
-
-      if (e.touches && e.touches.length === 1) {
-
-        startPress(e.touches[0].clientX, e.touches[0].clientY);
-
+      const badge = document.getElementById("lastSyncLabel");
+      if (badge) {
+        badge.innerHTML = `<span class="inline-flex items-center gap-1 text-emerald-300 font-bold">🟢 En vivo (Supabase Cloud)</span>`;
       }
 
-    }, { passive: true });
-
-
-
-    card.addEventListener("touchmove", (e) => {
-
-      if (e.touches && e.touches.length === 1) {
-
-        const dist = Math.hypot(e.touches[0].clientX - startX, e.touches[0].clientY - startY);
-
-        if (dist > 10) {
-
-          cancelPress();
-
-        }
-
+      if (showNotification) {
+        showToast(`✅ Conectado a Supabase: ${evCount} evidencias y ${matCount} entregas actualizadas en tiempo real.`, "success", 4000);
       }
-
-    }, { passive: true });
-
-
-
-    card.addEventListener("touchend", () => {
-
-      cancelPress();
-
-    }, { passive: true });
-
-
-
-    card.addEventListener("touchcancel", () => {
-
-      cancelPress();
-
-    }, { passive: true });
-
-
-
-    // Eventos de ratón (Escritorio / Laptop)
-
-    card.addEventListener("mousedown", (e) => {
-
-      if (e.button === 0) {
-
-        startPress(e.clientX, e.clientY);
-
-      }
-
-    });
-
-
-
-    card.addEventListener("mousemove", (e) => {
-
-      if (pressTimer) {
-
-        const dist = Math.hypot(e.clientX - startX, e.clientY - startY);
-
-        if (dist > 10) {
-
-          cancelPress();
-
-        }
-
-      }
-
-    });
-
-
-
-    card.addEventListener("mouseup", () => {
-
-      cancelPress();
-
-    });
-
-
-
-    card.addEventListener("mouseleave", () => {
-
-      cancelPress();
-
-    });
-
-
-
-    // Desactivar menú contextual nativo si se dejó oprimido
-
-    card.addEventListener("contextmenu", (e) => {
-
-      if (didLongPress) {
-
-        e.preventDefault();
-
-      }
-
-    });
-
-
-
-    // Selección regular al pulsar/tocar normalmente
-
-    card.onclick = (e) => {
-
-      if (didLongPress) {
-
-        e.preventDefault();
-
-        e.stopPropagation();
-
-        setTimeout(() => { didLongPress = false; }, 300);
-
-        return;
-
-      }
-
-      selectAsset(item);
-
-    };
-
-
-
-    listDiv.appendChild(card);
-
-  });
-
+    }
+  } catch (err) {
+    console.warn("[Supabase] Carga remota en vivo no disponible, operando con caché:", err);
+  }
 }
 
+// Auto-migración para cargar los datos en vivo más recientes de Linkaform
+function checkAndMigrateLiveData() {
+  if (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && Array.isArray(LINKAFORM_LIVE_RECORDS) && LINKAFORM_LIVE_RECORDS.length > 0) {
+    LINKAFORM_LIVE_RECORDS.forEach(r => {
+      r.modelo = normalizeModelName(r.modelo, r.tipo);
+    });
+    const dedupResult = deduplicateOfficialRecords(LINKAFORM_LIVE_RECORDS);
+    state.rawRecords = dedupResult.raw;
+    state.records = dedupResult.valid;
+    state.totalRawRecordsCount = dedupResult.rawCount;
+    state.totalDuplicatesCount = dedupResult.dupsCount;
+    state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") 
+      ? LINKAFORM_LIVE_MATERIALS.map(m => ({ ...m, descripcion: normalizeMaterialName(m.descripcion) })) 
+      : [];
+    
+    // Proteger contra QuotaExceededError (5MB) en navegadores
+    safeRemoveStorage("telmex_dashboard_records");
+    safeRemoveStorage("telmex_dashboard_raw_records");
+    safeRemoveStorage("telmex_dashboard_materials_log");
 
+    safeSetStorage("telmex_data_version", LIVE_DATA_VERSION);
+    const syncText = `Sincronización Linkaform (${state.records.length} válidos de ${state.totalRawRecordsCount} recibidos)`;
+    safeSetStorage("telmex_dashboard_last_sync", syncText);
+  }
+}
 
-function selectAsset(item) {
+// Cargar Configuración de Materiales (localStorage o por defecto)
+function loadConfig() {
+  const saved = safeGetStorage("telmex_dashboard_config");
+  if (saved) {
+    try {
+      state.config = JSON.parse(saved);
+      // Garantizar que la cuenta Linkaform esté preconfigurada
+      if (!state.config.linkaform) state.config.linkaform = {};
+      if (!state.config.linkaform.username) state.config.linkaform.username = DEFAULT_CONFIG.linkaform.username;
+      if (!state.config.linkaform.apiKey) state.config.linkaform.apiKey = DEFAULT_CONFIG.linkaform.apiKey;
+    } catch (e) {
+      state.config = DEFAULT_CONFIG;
+    }
+  } else {
+    state.config = DEFAULT_CONFIG;
+  }
 
-  if (!item || isRestrictedDistrict(item.id)) {
-    showCustomAlert(`🚫 El distrito ${item ? item.id : ''} está restringido por supervisión y no puede ser seleccionado ni trabajado.`, "Distrito Restringido");
+  // Siempre forzar el catálogo oficial homologado del Excel (10 Cajas y 5 Casetas)
+  state.config.materiales = DEFAULT_CONFIG.materiales;
+
+  // Eliminar esmalte, thinner y sellador de materiales en cualquier circunstancia
+  if (state.config && state.config.materiales) {
+    state.config.materiales = state.config.materiales.filter(m => {
+      if (EXCLUDED_MATERIALS.includes(m.id)) return false;
+      const lower = (m.nombre || "").toLowerCase();
+      if (lower.includes("esmalte") || lower.includes("thinner") || lower.includes("sellador") || lower.includes("solvente")) return false;
+      return true;
+    });
+  }
+}
+
+// Cargar Registros (LINKAFORM_LIVE_RECORDS o memoria)
+function loadRecords() {
+  // Si ya se migraron los datos en vivo, no sobreescribir
+  if (state.records && state.records.length > 0) {
     return;
   }
 
-  pendingAsset = item;
+  const live = (typeof LINKAFORM_LIVE_RECORDS !== "undefined" && Array.isArray(LINKAFORM_LIVE_RECORDS)) ? LINKAFORM_LIVE_RECORDS : [];
+  let sourceRecords = [];
+  if (live.length > 0) {
+    sourceRecords = live;
+  } else {
+    sourceRecords = (typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : [];
+  }
 
-  modalSelectedType = (item.tipo === "CAJA") ? "CAJA" : "CASETA";
+  sourceRecords.forEach(r => {
+    r.modelo = normalizeModelName(r.modelo, r.tipo);
+  });
+  const dedupResult = deduplicateOfficialRecords(sourceRecords);
+  state.rawRecords = dedupResult.raw;
+  state.records = dedupResult.valid;
+  state.totalRawRecordsCount = dedupResult.rawCount;
+  state.totalDuplicatesCount = dedupResult.dupsCount;
+}
 
+// Cargar Bitácora de Suministros de Materiales (Forma 184350)
+function loadMaterialsLog() {
+  if (state.materialsLog && state.materialsLog.length > 0) {
+    return;
+  }
+  const live = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined" && Array.isArray(LINKAFORM_LIVE_MATERIALS)) ? LINKAFORM_LIVE_MATERIALS : [];
+  if (live.length > 0) {
+    state.materialsLog = live;
+    return;
+  }
+  state.materialsLog = [];
+}
+
+// Normalizador de texto para tolerar pequeñas variaciones o faltas ortográficas del catálogo
+function normalizeMaterialStr(str) {
+  return (str || "")
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/envolvelte/g, "envolvente")
+    .replace(/secillo/g, "sencillo")
+    .replace(/deplasamiento/g, "desplazamiento")
+    .replace(/[^a-z0-9]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Normalizador estándar para claves de Áreas Operativas y Estados de Telmex
+function normalizeAreaKey(str) {
+  if (!str) return "";
+  let norm = String(str)
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^A-Z0-9]/g, "")
+    .trim();
+  const ALIAS_MAP = {
+    "MICHOACAN": "MICHOACANMORELIA",
+    "MORELIA": "MICHOACANMORELIA",
+    "CIUDADOBREGON": "CIUDADOBREGONLOSMOCH",
+    "CIUDADOBREGONLOSMOCHIS": "CIUDADOBREGONLOSMOCH",
+    "LOSMOCHIS": "CIUDADOBREGONLOSMOCH",
+    "OBREGON": "CIUDADOBREGONLOSMOCH",
+    "ESTADODEMEXICO": "ESTADODEMEXICOSUR",
+    "EDOMEX": "ESTADODEMEXICOSUR",
+    "TEPIC": "NAYARIT"
+  };
+  return ALIAS_MAP[norm] || norm;
+}
+
+// Recalcular Suministros de Materiales a partir de las entregas reales registradas
+function recalculateSuministrosFromMaterialsLog() {
+  if (!state.materialsLog || state.materialsLog.length === 0) return;
+
+  const totalsByMatId = {};
+  state.materialsLog.forEach(item => {
+    const matId = mapMaterialDescToId(item.descripcion);
+    const qty = parseFloat(item.cantidad) || 0;
+    totalsByMatId[matId] = (totalsByMatId[matId] || 0) + qty;
+  });
+
+  state.config.materiales.forEach(mat => {
+    mat.suministrado = totalsByMatId[mat.id] || 0;
+  });
+}
+
+function updateSyncLabel() {
+  const lastSync = localStorage.getItem("telmex_dashboard_last_sync");
+  const labelEl = document.getElementById("lastSyncLabel");
+  const countEl = document.getElementById("recordsLoadedCount");
   
-
-  const models = (modalSelectedType === "CAJA") ? CAJA_MODELS : CASETA_MODELS;
-
-  if (item.modelo_tipo && models.some(m => m.id === item.modelo_tipo)) {
-
-    modalSelectedModel = item.modelo_tipo;
-
-  } else {
-
-    modalSelectedModel = models[0].id;
-
+  if (labelEl) {
+    labelEl.innerText = lastSync ? lastSync : "Datos locales precargados";
   }
-
-
-
-  const idEl = document.getElementById("modalAssetId");
-
-  const infoEl = document.getElementById("modalAssetInfo");
-
-  const typeBadge = (modalSelectedType === "CAJA") ? "📦 CAJA" : "📞 CASETA";
-
-  if (idEl) idEl.innerText = `Activo: ${item.id} [${typeBadge}]`;
-
-  const coordsStr = (item.lat != null && item.lon != null) ? ` | Coords: ${item.lat}, ${item.lon}` : '';
-
-  if (infoEl) infoEl.innerText = `📍 Estado: ${item.estado || 'N/A'} | Área: ${item.area_trabajo || item.municipio || 'N/A'} | Calle: ${item.calle || 'S/N'}${coordsStr}`;
-
-
-
-  renderModalTypeGrid();
-
-
-
-  const modal = document.getElementById("assetConfirmModal");
-
-  if (modal) modal.style.display = "flex";
-
-}
-
-
-
-function closeAssetConfirmModal() {
-
-  const modal = document.getElementById("assetConfirmModal");
-
-  if (modal) modal.style.display = "none";
-
-}
-
-
-
-function renderModalTypeGrid() {
-
-  const isCaja = (modalSelectedType === "CAJA");
-
-  const models = isCaja ? CAJA_MODELS : CASETA_MODELS;
-
-  const grid = document.getElementById("modalTypeGrid");
-
-  if (!grid) return;
-
-
-
-  grid.innerHTML = "";
-
-  models.forEach(m => {
-
-    const card = document.createElement("div");
-
-    const isSel = (modalSelectedModel === m.id);
-
-    card.className = `type-card ${isSel ? 'selected' : ''}`;
-
-    card.onclick = () => selectModalModelType(m.id);
-
-
-
-    card.innerHTML = `
-
-      <img src="${m.img}" class="type-card-img" alt="${m.title}" onerror="this.style.display='none'">
-
-      <div class="type-card-title">${m.title}</div>
-
-    `;
-
-    grid.appendChild(card);
-
-  });
-
-}
-
-
-
-function selectModalModelType(modelId) {
-
-  modalSelectedModel = modelId;
-
-  renderModalTypeGrid();
-
-}
-
-
-
-function confirmAssetSelection() {
-
-  if (!pendingAsset) {
-
-    alert("⚠️ Error: No hay ningún activo seleccionado.");
-
-    closeAssetConfirmModal();
-
-    return;
-
+  if (countEl) {
+    countEl.innerText = `${state.records.length.toLocaleString()} registros activos`;
   }
-
-  if (!modalSelectedModel) {
-
-    alert("⚠️ Por favor selecciona un modelo en el muestrario visual.");
-
-    return;
-
-  }
-
-
-
-  selectedAsset = { ...pendingAsset };
-
-  selectedAsset.tipo = modalSelectedType;
-
-  selectedAsset.modelo_tipo = modalSelectedModel;
-
-  selectedAsset.is_manual = false;
-
-  selectedAsset.is_fuera_catalogo = false;
-
-  selectedAsset.existe_en_bd = "Sí";
-
-  selectedModelFilter = modalSelectedModel;
-
-
-
-  const proceso = document.querySelector('input[name="filterProceso"]:checked')?.value || "IMAGEN";
-
-  const areaVal = selectedAsset.area_trabajo || selectedAsset.municipio || "GENERAL";
-
-  const uniqueId = generateUniqueId(selectedAsset.tipo, areaVal);
-
-  selectedAsset.unique_id = uniqueId;
-
-
-
-  // Actualizar alerta general de activo seleccionado
-
-  document.getElementById("activeAssetAlert").style.display = "block";
-
-  document.getElementById("activeAssetTitle").innerText = `${uniqueId} (Ref: ${selectedAsset.id}) [${proceso}] (${selectedAsset.tipo} - ${modalSelectedModel}) - ${areaVal}, ${selectedAsset.estado}`;
-
-
-
-  // Llenar campos del formulario automáticamente
-
-  document.getElementById("formAssetId").value = `${uniqueId} (Ref: ${selectedAsset.id})`;
-
-  document.getElementById("formAssetEstado").value = selectedAsset.estado || "DESCONOCIDO";
-
-  document.getElementById("formAssetArea").value = selectedAsset.area_trabajo || selectedAsset.municipio || "GENERAL";
-
-  const existeBdEl = document.getElementById("formAssetExisteBD");
-
-  if (existeBdEl) {
-
-    existeBdEl.value = "En BD: Sí";
-
-    existeBdEl.style.background = "#f0fdf4";
-
-    existeBdEl.style.color = "#15803d";
-
-  }
-
-  document.getElementById("formAssetDetails").value = `Proceso: ${proceso} | Tipo: ${selectedAsset.tipo} | Modelo: ${modalSelectedModel}`;
-
-  const coordsStr = (selectedAsset.lat != null && selectedAsset.lon != null) ? ` | Coords: ${selectedAsset.lat}, ${selectedAsset.lon}` : '';
-
-  document.getElementById("formAssetInfo").value = `Colonia/Distrito: ${selectedAsset.colonia || selectedAsset.municipio || 'N/A'} | Calle: ${selectedAsset.calle || 'S/N'}${coordsStr}`;
-
-
-
-  if (selectedAsset.oferta_sugerida) {
-
-    const sug = String(selectedAsset.oferta_sugerida).trim();
-
-    if (sug.includes("250")) document.getElementById("ofertaColocada").value = "250 MB";
-
-    else if (sug.includes("120")) document.getElementById("ofertaColocada").value = "200 MB";
-
-  const comSel2 = document.getElementById("comentarios");
-
-  if (comSel2) comSel2.value = "Sin comentarios";
-
-  const comMan2 = document.getElementById("comentariosManual");
-
-  if (comMan2) { comMan2.style.display = "none"; comMan2.value = ""; }
-
-    else if (sug.includes("200")) document.getElementById("ofertaColocada").value = "200 MB";
-
-    else document.getElementById("ofertaColocada").value = sug;
-
-  } else {
-
-    document.getElementById("ofertaColocada").value = "200 MB";
-
-  }
-
-
-
-  // Resetear campo de comentarios a 'Sin comentarios' por defecto
-
-  const comSel1 = document.getElementById("comentarios");
-
-  if (comSel1) comSel1.value = "Sin comentarios";
-
-  const comMan1 = document.getElementById("comentariosManual");
-
-  if (comMan1) { comMan1.style.display = "none"; comMan1.value = ""; }
-
-
-
-  // Resetear radios de existencia en V8 para obligar a seleccionar Sí o No
-
-  document.querySelectorAll('input[name="existencia"]').forEach(r => r.checked = false);
-
-  const grpExist1 = document.getElementById("groupExistencia");
-
-  if (grpExist1) { grpExist1.style.border = "none"; grpExist1.style.padding = "0"; }
-
-
-
-  closeAssetConfirmModal();
-
-  switchView('form');
-
 }
 
-
-
-// ---------------------------------------------------------
-
-// REGISTRO MANUAL DE CAJAS Y CASETAS EN CAMPO (FUERA DE CATÁLOGO)
-
-// ---------------------------------------------------------
-
-let manualSelectedType = "CAJA";
-
-let manualSelectedModel = "Tradicional Sencilla";
-
-
-
-function openManualAssetModal() {
-
-  const modal = document.getElementById("manualAssetModal");
-
-  if (!modal) return;
-
-
-
-  // Reset de campos
-
-  const idInput = document.getElementById("manualAssetIdInput");
-
-  const calleInput = document.getElementById("manualCalleInput");
-
-  if (idInput) idInput.value = "";
-
-  if (calleInput) calleInput.value = "";
-
-
-
-  // Sincronizar GPS actual
-
-  const gpsEl = document.getElementById("manualGpsInfo");
-
-  if (gpsEl) {
-
-    if (currentGpsCoords && currentGpsCoords.lat != null && currentGpsCoords.lon != null) {
-
-      gpsEl.innerHTML = `📡 <strong>GPS Actual:</strong> Lat: ${currentGpsCoords.lat.toFixed(6)}, Lon: ${currentGpsCoords.lon.toFixed(6)} (±${Math.round(currentGpsCoords.accuracy || 10)}m)`;
-
-      gpsEl.style.color = "#15803d";
-
-    } else {
-
-      gpsEl.innerHTML = `📡 <strong>GPS:</strong> Obteniendo señal satelital en tiempo real...`;
-
-      gpsEl.style.color = "#0369a1";
-
-    }
-
-  }
-
-
-
-  // Poblar estados
-
-  populateManualEstados();
-
-
-
-  // Preseleccionar si el usuario ya tenía filtros en la búsqueda
-
-  const currentFiltroEstado = document.getElementById("filterEstado")?.value || "";
-
-  const estadoSelect = document.getElementById("manualEstadoSelect");
-
-  if (estadoSelect && currentFiltroEstado) {
-
-    estadoSelect.value = currentFiltroEstado;
-
-    onManualEstadoChange();
-
-    const currentFiltroArea = document.getElementById("filterArea")?.value || "";
-
-    const areaSelect = document.getElementById("manualAreaSelect");
-
-    if (areaSelect && currentFiltroArea) {
-
-      areaSelect.value = currentFiltroArea;
-
-    }
-
-  }
-
-
-
-  // Tipo inicial: CAJA
-
-  manualSelectedType = "CAJA";
-
-  const radCaja = document.getElementById("manual_tipo_caja");
-
-  if (radCaja) radCaja.checked = true;
-
-  onManualTipoToggle("CAJA");
-
-
-
-  modal.style.display = "flex";
-
-  if (idInput) setTimeout(() => idInput.focus(), 150);
-
+// =========================================================
+// FILTROS Y SELECTORES
+// =========================================================
+function initFilters() {
+  populateAreaFilter();
+  populateContratistasFilter();
+  populateTecnicosFilter();
+  initDatePresets();
 }
 
+function populateAreaFilter() {
+  const areaSelect = document.getElementById("filterArea");
+  if (!areaSelect) return;
+  const currentVal = areaSelect.value;
+  areaSelect.innerHTML = `<option value="">-- Todas las Áreas --</option>`;
 
-
-function closeManualAssetModal() {
-
-  const modal = document.getElementById("manualAssetModal");
-
-  if (modal) modal.style.display = "none";
-
-}
-
-
-
-
-
-// ---------------------------------------------------------
-
-// FILTRO EN TIEMPO REAL Y LISTENERS PARA V8
-
-// ---------------------------------------------------------
-
-function setupManualIdInputFilter() {
-
-  const idInput = document.getElementById("manualAssetIdInput");
-
-  if (!idInput) return;
-
-  idInput.addEventListener("input", function() {
-
-    if (manualSelectedType === "CASETA") {
-
-      this.value = this.value.replace(/\D/g, '').slice(0, 10);
-
-    } else {
-
-      this.value = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 7);
-
-    }
-
-  });
-
-}
-
-
-
-function setupExistenciaRadioListeners() {
-
-  const existRadios = document.querySelectorAll('input[name="existencia"]');
-
-  existRadios.forEach(r => {
-
-    r.addEventListener('change', () => {
-
-      const groupExist = document.getElementById("groupExistencia");
-
-      if (groupExist) {
-
-        groupExist.style.border = "none";
-
-        groupExist.style.padding = "0";
-
-      }
-
+  const areaSet = new Set();
+  if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
+    Object.keys(CATALOGO_METAS.estados).forEach(est => {
+      if (est) areaSet.add(est.toUpperCase().trim());
+      Object.keys(CATALOGO_METAS.estados[est]).forEach(ar => {
+        if (ar) areaSet.add(ar.toUpperCase().trim());
+      });
     });
-
+  }
+  (state.records || []).forEach(r => {
+    if (r.area_trabajo) areaSet.add(r.area_trabajo.toUpperCase().trim());
+  });
+  (state.materialsLog || []).forEach(m => {
+    if (m.area) areaSet.add(m.area.toUpperCase().trim());
   });
 
-}
-
-
-
-function onComentariosChange() {
-
-  const sel = document.getElementById("comentarios");
-
-  const manual = document.getElementById("comentariosManual");
-
-  if (!sel || !manual) return;
-
-  if (sel.value === "OTRO") {
-
-    manual.style.display = "block";
-
-    manual.focus();
-
-  } else {
-
-    manual.style.display = "none";
-
-    manual.value = "";
-
-  }
-
-}
-
-window.onComentariosChange = onComentariosChange;
-
-
-
-function onManualTipoToggle(tipo) {
-
-  manualSelectedType = (tipo === "CASETA") ? "CASETA" : "CAJA";
-
-
-
-  const idLabel = document.getElementById("manualIdLabel");
-
-  const idInput = document.getElementById("manualAssetIdInput");
-
-  const idHelper = document.getElementById("manualIdHelper");
-
-  const catLabel = document.getElementById("manualCatalogLabel");
-
-
-
-  if (manualSelectedType === "CASETA") {
-
-    if (idLabel) idLabel.innerHTML = '2. Teléfono de la Caseta: <span style="color:#ef4444; font-size:0.75rem;">* Obligatorio (10 dígitos)</span>';
-
-    if (idInput) {
-
-      idInput.placeholder = "Ej: 9848033711 (10 dígitos numéricos)";
-
-      idInput.maxLength = 10;
-
-      idInput.type = "tel";
-
-      idInput.value = "";
-
-    }
-
-    if (idHelper) idHelper.innerHTML = '<span style="color:#0369a1; font-weight:600;">📱 Obligatorio:</span> Debe contener exactamente <strong>10 dígitos numéricos</strong> (ejemplo: 9848033711).';
-
-    if (catLabel) catLabel.innerHTML = '3. Catálogo de Modelos de Casetas: <span style="color:#ef4444; font-size:0.75rem;">* Selecciona una</span>';
-
-    manualSelectedModel = CASETA_MODELS[0].id;
-
-  } else {
-
-    if (idLabel) idLabel.innerHTML = '2. Distrito de la Caja: <span style="color:#ef4444; font-size:0.75rem;">* Obligatorio (Alfanumérico 7 caracteres)</span>';
-
-    if (idInput) {
-
-      idInput.placeholder = "Ej: ZIH0061 o IND0017 (7 caracteres)";
-
-      idInput.maxLength = 7;
-
-      idInput.type = "text";
-
-      idInput.value = "";
-
-    }
-
-    if (idHelper) idHelper.innerHTML = '<span style="color:#0369a1; font-weight:600;">📦 Obligatorio:</span> Formato alfanumérico de <strong>7 caracteres</strong> (ejemplo: ZIH0061, IND0017).';
-
-    if (catLabel) catLabel.innerHTML = '3. Catálogo de Modelos de Cajas: <span style="color:#ef4444; font-size:0.75rem;">* Selecciona una</span>';
-
-    manualSelectedModel = CAJA_MODELS[0].id;
-
-  }
-
-
-
-  renderManualModelGrid();
-
-}
-
-
-
-function renderManualModelGrid() {
-
-  const grid = document.getElementById("manualModelGrid");
-
-  if (!grid) return;
-
-
-
-  const models = (manualSelectedType === "CASETA") ? CASETA_MODELS : CAJA_MODELS;
-
-  grid.innerHTML = "";
-
-
-
-  models.forEach(m => {
-
-    const card = document.createElement("div");
-
-    const isSel = (manualSelectedModel === m.id);
-
-    card.className = `type-card ${isSel ? 'selected' : ''}`;
-
-    card.onclick = () => selectManualModelType(m.id);
-
-
-
-    card.innerHTML = `
-
-      <img src="${m.img}" class="type-card-img" alt="${m.title}" onerror="this.style.display='none'">
-
-      <div class="type-card-title">${m.title}</div>
-
-    `;
-
-    grid.appendChild(card);
-
+  const sortedAreas = Array.from(areaSet).filter(Boolean).sort();
+  sortedAreas.forEach(ar => {
+    const opt = document.createElement("option");
+    opt.value = ar;
+    opt.innerText = ar;
+    areaSelect.appendChild(opt);
   });
 
+  if (currentVal && areaSet.has(currentVal)) {
+    areaSelect.value = currentVal;
+  }
 }
 
+function populateContratistasFilter() {
+  const contratistaSelect = document.getElementById("filterContratista");
+  if (!contratistaSelect) return;
+  const currentVal = contratistaSelect.value;
+  contratistaSelect.innerHTML = `<option value="">-- Todos los Contratistas --</option>`;
 
-
-function selectManualModelType(modelId) {
-
-  manualSelectedModel = modelId;
-
-  renderManualModelGrid();
-
+  const contratistas = Array.from(new Set(state.records.map(r => r.contratista).filter(Boolean))).sort();
+  contratistas.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.innerText = c;
+    contratistaSelect.appendChild(opt);
+  });
+  contratistaSelect.value = currentVal;
 }
 
+function onEstadoFilterChange() {
+  applyFilters();
+}
 
+function onPresetDateChange() {
+  const presetEl = document.getElementById("filterPresetDate");
+  const preset = presetEl ? presetEl.value : "all";
+  const customContainer = document.getElementById("customDateContainer");
 
-function populateManualEstados() {
-  const select = document.getElementById("manualEstadoSelect");
+  if (preset === "custom") {
+    if (customContainer) customContainer.classList.remove("hidden");
+  } else {
+    if (customContainer) customContainer.classList.add("hidden");
+    applyFilters();
+  }
+}
+
+function initDatePresets() {
+  const today = getLocalDateStr(new Date());
+  const customDateTo = document.getElementById("customDateTo");
+  const customDateFrom = document.getElementById("customDateFrom");
+  if (customDateTo) customDateTo.value = today;
+  if (customDateFrom) customDateFrom.value = "2026-10-01";
+}
+
+function resetFilters() {
+  const filterArea = document.getElementById("filterArea");
+  if (filterArea) filterArea.value = "";
+  const filterTipo = document.getElementById("filterTipo");
+  if (filterTipo) filterTipo.value = "";
+  const filterPreset = document.getElementById("filterPresetDate");
+  if (filterPreset) filterPreset.value = "all";
+  const customContainer = document.getElementById("customDateContainer");
+  if (customContainer) customContainer.classList.add("hidden");
+  applyFilters();
+}
+
+// Verifica si un registro corresponde a un área o región seleccionada
+function recordMatchesArea(r, selectedArea) {
+  if (!selectedArea) return true;
+  const selNorm = normalizeAreaKey(selectedArea);
+  const rAreaNorm = normalizeAreaKey(r.area_trabajo);
+  const rEstadoNorm = normalizeAreaKey(r.estado);
+
+  // 1. Coincidencia directa por Área de Trabajo / Plaza (la unidad operativa oficial de Telmex)
+  if (rAreaNorm && (rAreaNorm === selNorm || rAreaNorm.includes(selNorm) || selNorm.includes(rAreaNorm))) {
+    return true;
+  }
+
+  // 2. Si no tiene área de trabajo, comparar por estado
+  if (!rAreaNorm && rEstadoNorm === selNorm) {
+    return true;
+  }
+
+  // 3. Si selectedArea es una Región macro en CATALOGO_METAS que agrupa varias plazas
+  if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
+    for (let est in CATALOGO_METAS.estados) {
+      if (normalizeAreaKey(est) === selNorm && est !== selectedArea) {
+        for (let ar in CATALOGO_METAS.estados[est]) {
+          if (normalizeAreaKey(ar) === rAreaNorm) return true;
+        }
+      }
+    }
+  }
+
+  return false;
+}
+
+// Normalizador y verificador de corte oficial (respeta todos los registros hasta las 22:00 hrs)
+// Normalizador y verificador de corte oficial (respeta todos los registros hasta las 22:00 hrs)
+function isRecordAfterCutoff(r, cutoffInfo) {
+  if (!cutoffInfo || !cutoffInfo.isFrozen) return false;
+  
+  // Extraer fecha y hora real de captura
+  const timeInfo = parseDateTimeSafe(r.created_at_iso || r.fecha_captura || r.fecha);
+  const captureDate = timeInfo.dateStr || "";
+  const captureTime = timeInfo.timeStr ? (timeInfo.timeStr.length === 5 ? timeInfo.timeStr + ":00" : timeInfo.timeStr) : "00:00:00";
+  const captureDateTime = `${captureDate} ${captureTime}`;
+  
+  const cutoffLimit = cutoffInfo.maxVisibleDt || `${cutoffInfo.activeReportingDate} 22:00:00`;
+  return captureDateTime > cutoffLimit;
+}
+
+// =========================================================
+// APLICACIÓN DE FILTROS & CÁLCULOS
+// =========================================================
+function applyFilters() {
+  const arEl = document.getElementById("filterArea");
+  const arVal = arEl ? arEl.value.trim().toUpperCase() : "";
+  const tipoEl = document.getElementById("filterTipo");
+  const tipoVal = tipoEl ? tipoEl.value.trim().toUpperCase() : "";
+  const presetEl = document.getElementById("filterPresetDate");
+  const presetVal = presetEl ? presetEl.value : "all";
+
+  // Rango de fechas
+  let minDate = null;
+  let maxDate = null;
+  const today = new Date();
+
+  if (presetVal === "today") {
+    minDate = getLocalDateStr(today);
+    maxDate = minDate;
+  } else if (presetVal === "7days") {
+    const d = new Date(today);
+    d.setDate(d.getDate() - 7);
+    minDate = getLocalDateStr(d);
+    maxDate = getLocalDateStr(today);
+  } else if (presetVal === "30days") {
+    const d = new Date(today);
+    d.setDate(d.getDate() - 30);
+    minDate = getLocalDateStr(d);
+    maxDate = getLocalDateStr(today);
+  } else if (presetVal === "custom") {
+    minDate = document.getElementById("customDateFrom") ? document.getElementById("customDateFrom").value || null : null;
+    maxDate = document.getElementById("customDateTo") ? document.getElementById("customDateTo").value || null : null;
+  }
+
+  const cutoffInfo = getCutoffInfo();
+  renderCutoffBanner(cutoffInfo);
+
+  if (presetVal === "today") {
+    minDate = cutoffInfo.activeReportingDate;
+    maxDate = minDate;
+  }
+
+  // state.records contiene exclusivamente los activos físicos únicos validados (coincidencia 100% con Excel oficial)
+  state.filteredRecords = [];
+
+  for (const r of (state.records || [])) {
+    const ident = String(r.identificador || r.id || "").trim().toUpperCase();
+    if (RESTRICTED_DISTRICTS.has(ident)) continue;
+    if (arVal && !recordMatchesArea(r, arVal)) continue;
+    if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) continue;
+    
+    // Regla de corte: en período congelado, respetar todo lo capturado hasta las 22:00
+    if (cutoffInfo.isFrozen && isRecordAfterCutoff(r, cutoffInfo)) {
+      continue;
+    }
+
+    if (minDate && r.fecha && r.fecha < minDate) continue;
+    if (maxDate && r.fecha && r.fecha > maxDate) continue;
+
+    state.filteredRecords.push(r);
+  }
+
+  // Contar cuántos folios brutos en Linkaform corresponden a este mismo filtro (para auditoría transparente)
+  let totalRawFolios = 0;
+  const rawList = (state.rawRecords && state.rawRecords.length > 0) ? state.rawRecords : (state.records || []);
+  for (const r of rawList) {
+    const ident = String(r.identificador || r.id || "").trim().toUpperCase();
+    if (RESTRICTED_DISTRICTS.has(ident)) continue;
+    if (arVal && !recordMatchesArea(r, arVal)) continue;
+    if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) continue;
+    if (cutoffInfo.isFrozen && isRecordAfterCutoff(r, cutoffInfo)) continue;
+    if (minDate && r.fecha && r.fecha < minDate) continue;
+    if (maxDate && r.fecha && r.fecha > maxDate) continue;
+    totalRawFolios++;
+  }
+
+  state.totalRawFoliosCount = totalRawFolios;
+  state.currentPage = 1;
+
+  // Mantener catálogo de técnicos sincronizado con el área activa
+  populateTecnicosFilter();
+
+  // Renderizar vistas
+  renderKpis();
+  renderMaterialsTab();
+  renderAreasTab();
+  renderFechasTab();
+  renderRecordsTable();
+  if (typeof renderBossModule === "function") { renderBossModule(); }
+}
+
+// =========================================================
+// RENDERIZADO DE KPIS SUPERIORES
+// =========================================================
+function renderKpis() {
+  const filtered = state.filteredRecords;
+  const arEl = document.getElementById("filterArea");
+  const arVal = arEl ? arEl.value.trim().toUpperCase() : "";
+  const tipoEl = document.getElementById("filterTipo");
+  const tipoVal = tipoEl ? tipoEl.value.trim().toUpperCase() : "";
+
+  // Calcular metas correspondientes al filtro de Área
+  let totalMeta = 0;
+  let cajasMeta = 0;
+  let casetasMeta = 0;
+
+  if (arVal) {
+    const metaData = getAreaMetas(arVal);
+    cajasMeta = metaData.cajas || 0;
+    casetasMeta = metaData.casetas || 0;
+    totalMeta = metaData.total || (cajasMeta + casetasMeta);
+  } else if (typeof CATALOGO_METAS !== "undefined") {
+    totalMeta = CATALOGO_METAS.total_general;
+    cajasMeta = CATALOGO_METAS.total_cajas;
+    casetasMeta = CATALOGO_METAS.total_casetas;
+  }
+
+  const cajasDone = filtered.filter(r => r.tipo === "CAJA").length;
+  const casetasDone = filtered.filter(r => r.tipo === "CASETA").length;
+  const totalDone = filtered.length;
+
+  let activeTargetMeta = totalMeta;
+  if (tipoVal === "CAJA") activeTargetMeta = cajasMeta;
+  else if (tipoVal === "CASETA") activeTargetMeta = casetasMeta;
+
+  const totalPercent = activeTargetMeta > 0 ? ((totalDone / activeTargetMeta) * 100).toFixed(1) : "0.0";
+  const cajasPercent = cajasMeta > 0 ? ((cajasDone / cajasMeta) * 100).toFixed(1) : "0.0";
+  const casetasPercent = casetasMeta > 0 ? ((casetasDone / casetasMeta) * 100).toFixed(1) : "0.0";
+
+  // Actualizar DOM KPIs
+  document.getElementById("kpiTotalDone").innerText = totalDone.toLocaleString();
+  document.getElementById("kpiTotalMeta").innerText = activeTargetMeta.toLocaleString();
+  document.getElementById("kpiTotalPercent").innerText = `${totalPercent}%`;
+  document.getElementById("kpiTotalProgressBar").style.width = `${Math.min(100, totalPercent)}%`;
+
+  const auditSub = document.getElementById("kpiTotalAuditSub");
+  if (auditSub) {
+    const rawTotal = state.totalRawFoliosCount || totalDone;
+    const dups = Math.max(0, rawTotal - totalDone);
+    if (dups > 0) {
+      auditSub.innerHTML = `<span class="text-emerald-700 font-bold">${totalDone.toLocaleString()} validados</span> <span class="text-slate-400 font-normal">(${rawTotal.toLocaleString()} folios • ${dups} dup)</span>`;
+    } else {
+      auditSub.innerHTML = `<span class="text-emerald-700 font-bold">${totalDone.toLocaleString()} activos validados</span>`;
+    }
+  }
+
+  document.getElementById("kpiCajasDone").innerText = cajasDone.toLocaleString();
+  document.getElementById("kpiCajasMeta").innerText = cajasMeta.toLocaleString();
+  document.getElementById("kpiCajasPercent").innerText = `${cajasPercent}%`;
+  document.getElementById("kpiCajasProgressBar").style.width = `${Math.min(100, cajasPercent)}%`;
+
+  document.getElementById("kpiCasetasDone").innerText = casetasDone.toLocaleString();
+  document.getElementById("kpiCasetasMeta").innerText = casetasMeta.toLocaleString();
+  document.getElementById("kpiCasetasPercent").innerText = `${casetasPercent}%`;
+  document.getElementById("kpiCasetasProgressBar").style.width = `${Math.min(100, casetasPercent)}%`;
+
+  // Ritmo de Trabajo
+  const uniqueDates = Array.from(new Set(filtered.map(r => r.fecha).filter(Boolean)));
+  const activeDays = Math.max(1, uniqueDates.length);
+  const avgPerDay = Math.round(totalDone / activeDays);
+  
+  const todayStr = getLocalDateStr(new Date());
+  const doneToday = filtered.filter(r => {
+    if (!r.fecha) return false;
+    const recDate = String(r.fecha).replace(/\//g, "-").substring(0, 10);
+    return recDate === todayStr;
+  }).length;
+
+  const kpiAvgPerDay = document.getElementById("kpiAvgPerDay");
+  const kpiDoneToday = document.getElementById("kpiDoneToday");
+  const kpiActiveDays = document.getElementById("kpiActiveDays");
+
+  if (kpiAvgPerDay) {
+    kpiAvgPerDay.innerHTML = `${avgPerDay.toLocaleString()} <span class="text-xs font-semibold text-slate-500">activos/día</span>`;
+  }
+  if (kpiDoneToday) {
+    kpiDoneToday.innerText = `${doneToday.toLocaleString()} activos`;
+    kpiDoneToday.className = doneToday > 0 ? "font-bold text-emerald-700" : "font-bold text-slate-500";
+  }
+  if (kpiActiveDays) {
+    kpiActiveDays.innerText = `${activeDays} días registrados`;
+  }
+}
+
+// =========================================================
+// PESTAÑA 1: BALANCE DE MATERIALES (QUEDA VS FALTA POR ÁREA)
+// =========================================================
+
+// Mapeo exacto entre el registro de trabajo de campo (Forma 142786) y el catálogo de materiales
+function mapRecordToMaterialId(rec) {
+  const tipo = (rec.tipo || '').toUpperCase().trim();
+  const modelo = normalizeModelName(rec.modelo, tipo);
+
+  if (tipo === 'CASETA') {
+    if (modelo === 'CUICUILCO') return 'cuicuilco';
+    if (modelo === 'DOBLE REFORMA') return 'doble_reforma';
+    if (modelo === 'SEMICIRCULAR') return 'semicircular';
+    if (modelo === 'MINI') return 'caseta_mini';
+    return 'caseta_normal';
+  } else {
+    // CAJA
+    if (modelo === 'DESPLAZAMIENTO DOBLE') return 'desplazamiento_doble';
+    if (modelo === 'DESPLAZAMIENTO SENCILLA') return 'desplazamiento_sencilla';
+    if (modelo === 'ENVOLVENTE DOBLE') return 'envolvente_doble';
+    if (modelo === 'ENVOLVENTE SENCILLA') return 'envolvente_sencilla';
+    if (modelo === 'KRONE') return 'krone';
+    if (modelo === 'SIECOR DOBLE') return 'siecor_doble';
+    if (modelo === 'SIECOR SENCILLA 1PTA') return 'siecor_sencilla_1pta';
+    if (modelo === 'SIECOR SENCILLA 2 PTAS') return 'siecor_sencilla_2_ptas';
+    if (modelo === 'TRADICIONAL DOBLE') return 'tradicional_doble';
+    return 'tradicional_sencilla';
+  }
+}
+
+// Obtener cantidad real de viniles instalados en el activo reportado
+function getRecordVinilCount(rec) {
+  if (rec.num_viniles !== undefined && rec.num_viniles !== null && rec.num_viniles !== '') {
+    const val = parseFloat(rec.num_viniles);
+    if (!isNaN(val)) return val;
+  }
+  // Valor por defecto en campo si no fue capturado
+  return (rec.tipo || '').toUpperCase().trim() === 'CASETA' ? 2 : 1;
+}
+
+// Mapeo normalizado de la descripción de entrega (Forma 184350) al ID de material
+function mapMaterialDescToId(desc) {
+  const norm = normalizeMaterialName(desc);
+  if (norm === 'CUICUILCO') return 'cuicuilco';
+  if (norm === 'DOBLE REFORMA') return 'doble_reforma';
+  if (norm === 'SEMICIRCULAR') return 'semicircular';
+  if (norm === 'MINI') return 'caseta_mini';
+  if (norm === 'NORMAL') return 'caseta_normal';
+  if (norm === 'DESPLAZAMIENTO DOBLE') return 'desplazamiento_doble';
+  if (norm === 'DESPLAZAMIENTO SENCILLA') return 'desplazamiento_sencilla';
+  if (norm === 'ENVOLVENTE DOBLE') return 'envolvente_doble';
+  if (norm === 'ENVOLVENTE SENCILLA') return 'envolvente_sencilla';
+  if (norm === 'KRONE') return 'krone';
+  if (norm === 'SIECOR DOBLE') return 'siecor_doble';
+  if (norm === 'SIECOR SENCILLA 1PTA') return 'siecor_sencilla_1pta';
+  if (norm === 'SIECOR SENCILLA 2 PTAS') return 'siecor_sencilla_2_ptas';
+  if (norm === 'TRADICIONAL DOBLE') return 'tradicional_doble';
+  if (norm === 'TRADICIONAL SENCILLA') return 'tradicional_sencilla';
+
+  const d = normalizeMaterialStr(desc);
+  if (d.includes('pintura') && d.includes('azul')) return 'pintura_azul';
+  if (d.includes('pintura') && d.includes('gris')) return 'pintura_gris';
+  if (d.includes('thinner')) return 'thinner';
+  if (d.includes('sellador')) return 'sellador';
+  return d;
+}
+
+// Metas del Área
+function getAreaMetas(areaName) {
+  if (!areaName || typeof CATALOGO_METAS === "undefined" || !CATALOGO_METAS.estados) {
+    return {
+      cajas: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_cajas : 49829,
+      casetas: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_casetas : 44919,
+      total: (typeof CATALOGO_METAS !== "undefined") ? CATALOGO_METAS.total_general : 94748
+    };
+  }
+
+  const normArea = normalizeAreaKey(areaName);
+  for (let edo in CATALOGO_METAS.estados) {
+    for (let ar in CATALOGO_METAS.estados[edo]) {
+      if (normalizeAreaKey(ar) === normArea || normalizeAreaKey(edo) === normArea) {
+        return CATALOGO_METAS.estados[edo][ar];
+      }
+    }
+  }
+
+  return { cajas: 1000, casetas: 500, total: 1500 };
+}
+
+// Inicializar selector de áreas de materiales
+function initMaterialAreaFilter() {
+  const select = document.getElementById("materialAreaSelect");
   if (!select) return;
 
-  const currentVal = select.value;
-  select.innerHTML = '<option value="">-- Seleccionar Estado * --</option>';
-  Object.keys(OFFICIAL_ESTADOS_AREAS).sort().forEach(est => {
+  const currentVal = state.selectedMaterialArea || select.value || "";
+  select.innerHTML = `<option value="">-- Todas las Áreas (Consolidado) --</option>`;
+
+  const areaSet = new Set();
+  (state.materialsLog || []).forEach(m => {
+    if (m.area) areaSet.add(m.area.toUpperCase().trim());
+  });
+  (state.records || []).forEach(r => {
+    if (r.area_trabajo) areaSet.add(r.area_trabajo.toUpperCase().trim());
+  });
+
+  Array.from(areaSet).sort().forEach(ar => {
     const opt = document.createElement("option");
-    opt.value = est;
-    opt.innerText = est;
-    if (est === currentVal) opt.selected = true;
+    opt.value = ar;
+    opt.innerText = ar;
     select.appendChild(opt);
   });
 
-  const areaSelect = document.getElementById("manualAreaSelect");
-  if (areaSelect && !areaSelect.value) {
-    areaSelect.innerHTML = '<option value="">-- Seleccionar Área * --</option>';
-  }
+  select.value = currentVal;
 }
 
+function onMaterialAreaSelectChange() {
+  const select = document.getElementById("materialAreaSelect");
+  state.selectedMaterialArea = select ? select.value : "";
+  renderMaterialsTab();
+}
 
+// Renderizado principal del Balance de Materiales
+function renderMaterialsTab() {
+  initMaterialAreaFilter();
 
-function onManualEstadoChange() {
-  const selectedEstado = document.getElementById("manualEstadoSelect")?.value || "";
-  const areaSelect = document.getElementById("manualAreaSelect");
-  if (!areaSelect) return;
+  const selectedArea = state.selectedMaterialArea || "";
+  const tbody = document.getElementById("materialsTableBody");
+  const alertList = document.getElementById("materialsAlertList");
 
-  areaSelect.innerHTML = '<option value="">-- Seleccionar Área * --</option>';
+  if (tbody) tbody.innerHTML = "";
+  if (alertList) alertList.innerHTML = "";
 
-  if (selectedEstado && OFFICIAL_ESTADOS_AREAS[selectedEstado]) {
-    OFFICIAL_ESTADOS_AREAS[selectedEstado].slice().sort().forEach(area => {
-      const opt = document.createElement("option");
-      opt.value = area;
-      opt.innerText = area;
-      areaSelect.appendChild(opt);
+  // 1. Actualizar Encabezados y Badges si existen
+  const badgeEl = document.getElementById("activeMaterialAreaBadge");
+  const titleEl = document.getElementById("materialsTableTitle");
+  const subEl = document.getElementById("materialsAreaSubtitle");
+
+  if (badgeEl) {
+    badgeEl.innerText = selectedArea ? `PLAZA: ${selectedArea}` : "TODAS LAS ÁREAS";
+    badgeEl.className = selectedArea 
+      ? "bg-amber-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm" 
+      : "bg-telmex text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-sm";
+  }
+  if (titleEl) {
+    titleEl.innerText = selectedArea 
+      ? `Balance de Materiales - Plaza ${selectedArea}` 
+      : "Balance General de Materiales (Consolidado Nacional)";
+  }
+  if (subEl) {
+    subEl.innerText = selectedArea 
+      ? `Suministros recibidos en ${selectedArea} vs Viniles instalados en ${selectedArea} (inventario independiente)` 
+      : "Contabilización directa por número de viniles instalados en campo";
+  }
+
+  // 2. Filtrar Registros y Bitácora exclusivamente para el área activa
+  const activeRecords = selectedArea 
+    ? state.records.filter(r => (r.area_trabajo || "").toUpperCase().trim() === selectedArea)
+    : state.records;
+
+  const activeLog = selectedArea 
+    ? state.materialsLog.filter(m => (m.area || "").toUpperCase().trim() === selectedArea)
+    : state.materialsLog;
+
+  // 3. Suministros por Material en el Área activa
+  const suministrosByMat = {};
+  activeLog.forEach(m => {
+    const matId = mapMaterialDescToId(m.descripcion);
+    const qty = parseFloat(m.cantidad) || 0;
+    suministrosByMat[matId] = (suministrosByMat[matId] || 0) + qty;
+  });
+
+  // 4. Consumo Real en base a NUM_VINILES colocados en campo
+  const consumidoByMat = {};
+  activeRecords.forEach(r => {
+    const matId = mapRecordToMaterialId(r);
+    const viniles = getRecordVinilCount(r);
+    consumidoByMat[matId] = (consumidoByMat[matId] || 0) + viniles;
+  });
+
+  // 5. Metas correspondientes
+  const metas = getAreaMetas(selectedArea);
+  const cajasMeta = metas.cajas || 0;
+  const casetasMeta = metas.casetas || 0;
+
+  let criticalCount = 0;
+  const chartLabels = [];
+  const chartConsumidoData = [];
+  const chartStockQuedaData = [];
+
+  // 6. Recorrer cada material del catálogo (excluyendo esmalte, thinner y sellador)
+  state.config.materiales.forEach(mat => {
+    if (EXCLUDED_MATERIALS.includes(mat.id)) return;
+    const lowerName = (mat.nombre || "").toLowerCase();
+    if (lowerName.includes("esmalte") || lowerName.includes("thinner") || lowerName.includes("sellador") || lowerName.includes("solvente")) return;
+
+    const suministrado = suministrosByMat[mat.id] || 0;
+
+    let consumido = 0;
+    if (mat.categoria.includes("Vinil") || mat.id.includes("vinil") || mat.id.includes("caseta") || mat.id.includes("sencilla") || mat.id.includes("doble")) {
+      consumido = consumidoByMat[mat.id] || 0;
+    } else {
+      const cajasCount = activeRecords.filter(r => r.tipo === "CAJA").length;
+      const casetasCount = activeRecords.filter(r => r.tipo === "CASETA").length;
+      consumido = Math.round((cajasCount * (mat.consumo_por_caja || 0)) + (casetasCount * (mat.consumo_por_caseta || 0)));
+    }
+
+    // Sobran / Queda = Suministrado - Consumido
+    const queda = suministrado - consumido;
+    const quedaVisual = Math.max(0, queda);
+
+    // Requerido según la meta del área y faltante por suministrar
+    const requeridoMeta = Math.round((cajasMeta * (mat.consumo_por_caja || 0)) + (casetasMeta * (mat.consumo_por_caseta || 0)));
+    const falta = Math.max(0, requeridoMeta - suministrado);
+
+    // Badges de estatus
+    let statusBadge = "";
+    let isCritical = false;
+
+    if (suministrado === 0 && consumido > 0) {
+      statusBadge = `<span class="badge badge-danger">🔴 Sin Surtido (-${consumido} viniles)</span>`;
+      criticalCount++;
+      isCritical = true;
+    } else if (queda < 0) {
+      statusBadge = `<span class="badge badge-danger">🔴 Déficit (${queda} viniles)</span>`;
+      criticalCount++;
+      isCritical = true;
+    } else if (suministrado > 0 && queda <= (mat.stock_minimo_alerta || 20)) {
+      statusBadge = `<span class="badge badge-warning">🟡 Stock Bajo (${queda} disponibles)</span>`;
+    } else if (suministrado === 0 && consumido === 0) {
+      statusBadge = `<span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-500">⚪ Sin Movimiento</span>`;
+    } else {
+      statusBadge = `<span class="badge badge-success">🟢 Sobran ${formatNumber(queda)} ${mat.unidad}</span>`;
+    }
+
+    const row = document.createElement("tr");
+    row.className = "hover:bg-slate-50 transition border-b border-slate-100";
+    row.innerHTML = `
+      <td class="py-3 px-4 font-bold text-slate-800 flex items-center gap-2">
+        <span class="text-base">${mat.icono || '📦'}</span>
+        <div>
+          <div>${mat.nombre}</div>
+          <span class="text-[10px] text-slate-400 font-normal uppercase">${mat.categoria || 'General'}</span>
+        </div>
+      </td>
+      <td class="py-3 px-3 text-slate-500">${mat.unidad}</td>
+      <td class="py-3 px-3 text-right font-semibold text-slate-700">${formatNumber(suministrado)}</td>
+      <td class="py-3 px-3 text-right font-black text-telmex">${formatNumber(consumido)}</td>
+      <td class="py-3 px-3 text-right font-black ${queda < 0 ? 'text-rose-700 bg-rose-50/50' : 'text-emerald-700 bg-emerald-50/40'}">${formatNumber(quedaVisual)}</td>
+      <td class="py-3 px-3 text-right text-slate-500">${formatNumber(requeridoMeta)}</td>
+      <td class="py-3 px-3 text-right font-black text-rose-700 bg-rose-50/40">${formatNumber(falta)}</td>
+      <td class="py-3 px-4 text-center">${statusBadge}</td>
+    `;
+    if (tbody) tbody.appendChild(row);
+
+    // Datos para gráfica
+    if (suministrado > 0 || consumido > 0) {
+      chartLabels.push(mat.nombre.length > 18 ? mat.nombre.substring(0, 16) + '...' : mat.nombre);
+      chartConsumidoData.push(Math.round(consumido));
+      chartStockQuedaData.push(Math.round(quedaVisual));
+    }
+
+    if (isCritical && alertList) {
+      const alertItem = document.createElement("div");
+      alertItem.className = "p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs flex items-start gap-2.5";
+      alertItem.innerHTML = `
+        <span class="text-lg">⚠️</span>
+        <div>
+          <strong class="font-bold text-rose-900">${mat.nombre} (${selectedArea || 'Consolidado'}):</strong>
+          <p class="text-rose-800 mt-0.5">Se han instalado <strong>${formatNumber(consumido)} viniles</strong> en campo, pero en almacén ${suministrado === 0 ? 'no se tiene registro de remisión' : `solo se recibieron ${formatNumber(suministrado)}`}.</p>
+        </div>
+      `;
+      alertList.appendChild(alertItem);
+    }
+  });
+
+  if (criticalCount === 0 && alertList) {
+    alertList.innerHTML = `
+      <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-xs text-emerald-800 flex items-center gap-2">
+        <span>✅</span>
+        <span>${selectedArea ? `La plaza ${selectedArea} cuenta con balance positivo de inventario.` : 'Todas las plazas cuentan con inventario suficiente para su ritmo actual.'}</span>
+      </div>
+    `;
+  }
+
+  // Actualizar KPI Card de Materiales
+  const matStatusEl = document.getElementById("kpiMaterialStatus");
+  const matCriticalCountEl = document.getElementById("kpiCriticalMaterialsCount");
+  if (matStatusEl && matCriticalCountEl) {
+    if (criticalCount > 0) {
+      matStatusEl.innerText = `🔴 ${criticalCount} en Déficit`;
+      matStatusEl.className = "text-lg font-black text-rose-600 mt-0.5";
+    } else {
+      matStatusEl.innerText = `🟢 Abastecido`;
+      matStatusEl.className = "text-lg font-black text-emerald-600 mt-0.5";
+    }
+    matCriticalCountEl.innerText = `${criticalCount} ítems con alerta`;
+  }
+
+  // Gráfica
+  renderChartMaterials(chartLabels, chartConsumidoData, chartStockQuedaData);
+
+  // Renderizar Matriz Comparativa por Área
+  renderMaterialsAreaMatrix();
+
+  // Renderizar Bitácora filtrada
+  renderMaterialsLogTable(selectedArea);
+}
+
+// Matriz Comparativa de Materiales por Plaza Operativa
+function renderMaterialsAreaMatrix() {
+  const tbody = document.getElementById("materialsAreaMatrixTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  const areaSet = new Set();
+  (state.materialsLog || []).forEach(m => {
+    if (m.area) areaSet.add(m.area.toUpperCase().trim());
+  });
+  (state.records || []).forEach(r => {
+    if (r.area_trabajo) areaSet.add(r.area_trabajo.toUpperCase().trim());
+  });
+
+  const selectedArea = state.selectedMaterialArea || "";
+  const allAreas = Array.from(areaSet).sort();
+  const areas = selectedArea ? allAreas.filter(a => a === selectedArea) : allAreas;
+  if (areas.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-slate-400 italic">No hay registros de materiales ni trabajos para esta plaza aún.</td></tr>`;
+    return;
+  }
+
+  // Suministros por Área y Material
+  const sumByAreaMat = {};
+  (state.materialsLog || []).forEach(m => {
+    const area = (m.area || "GENERAL").toUpperCase().trim();
+    const matId = mapMaterialDescToId(m.descripcion);
+    const qty = parseFloat(m.cantidad) || 0;
+    if (!sumByAreaMat[area]) sumByAreaMat[area] = {};
+    sumByAreaMat[area][matId] = (sumByAreaMat[area][matId] || 0) + qty;
+  });
+
+  // Consumo por Área y Material
+  const conByAreaMat = {};
+  (state.records || []).forEach(r => {
+    const area = (r.area_trabajo || "GENERAL").toUpperCase().trim();
+    const matId = mapRecordToMaterialId(r);
+    const viniles = getRecordVinilCount(r);
+    if (!conByAreaMat[area]) conByAreaMat[area] = {};
+    conByAreaMat[area][matId] = (conByAreaMat[area][matId] || 0) + viniles;
+  });
+
+  areas.forEach(area => {
+    const metas = getAreaMetas(area);
+    const cajasMeta = metas.cajas || 0;
+    const casetasMeta = metas.casetas || 0;
+
+    const activeMatIds = new Set();
+    if (sumByAreaMat[area]) {
+      Object.keys(sumByAreaMat[area]).forEach(id => activeMatIds.add(id));
+    }
+    if (conByAreaMat[area]) {
+      Object.keys(conByAreaMat[area]).forEach(id => activeMatIds.add(id));
+    }
+
+    if (activeMatIds.size === 0) return;
+
+    activeMatIds.forEach(matId => {
+      if (EXCLUDED_MATERIALS.includes(matId)) return;
+      const lowerMat = (matId || "").toLowerCase();
+      if (lowerMat.includes("esmalte") || lowerMat.includes("thinner") || lowerMat.includes("sellador") || lowerMat.includes("solvente") || lowerMat.includes("pintura")) return;
+
+      const mat = state.config.materiales.find(m => m.id === matId) || {
+        id: matId,
+        nombre: matId.replace(/_/g, " ").toUpperCase(),
+        unidad: "Pzas",
+        consumo_por_caja: 0.1,
+        consumo_por_caseta: 1.0,
+        icono: "🏷️"
+      };
+
+      const suministrado = (sumByAreaMat[area] && sumByAreaMat[area][matId]) || 0;
+      const consumido = (conByAreaMat[area] && conByAreaMat[area][matId]) || 0;
+      const queda = suministrado - consumido;
+      const quedaVisual = Math.max(0, queda);
+      const metaReq = Math.round((cajasMeta * (mat.consumo_por_caja || 0)) + (casetasMeta * (mat.consumo_por_caseta || 0)));
+      const falta = Math.max(0, metaReq - suministrado);
+
+      let statusBadge = "";
+      if (suministrado === 0 && consumido > 0) {
+        statusBadge = `<span class="badge badge-danger">🔴 Sin Suministro (-${consumido})</span>`;
+      } else if (queda < 0) {
+        statusBadge = `<span class="badge badge-danger">🔴 Déficit (${queda})</span>`;
+      } else if (suministrado > 0 && queda <= 20) {
+        statusBadge = `<span class="badge badge-warning">🟡 Stock Bajo (${queda})</span>`;
+      } else {
+        statusBadge = `<span class="badge badge-success">🟢 Sobran ${formatNumber(queda)}</span>`;
+      }
+
+      const row = document.createElement("tr");
+      row.className = "hover:bg-slate-50 transition border-b border-slate-100";
+      row.innerHTML = `
+        <td class="py-2.5 px-4 font-bold text-slate-800">
+          <span class="inline-block px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-mono text-[11px]">${area}</span>
+        </td>
+        <td class="py-2.5 px-3 font-semibold text-slate-700 flex items-center gap-1.5">
+          <span>${mat.icono || '🏷️'}</span>
+          <span>${mat.nombre}</span>
+        </td>
+        <td class="py-2.5 px-3 text-right font-semibold text-slate-800">${formatNumber(suministrado)}</td>
+        <td class="py-2.5 px-3 text-right font-black text-telmex">${formatNumber(consumido)}</td>
+        <td class="py-2.5 px-3 text-right font-black ${queda < 0 ? 'text-rose-700 bg-rose-50/50' : 'text-emerald-700 bg-emerald-50/50'}">${formatNumber(quedaVisual)}</td>
+        <td class="py-2.5 px-3 text-right text-slate-500">${formatNumber(metaReq)}</td>
+        <td class="py-2.5 px-3 text-right font-black text-rose-700 bg-rose-50/50">${formatNumber(falta)}</td>
+        <td class="py-2.5 px-4 text-center">${statusBadge}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  });
+}
+
+function renderMaterialsLogTable(filterArea = "") {
+  const tbody = document.getElementById("materialsLogTableBody");
+  const countEl = document.getElementById("materialsLogCount");
+  if (!tbody) return;
+
+  tbody.innerHTML = "";
+  let log = state.materialsLog || [];
+  if (filterArea) {
+    log = log.filter(m => (m.area || "").toUpperCase().trim() === filterArea.toUpperCase().trim());
+  }
+
+  if (countEl) {
+    countEl.innerText = filterArea 
+      ? `${log.length} entregas en ${filterArea}` 
+      : `${log.length} entregas registradas`;
+  }
+
+  if (log.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="py-6 text-center text-slate-400 italic">
+          No hay registros de suministros ${filterArea ? `para la plaza ${filterArea}` : ''}.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  log.forEach(item => {
+    const row = document.createElement("tr");
+    row.className = "hover:bg-slate-50 transition border-b border-slate-100";
+    const fotoHtml = item.foto 
+      ? `<a href="${item.foto}" target="_blank" class="inline-flex items-center gap-1 text-telmex hover:text-telmex-dark font-bold underline"><span>📷</span> Ver Foto</a>`
+      : `<span class="text-slate-400">Sin foto</span>`;
+
+    row.innerHTML = `
+      <td class="py-2.5 px-4 font-mono text-slate-600">${item.fecha || "S/F"}</td>
+      <td class="py-2.5 px-3 font-bold text-slate-800">${item.area || "GENERAL"}</td>
+      <td class="py-2.5 px-3 text-slate-700 font-semibold">${item.descripcion}</td>
+      <td class="py-2.5 px-3 text-right font-black text-emerald-700">${formatNumber(item.cantidad)}</td>
+      <td class="py-2.5 px-3 text-slate-500">${item.unidad || "Pzas"}</td>
+      <td class="py-2.5 px-4 text-center">${fotoHtml}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function renderChartMaterials(labels, consumido, queda) {
+  const ctx = document.getElementById("chartMaterials");
+  if (!ctx) return;
+
+  if (state.charts.materials) {
+    state.charts.materials.destroy();
+  }
+
+  state.charts.materials = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Consumido (Real)',
+          data: consumido,
+          backgroundColor: '#0055a5',
+          borderRadius: 4
+        },
+        {
+          label: 'Stock Remanente (Queda)',
+          data: queda,
+          backgroundColor: '#10b981',
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: ${ctx.raw.toLocaleString()}`
+          }
+        }
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, beginAtZero: true }
+      }
+    }
+  });
+}
+
+// =========================================================
+// PESTAÑA 2: AVANCE POR ÁREAS Y ESTADOS
+// =========================================================
+function renderAreasTab() {
+  const filtered = state.filteredRecords;
+  const tbody = document.getElementById("areasTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  // 1. Construir catálogo base de áreas y metas
+  const areaList = [];
+  const areaIndexMap = {}; // Acceso O(1) por clave normalizada
+
+  if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
+    Object.keys(CATALOGO_METAS.estados).forEach(est => {
+      Object.keys(CATALOGO_METAS.estados[est]).forEach(ar => {
+        const metaData = CATALOGO_METAS.estados[est][ar];
+        const entry = {
+          estado: (est === ar) ? est : ar,
+          area: est,
+          estRaw: est,
+          arRaw: ar,
+          normEst: normalizeAreaKey(est),
+          normAr: normalizeAreaKey(ar),
+          metaCajas: metaData.cajas || 0,
+          metaCasetas: metaData.casetas || 0,
+          metaTotal: metaData.total || 0,
+          cajasDone: 0,
+          casetasDone: 0,
+          totalDone: 0
+        };
+        const idx = areaList.length;
+        areaList.push(entry);
+
+        if (entry.normEst && areaIndexMap[entry.normEst] === undefined) {
+          areaIndexMap[entry.normEst] = idx;
+        }
+        if (entry.normAr && areaIndexMap[entry.normAr] === undefined) {
+          areaIndexMap[entry.normAr] = idx;
+        }
+      });
     });
   }
+
+  // Mapa para filas de registros no encontrados en el catálogo
+  const unmappedRows = {};
+
+  // 2. Acumular registros filtrados hacia el área correspondiente
+  filtered.forEach(r => {
+    const rArea = r.area_trabajo || "";
+    const rEstado = r.estado || "";
+    const normA = normalizeAreaKey(rArea);
+    const normE = normalizeAreaKey(rEstado);
+
+    let targetIdx = -1;
+
+    // A) Búsqueda directa por área de trabajo (ej: TOLUCA, MORELOS, BALBUENA)
+    if (normA && areaIndexMap[normA] !== undefined) {
+      targetIdx = areaIndexMap[normA];
+    }
+    // B) Búsqueda directa por estado
+    else if (normE && areaIndexMap[normE] !== undefined) {
+      targetIdx = areaIndexMap[normE];
+    }
+    // C) Búsqueda por contención o subcadena
+    else if (normA || normE) {
+      for (let i = 0; i < areaList.length; i++) {
+        const item = areaList[i];
+        if (normA && (item.normEst.includes(normA) || normA.includes(item.normEst))) {
+          targetIdx = i;
+          break;
+        }
+        if (normA && (item.normAr.includes(normA) || normA.includes(item.normAr))) {
+          targetIdx = i;
+          break;
+        }
+        if (normE && (item.normEst.includes(normE) || item.normAr.includes(normE))) {
+          targetIdx = i;
+          break;
+        }
+      }
+    }
+
+    const isCaseta = (r.tipo === 'CASETA');
+
+    if (targetIdx >= 0) {
+      const target = areaList[targetIdx];
+      if (isCaseta) {
+        target.casetasDone++;
+      } else {
+        target.cajasDone++;
+      }
+      target.totalDone++;
+    } else {
+      // Registrar fila no catalogada para asegurar que el 100% de los trabajos se refleje
+      const unmappedKey = `${rEstado || 'S/E'} - ${rArea || 'S/A'}`;
+      if (!unmappedRows[unmappedKey]) {
+        unmappedRows[unmappedKey] = {
+          estado: rEstado || 'S/E',
+          area: rArea || 'S/A',
+          metaCajas: 0,
+          metaCasetas: 0,
+          metaTotal: 0,
+          cajasDone: 0,
+          casetasDone: 0,
+          totalDone: 0
+        };
+      }
+      if (isCaseta) {
+        unmappedRows[unmappedKey].casetasDone++;
+      } else {
+        unmappedRows[unmappedKey].cajasDone++;
+      }
+      unmappedRows[unmappedKey].totalDone++;
+    }
+  });
+
+  // 3. Consolidar todas las filas y calcular porcentajes
+  const areaRows = areaList.map(item => {
+    const percent = item.metaTotal > 0 ? ((item.totalDone / item.metaTotal) * 100) : 0;
+    return {
+      estado: item.estado,
+      area: item.area,
+      metaCajas: item.metaCajas,
+      cajasDone: item.cajasDone,
+      metaCasetas: item.metaCasetas,
+      casetasDone: item.casetasDone,
+      metaTotal: item.metaTotal,
+      totalDone: item.totalDone,
+      percent: percent
+    };
+  });
+
+  Object.values(unmappedRows).forEach(u => {
+    const percent = u.metaTotal > 0 ? ((u.totalDone / u.metaTotal) * 100) : (u.totalDone > 0 ? 100 : 0);
+    areaRows.push({
+      ...u,
+      percent: percent
+    });
+  });
+
+  // 4. Ordenar: primero áreas con trabajos intervenidos descendente; si empatan en 0, por meta descendente
+  areaRows.sort((a, b) => {
+    if (b.totalDone !== a.totalDone) {
+      return b.totalDone - a.totalDone;
+    }
+    return b.metaTotal - a.metaTotal;
+  });
+
+  // 5. Renderizar filas en la tabla
+  areaRows.forEach(item => {
+    const pFormatted = item.percent.toFixed(1);
+    let pBadgeClass = 'badge-danger';
+    if (item.percent >= 50) pBadgeClass = 'badge-success';
+    else if (item.percent >= 15) pBadgeClass = 'badge-warning';
+
+    const tr = document.createElement("tr");
+    tr.className = "hover:bg-slate-50 transition border-b border-slate-100 area-table-row";
+    tr.dataset.text = `${item.estado} ${item.area} ${item.area === 'TOLUCA' ? 'mexico edomex' : ''}`.toLowerCase();
+    tr.innerHTML = `
+      <td class="py-2.5 px-4 font-bold text-slate-800">${item.estado}</td>
+      <td class="py-2.5 px-3 font-semibold text-slate-700">${item.area}</td>
+      <td class="py-2.5 px-3 text-right text-slate-500">${item.metaCajas.toLocaleString()}</td>
+      <td class="py-2.5 px-3 text-right font-black text-cyan-600">${item.cajasDone.toLocaleString()}</td>
+      <td class="py-2.5 px-3 text-right text-slate-500">${item.metaCasetas.toLocaleString()}</td>
+      <td class="py-2.5 px-3 text-right font-black text-indigo-600">${item.casetasDone.toLocaleString()}</td>
+      <td class="py-2.5 px-3 text-right font-bold text-slate-800">${item.metaTotal.toLocaleString()}</td>
+      <td class="py-2.5 px-3 text-right font-black text-telmex text-sm">${item.totalDone.toLocaleString()}</td>
+      <td class="py-2.5 px-4 text-center">
+        <span class="badge ${pBadgeClass}">${pFormatted}%</span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // 6. Top 10 áreas para la gráfica
+  const top10 = areaRows.slice(0, 10);
+  renderChartAreas(top10);
 }
 
+function filterAreaTable() {
+  const query = document.getElementById("searchAreaTableInput").value.trim().toLowerCase();
+  document.querySelectorAll(".area-table-row").forEach(row => {
+    const txt = row.dataset.text || '';
+    row.style.display = txt.includes(query) ? "" : "none";
+  });
+}
 
+function renderChartAreas(topAreas) {
+  const ctx = document.getElementById("chartAreas");
+  if (!ctx) return;
 
-function confirmManualAssetSelection() {
-
-  const idInput = document.getElementById("manualAssetIdInput");
-
-  const rawId = (idInput?.value || "").trim().toUpperCase();
-
-
-
-  if (!rawId || rawId === "S/N" || rawId === "N/A") {
-
-    showCustomAlert("⚠️ <strong>Identificador Obligatorio:</strong><br><br>Por favor ingresa un identificador válido para la " + (manualSelectedType === "CASETA" ? "caseta (10 dígitos)" : "caja (7 caracteres alfanuméricos)") + ".", "Dato Requerido");
-
-    if (idInput) {
-
-      idInput.style.border = "2px solid #ef4444";
-
-      idInput.focus();
-
-    }
-
-    return;
-
+  if (state.charts.areas) {
+    state.charts.areas.destroy();
   }
 
+  const labels = topAreas.map(a => `${a.area} (${a.estado.substring(0,3)})`);
+  const doneData = topAreas.map(a => a.totalDone);
+  const metaData = topAreas.map(a => a.metaTotal);
 
-
-  // Restricción de Distritos No Permitidos
-  if (isRestrictedDistrict(rawId)) {
-    showCustomAlert(
-      `🚫 <strong>Distrito Restringido:</strong><br><br>` +
-      `El distrito <strong>${rawId}</strong> está restringido por normatividad y supervisión de Telmex.<br><br>` +
-      `No está permitido crear, dar de alta ni registrar evidencias en este distrito.`,
-      "Distrito No Permitido"
-    );
-    if (idInput) {
-      idInput.style.border = "2px solid #ef4444";
-      idInput.value = "";
-      idInput.focus();
-    }
-    return;
-  }
-
-  // Validación de Duplicado en Base Linkaform
-
-  const allCompletedAssetIds = getCompletedAssetIdsSet();
-
-  if (allCompletedAssetIds.has(rawId)) {
-
-    showCustomAlert(
-
-      `⚠️ <strong>Activo Ya Completado Previamente:</strong><br><br>` +
-
-      `El identificador <strong>${rawId}</strong> ya fue registrado y validado en Linkaform por otra cuadrilla.<br><br>` +
-
-      `No es necesario volver a capturarlo.`,
-
-      "Activo Ya Completado"
-
-    );
-
-    if (idInput) {
-
-      idInput.style.border = "2px solid #ef4444";
-
-      idInput.focus();
-
-    }
-
-    return;
-
-  }
-
-
-
-  // Validación estricta V8 de formato por tipo
-
-  if (manualSelectedType === "CASETA") {
-
-    if (!/^\d{10}$/.test(rawId)) {
-
-      showCustomAlert(`⚠️ <strong>Teléfono de Caseta Inválido:</strong><br><br>Para <strong>Caseta</strong>, el identificador debe contener exactamente <strong>10 dígitos numéricos</strong> (ejemplo: 9848033711).<br><br>Has ingresado: "<strong>${rawId}</strong>" (${rawId.length} caracteres).`, "Formato Inválido");
-
-      if (idInput) {
-
-        idInput.style.border = "2px solid #ef4444";
-
-        idInput.focus();
-
+  state.charts.areas = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Intervenidos',
+          data: doneData,
+          backgroundColor: '#0055a5',
+          borderRadius: 4
+        },
+        {
+          label: 'Meta Total',
+          data: metaData,
+          backgroundColor: '#cbd5e1',
+          borderRadius: 4
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: { beginAtZero: true }
       }
+    }
+  });
+}
 
-      return;
+// =========================================================
+// PESTAÑA 3: AVANCE POR FECHAS & TENDENCIAS
+// =========================================================
+function renderFechasTab() {
+  const filtered = state.filteredRecords;
 
+  // Agrupar por fecha
+  const datesMap = {};
+  filtered.forEach(r => {
+    if (!r.fecha) return;
+    if (!datesMap[r.fecha]) {
+      datesMap[r.fecha] = { cajas: 0, casetas: 0, total: 0 };
+    }
+    if (r.tipo === 'CASETA') datesMap[r.fecha].casetas++;
+    else datesMap[r.fecha].cajas++;
+    datesMap[r.fecha].total++;
+  });
+
+  const sortedDates = Object.keys(datesMap).sort();
+  const cajasData = [];
+  const casetasData = [];
+  const acumuladoData = [];
+  let runningSum = 0;
+
+  sortedDates.forEach(d => {
+    const count = datesMap[d].total;
+    runningSum += count;
+    cajasData.push(datesMap[d].cajas);
+    casetasData.push(datesMap[d].casetas);
+    acumuladoData.push(runningSum);
+  });
+
+  // Renderizar Gráfica de Tendencia
+  renderChartTrend(sortedDates, cajasData, casetasData, acumuladoData);
+
+  // Doughnut de Proporción Cajas vs Casetas
+  const totalCajas = filtered.filter(r => r.tipo === 'CAJA').length;
+  const totalCasetas = filtered.filter(r => r.tipo === 'CASETA').length;
+  renderChartDoughnut(totalCajas, totalCasetas);
+
+  // Promedio Diario
+  const activeDays = Math.max(1, sortedDates.length);
+  const avgPace = Math.round(filtered.length / activeDays);
+  
+  const avgLabel = document.getElementById("avgTrendLabel");
+  if (avgLabel) avgLabel.innerText = `${avgPace} activos/día`;
+}
+
+function renderChartTrend(dates, cajas, casetas, acumulado) {
+  const ctx = document.getElementById("chartTrend");
+  if (!ctx) return;
+
+  if (state.charts.trend) {
+    state.charts.trend.destroy();
+  }
+
+  state.charts.trend = new Chart(ctx, {
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          type: 'line',
+          label: 'Avance Acumulado',
+          data: acumulado,
+          borderColor: '#0284c7',
+          backgroundColor: 'rgba(2, 132, 199, 0.1)',
+          fill: true,
+          tension: 0.3,
+          yAxisID: 'y1'
+        },
+        {
+          type: 'bar',
+          label: 'Cajas por Día',
+          data: cajas,
+          backgroundColor: '#06b6d4',
+          borderRadius: 3,
+          yAxisID: 'y'
+        },
+        {
+          type: 'bar',
+          label: 'Casetas por Día',
+          data: casetas,
+          backgroundColor: '#6366f1',
+          borderRadius: 3,
+          yAxisID: 'y'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { boxWidth: 12, font: { size: 11 } } }
+      },
+      scales: {
+        x: { grid: { display: false } },
+        y: {
+          position: 'left',
+          beginAtZero: true,
+          title: { display: true, text: 'Registros Diarios' }
+        },
+        y1: {
+          position: 'right',
+          beginAtZero: true,
+          grid: { drawOnChartArea: false },
+          title: { display: true, text: 'Acumulado' }
+        }
+      }
+    }
+  });
+}
+
+function renderChartDoughnut(cajas, casetas) {
+  const ctx = document.getElementById("chartTypesDoughnut");
+  if (!ctx) return;
+
+  document.getElementById("donutCajasCount").innerText = cajas.toLocaleString();
+  document.getElementById("donutCasetasCount").innerText = casetas.toLocaleString();
+
+  if (state.charts.doughnut) {
+    state.charts.doughnut.destroy();
+  }
+
+  state.charts.doughnut = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Cajas', 'Casetas'],
+      datasets: [{
+        data: [cajas, casetas],
+        backgroundColor: ['#06b6d4', '#6366f1'],
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      cutout: '65%'
+    }
+  });
+}
+
+// =========================================================
+// PESTAÑA 4: DETALLE DE REGISTROS (TABLA CON PAGINACIÓN)
+// =========================================================
+function renderRecordsTable() {
+  const filtered = state.filteredRecords;
+  const tbody = document.getElementById("recordsTableBody");
+  tbody.innerHTML = "";
+
+  document.getElementById("filteredRecordsBadge").innerText = `${filtered.length.toLocaleString()} registros`;
+
+  const total = filtered.length;
+  const totalPages = Math.ceil(total / state.pageSize) || 1;
+  if (state.currentPage > totalPages) state.currentPage = totalPages;
+
+  const start = (state.currentPage - 1) * state.pageSize;
+  const end = Math.min(start + state.pageSize, total);
+  const pageItems = filtered.slice(start, end);
+
+  document.getElementById("recordsPaginationInfo").innerText = `Mostrando ${total > 0 ? (start + 1) : 0} - ${end} de ${total.toLocaleString()}`;
+  document.getElementById("btnPrevPage").disabled = (state.currentPage <= 1);
+  document.getElementById("btnNextPage").disabled = (state.currentPage >= totalPages);
+
+  pageItems.forEach(r => {
+    const isCaseta = (r.tipo === 'CASETA');
+    const badgeColor = isCaseta ? 'bg-indigo-50 text-indigo-700' : 'bg-cyan-50 text-cyan-700';
+
+    const tr = document.createElement("tr");
+    tr.className = "hover:bg-slate-50 transition border-b border-slate-100 record-row";
+    tr.innerHTML = `
+      <td class="py-2.5 px-4 font-bold text-slate-800 font-mono text-[11px]">${r.folio || 'N/A'}</td>
+      <td class="py-2.5 px-3 text-slate-600">${r.fecha || 'N/A'} <span class="text-[10px] text-slate-400 font-mono">${r.hora || ''}</span> ${r.fecha_captura && r.fecha_captura !== r.fecha ? `<span class="ml-1 text-[9px] bg-sky-100 text-sky-800 font-bold px-1.5 py-0.5 rounded" title="Captura: ${r.fecha_captura} ${r.hora} (después de las 10 PM) -> Contabilizado en ciclo ${r.fecha}">Corte +1</span>` : ''}</td>
+      <td class="py-2.5 px-3">
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeColor}">
+          ${isCaseta ? '📞 CASETA' : '📦 CAJA'}
+        </span>
+      </td>
+      <td class="py-2.5 px-3 font-bold text-telmex font-mono">${r.identificador || 'S/ID'}</td>
+      <td class="py-2.5 px-3 text-slate-700 font-medium">${r.modelo || 'Sencilla'}</td>
+      <td class="py-2.5 px-3 text-slate-600">${r.estado || 'N/A'}</td>
+      <td class="py-2.5 px-3 text-slate-600">${r.area_trabajo || 'N/A'}</td>
+      <td class="py-2.5 px-3 text-slate-700">${r.contratista || 'Sin Contratista'}</td>
+      <td class="py-2.5 px-3 text-slate-700 font-medium">${r.tecnico || 'N/A'}</td>
+      <td class="py-2.5 px-4 text-center">
+        <span class="badge badge-success">✓ ${r.estatus || 'Aprobada'}</span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function changeRecordsPage(delta) {
+  state.currentPage += delta;
+  renderRecordsTable();
+}
+
+function filterRecordsTable() {
+  const queryEl = document.getElementById("searchRecordsInput");
+  const query = queryEl ? queryEl.value.trim().toLowerCase() : "";
+  const tecEl = document.getElementById("filterRecordsTecnico");
+  const selectedTecnico = tecEl ? tecEl.value.trim().toLowerCase() : "";
+
+  // Base filtrada según filtros globales de área, fechas y tipo
+  const arEl = document.getElementById("filterArea");
+  const arVal = arEl ? arEl.value.trim().toUpperCase() : "";
+  const tipoEl = document.getElementById("filterTipo");
+  const tipoVal = tipoEl ? tipoEl.value.trim().toUpperCase() : "";
+  const presetEl = document.getElementById("filterPresetDate");
+  const presetVal = presetEl ? presetEl.value : "all";
+
+  let minDate = null;
+  let maxDate = null;
+  const today = new Date();
+  if (presetVal === "today") {
+    minDate = getLocalDateStr(today);
+    maxDate = minDate;
+  } else if (presetVal === "7days") {
+    const d = new Date(today);
+    d.setDate(d.getDate() - 7);
+    minDate = getLocalDateStr(d);
+    maxDate = getLocalDateStr(today);
+  } else if (presetVal === "30days") {
+    const d = new Date(today);
+    d.setDate(d.getDate() - 30);
+    minDate = getLocalDateStr(d);
+    maxDate = getLocalDateStr(today);
+  } else if (presetVal === "custom") {
+    minDate = document.getElementById("customDateFrom") ? document.getElementById("customDateFrom").value || null : null;
+    maxDate = document.getElementById("customDateTo") ? document.getElementById("customDateTo").value || null : null;
+  }
+
+  const cutoffInfo = getCutoffInfo();
+  if (presetVal === "today") {
+    minDate = cutoffInfo.activeReportingDate;
+    maxDate = minDate;
+  }
+
+  state.filteredRecords = (state.records || []).filter(r => {
+    if (arVal && !recordMatchesArea(r, arVal)) return false;
+    if (tipoVal && r.tipo && r.tipo.toUpperCase() !== tipoVal) return false;
+    if (cutoffInfo.isFrozen && isRecordAfterCutoff(r, cutoffInfo)) return false;
+    if (minDate && r.fecha && r.fecha < minDate) return false;
+    if (maxDate && r.fecha && r.fecha > maxDate) return false;
+
+    // Filtro específico por Técnico
+    if (selectedTecnico) {
+      const rTec = (r.tecnico || "").trim().toLowerCase();
+      if (rTec !== selectedTecnico) return false;
     }
 
+    // Filtro por búsqueda de texto
+    if (query) {
+      const match = (r.folio && r.folio.toLowerCase().includes(query)) ||
+                    (r.identificador && r.identificador.toLowerCase().includes(query)) ||
+                    (r.area_trabajo && r.area_trabajo.toLowerCase().includes(query)) ||
+                    (r.contratista && r.contratista.toLowerCase().includes(query)) ||
+                    (r.tecnico && r.tecnico.toLowerCase().includes(query));
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  state.currentPage = 1;
+  renderRecordsTable();
+}
+
+function populateTecnicosFilter() {
+  const tecnicoSelect = document.getElementById("filterRecordsTecnico");
+  if (!tecnicoSelect) return;
+  const currentVal = tecnicoSelect.value;
+  tecnicoSelect.innerHTML = `<option value="">-- Todos los Técnicos --</option>`;
+
+  const arEl = document.getElementById("filterArea");
+  const arVal = arEl ? arEl.value.trim().toUpperCase() : "";
+
+  // Extraer técnicos disponibles (respetando área si está seleccionada)
+  const pool = (arVal && typeof recordMatchesArea === "function")
+    ? (state.records || []).filter(r => recordMatchesArea(r, arVal))
+    : (state.records || []);
+
+  const tecnicos = Array.from(new Set(pool.map(r => (r.tecnico || "").trim()).filter(t => t && t !== "Sin Técnico" && t !== "N/A"))).sort();
+  tecnicos.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.innerText = t;
+    tecnicoSelect.appendChild(opt);
+  });
+  if (currentVal && tecnicos.includes(currentVal)) {
+    tecnicoSelect.value = currentVal;
+  }
+}
+
+// =========================================================
+// CAMBIO DE PESTAÑAS (TABS)
+// =========================================================
+function switchTab(tabId) {
+  if (tabId === "tab-gerencial") {
+    const isAuth = sessionStorage.getItem("GERENCIAL_AUTH_OK") === "true";
+    if (!isAuth) {
+      openGerencialNipModal();
+      return;
+    }
+  }
+
+  document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
+
+  const targetContent = document.getElementById(tabId);
+  if (targetContent) targetContent.classList.remove("hidden");
+
+  // Activar botón
+  const btns = Array.from(document.querySelectorAll(".tab-btn"));
+  const clickedBtn = btns.find(b => {
+    const onc = b.getAttribute("onclick") || "";
+    return onc.includes(tabId) || 
+           (tabId === "tab-gerencial" && (onc.includes("openGerencialModule") || onc.includes("tab-gerencial"))) ||
+           (tabId === "tab-pagos" && (onc.includes("openPagosModule") || onc.includes("tab-pagos")));
+  });
+  if (clickedBtn) clickedBtn.classList.add("active");
+
+  // Redimensionar gráficas de Chart.js al cambiar de pestaña
+  setTimeout(() => {
+    Object.values(state.charts).forEach(c => {
+      if (c && typeof c.resize === 'function') c.resize();
+    });
+  }, 100);
+}
+
+// =========================================================
+// MODAL: CONFIGURAR MATERIALES
+// =========================================================
+function openMaterialsModal() {
+  const modal = document.getElementById("materialsModal");
+  if (!modal) return;
+  renderMaterialsConfigTable();
+  modal.classList.remove("hidden");
+}
+
+function closeMaterialsModal() {
+  const modal = document.getElementById("materialsModal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function renderMaterialsConfigTable() {
+  const tbody = document.getElementById("materialsConfigTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+
+  state.config.materiales.forEach((mat, idx) => {
+    const tr = document.createElement("tr");
+    tr.className = "border-b border-slate-100 hover:bg-slate-50";
+    tr.innerHTML = `
+      <td class="py-2 px-3 font-bold text-slate-800 flex items-center gap-1.5">
+        <span>${mat.icono || '📦'}</span>
+        <span>${mat.nombre}</span>
+      </td>
+      <td class="py-2 px-2 text-slate-500 font-semibold">${mat.unidad}</td>
+      <td class="py-2 px-2 text-right">
+        <input type="number" step="any" id="mat_sum_${idx}" value="${mat.suministrado}" class="w-24 text-right border border-slate-300 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-telmex font-semibold">
+      </td>
+      <td class="py-2 px-2 text-right">
+        <input type="number" step="any" id="mat_caja_${idx}" value="${mat.consumo_por_caja}" class="w-20 text-right border border-slate-300 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-telmex">
+      </td>
+      <td class="py-2 px-2 text-right">
+        <input type="number" step="any" id="mat_caseta_${idx}" value="${mat.consumo_por_caseta}" class="w-20 text-right border border-slate-300 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-telmex">
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function saveMaterialsConfig() {
+  state.config.materiales.forEach((mat, idx) => {
+    const sumEl = document.getElementById(`mat_sum_${idx}`);
+    const cajaEl = document.getElementById(`mat_caja_${idx}`);
+    const casetaEl = document.getElementById(`mat_caseta_${idx}`);
+    
+    if (sumEl) mat.suministrado = Number(sumEl.value) || 0;
+    if (cajaEl) mat.consumo_por_caja = Number(cajaEl.value) || 0;
+    if (casetaEl) mat.consumo_por_caseta = Number(casetaEl.value) || 0;
+  });
+
+  localStorage.setItem("telmex_dashboard_config", JSON.stringify(state.config));
+  closeMaterialsModal();
+  applyFilters();
+  alert("✅ Configuración de materiales guardada correctamente.");
+}
+
+function resetDefaultMaterialsConfig() {
+  if (confirm("¿Deseas restaurar la receta y stock de materiales a los valores predeterminados?")) {
+    state.config = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+    localStorage.removeItem("telmex_dashboard_config");
+    renderMaterialsConfigTable();
+    applyFilters();
+  }
+}
+
+// =========================================================
+// SISTEMA DE NOTIFICACIONES TOAST (FEEDBACK VISUAL)
+// =========================================================
+let toastTimer = null;
+function showToast(message, type = "info", duration = 4500) {
+  const toast = document.getElementById("systemToast");
+  const msgEl = document.getElementById("systemToastMsg");
+  const iconEl = document.getElementById("systemToastIcon");
+  if (!toast || !msgEl) return;
+
+  if (toastTimer) clearTimeout(toastTimer);
+
+  msgEl.innerHTML = message;
+
+  // Clases base y estilos por tipo
+  toast.className = "fixed top-5 right-5 z-50 transform transition-all duration-300 max-w-md text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border pointer-events-auto ";
+  if (type === "success") {
+    toast.className += "bg-emerald-900/95 border-emerald-500 shadow-emerald-950/40";
+    if (iconEl) iconEl.innerText = "✅";
+  } else if (type === "error") {
+    toast.className += "bg-rose-900/95 border-rose-500 shadow-rose-950/40";
+    if (iconEl) iconEl.innerText = "⚠️";
+  } else if (type === "warning") {
+    toast.className += "bg-amber-900/95 border-amber-500 shadow-amber-950/40";
+    if (iconEl) iconEl.innerText = "⚡";
   } else {
-
-    // CAJA: distrito alfanumérico de 7 caracteres
-
-    if (!/^[A-Z0-9]{7}$/.test(rawId)) {
-
-      showCustomAlert(`⚠️ <strong>Distrito de Caja Inválido:</strong><br><br>Para <strong>Caja</strong>, el identificador debe ser un código de distrito alfanumérico de exactamente <strong>7 caracteres</strong> (ejemplo: ZIH0061 o IND0017).<br><br>Has ingresado: "<strong>${rawId}</strong>" (${rawId.length} caracteres).`, "Formato Inválido");
-
-      if (idInput) {
-
-        idInput.style.border = "2px solid #ef4444";
-
-        idInput.focus();
-
-      }
-
-      return;
-
-    }
-
+    toast.className += "bg-slate-900/95 border-slate-700 shadow-slate-950/40";
+    if (iconEl) iconEl.innerText = "🔄";
   }
 
-  if (idInput) idInput.style.border = "1px solid #cbd5e1";
+  // Animación de entrada
+  requestAnimationFrame(() => {
+    toast.classList.remove("opacity-0", "translate-y-[-12px]", "pointer-events-none");
+    toast.classList.add("opacity-100", "translate-y-0");
+  });
 
-
-
-  if (!manualSelectedModel) {
-
-    showCustomAlert("⚠️ <strong>Modelo Obligatorio:</strong><br><br>Por favor selecciona el modelo en el catálogo visual.", "Dato Requerido");
-
-    return;
-
+  if (duration > 0) {
+    toastTimer = setTimeout(() => {
+      toast.classList.remove("opacity-100", "translate-y-0");
+      toast.classList.add("opacity-0", "translate-y-[-12px]", "pointer-events-none");
+    }, duration);
   }
-
-
-
-  const estadoSelect = document.getElementById("manualEstadoSelect");
-
-  const areaSelect = document.getElementById("manualAreaSelect");
-
-  const calleInput = document.getElementById("manualCalleInput");
-
-
-
-  const estadoVal = (estadoSelect?.value || "").trim().toUpperCase();
-
-  if (!estadoVal || estadoVal === "DESCONOCIDO" || estadoVal === "GENERAL") {
-
-    showCustomAlert("⚠️ <strong>Estado de la República Obligatorio:</strong><br><br>Debes seleccionar el Estado de la República donde se ubica la estructura.", "Dato Requerido");
-
-    if (estadoSelect) {
-
-      estadoSelect.style.border = "2px solid #ef4444";
-
-      estadoSelect.focus();
-
-    }
-
-    return;
-
-  }
-
-  if (estadoSelect) estadoSelect.style.border = "1px solid #cbd5e1";
-
-
-
-  const areaVal = (areaSelect?.value || "").trim().toUpperCase();
-
-  if (!areaVal || areaVal === "CAMPO" || areaVal === "GENERAL" || areaVal === "DESCONOCIDO") {
-
-    showCustomAlert("⚠️ <strong>Área de Trabajo Obligatoria:</strong><br><br>Debes seleccionar el Área de Trabajo correspondiente a la estructura.", "Dato Requerido");
-
-    if (areaSelect) {
-
-      areaSelect.style.border = "2px solid #ef4444";
-
-      areaSelect.focus();
-
-    }
-
-    return;
-
-  }
-
-  if (["MONTERREY", "GUADALAJARA", "QUINTANA ROO"].includes(areaVal)) {
-
-    showCustomAlert(
-
-      `⚠️ <strong>Sub-Área Específica Requerida:</strong><br><br>` +
-
-      `No se permite enviar el área genérica <strong>"${areaVal}"</strong>.<br><br>` +
-
-      `Por favor selecciona la sub-área oficial correspondiente en el desplegable.`,
-
-      "Sub-Área Requerida"
-
-    );
-
-    if (areaSelect) {
-
-      areaSelect.style.border = "2px solid #ef4444";
-
-      areaSelect.focus();
-
-    }
-
-    return;
-
-  }
-
-  if (areaSelect) areaSelect.style.border = "1px solid #cbd5e1";
-
-
-
-  const calleVal = (calleInput?.value || "").trim();
-
-  if (!calleVal || calleVal.length < 3) {
-
-    showCustomAlert("⚠️ <strong>Calle / Referencia Obligatoria:</strong><br><br>Debes ingresar la calle, cruce o referencia física de la ubicación.", "Dato Requerido");
-
-    if (calleInput) {
-
-      calleInput.style.border = "2px solid #ef4444";
-
-      calleInput.focus();
-
-    }
-
-    return;
-
-  }
-
-  if (calleInput) calleInput.style.border = "1px solid #cbd5e1";
-
-
-
-  // Determinar coordenadas válidas (GPS en vivo o coordenadas oficiales del Área)
-
-  let latVal = (currentGpsCoords && currentGpsCoords.lat != null && currentGpsCoords.lat !== 0) ? currentGpsCoords.lat : null;
-
-  let lonVal = (currentGpsCoords && currentGpsCoords.lon != null && currentGpsCoords.lon !== 0) ? currentGpsCoords.lon : null;
-
-
-
-  if (latVal == null || lonVal == null) {
-
-    const areaCoords = AREA_COORDINATES_MAP[areaVal] || AREA_COORDINATES_MAP[estadoVal] || { lat: 19.4326, lon: -99.1332 };
-
-    latVal = areaCoords.lat;
-
-    lonVal = areaCoords.lon;
-
-  }
-
-
-
-  const proceso = document.querySelector('input[name="filterProceso"]:checked')?.value || "IMAGEN";
-
-  const uniqueId = generateUniqueId(manualSelectedType, areaVal);
-
-
-
-  selectedAsset = {
-
-    id: rawId,
-
-    tipo: manualSelectedType,
-
-    modelo_tipo: manualSelectedModel,
-
-    calle: calleVal,
-
-    colonia: areaVal,
-
-    municipio: areaVal,
-
-    estado: estadoVal,
-
-    area_trabajo: areaVal,
-
-    oferta_sugerida: "120 MB",
-
-    lat: latVal,
-
-    lon: lonVal,
-
-    is_manual: true,
-
-    is_fuera_catalogo: true,
-
-    existe_en_bd: "No",
-
-    unique_id: uniqueId
-
-  };
-
-
-
-  selectedModelFilter = manualSelectedModel;
-
-  modalSelectedModel = manualSelectedModel;
-
-  modalSelectedType = manualSelectedType;
-
-
-
-  // Actualizar alerta de activo seleccionado
-
-  document.getElementById("activeAssetAlert").style.display = "block";
-
-  document.getElementById("activeAssetTitle").innerText = `${uniqueId} (Ref: ${selectedAsset.id}) [${proceso}] (${selectedAsset.tipo} - ${manualSelectedModel} - NO EN BD) - ${areaVal}, ${estadoVal}`;
-
-
-
-  // Llenar campos del formulario
-
-  document.getElementById("formAssetId").value = `${uniqueId} (Ref: ${selectedAsset.id}) [NO EN BD]`;
-
-  document.getElementById("formAssetEstado").value = estadoVal;
-
-  document.getElementById("formAssetArea").value = areaVal;
-
-  const existeBdEl = document.getElementById("formAssetExisteBD");
-
-  if (existeBdEl) {
-
-    existeBdEl.value = "En BD: No";
-
-    existeBdEl.style.background = "#fffbeb";
-
-    existeBdEl.style.color = "#b45309";
-
-  }
-
-  document.getElementById("formAssetDetails").value = `Proceso: ${proceso} | Tipo: ${selectedAsset.tipo} | Modelo: ${manualSelectedModel} (No existe en BD)`;
-
-  const coordsStr = (latVal != null && lonVal != null) ? ` | Coords: ${latVal.toFixed(6)}, ${lonVal.toFixed(6)}` : '';
-
-  document.getElementById("formAssetInfo").value = `Calle: ${calleVal}${coordsStr}`;
-
-
-
-  document.getElementById("ofertaColocada").value = "200 MB";
-
-  const comSel2 = document.getElementById("comentarios");
-
-  if (comSel2) comSel2.value = "Sin comentarios";
-
-  const comMan2 = document.getElementById("comentariosManual");
-
-  if (comMan2) { comMan2.style.display = "none"; comMan2.value = ""; }
-
-
-
-  // Resetear radios de existencia en V8 para obligar a seleccionar Sí o No
-
-  document.querySelectorAll('input[name="existencia"]').forEach(r => r.checked = false);
-
-  const grpExist2 = document.getElementById("groupExistencia");
-
-  if (grpExist2) { grpExist2.style.border = "none"; grpExist2.style.padding = "0"; }
-
-
-
-  closeManualAssetModal();
-
-  switchView('form');
-
-
-
-  showCustomAlert(`✅ <strong>Registro Manual Fuera de BD Preparado:</strong><br><br><strong>Folio:</strong> ${uniqueId}<br><strong>ID / Ref:</strong> ${rawId}<br><strong>Tipo:</strong> ${manualSelectedType} (${manualSelectedModel})<br><strong>Estado:</strong> ${estadoVal}<br><strong>Área:</strong> ${areaVal}<br><strong>Calle:</strong> ${calleVal}<br><br>Por favor continúa con la <strong>Foto DESPUÉS</strong> y completa los campos obligatorios para guardar la evidencia localmente.`, "Registro Manual Preparado");
-
 }
 
+// =========================================================
+// SINCRONIZACIÓN LINKAFORM DIRECTA (SIN VENTANA DE VALIDACIÓN)
+// =========================================================
+function openSyncModal() {
+  triggerLinkaformSync();
+}
 
+function closeSyncModal() {
+  // Modal eliminado por directiva de privacidad y automatización
+}
 
-// ---------------------------------------------------------
+async function triggerLinkaformSync() {
+  const btn = document.getElementById("btnSyncLinkaform");
+  const syncIcon = document.getElementById("syncIcon");
+  const syncText = document.getElementById("syncText");
 
-// COMPRESIÓN Y MANEJO DE FOTOGRAFÍAS (SOLO FOTO DESPUÉS)
+  // Estado visual del botón durante la sincronización
+  if (btn) btn.disabled = true;
+  if (syncIcon) syncIcon.className = "inline-block animate-spin";
+  if (syncText) syncText.innerText = "Actualizando...";
 
-// ---------------------------------------------------------
+  showToast("🔄 Actualizando datos en vivo con Linkaform...", "info", 2000);
 
-function handlePhotoSelect(event, type) {
+  try {
+    // Paso 1: Si estamos en localhost y el bridge local está activo, intentar sincronización local (timeout 3s)
+    const isLocalhost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+    if (isLocalhost) {
+      try {
+        const localCtrl = new AbortController();
+        const localTimeout = setTimeout(() => localCtrl.abort(), 3000);
+        const localResp = await fetch("http://127.0.0.1:8765/sync", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          signal: localCtrl.signal
+        });
+        clearTimeout(localTimeout);
+        if (localResp.ok) {
+          const res = await localResp.json();
+          if (res.success && Array.isArray(res.records) && res.records.length > 0) {
+            state.records = res.records;
+          }
+        }
+      } catch (e) {
+        console.log("Bridge local no disponible, recargando directamente desde servidor web.");
+      }
+    }
 
-  const file = event.target.files[0];
+    // Paso 2: Recargar directamente el script de datos en vivo con cache-buster
+    await reloadLiveDataScript();
+    state.records = []; // Forzar refresco
+    checkAndMigrateLiveData();
+    loadRecords();
+    loadMaterialsLog();
+    recalculateSuministrosFromMaterialsLog();
+    
+    const nowStr = new Date().toLocaleString("es-MX");
+    safeSetStorage("telmex_dashboard_last_sync", nowStr);
+    populateAreaFilter();
+    populateContratistasFilter();
+  populateTecnicosFilter();
+    applyFilters();
+    renderMaterialsTab();
+    renderMaterialsLogTable();
+    updateSyncLabel();
 
+    const totalActual = (state.records && state.records.length) ? state.records.length : (state.totalRawRecordsCount || 0);
+    showToast(`✅ Dashboard actualizado exitosamente: ${totalActual} trabajos en vivo.`, "success", 4000);
+  } catch (err) {
+    console.error("Error al actualizar datos:", err);
+    showToast("⚠️ Datos actualizados desde caché en vivo.", "warning", 3000);
+  } finally {
+    // Garantizar SIEMPRE que el botón se desbloquea y el texto vuelve a la normalidad
+    if (btn) btn.disabled = false;
+    if (syncIcon) syncIcon.className = "inline-block";
+    if (syncText) syncText.innerText = "Sincronizar Linkaform";
+  }
+}
+
+function reloadLiveDataScript() {
+  return new Promise((resolve) => {
+    const existing = document.querySelector('script[src*="linkaform_live_data.js"]');
+    if (existing) existing.remove();
+    const s = document.createElement("script");
+    s.src = `data/linkaform_live_data.js?v=${Date.now()}`;
+    s.onload = () => resolve();
+    s.onerror = () => resolve();
+    document.body.appendChild(s);
+  });
+}
+
+// =========================================================
+// MODAL: IMPORTAR ARCHIVO (EXCEL / JSON)
+// =========================================================
+function openImportModal() {
+  document.getElementById("importModal").classList.remove("hidden");
+  document.getElementById("fileImportStatus").classList.add("hidden");
+}
+
+function closeImportModal() {
+  document.getElementById("importModal").classList.add("hidden");
+}
+
+function handleFileSelected(e) {
+  const file = e.target.files[0];
   if (!file) return;
 
-
+  const statusEl = document.getElementById("fileImportStatus");
+  statusEl.className = "mt-3 p-3 rounded-lg text-xs font-semibold bg-blue-100 text-blue-800 block";
+  statusEl.innerText = `Procesando archivo: ${file.name}...`;
 
   const reader = new FileReader();
 
-  reader.onload = (e) => {
-
-    const img = new Image();
-
-    img.onload = () => {
-
-      const canvas = document.createElement("canvas");
-
-      const MAX_WIDTH = 1080;
-
-      const MAX_HEIGHT = 1080;
-
-      let width = img.width;
-
-      let height = img.height;
-
-
-
-      if (width > height) {
-
-        if (width > MAX_WIDTH) {
-
-          height *= MAX_WIDTH / width;
-
-          width = MAX_WIDTH;
-
-        }
-
-      } else {
-
-        if (height > MAX_HEIGHT) {
-
-          width *= MAX_HEIGHT / height;
-
-          height = MAX_HEIGHT;
-
-        }
-
-      }
-
-
-
-      canvas.width = width;
-
-      canvas.height = height;
-
-      const ctx = canvas.getContext("2d");
-
-      ctx.drawImage(img, 0, 0, width, height);
-
-
-
-      const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.68);
-
-
-
-      photoDespuesBase64 = compressedDataUrl;
-
-      document.getElementById("previewDespues").src = compressedDataUrl;
-
-      document.getElementById("previewDespues").style.display = "block";
-
-      document.getElementById("iconDespues").style.display = "none";
-
-      document.getElementById("labelDespues").innerText = "✔ Foto DESPUÉS OK";
-
-    };
-
-    img.src = e.target.result;
-
-  };
-
-  reader.readAsDataURL(file);
-
-}
-
-
-
-// ---------------------------------------------------------
-
-// GUARDAR EVIDENCIA OFFLINE
-
-// ---------------------------------------------------------
-
-function saveEvidence(event) {
-
-  if (event && event.preventDefault) event.preventDefault();
-
-
-
-  // 1. Validar Contratista y Técnico (Obligatorios y sin valores inválidos)
-
-  const contra = (userContratista || "").trim();
-
-  const tec = (userTecnico || "").trim();
-
-  if (!contra || contra === "N/A" || contra === "OTRO" || contra === "undefined" || contra === "null" ||
-
-      !tec || tec === "N/A" || tec === "OTRO" || tec === "undefined" || tec === "null") {
-
-    showCustomAlert("⚠️ <strong>Datos de Técnico y Contratista Obligatorios:</strong><br><br>Debes configurar primero tu Contratista y tu Nombre de Técnico antes de poder guardar cualquier evidencia.", "Configuración Requerida", () => {
-
-      openUserSetupModal();
-
-    });
-
-    return false;
-
-  }
-
-
-
-  // 2. Validar Activo Seleccionado
-
-  if (!selectedAsset) {
-
-    showCustomAlert("⚠️ <strong>Activo no seleccionado:</strong><br><br>No hay ningún activo seleccionado. Por favor busca una caja o caseta o agrégala manualmente.", "Activo Requerido", () => {
-
-      switchView('search');
-
-    });
-
-    return false;
-
-  }
-
-
-
-  // 3. Validar Identificador / Teléfono del activo
-
-  const assetId = (selectedAsset.id || "").trim().toUpperCase();
-
-  if (!assetId || assetId === "S/N" || assetId === "N/A" || assetId.length < 2) {
-
-    showCustomAlert("⚠️ <strong>Identificador / Teléfono inválido:</strong><br><br>El activo seleccionado no cuenta con un número identificador o teléfono válido.", "Identificador Requerido");
-
-    return false;
-
-  }
-
-
-
-  // 3.0.0 Restricción de Distritos No Permitidos
-  if (isRestrictedDistrict(assetId)) {
-    showCustomAlert(
-      `🚫 <strong>Distrito Restringido:</strong><br><br>` +
-      `El distrito <strong>${assetId}</strong> se encuentra restringido por normativa y supervisión de Telmex.<br><br>` +
-      `No está permitido crear ni guardar evidencias para este distrito.`,
-      "Distrito No Permitido"
-    );
-    return false;
-  }
-
-  // 3.0 Validación estricta V8 si es activo manual
-
-  if (selectedAsset.is_manual) {
-
-    const tipoActivo = (selectedAsset.tipo || "").trim().toUpperCase();
-
-    if (tipoActivo === "CASETA" && !/^\d{10}$/.test(assetId)) {
-
-      showCustomAlert(`⚠️ <strong>Teléfono de Caseta Inválido:</strong><br><br>El teléfono de la caseta debe tener exactamente 10 dígitos numéricos (ejemplo: 9848033711).<br><br>Valor actual: "${assetId}"`, "Formato Inválido");
-
-      return false;
-
-    }
-
-    if (tipoActivo === "CAJA" && !/^[A-Z0-9]{7}$/.test(assetId)) {
-
-      showCustomAlert(`⚠️ <strong>Distrito de Caja Inválido:</strong><br><br>El distrito de la caja debe ser alfanumérico de 7 caracteres (ejemplo: ZIH0061 o IND0017).<br><br>Valor actual: "${assetId}"`, "Formato Inválido");
-
-      return false;
-
-    }
-
-  }
-
-
-
-  // 3.1 Prevenir Duplicados: Verificar si ya existe en el lote pendiente o ya fue completado
-
-  const alreadyInBatch = Array.isArray(dbEvidences) && dbEvidences.some(ev => String(ev.asset_id || "").trim().toUpperCase() === assetId);
-
-  if (alreadyInBatch) {
-
-    showCustomAlert(`⚠️ <strong>Activo Ya Registrado en tu Lote:</strong><br><br>El activo <strong>${assetId}</strong> ya se encuentra guardado en este teléfono en la lista de evidencias pendientes.<br><br>No es necesario capturarlo dos veces.`, "Activo Duplicado");
-
-    return false;
-
-  }
-
-
-
-  const alreadyCompleted = completedAssetIdsSet && completedAssetIdsSet.has(assetId);
-
-  if (alreadyCompleted) {
-
-    showCustomAlert(`⚠️ <strong>Activo Ya Completado Previamente:</strong><br><br>El activo <strong>${assetId}</strong> ya fue registrado y confirmado exitosamente con anterioridad.<br><br>Para evitar duplicar registros en Linkaform, no está permitido recapturarlo.`, "Activo Ya Completado");
-
-    return false;
-
-  }
-
-
-
-  // 4. Validar Tipo de Elemento (CAJA o CASETA)
-
-  const tipoElemento = (selectedAsset.tipo || "").trim().toUpperCase();
-
-  if (tipoElemento !== "CAJA" && tipoElemento !== "CASETA") {
-
-    showCustomAlert("⚠️ <strong>Tipo de Activo Inválido:</strong><br><br>El activo debe ser tipo CAJA o CASETA.", "Tipo Requerido");
-
-    return false;
-
-  }
-
-
-
-  // 5. Validar Modelo Seleccionado
-
-  const modelo = (selectedModelFilter || selectedAsset.modelo_tipo || "").trim();
-
-  if (!modelo) {
-
-    showCustomAlert("⚠️ <strong>Modelo no seleccionado:</strong><br><br>Debes seleccionar el modelo visual de la " + (tipoElemento === "CASETA" ? "Caseta" : "Caja") + " antes de guardar.", "Modelo Requerido");
-
-    return false;
-
-  }
-
-
-
-  // 6. Validar Estado de la República
-
-  const estadoVal = (selectedAsset.estado || document.getElementById("formAssetEstado")?.value || "").trim().toUpperCase();
-
-  if (!estadoVal || estadoVal === "GENERAL" || estadoVal === "DESCONOCIDO") {
-
-    showCustomAlert("⚠️ <strong>Estado de la República Obligatorio:</strong><br><br>El registro no tiene un Estado asignado. Por favor ingresa o selecciona un Estado válido.", "Estado Requerido");
-
-    return false;
-
-  }
-
-
-
-  // 7. Validar Área de Trabajo
-
-  const areaVal = (selectedAsset.area_trabajo || selectedAsset.municipio || document.getElementById("formAssetArea")?.value || "").trim().toUpperCase();
-
-  if (!areaVal || areaVal === "CAMPO" || areaVal === "GENERAL" || areaVal === "DESCONOCIDO") {
-
-    showCustomAlert("⚠️ <strong>Área de Trabajo Obligatoria:</strong><br><br>El registro no tiene un Área de Trabajo asignada. Por favor selecciona un Área válida.", "Área Requerida");
-
-    return false;
-
-  }
-
-  if (["MONTERREY", "GUADALAJARA", "QUINTANA ROO"].includes(areaVal)) {
-
-    showCustomAlert(
-
-      `⚠️ <strong>Sub-Área Específica Requerida:</strong><br><br>` +
-
-      `No está permitido enviar el área genérica <strong>"${areaVal}"</strong>.<br><br>` +
-
-      `Debes seleccionar la sub-área oficial correcta:<br>` +
-
-      (areaVal === "MONTERREY" ? `• <strong>MONTERREY 1, MONTERREY 2 o MONTERREY 3</strong>` :
-
-       areaVal === "GUADALAJARA" ? `• <strong>GUADALAJARA CENTRO, ORIENTE o PONIENTE</strong>` :
-
-       `• <strong>QUINTANA ROO NORTE o QUINTANA ROO SUR</strong>`),
-
-      "Sub-Área Requerida"
-
-    );
-
-    return false;
-
-  }
-
-
-
-  // 8. Validar Calle / Dirección
-
-  const calleVal = (selectedAsset.calle || "").trim();
-
-  if (!calleVal || (calleVal === "S/N" && selectedAsset.is_manual)) {
-
-    showCustomAlert("⚠️ <strong>Calle / Ubicación Obligatoria:</strong><br><br>Debes proporcionar la calle o referencia física de la ubicación del activo.", "Ubicación Requerida");
-
-    return false;
-
-  }
-
-
-
-  // 9. Validar Existencia en Sitio (Obligatorio V8, sin opción por defecto)
-
-  const existenciaEl = document.querySelector('input[name="existencia"]:checked');
-
-  if (!existenciaEl || !existenciaEl.value) {
-
-    showCustomAlert("⚠️ <strong>Selección Obligatoria de Existencia:</strong><br><br>Debes indicar obligatoriamente si la caja o caseta <strong>Existe</strong> o <strong>No Existe</strong> en el sitio antes de guardar.", "Existencia Requerida");
-
-    const grpExist3 = document.getElementById("groupExistencia");
-
-    if (grpExist3) {
-
-      grpExist3.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-      grpExist3.style.border = "2px solid #ef4444";
-
-      grpExist3.style.borderRadius = "8px";
-
-      grpExist3.style.padding = "8px";
-
-    }
-
-    return false;
-
-  }
-
-  const existencia = existenciaEl.value;
-
-
-
-  // 10. Validar Número de Viniles
-
-  const numVinilesEl = document.getElementById("numViniles");
-
-  const numVinilesVal = numVinilesEl?.value;
-
-  if (numVinilesVal === undefined || numVinilesVal === null || numVinilesVal === "") {
-
-    showCustomAlert("⚠️ <strong>Número de Viniles Obligatorio:</strong><br><br>Por favor selecciona el número de viniles instalados.", "Viniles Requeridos");
-
-    if (numVinilesEl) {
-
-      numVinilesEl.style.border = "2px solid #ef4444";
-
-      numVinilesEl.focus();
-
-    }
-
-    return false;
-
-  }
-
-  if (numVinilesEl) numVinilesEl.style.border = "1px solid #cbd5e1";
-
-  const numViniles = parseInt(numVinilesVal) || 0;
-
-
-
-  // 11. Validar Oferta Colocada
-
-  const ofertaEl = document.getElementById("ofertaColocada");
-
-  const oferta = ofertaEl?.value;
-
-  if (!oferta || (!oferta.includes("120") && !oferta.includes("200") && !oferta.includes("250"))) {
-
-    showCustomAlert("⚠️ <strong>Oferta Colocada Obligatoria:</strong><br><br>Por favor selecciona la Oferta Colocada (120 MB, 200 MB o 250 MB).", "Oferta Requerida");
-
-    if (ofertaEl) {
-
-      ofertaEl.style.border = "2px solid #ef4444";
-
-      ofertaEl.focus();
-
-    }
-
-    return false;
-
-  }
-
-  if (ofertaEl) ofertaEl.style.border = "1px solid #cbd5e1";
-
-
-
-  // 12. Validar Fotografía DESPUÉS (Obligatoria y en formato base64 de imagen)
-
-  if (!photoDespuesBase64 || typeof photoDespuesBase64 !== "string" || !photoDespuesBase64.startsWith("data:image/")) {
-
-    showCustomAlert("⚠️ <strong>Foto DESPUÉS Obligatoria:</strong><br><br>La fotografía de evidencia DESPUÉS es obligatoria. Por favor toma o sube la foto para continuar.", "Foto Obligatoria");
-
-    const box = document.getElementById("boxFotoDespues");
-
-    if (box) {
-
-      box.style.border = "2px solid #ef4444";
-
-      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-    }
-
-    return false;
-
-  }
-
-
-
-  // 13. Coordenadas de Captura Válidas
-
-  let gpsLat = (currentGpsCoords && currentGpsCoords.lat != null && currentGpsCoords.lat !== 0) ? currentGpsCoords.lat : (selectedAsset.lat || null);
-
-  let gpsLon = (currentGpsCoords && currentGpsCoords.lon != null && currentGpsCoords.lon !== 0) ? currentGpsCoords.lon : (selectedAsset.lon || null);
-
-  let gpsAccuracy = (currentGpsCoords && currentGpsCoords.accuracy != null) ? currentGpsCoords.accuracy : 10;
-
-
-
-  if (gpsLat == null || gpsLon == null || gpsLat === 0 || gpsLon === 0) {
-
-    const areaCoords = AREA_COORDINATES_MAP[areaVal] || AREA_COORDINATES_MAP[estadoVal] || { lat: 19.4326, lon: -99.1332 };
-
-    gpsLat = areaCoords.lat;
-
-    gpsLon = areaCoords.lon;
-
-  }
-
-
-
-  const proceso = document.querySelector('input[name="filterProceso"]:checked')?.value || "IMAGEN";
-
-  let comentarios = document.getElementById("comentarios")?.value?.trim() || "Sin comentarios";
-
-  if (comentarios === "OTRO") {
-
-    const manVal = document.getElementById("comentariosManual")?.value?.trim();
-
-    comentarios = manVal || "Sin comentarios";
-
-  }
-
-
-
-  const timestamp = new Date().toISOString();
-
-  const uniqueId = selectedAsset.unique_id || generateUniqueId(tipoElemento, areaVal);
-
-  const isManualAsset = selectedAsset.is_manual === true || selectedAsset.is_fuera_catalogo === true || selectedAsset.existe_en_bd === "No";
-
-
-
-  const evidenceRecord = {
-
-    id_registro_local: "EV_" + Date.now(),
-
-    unique_id: uniqueId,
-
-    asset_id: assetId,
-
-    contratista: contra,
-
-    tecnico: tec,
-
-    proceso: proceso,
-
-    tipo_elemento: tipoElemento,
-
-    modelo_tipo: modelo,
-
-    estado: estadoVal,
-
-    area_trabajo: areaVal,
-
-    municipio: areaVal,
-
-    calle: calleVal,
-
-    lat_original: selectedAsset.lat || gpsLat,
-
-    lon_original: selectedAsset.lon || gpsLon,
-
-    is_manual: isManualAsset,
-
-    existe_en_bd: isManualAsset ? "No" : "Sí",
-
-    
-
-    // Captura en Campo
-
-    existencia: existencia,
-
-    num_viniles: numViniles,
-
-    oferta_colocada: oferta,
-
-    comentarios: comentarios,
-
-    
-
-    // Fotos (Únicamente Foto DESPUÉS)
-
-    foto_despues: photoDespuesBase64,
-
-    
-
-    // GPS Foto Real
-
-    gps_captura_lat: gpsLat,
-
-    gps_captura_lon: gpsLon,
-
-    gps_precision_m: gpsAccuracy,
-
-    
-
-    version_app: getAppVersionString() || CURRENT_APP_VERSION_IPHONE,
-
-    fecha_captura: timestamp
-
-  };
-
-
-
-  dbEvidences.push(evidenceRecord);
-
-  markAssetCompletedPermanently(evidenceRecord.asset_id, evidenceRecord.unique_id);
-
-  saveEvidencesToStorage();
-
-
-
-  showCustomAlert(`✅ <strong>Evidencia guardada exitosamente en el teléfono:</strong><br><br><strong>Folio:</strong> ${uniqueId}<br><strong>ID / Ref:</strong> ${assetId}<br><strong>Estado / Área:</strong> ${estadoVal} - ${areaVal}<br><strong>Foto:</strong> Registrada ✔<br><br>El registro quedó guardado en tu lote de evidencias pendientes de envío.`, "Evidencia Guardada");
-
-
-
-  // Reset Form y Activo Seleccionado
-
-  selectedAsset = null;
-
-  document.getElementById("activeAssetAlert").style.display = "none";
-
-  document.getElementById("formAssetId").value = "";
-
-  document.getElementById("formAssetEstado").value = "";
-
-  document.getElementById("formAssetArea").value = "";
-
-  const resetBdEl = document.getElementById("formAssetExisteBD");
-
-  if (resetBdEl) resetBdEl.value = "";
-
-  document.getElementById("formAssetInfo").value = "";
-
-  document.getElementById("evidenceForm").reset();
-
-  document.querySelectorAll('input[name="existencia"]').forEach(r => r.checked = false);
-
-  const ofertaResetEl = document.getElementById("ofertaColocada");
-
-  if (ofertaResetEl) ofertaResetEl.value = "200 MB";
-
-  const comSelReset = document.getElementById("comentarios");
-
-  if (comSelReset) comSelReset.value = "Sin comentarios";
-
-  const comManReset = document.getElementById("comentariosManual");
-
-  if (comManReset) { comManReset.style.display = "none"; comManReset.value = ""; }
-
-  const grpExist4 = document.getElementById("groupExistencia");
-
-  if (grpExist4) { grpExist4.style.border = "none"; grpExist4.style.padding = "0"; }
-
-  photoDespuesBase64 = "";
-
-  document.getElementById("previewDespues").style.display = "none";
-
-  document.getElementById("iconDespues").style.display = "block";
-
-  document.getElementById("labelDespues").innerText = "Sin foto";
-
-
-
-  // Refrescar lista de búsqueda para ocultar automáticamente el activo capturado
-
-  applyHierarchyFilter();
-
-
-
-  switchView('sync');
-
-  return true;
-
-}
-
-
-
-// ---------------------------------------------------------
-
-// ALMACENAMIENTO Y EXPORTACIÓN
-
-// ---------------------------------------------------------
-
-function getCompletedAssetIdsSet() {
-
-  const set = new Set();
-
-
-
-  // 1. Activos completados en Linkaform remotamente (Base Dinámica)
-
-  if (remoteCompletedSet && remoteCompletedSet.size > 0) {
-
-    remoteCompletedSet.forEach(id => {
-
-      if (id) set.add(id);
-
-    });
-
-  } else {
-
-    const remoteSaved = localStorage.getItem("TELMEX_REMOTE_COMPLETED_SET");
-
-    if (remoteSaved) {
-
+  if (file.name.endsWith(".json")) {
+    reader.onload = (event) => {
       try {
+        const json = JSON.parse(event.target.result);
+        if (Array.isArray(json)) {
+          state.records = json;
+          saveAndRefreshImportedRecords(file.name, json.length);
+        } else {
+          throw new Error("El archivo JSON debe contener un arreglo de registros.");
+        }
+      } catch (err) {
+        statusEl.className = "mt-3 p-3 rounded-lg text-xs font-semibold bg-rose-100 text-rose-800 block";
+        statusEl.innerText = `Error al leer JSON: ${err.message}`;
+      }
+    };
+    reader.readAsText(file);
+  } else {
+    // Archivo Excel (.xlsx / .xls)
+    reader.onload = (event) => {
+      try {
+        const data = new Uint8Array(event.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const rawJson = XLSX.utils.sheet_to_json(worksheet);
 
-        const arr = JSON.parse(remoteSaved);
-
-        if (Array.isArray(arr)) {
-
-          arr.forEach(id => { if (id) set.add(String(id).trim().toUpperCase()); });
-
+        if (rawJson.length === 0) {
+          throw new Error("La hoja de cálculo está vacía.");
         }
 
-      } catch(e) {}
+        const firstRow = rawJson[0] || {};
+        const isMaterialsSheet = ("Descripcion" in firstRow || "descripcion" in firstRow || "Cantidad" in firstRow || "cantidad" in firstRow) && !("Tipo" in firstRow || "tipo" in firstRow || "identificador" in firstRow);
 
-    }
+        if (isMaterialsSheet) {
+          state.materialsLog = rawJson.map(r => ({
+            id: r["Folio"] || r["folio"] || r["ID"] || "",
+            area: (r["Area"] || r["area"] || r["Área"] || "GENERAL").toUpperCase(),
+            descripcion: (r["Descripcion"] || r["descripcion"] || r["Descripción"] || "MATERIAL").toUpperCase(),
+            cantidad: parseFloat(r["Cantidad"] || r["cantidad"] || 0),
+            unidad: (r["Unidad"] || r["unidad"] || r["Título de la pregunta"] || "PZAS.").toUpperCase(),
+            fecha: r["Fecha"] || r["fecha"] || "",
+            foto: r["Evidencia Fotografica"] || r["Foto"] || ""
+          }));
 
-  }
+          localStorage.setItem("telmex_dashboard_materials_log", JSON.stringify(state.materialsLog));
+          recalculateSuministrosFromMaterialsLog();
+          renderMaterialsTab();
+          renderMaterialsLogTable();
+          saveAndRefreshImportedRecords(file.name, state.materialsLog.length, "entregas de materiales (Forma 184350)");
+          return;
+        }
 
-
-
-  // 2. Activos completados en este dispositivo
-
-  const permSaved = localStorage.getItem("TELMEX_COMPLETED_ASSETS");
-
-  if (permSaved) {
-
-    try {
-
-      const arr = JSON.parse(permSaved);
-
-      if (Array.isArray(arr)) {
-
-        arr.forEach(id => {
-
-          if (id) set.add(String(id).trim().toUpperCase());
-
+        // Mapeo flexible de columnas para evidencias (Forma 142786)
+        const mapped = rawJson.map((r, i) => {
+          return {
+            folio: r["Folio"] || r["folio"] || r["ID"] || `LF-${i + 1}`,
+            fecha: r["Fecha"] || r["fecha"] || r["created_at"] || getLocalDateStr(),
+            hora: r["Hora"] || r["hora"] || "",
+            tipo: (r["Tipo"] || r["tipo"] || r["TIPO"] || "CAJA").toUpperCase(),
+            identificador: r["Identificador"] || r["identificador"] || r["DISTRITO / TELEFONO"] || "S/ID",
+            modelo: r["Modelo"] || r["modelo"] || "Sencilla",
+            estado: (r["Estado"] || r["estado"] || r["ESTADO"] || "GUANAJUATO").toUpperCase(),
+            area_trabajo: (r["Área"] || r["Area"] || r["area_trabajo"] || r["AREA TRABAJO"] || "CELAYA").toUpperCase(),
+            contratista: r["Contratista"] || r["contratista"] || "Lucina Villanueva Hernández",
+            estatus: r["Estatus"] || r["estatus"] || "Aprobada"
+          };
         });
 
+        state.records = mapped;
+        saveAndRefreshImportedRecords(file.name, mapped.length, "trabajos de campo");
+
+      } catch (err) {
+        statusEl.className = "mt-3 p-3 rounded-lg text-xs font-semibold bg-rose-100 text-rose-800 block";
+        statusEl.innerText = `Error al procesar Excel: ${err.message}`;
       }
-
-    } catch(e) {}
-
+    };
+    reader.readAsArrayBuffer(file);
   }
-
-  if (Array.isArray(dbEvidences)) {
-
-    dbEvidences.forEach(ev => {
-
-      if (ev.asset_id) set.add(String(ev.asset_id).trim().toUpperCase());
-
-      if (ev.unique_id) set.add(String(ev.unique_id).trim().toUpperCase());
-
-    });
-
-  }
-
-  completedAssetIdsSet = set;
-
-  return set;
-
 }
 
+function saveAndRefreshImportedRecords(fileName, count, typeLabel = "registros") {
+  safeSetStorage("telmex_dashboard_records", state.records);
+  safeSetStorage("telmex_dashboard_last_sync", `Archivo: ${fileName} (${new Date().toLocaleTimeString("es-MX")})`);
+  
+  const statusEl = document.getElementById("fileImportStatus");
+  statusEl.className = "mt-3 p-3 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-800 block";
+  statusEl.innerText = `✅ ¡Éxito! Se cargaron ${count.toLocaleString()} ${typeLabel} correctamente.`;
 
-
-function getLocalDateString(dateObj = new Date()) {
-
-  const d = dateObj;
-
-  const year = d.getFullYear();
-
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-
-  const day = String(d.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-
+  updateSyncLabel();
+  populateAreaFilter();
+  populateContratistasFilter();
+  populateTecnicosFilter();
+  applyFilters();
 }
 
-
-
-function getTodayDateString() {
-
-  return getLocalDateString(new Date());
-
+function restoreDefaultRecords() {
+  const choice = confirm("¿Deseas restaurar los datos en vivo oficiales de Linkaform?\n\nPresiona Aceptar para restaurar los datos oficiales de Linkaform.");
+  if (choice) {
+    state.records = (typeof LINKAFORM_LIVE_RECORDS !== "undefined") ? LINKAFORM_LIVE_RECORDS : ((typeof INITIAL_RECORDS !== "undefined") ? INITIAL_RECORDS : []);
+    state.materialsLog = (typeof LINKAFORM_LIVE_MATERIALS !== "undefined") 
+      ? LINKAFORM_LIVE_MATERIALS.map(m => ({ ...m, descripcion: normalizeMaterialName(m.descripcion) })) 
+      : [];
+    safeRemoveStorage("telmex_dashboard_records");
+    safeRemoveStorage("telmex_dashboard_raw_records");
+    safeRemoveStorage("telmex_dashboard_materials_log");
+    safeSetStorage("telmex_dashboard_last_sync", "Datos oficiales Linkaform restaurados");
+    recalculateSuministrosFromMaterialsLog();
+    updateSyncLabel();
+    populateAreaFilter();
+    populateContratistasFilter();
+  populateTecnicosFilter();
+    applyFilters();
+    renderMaterialsLogTable();
+    closeImportModal();
+    alert("✅ Datos oficiales de Linkaform restaurados correctamente.");
+  }
 }
 
-
-
-function getTodayCompletedCount() {
-
-  const todayStr = getTodayDateString();
-
-  const todaySet = new Set();
-
-
-
-  // 1. Contar registros guardados en dbEvidences que corresponden a la fecha de hoy
-
-  if (Array.isArray(dbEvidences)) {
-
-    dbEvidences.forEach(ev => {
-
-      let isToday = false;
-
-      if (ev.fecha_captura) {
-
-        if (ev.fecha_captura.startsWith(todayStr)) {
-
-          isToday = true;
-
-        } else {
-
-          try {
-
-            const evDate = new Date(ev.fecha_captura);
-
-            if (!isNaN(evDate.getTime()) && getLocalDateString(evDate) === todayStr) {
-
-              isToday = true;
-
-            }
-
-          } catch(e) {}
-
-        }
-
-      }
-
-      if (isToday) {
-
-        const key = ev.unique_id || ev.asset_id || ev.id_registro_local;
-
-        if (key) todaySet.add(String(key).trim().toUpperCase());
-
-      }
-
-    });
-
+// =========================================================
+// EXPORTACIÓN A EXCEL
+// =========================================================
+function exportDataToExcel() {
+  if (typeof XLSX === "undefined") {
+    alert("La librería de exportación a Excel aún se está cargando. Intenta en unos segundos.");
+    return;
   }
 
+  const wb = XLSX.utils.book_new();
 
-
-  // 2. Incluir registros guardados en el set del día de hoy en localStorage
-
-  const savedTodayJson = localStorage.getItem(`TELMEX_TODAY_COMPLETED_SET_${todayStr}`);
-
-  if (savedTodayJson) {
-
-    try {
-
-      const arr = JSON.parse(savedTodayJson);
-
-      if (Array.isArray(arr)) {
-
-        arr.forEach(id => { if (id) todaySet.add(String(id).trim().toUpperCase()); });
-
-      }
-
-    } catch(e) {}
-
-  }
-
-
-
-  return todaySet.size;
-
-}
-
-
-
-function updateDailyGoalUI() {
-
-  const count = getTodayCompletedCount();
-
-  const goal = 35;
-
-  const pct = Math.min(100, Math.round((count / goal) * 100));
-
-
-
-  const badge = document.getElementById("dailyGoalBadge");
-
-  const bar = document.getElementById("dailyGoalProgressBar");
-
-  const text = document.getElementById("dailyGoalText");
-
-
-
-  if (badge) badge.innerText = `${count} / ${goal}`;
-
-  if (bar) bar.style.width = `${pct}%`;
-
-  if (text) {
-
-    if (count >= goal) {
-
-      text.innerText = `${pct}% completado hoy (¡Meta alcanzada de ${goal}! 🎉)`;
-
-    } else {
-
-      const remaining = goal - count;
-
-      text.innerText = `${pct}% completado hoy (Faltan ${remaining} de la meta)`;
-
-    }
-
-  }
-
-}
-
-
-
-function getCompletedAssetCount() {
-
-  const set = getCompletedAssetIdsSet();
-
-  let primaryCount = 0;
-
-  set.forEach(id => {
-
-    if (!id.startsWith("CAS_") && !id.startsWith("CAJ_")) {
-
-      primaryCount++;
-
-    }
-
+  // Hoja 1: Matriz de Balance de Materiales por Plaza Operativa
+  const matrixRows = [];
+  const areaSet = new Set();
+  (state.materialsLog || []).forEach(m => {
+    if (m.area) areaSet.add(m.area.toUpperCase().trim());
+  });
+  (state.records || []).forEach(r => {
+    if (r.area_trabajo) areaSet.add(r.area_trabajo.toUpperCase().trim());
   });
 
-  return primaryCount > 0 ? primaryCount : Math.ceil(set.size / 2);
+  const areas = Array.from(areaSet).sort();
 
-}
+  const sumByAreaMat = {};
+  (state.materialsLog || []).forEach(m => {
+    const area = (m.area || "GENERAL").toUpperCase().trim();
+    const matId = mapMaterialDescToId(m.descripcion);
+    const qty = parseFloat(m.cantidad) || 0;
+    if (!sumByAreaMat[area]) sumByAreaMat[area] = {};
+    sumByAreaMat[area][matId] = (sumByAreaMat[area][matId] || 0) + qty;
+  });
 
+  const conByAreaMat = {};
+  (state.records || []).forEach(r => {
+    const area = (r.area_trabajo || "GENERAL").toUpperCase().trim();
+    const matId = mapRecordToMaterialId(r);
+    const viniles = getRecordVinilCount(r);
+    if (!conByAreaMat[area]) conByAreaMat[area] = {};
+    conByAreaMat[area][matId] = (conByAreaMat[area][matId] || 0) + viniles;
+  });
 
+  areas.forEach(area => {
+    const metas = getAreaMetas(area);
+    const cajasMeta = metas.cajas || 0;
+    const casetasMeta = metas.casetas || 0;
 
-function markAssetCompletedPermanently(assetId, uniqueId) {
-
-  // Guardar en set histórico global permanente
-
-  const set = getCompletedAssetIdsSet();
-
-  if (assetId) {
-
-    const cleanAssetId = String(assetId).trim().toUpperCase();
-
-    if (cleanAssetId) set.add(cleanAssetId);
-
-  }
-
-  if (uniqueId) {
-
-    const cleanUniqueId = String(uniqueId).trim().toUpperCase();
-
-    if (cleanUniqueId) {
-
-      set.add(cleanUniqueId);
-
-
-
-      // Registrar consecutivo permanente en localStorage para que nunca se reinicie a 0001
-
-      const parts = cleanUniqueId.split("_");
-
-      if (parts.length >= 3) {
-
-        const prefixArea = `${parts[0]}_${parts[1]}_`;
-
-        const num = parseInt(parts[parts.length - 1], 10);
-
-        if (!isNaN(num)) {
-
-          const key = `TELMEX_LAST_FOLIO_SEQ_${prefixArea}`;
-
-          const currentMax = parseInt(localStorage.getItem(key) || "0", 10);
-
-          if (num > currentMax) {
-
-            localStorage.setItem(key, String(num));
-
-          }
-
-        }
-
-      }
-
+    const activeMatIds = new Set();
+    if (sumByAreaMat[area]) {
+      Object.keys(sumByAreaMat[area]).forEach(id => activeMatIds.add(id));
+    }
+    if (conByAreaMat[area]) {
+      Object.keys(conByAreaMat[area]).forEach(id => activeMatIds.add(id));
     }
 
+    activeMatIds.forEach(matId => {
+      const mat = state.config.materiales.find(m => m.id === matId) || {
+        id: matId,
+        nombre: matId.replace(/_/g, " ").toUpperCase(),
+        unidad: "Pzas",
+        consumo_por_caja: 0.1,
+        consumo_por_caseta: 1.0
+      };
+
+      const suministrado = (sumByAreaMat[area] && sumByAreaMat[area][matId]) || 0;
+      const consumido = (conByAreaMat[area] && conByAreaMat[area][matId]) || 0;
+      const queda = Math.max(0, suministrado - consumido);
+      const metaReq = Math.round((cajasMeta * (mat.consumo_por_caja || 0)) + (casetasMeta * (mat.consumo_por_caseta || 0)));
+      const falta = Math.max(0, metaReq - suministrado);
+
+      matrixRows.push({
+        "Plaza / Área": area,
+        "Material": mat.nombre,
+        "Unidad": mat.unidad,
+        "Suministrado (Entradas)": suministrado,
+        "Viniles Instalados (Consumo Real)": consumido,
+        "Stock Disponible (Sobran / Queda)": queda,
+        "Meta Requerida Área": metaReq,
+        "Faltante por Surtir": falta,
+        "Estado": suministrado === 0 && consumido > 0 ? "Sin Suministro" : (queda <= 20 ? "Stock Bajo" : "Abastecido")
+      });
+    });
+  });
+
+  const wsMatrix = XLSX.utils.json_to_sheet(matrixRows);
+  XLSX.utils.book_append_sheet(wb, wsMatrix, "Inventario por Plaza");
+
+  // Hoja 2: Bitácora de Suministros (Forma 184350)
+  const logRows = (state.materialsLog || []).map(m => ({
+    "Folio": m.id,
+    "Fecha": m.fecha,
+    "Plaza / Área": m.area,
+    "Material": m.descripcion,
+    "Cantidad": m.cantidad,
+    "Unidad": m.unidad,
+    "Enlace Foto": m.foto || "Sin Foto"
+  }));
+  const wsLog = XLSX.utils.json_to_sheet(logRows);
+  XLSX.utils.book_append_sheet(wb, wsLog, "Entradas de Material");
+
+  // Hoja 3: Trabajos de Campo (Forma 142786)
+  const recordsRows = (state.filteredRecords || []).map(r => ({
+    "Folio": r.folio,
+    "Fecha": r.fecha,
+    "Hora": r.hora,
+    "Plaza / Área": r.area_trabajo,
+    "Estado": r.estado,
+    "Tipo": r.tipo,
+    "Identificador": r.identificador,
+    "Modelo": r.modelo,
+    "Viniles Instalados": r.num_viniles !== undefined ? r.num_viniles : (r.tipo === "CASETA" ? 2 : 1),
+    "Contratista": r.contratista,
+    "Técnico": r.tecnico || "Sin Técnico",
+    "Estatus": r.estatus
+  }));
+  const wsRecords = XLSX.utils.json_to_sheet(recordsRows);
+  XLSX.utils.book_append_sheet(wb, wsRecords, "Trabajos de Campo");
+
+  // Descargar
+  const dateStr = getLocalDateStr();
+  XLSX.writeFile(wb, `Reporte_Materiales_Telmex_Por_Area_${dateStr}.xlsx`);
+}
+
+// Normalizar nombres de área para coincidencia con la plantilla de Excel
+function normalizeAreaForExcel(val) {
+  if (!val) return "";
+  return String(val)
+    .trim()
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/-/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Obtener fecha YYYY-MM-DD sin desfase horario para encabezados de celdas de Excel (evita desfase UTC a UTC-6)
+function getExcelHeaderDateStr(v) {
+  if (!v) return "";
+  if (v instanceof Date) {
+    const year = v.getUTCFullYear();
+    const month = String(v.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(v.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
-
-  localStorage.setItem("TELMEX_COMPLETED_ASSETS", JSON.stringify(Array.from(set)));
-
-  completedAssetIdsSet = set;
-
-
-
-  // Guardar en set específico de hoy (evitando duplicaciones de conteo para la meta de 35)
-
-  const todayStr = getTodayDateString();
-
-  const todaySet = new Set();
-
-  const savedTodayJson = localStorage.getItem(`TELMEX_TODAY_COMPLETED_SET_${todayStr}`);
-
-  if (savedTodayJson) {
-
-    try {
-
-      const arr = JSON.parse(savedTodayJson);
-
-      if (Array.isArray(arr)) {
-
-        arr.forEach(id => { if (id) todaySet.add(String(id).trim().toUpperCase()); });
-
-      }
-
-    } catch(e) {}
-
+  if (typeof v === "string" && v.includes("2026")) {
+    return v.trim().substring(0, 10);
   }
+  return "";
+}
 
+// Descargar Réplica Oficial del Reporte Diario de Casetas y Cajas (Generado con fórmulas y formatos íntegros)
+async function exportReporteDiarioExcel() {
+  const dateStr = getLocalDateStr();
+  showToast("📊 Descargando Reporte Diario Oficial de Casetas y Cajas...", "info", 2000);
 
-
-  const keyToStore = uniqueId || assetId;
-
-  if (keyToStore) {
-
-    todaySet.add(String(keyToStore).trim().toUpperCase());
-
+  try {
+    const fileUrl = `data/Reporte_Diario_Casetas_y_Cajas_Contratistas_2026.xlsx?v=${Date.now()}`;
+    const a = document.createElement("a");
+    a.href = fileUrl;
+    a.download = `Reporte_diarios_Casetas_y_Cajas_Contratistas_2026_${dateStr}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast("✅ ¡Reporte Diario Oficial descargado con éxito con todas sus fórmulas y formatos!", "success", 4000);
+  } catch (err) {
+    console.error("Error al descargar reporte diario:", err);
+    showToast("❌ No se pudo descargar el Reporte Diario.", "error", 4000);
   }
+}
 
-  localStorage.setItem(`TELMEX_TODAY_COMPLETED_SET_${todayStr}`, JSON.stringify(Array.from(todaySet)));
+// Descargar Réplica Oficial de Cantidades de Materiales Recibidos Actualizada
+async function exportMaterialesRecibidosExcel() {
+  const dateStr = getLocalDateStr();
+  showToast("📦 Descargando Réplica Oficial de Cantidades de Materiales Recibidos...", "info", 2000);
 
+  try {
+    const fileUrl = `data/CANTIDADES_MATERIALES_RECIBIDOS_ACTUALIZADO.xlsx?v=${Date.now()}`;
+    const a = document.createElement("a");
+    a.href = fileUrl;
+    a.download = `CANTIDADES_MATERIALES_RECIBIDOS_Actualizado_${dateStr}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    showToast("✅ ¡CANTIDADES MATERIALES RECIBIDOS descargado con éxito con datos en vivo!", "success", 4000);
+  } catch (err) {
+    console.error("Error al descargar materiales recibidos:", err);
+    showToast("❌ No se pudo descargar el archivo de Materiales Recibidos.", "error", 4000);
+  }
+}
 
-
-  updateDailyGoalUI();
-
+// Utilidad Formato de Números
+function formatNumber(num) {
+  if (num === null || num === undefined || isNaN(num)) return "0";
+  return Math.round(num).toLocaleString("es-MX");
 }
 
 
 
-// ---------------------------------------------------------
 
-// MOTOR DE ALMACENAMIENTO HÍBRIDO (INDEXEDDB + LOCALSTORAGE)
+// =========================================================
+// MÓDULO ESPECIAL DE VALIDACIÓN DE TRABAJOS Y PAGOS A CONTRATISTAS
+// =========================================================
 
-// Soporta lotes ilimitados de fotos sin error de QuotaExceeded
-
-// ---------------------------------------------------------
-
-const IDB_CONFIG = {
-
-  dbName: "TelmexOfflineDB_2026",
-
-  storeName: "evidences_store",
-
-  key: "current_batch"
-
+let pagosState = {
+  tipo: "CAJA", // "CAJA" o "CASETA"
+  tarifaCaja: 60.00,
+  tarifaCaseta: 36.00,
+  tarifaActiva: 60.00,
+  selectedAreas: new Set(), // Nombres de áreas seleccionadas
+  contratista: "TODOS",
+  tecnico: "TODOS",
+  presetDate: "TODO",
+  dateStart: "",
+  dateEnd: "",
+  currentPage: 1,
+  pageSize: 50
 };
 
+let pagosFilteredRecords = [];
 
+function getPagosNip() {
+  const stored = localStorage.getItem("TELMEX_PAGOS_NIP");
+  // Si no está definido o sigue siendo el valor anterior "2026", actualiza al nuevo PIN por defecto "20262"
+  if (!stored || stored === "2026") {
+    localStorage.setItem("TELMEX_PAGOS_NIP", "20262");
+    return "20262";
+  }
+  return stored;
+}
 
-function openIndexedDB() {
+function openPagosModule() {
+  const isAuth = sessionStorage.getItem("PAGOS_AUTH_OK") === "true";
+  if (isAuth) {
+    switchTab("tab-pagos");
+    initPagosModule();
+  } else {
+    const modal = document.getElementById("nipModal");
+    const input = document.getElementById("nipInput");
+    const err = document.getElementById("nipErrorMsg");
+    if (err) err.classList.add("hidden");
+    if (input) input.value = "";
+    if (modal) modal.classList.remove("hidden");
+    setTimeout(() => { if (input) input.focus(); }, 150);
+  }
+}
 
-  return new Promise((resolve) => {
+function closeNipModal() {
+  const modal = document.getElementById("nipModal");
+  if (modal) modal.classList.add("hidden");
+}
 
-    if (!window.indexedDB) {
+function verifyNip() {
+  const input = document.getElementById("nipInput");
+  const err = document.getElementById("nipErrorMsg");
+  const entered = (input?.value || "").trim();
+  const correct = getPagosNip();
 
-      resolve(null);
-
-      return;
-
+  if (entered === correct) {
+    sessionStorage.setItem("PAGOS_AUTH_OK", "true");
+    closeNipModal();
+    switchTab("tab-pagos");
+    initPagosModule();
+    showToast("🔓 Sesión de Finanzas y Pagos Autorizada.", "success", 3000);
+  } else {
+    if (err) {
+      err.innerText = "❌ NIP Incorrecto. Acceso denegado.";
+      err.classList.remove("hidden");
     }
-
-    try {
-
-      const request = indexedDB.open(IDB_CONFIG.dbName, 1);
-
-      request.onupgradeneeded = (e) => {
-
-        const db = e.target.result;
-
-        if (!db.objectStoreNames.contains(IDB_CONFIG.storeName)) {
-
-          db.createObjectStore(IDB_CONFIG.storeName);
-
-        }
-
-      };
-
-      request.onsuccess = (e) => resolve(e.target.result);
-
-      request.onerror = (e) => {
-
-        console.warn("IndexedDB no disponible, usando localStorage fallback:", e);
-
-        resolve(null);
-
-      };
-
-    } catch(err) {
-
-      resolve(null);
-
+    if (input) {
+      input.classList.add("border-rose-500");
+      input.select();
+      setTimeout(() => input.classList.remove("border-rose-500"), 1000);
     }
+  }
+}
 
+function logoutPagos() {
+  sessionStorage.removeItem("PAGOS_AUTH_OK");
+  switchTab("tab-materiales");
+  showToast("🔒 Módulo de Pagos Bloqueado.", "info", 2500);
+}
+
+function openChangeNipModal() {
+  const modal = document.getElementById("changeNipModal");
+  const err = document.getElementById("changeNipErrorMsg");
+  if (err) err.classList.add("hidden");
+  document.getElementById("inputCurrentNip").value = "";
+  document.getElementById("inputNewNip").value = "";
+  if (modal) modal.classList.remove("hidden");
+}
+
+function closeChangeNipModal() {
+  const modal = document.getElementById("changeNipModal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function saveNewNip() {
+  const currInput = document.getElementById("inputCurrentNip").value.trim();
+  const newInput = document.getElementById("inputNewNip").value.trim();
+  const err = document.getElementById("changeNipErrorMsg");
+
+  if (currInput !== getPagosNip()) {
+    err.innerText = "El NIP actual es incorrecto.";
+    err.classList.remove("hidden");
+    return;
+  }
+
+  if (newInput.length < 4 || newInput.length > 8) {
+    err.innerText = "El nuevo NIP debe tener entre 4 y 8 dígitos.";
+    err.classList.remove("hidden");
+    return;
+  }
+
+  localStorage.setItem("TELMEX_PAGOS_NIP", newInput);
+  closeChangeNipModal();
+  showToast("✅ NIP de Pagos actualizado exitosamente.", "success", 3500);
+}
+
+// Inicializar el Módulo de Pagos
+
+// =========================================================================
+// GESTOR DE BITÁCORA DE PAGOS Y CONCILIACIONES (ANTI-DUPLICIDAD)
+// =========================================================================
+const STORAGE_KEY_PAGOS = "TELMEX_HISTORIAL_PAGOS_V1";
+
+function getPagosRegistrados() {
+  // 1. Cargar pagos oficiales centralizados desde GitHub (window.TELMEX_HISTORIAL_PAGOS)
+  const fromGithub = (typeof window !== "undefined" && Array.isArray(window.TELMEX_HISTORIAL_PAGOS)) 
+    ? window.TELMEX_HISTORIAL_PAGOS 
+    : [];
+
+  // 2. Cargar pagos locales del navegador (localStorage)
+  let fromLocal = [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PAGOS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) fromLocal = parsed;
+    }
+  } catch (e) {
+    console.error("Error al cargar historial de pagos local:", e);
+  }
+
+  // 3. Fusionar ambas fuentes sin duplicados (clave única: folioPago o id)
+  const map = new Map();
+  // Primero los de GitHub
+  fromGithub.forEach(p => {
+    const k = p.folioPago || p.id;
+    if (k) map.set(k, p);
+  });
+  // Luego los locales (que pueden tener pagos más recientes)
+  fromLocal.forEach(p => {
+    const k = p.folioPago || p.id;
+    if (k) map.set(k, p);
   });
 
+  return Array.from(map.values()).sort((a, b) => {
+    const ta = new Date(a.fecha || a.timestamp || 0).getTime();
+    const tb = new Date(b.fecha || b.timestamp || 0).getTime();
+    return tb - ta; // Más recientes primero
+  });
+}
+
+// Token de GitHub para sincronización directa desde el navegador (opcional)
+function getGitHubToken() {
+  return localStorage.getItem("TELMEX_GITHUB_TOKEN") || "";
+}
+
+function setGitHubToken(token) {
+  if (token) localStorage.setItem("TELMEX_GITHUB_TOKEN", token.trim());
+  else localStorage.removeItem("TELMEX_GITHUB_TOKEN");
+}
+
+// Publicar historial directamente a GitHub mediante GitHub REST API
+async function publicarHistorialEnGitHub() {
+  const lista = getPagosRegistrados();
+  let token = getGitHubToken();
+
+  if (!token) {
+    token = prompt("🔑 Para publicar directamente a GitHub Pages, ingresa tu GitHub Personal Access Token (PAT):\n\n(Se guardará en este navegador para futuras publicaciones)");
+    if (!token) return;
+    setGitHubToken(token);
+  }
+
+  showToast("☁️ Conectando con GitHub API para publicar pagos...", "info", 3000);
+
+  const owner = "pahernandez-sys";
+  const repo = "dashboard-imagen-telmex";
+  const filePath = "data/historial_pagos.js";
+  const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+
+  try {
+    // 1. Obtener SHA actual del archivo si existe
+    let currentSha = "";
+    const getRes = await fetch(url, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/vnd.github.v3+json"
+      }
+    });
+
+    if (getRes.status === 200) {
+      const fileData = await getRes.json();
+      currentSha = fileData.sha;
+    } else if (getRes.status === 401 || getRes.status === 403) {
+      localStorage.removeItem("TELMEX_GITHUB_TOKEN");
+      showToast("❌ Token de GitHub inválido o sin permisos. Ingresa un token válido.", "error", 4000);
+      return;
+    }
+
+    // 2. Preparar contenido del archivo en base64
+    const jsContent = `/**\n * Bitácora Oficial de Pagos y Liquidaciones a Contratistas\n * Campaña Nacional Imagen Telmex 2026\n * Almacenamiento Centralizado en GitHub\n * Última sincronización: ${new Date().toISOString()}\n */\nwindow.TELMEX_HISTORIAL_PAGOS = ${JSON.stringify(lista, null, 2)};\n`;
+    
+    // Codificar a UTF-8 Base64
+    const utf8Bytes = new TextEncoder().encode(jsContent);
+    let binary = "";
+    utf8Bytes.forEach(b => binary += String.fromCharCode(b));
+    const base64Content = btoa(binary);
+
+    // 3. Hacer PUT a GitHub
+    const putBody = {
+      message: `chore(pagos): sincronizar bitácora oficial de ${lista.length} pagos en GitHub`,
+      content: base64Content,
+      branch: "main"
+    };
+    if (currentSha) putBody.sha = currentSha;
+
+    const putRes = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/vnd.github.v3+json"
+      },
+      body: JSON.stringify(putBody)
+    });
+
+    if (putRes.status === 200 || putRes.status === 201) {
+      // Actualizar variable en memoria
+      window.TELMEX_HISTORIAL_PAGOS = lista;
+      showToast(`✅ ¡Éxito! ${lista.length} pagos publicados y respaldados centralizadamente en GitHub.`, "success", 4500);
+    } else {
+      const errJson = await putRes.json().catch(() => ({}));
+      showToast(`⚠️ Error al subir a GitHub (${putRes.status}): ${errJson.message || "Verifica permisos"}`, "warning", 4500);
+    }
+  } catch (err) {
+    console.error("Error en publicarHistorialEnGitHub:", err);
+    showToast(`❌ Error de conexión con GitHub: ${err.message}`, "error", 4000);
+  }
+}
+
+function savePagosRegistrados(list) {
+  try {
+    localStorage.setItem(STORAGE_KEY_PAGOS, JSON.stringify(list));
+  } catch (e) {
+    console.error("Error al guardar historial de pagos:", e);
+  }
+}
+
+// Retorna el total de piezas pagadas acumuladas para tipo, área y contratista
+function getPiezasPagadasAcumuladas(tipo, area, contratista) {
+  const lista = getPagosRegistrados();
+  const areaNorm = (area || "").trim().toUpperCase();
+  const conNorm = (contratista || "").trim();
+
+  return lista.reduce((acc, p) => {
+    if (p.tipo !== tipo) return acc;
+    if (areaNorm && areaNorm !== "TODAS" && areaNorm !== "TODOS" && p.area.toUpperCase() !== areaNorm) return acc;
+    if (conNorm && conNorm !== "TODOS" && p.contratista !== conNorm) return acc;
+    return acc + (Number(p.piezasPagadasHoy) || 0);
+  }, 0);
+}
+
+// Retorna el total de piezas realizadas en Linkaform para tipo, área y contratista
+function getPiezasRealizadasTotal(tipo, area, contratista) {
+  const allRecords = state.records || [];
+  const areaNorm = (area || "").trim().toUpperCase();
+  const conNorm = (contratista || "").trim();
+
+  return allRecords.reduce((acc, r) => {
+    if (r.tipo !== tipo) return acc;
+    if (areaNorm && areaNorm !== "TODAS" && areaNorm !== "TODOS") {
+      const a = (r.area_trabajo || "").trim().toUpperCase();
+      if (a !== areaNorm) return acc;
+    }
+    if (conNorm && conNorm !== "TODOS") {
+      const c = (r.contratista_homologado || r.contratista || "").trim();
+      if (c !== conNorm) return acc;
+    }
+    return acc + 1;
+  }, 0);
+}
+
+// -------------------------------------------------------------------------
+// MODAL DE REGISTRO DE PAGO
+// -------------------------------------------------------------------------
+function openRegistrarPagoModal(preselectedArea, preselectedContratista) {
+  const modal = document.getElementById("modalRegistrarPago");
+  if (!modal) return;
+
+  const tipo = pagosState.tipo;
+  const tarifa = pagosState.tarifaActiva;
+
+  // Badge de Tipo
+  const badgeTipo = document.getElementById("modalPagoTipoBadge");
+  if (badgeTipo) {
+    badgeTipo.innerText = `${tipo === "CASETA" ? "📞 CASETA" : "📦 CAJA"} ($${tarifa.toFixed(2)} MXN)`;
+    badgeTipo.className = tipo === "CASETA" 
+      ? "p-2 rounded-lg font-bold text-center border text-xs bg-amber-50 text-amber-900 border-amber-300"
+      : "p-2 rounded-lg font-bold text-center border text-xs bg-blue-50 text-blue-900 border-blue-300";
+  }
+
+  const lblTarifa = document.getElementById("modalPagoTarifaLabel");
+  if (lblTarifa) lblTarifa.innerText = `$${tarifa.toFixed(2)} MXN`;
+
+  // Fecha de hoy por defecto
+  const inputFecha = document.getElementById("modalPagoFecha");
+  if (inputFecha) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    inputFecha.value = `${yyyy}-${mm}-${dd}`;
+  }
+
+  // Poblar Áreas
+  const selArea = document.getElementById("modalPagoSelectArea");
+  if (selArea) {
+    const areas = getAvailableAreasForTipo(tipo);
+    selArea.innerHTML = "";
+    areas.forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a;
+      opt.innerText = a;
+      selArea.appendChild(opt);
+    });
+
+    if (preselectedArea && areas.includes(preselectedArea.toUpperCase())) {
+      selArea.value = preselectedArea.toUpperCase();
+    } else if (pagosState.selectedAreas.size === 1) {
+      selArea.value = Array.from(pagosState.selectedAreas)[0];
+    } else if (areas.length > 0) {
+      selArea.value = areas[0];
+    }
+  }
+
+  // Poblar Contratistas para esa área
+  actualizarContratistasEnModal(preselectedContratista);
+
+  // Recalcular saldo y disponibles
+  onModalPagoAreaOrConChange();
+
+  modal.classList.remove("hidden");
+}
+
+function closeRegistrarPagoModal() {
+  const modal = document.getElementById("modalRegistrarPago");
+  if (modal) modal.classList.add("hidden");
+}
+
+function actualizarContratistasEnModal(preselectedContratista) {
+  const tipo = pagosState.tipo;
+  const selArea = document.getElementById("modalPagoSelectArea");
+  const selCon = document.getElementById("modalPagoSelectContratista");
+  if (!selArea || !selCon) return;
+
+  const currentArea = selArea.value;
+  const records = state.records || [];
+  const conSet = new Set();
+
+  records.forEach(r => {
+    if (r.tipo === tipo) {
+      const a = (r.area_trabajo || "").trim().toUpperCase();
+      if (!currentArea || a === currentArea) {
+        const c = (r.contratista_homologado || r.contratista || "").trim();
+        if (c && c !== "Directo") conSet.add(c);
+      }
+    }
+  });
+
+  const sortedCon = Array.from(conSet).sort();
+  selCon.innerHTML = "";
+  if (sortedCon.length === 0) {
+    selCon.innerHTML = '<option value="">Sin contratistas con trabajos</option>';
+  } else {
+    sortedCon.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.innerText = c;
+      selCon.appendChild(opt);
+    });
+  }
+
+  if (preselectedContratista && conSet.has(preselectedContratista)) {
+    selCon.value = preselectedContratista;
+  } else if (pagosState.contratista !== "TODOS" && conSet.has(pagosState.contratista)) {
+    selCon.value = pagosState.contratista;
+  } else if (sortedCon.length > 0) {
+    selCon.value = sortedCon[0];
+  }
+}
+
+function onModalPagoAreaOrConChange() {
+  const tipo = pagosState.tipo;
+  const selArea = document.getElementById("modalPagoSelectArea");
+  const selCon = document.getElementById("modalPagoSelectContratista");
+  if (!selArea || !selCon) return;
+
+  const area = selArea.value;
+  const contratista = selCon.value;
+
+  const hechas = getPiezasRealizadasTotal(tipo, area, contratista);
+  const pagadasPrevias = getPiezasPagadasAcumuladas(tipo, area, contratista);
+  const disponibles = Math.max(0, hechas - pagadasPrevias);
+
+  const elHechas = document.getElementById("modalPagoRealizadasCount");
+  const elPrevias = document.getElementById("modalPagoPagadasPreviasCount");
+  const elDisp = document.getElementById("modalPagoDisponiblesCount");
+
+  if (elHechas) elHechas.innerText = formatNumber(hechas);
+  if (elPrevias) elPrevias.innerText = formatNumber(pagadasPrevias);
+  if (elDisp) elDisp.innerText = formatNumber(disponibles);
+
+  const inputPiezas = document.getElementById("modalPagoInputPiezas");
+  if (inputPiezas) {
+    inputPiezas.max = disponibles > 0 ? disponibles : 1;
+    inputPiezas.value = disponibles;
+  }
+
+  onModalPagoPiezasInput();
+}
+
+function onModalPagoPiezasInput() {
+  const inputPiezas = document.getElementById("modalPagoInputPiezas");
+  const montoEl = document.getElementById("modalPagoMontoCalculado");
+  const remanenteEl = document.getElementById("modalPagoRemanenteInfo");
+  const elDisp = document.getElementById("modalPagoDisponiblesCount");
+
+  const piezasAPagar = parseInt(inputPiezas?.value, 10) || 0;
+  const tarifa = pagosState.tarifaActiva;
+  const disponibles = parseInt(elDisp?.innerText?.replace(/,/g, ""), 10) || 0;
+
+  const totalDinero = piezasAPagar * tarifa;
+  if (montoEl) montoEl.innerText = formatMoney(totalDinero);
+
+  const remanente = disponibles - piezasAPagar;
+  if (remanenteEl) {
+    if (remanente > 0) {
+      remanenteEl.className = "text-[11px] font-bold text-blue-700 bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-200 mt-1";
+      remanenteEl.innerText = `Quedan ${formatNumber(remanente)} piezas pendientes ($${formatMoney(remanente * tarifa)}) para el próximo pago.`;
+    } else if (remanente === 0) {
+      remanenteEl.className = "text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-200 mt-1";
+      remanenteEl.innerText = `✅ Liquidación total completa (0 piezas pendientes).`;
+    } else {
+      remanenteEl.className = "text-[11px] font-bold text-rose-700 bg-rose-50 px-2.5 py-1.5 rounded-lg border border-rose-200 mt-1";
+      remanenteEl.innerText = `⚠️ Atención: Estás pagando ${formatNumber(piezasAPagar)}, superando las ${formatNumber(disponibles)} piezas validadas en Linkaform.`;
+    }
+  }
+}
+
+function confirmarRegistroPago() {
+  const tipo = pagosState.tipo;
+  const tarifa = pagosState.tarifaActiva;
+  const selArea = document.getElementById("modalPagoSelectArea");
+  const selCon = document.getElementById("modalPagoSelectContratista");
+  const inputPiezas = document.getElementById("modalPagoInputPiezas");
+  const inputFecha = document.getElementById("modalPagoFecha");
+  const inputFactura = document.getElementById("modalPagoFactura");
+  const selMetodo = document.getElementById("modalPagoMetodo");
+  const inputAutorizo = document.getElementById("modalPagoAutorizo");
+  const inputNotas = document.getElementById("modalPagoNotas");
+
+  const area = selArea?.value || "";
+  const contratista = selCon?.value || "";
+  const piezas = parseInt(inputPiezas?.value, 10) || 0;
+  const fecha = inputFecha?.value || new Date().toISOString().split("T")[0];
+
+  if (!area) {
+    showToast("⚠️ Debes seleccionar una plaza.", "warning", 3000);
+    return;
+  }
+  if (!contratista) {
+    showToast("⚠️ Debes seleccionar un contratista.", "warning", 3000);
+    return;
+  }
+  if (piezas <= 0) {
+    showToast("⚠️ La cantidad de piezas a pagar debe ser mayor a 0.", "warning", 3000);
+    return;
+  }
+
+  const hechas = getPiezasRealizadasTotal(tipo, area, contratista);
+  const previas = getPiezasPagadasAcumuladas(tipo, area, contratista);
+  const disponibles = Math.max(0, hechas - previas);
+  const remanente = Math.max(0, disponibles - piezas);
+  const monto = piezas * tarifa;
+
+  const now = new Date();
+  const folioPago = "PAG-" + now.getFullYear() + 
+                    String(now.getMonth() + 1).padStart(2, "0") + 
+                    String(now.getDate()).padStart(2, "0") + "-" + 
+                    String(now.getHours()).padStart(2, "0") + 
+                    String(now.getMinutes()).padStart(2, "0") + 
+                    String(now.getSeconds()).padStart(2, "0");
+
+  const nuevoPago = {
+    id: "PAGO_" + Date.now(),
+    folioPago: folioPago,
+    fecha: fecha,
+    timestamp: now.toISOString(),
+    area: area,
+    contratista: contratista,
+    tipo: tipo,
+    tarifa: tarifa,
+    piezasRealizadas: hechas,
+    piezasPagadasPreviamente: previas,
+    piezasPagadasHoy: piezas,
+    piezasPendientesRemanentes: remanente,
+    montoPagado: monto,
+    folioFactura: (inputFactura?.value || "").trim() || "S/F",
+    metodoPago: selMetodo?.value || "Transferencia Electrónica (SPEI)",
+    autorizadoPor: (inputAutorizo?.value || "").trim() || "Responsable de Pagos",
+    notas: (inputNotas?.value || "").trim()
+  };
+
+  const lista = getPagosRegistrados();
+  lista.unshift(nuevoPago); // Agregar al inicio para orden cronológico inverso
+  savePagosRegistrados(lista);
+
+  closeRegistrarPagoModal();
+
+  showToast(`✅ Pago registrado: ${formatMoney(monto)} a ${contratista} en ${area} (${piezas} piezas). Quedan ${remanente} pendientes.`, "success", 4500);
+
+  // Refrescar vistas del módulo
+  applyPagosFilter();
+  renderHistorialPagosTable();
+}
+
+function eliminarPagoRegistrado(idPago) {
+  const lista = getPagosRegistrados();
+  const item = lista.find(p => p.id === idPago);
+  if (!item) return;
+
+  const conf = confirm(`¿Estás segura de eliminar/anular el pago ${item.folioPago} por ${formatMoney(item.montoPagado)} a ${item.contratista}?\n\nLas ${item.piezasPagadasHoy} piezas pagadas volverán a sumarse al saldo pendiente por pagar.`);
+  if (!conf) return;
+
+  const filtrados = lista.filter(p => p.id !== idPago);
+  savePagosRegistrados(filtrados);
+
+  showToast(`🗑️ Pago ${item.folioPago} anulado. Las piezas regresaron a saldo pendiente.`, "info", 3500);
+
+  applyPagosFilter();
+  renderHistorialPagosTable();
+}
+
+// -------------------------------------------------------------------------
+// RENDERIZADO DE LA BITÁCORA DE PAGOS REGISTRADOS
+// -------------------------------------------------------------------------
+function toggleHistorialPagosSection() {
+  const sec = document.getElementById("pagosHistorialSection");
+  if (!sec) return;
+  sec.scrollIntoView({ behavior: "smooth" });
+}
+
+function renderHistorialPagosTable() {
+  const tbody = document.getElementById("pagosHistorialTableBody");
+  const badgeTotal = document.getElementById("pagosHistorialTotalBadge");
+  const badgeBtn = document.getElementById("pagosHistorialBadgeCount");
+  if (!tbody) return;
+
+  const lista = getPagosRegistrados();
+
+  if (badgeTotal) badgeTotal.innerText = `${lista.length} pago${lista.length === 1 ? "" : "s"} registrado${lista.length === 1 ? "" : "s"}`;
+  if (badgeBtn) badgeBtn.innerText = String(lista.length);
+
+  if (lista.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="12" class="text-center py-8 text-slate-400">
+          <div class="text-2xl mb-1">📜</div>
+          <div class="font-bold text-xs text-slate-600">Aún no hay pagos registrados en la bitácora</div>
+          <div class="text-[11px] text-slate-400 mt-0.5">Usa el botón "Registrar Pago" para liquidar y conciliar piezas con contratistas.</div>
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  let html = "";
+  lista.forEach((p, idx) => {
+    const tipoBadge = p.tipo === "CASETA" 
+      ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">CASETA</span>'
+      : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300">CAJA</span>';
+
+    html += `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="p-2.5 font-mono text-[11px] font-bold text-slate-800">${p.folioPago}</td>
+        <td class="p-2.5 whitespace-nowrap text-slate-600">${p.fecha}</td>
+        <td class="p-2.5 font-bold text-slate-900">${p.area}</td>
+        <td class="p-2.5 font-bold text-amber-950">${p.contratista}</td>
+        <td class="p-2.5 text-center">${tipoBadge}</td>
+        <td class="p-2.5 text-center font-black text-blue-900 text-sm bg-blue-50/50">
+          ${formatNumber(p.piezasPagadasHoy)}
+        </td>
+        <td class="p-2.5 text-right text-slate-600 font-semibold">$${Number(p.tarifa).toFixed(2)}</td>
+        <td class="p-2.5 text-right font-black text-emerald-700 text-sm bg-emerald-50/50">
+          ${formatMoney(p.montoPagado)}
+        </td>
+        <td class="p-2.5 text-center font-bold text-amber-800">
+          ${formatNumber(p.piezasPendientesRemanentes)} remanentes
+        </td>
+        <td class="p-2.5 font-mono text-[11px] text-slate-700">${p.folioFactura || "-"}</td>
+        <td class="p-2.5 text-[11px] text-slate-500 max-w-[140px] truncate" title="${p.notas || ''} (${p.autorizadoPor || ''})">
+          ${p.notas ? p.notas : (p.autorizadoPor || "-")}
+        </td>
+        <td class="p-2.5 text-center whitespace-nowrap">
+          <div class="flex items-center justify-center gap-1">
+            <button type="button" onclick="imprimirComprobantePago('${p.id}')" title="Imprimir Comprobante Oficial" class="p-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded border border-slate-300">
+              🖨️
+            </button>
+            <button type="button" onclick="eliminarPagoRegistrado('${p.id}')" title="Anular este pago" class="p-1 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded border border-rose-200">
+              🗑️
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+// -------------------------------------------------------------------------
+// EXPORTACIÓN Y RESPALDO DE LA BITÁCORA
+// -------------------------------------------------------------------------
+function exportarBitacoraPagosCSV() {
+  const lista = getPagosRegistrados();
+  if (lista.length === 0) {
+    showToast("⚠️ No hay pagos registrados para exportar.", "warning", 3000);
+    return;
+  }
+
+  const headers = [
+    "Folio Pago",
+    "Fecha",
+    "Plaza / Area",
+    "Contratista",
+    "Tipo Activo",
+    "Piezas Pagadas",
+    "Tarifa Unitaria MXN",
+    "Monto Liquidado MXN",
+    "Piezas Realizadas al Corte",
+    "Piezas Pagadas Previas",
+    "Piezas Remanentes Pendientes",
+    "Factura / Ref Fiscal",
+    "Metodo de Pago",
+    "Autorizado Por",
+    "Notas"
+  ];
+
+  const rows = lista.map(p => [
+    `"${p.folioPago}"`,
+    `"${p.fecha}"`,
+    `"${p.area}"`,
+    `"${p.contratista}"`,
+    `"${p.tipo}"`,
+    p.piezasPagadasHoy,
+    p.tarifa,
+    p.montoPagado,
+    p.piezasRealizadas,
+    p.piezasPagadasPreviamente,
+    p.piezasPendientesRemanentes,
+    `"${p.folioFactura || ''}"`,
+    `"${p.metodoPago || ''}"`,
+    `"${p.autorizadoPor || ''}"`,
+    `"${(p.notas || '').replace(/"/g, '""')}"`
+  ]);
+
+  const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Bitacora_Pagos_Contratistas_Telmex2026_${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast("📥 Bitácora de pagos descargada exitosamente.", "success", 3000);
+}
+
+function exportarRespaldoPagosJSON() {
+  const lista = getPagosRegistrados();
+  const str = JSON.stringify(lista, null, 2);
+  const blob = new Blob([str], { type: "application/json;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Respaldo_Historial_Pagos_Telmex2026_${new Date().toISOString().split("T")[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast("💾 Respaldo JSON de pagos descargado.", "success", 2500);
+}
+
+function importarRespaldoPagosJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (!Array.isArray(parsed)) throw new Error("Formato no válido");
+      savePagosRegistrados(parsed);
+      showToast(`✅ Se restauraron ${parsed.length} pagos correctamente.`, "success", 3500);
+      applyPagosFilter();
+      renderHistorialPagosTable();
+    } catch (err) {
+      showToast("❌ Error al restaurar el archivo JSON: formato inválido.", "error", 4000);
+    }
+  };
+  reader.readAsText(file);
+}
+
+// -------------------------------------------------------------------------
+// IMPRESIÓN DE COMPROBANTE OFICIAL DE PAGO
+// -------------------------------------------------------------------------
+function imprimirComprobantePago(idPago) {
+  const lista = getPagosRegistrados();
+  const p = lista.find(it => it.id === idPago);
+  if (!p) return;
+
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Comprobante Oficial de Liquidación - ${p.folioPago}</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 40px; color: #0f172a; font-size: 12px; line-height: 1.5; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0055a5; padding-bottom: 15px; margin-bottom: 20px; }
+        .logo-title { font-size: 20px; font-weight: 900; color: #0055a5; }
+        .badge { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; background: #e0f2fe; color: #0369a1; }
+        .box { border: 1px solid #cbd5e1; border-radius: 8px; padding: 15px; margin-bottom: 20px; background: #f8fafc; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th { background: #0055a5; color: white; padding: 8px 10px; text-align: left; font-size: 11px; }
+        td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; }
+        .total-row { font-size: 14px; font-weight: bold; background: #ecfdf5; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 60px; }
+        .sign-box { width: 28%; text-align: center; border-top: 1px solid #64748b; padding-top: 8px; font-size: 11px; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <div class="logo-title">IASA / PCI | CAMPAÑA NACIONAL IMAGEN TELMEX 2026</div>
+          <div style="font-size: 13px; font-weight: bold; color: #334155; margin-top: 3px;">Comprobante Oficial de Conciliación y Pago a Contratistas</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 14px; font-weight: 900; color: #0055a5;">${p.folioPago}</div>
+          <div style="color: #64748b; font-size: 11px;">Fecha de Pago: <b>${p.fecha}</b></div>
+        </div>
+      </div>
+
+      <div class="box">
+        <table style="margin: 0; background: transparent;">
+          <tr>
+            <td style="border:none; width: 50%;"><b>Plaza / Área:</b> ${p.area}</td>
+            <td style="border:none; width: 50%;"><b>Tipo de Activo:</b> ${p.tipo}</td>
+          </tr>
+          <tr>
+            <td style="border:none;"><b>Contratista / Socio:</b> ${p.contratista}</td>
+            <td style="border:none;"><b>Factura / Ref Fiscal:</b> ${p.folioFactura || "S/F"}</td>
+          </tr>
+          <tr>
+            <td style="border:none;"><b>Método de Pago:</b> ${p.metodoPago}</td>
+            <td style="border:none;"><b>Autorizado Por:</b> ${p.autorizadoPor}</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3>Detalle de Conciliación y Liquidación:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Concepto de Trabajo</th>
+            <th style="text-align: center;">Tarifa Unitaria</th>
+            <th style="text-align: center;">Piezas Realizadas</th>
+            <th style="text-align: center;">Piezas Pagadas Hoy</th>
+            <th style="text-align: center;">Saldo Remanente</th>
+            <th style="text-align: right;">Total Liquidado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>${p.tipo === "CASETA" ? "Casetas Telefónicas" : "Cajas de Distribución"}</b> (${p.area})</td>
+            <td style="text-align: center;">$${Number(p.tarifa).toFixed(2)} MXN</td>
+            <td style="text-align: center;">${p.piezasRealizadas}</td>
+            <td style="text-align: center; font-weight: bold; color: #0055a5;">${p.piezasPagadasHoy}</td>
+            <td style="text-align: center; color: #d97706; font-weight: bold;">${p.piezasPendientesRemanentes} piezas</td>
+            <td style="text-align: right; font-weight: 900; color: #059669; font-size: 13px;">$${Number(p.montoPagado).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="5" style="text-align: right; padding-right: 15px;">TOTAL TRANSFERIDO EN ESTA EMISIÓN:</td>
+            <td style="text-align: right; color: #059669; font-size: 16px;">$${Number(p.montoPagado).toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="background: #f1f5f9; padding: 10px; border-radius: 6px; font-size: 11px; margin-top: 15px;">
+        <b>Nota de Conciliación:</b> ${p.notas ? p.notas : "Liquidación conforme a folios autorizados en Linkaform."} Quedan ${p.piezasPendientesRemanentes} piezas pendientes para la siguiente factura.
+      </div>
+
+      <div class="signatures">
+        <div class="sign-box">
+          <b>Elaboró / Finanzas</b><br>
+          <span style="color: #64748b;">${p.autorizadoPor}</span>
+        </div>
+        <div class="sign-box">
+          <b>Revisó / Auditoría</b><br>
+          <span style="color: #64748b;">PCI / IASA</span>
+        </div>
+        <div class="sign-box">
+          <b>Recibió Contratista</b><br>
+          <span style="color: #64748b;">${p.contratista}</span>
+        </div>
+      </div>
+
+      <script>
+        window.onload = function() { window.print(); }
+      <\/script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
 
 
+function initPagosModule() {
+  // Configurar tarifas por defecto
+  pagosState.tarifaActiva = pagosState.tipo === "CASETA" ? pagosState.tarifaCaseta : pagosState.tarifaCaja;
+  
+  // Contadores globales de tipo en botones
+  updateGlobalTipoCounters();
 
-async function loadEvidencesFromStorage() {
+  // Inicializar sin ningún área seleccionada por defecto (como solicita el usuario para evitar confusión)
+  pagosState.selectedAreas.clear();
 
-  // 1. Carga inicial síncrona inmediata desde localStorage
+  // Renderizar componentes
+  updateTipoButtonsVisual();
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+  renderHistorialPagosTable();
+}
 
-  const saved = localStorage.getItem("TELMEX_EVIDENCES_2026");
+function updateGlobalTipoCounters() {
+  const records = state.records || [];
+  let cajas = 0;
+  let casetas = 0;
+  records.forEach(r => {
+    if (r.tipo === "CASETA") casetas++;
+    else cajas++;
+  });
 
-  if (saved) {
+  const cCajas = document.getElementById("pagosCounterCajasTotal");
+  if (cCajas) cCajas.innerText = `${formatNumber(cajas)} folios totales`;
 
-    try {
+  const cCasetas = document.getElementById("pagosCounterCasetasTotal");
+  if (cCasetas) cCasetas.innerText = `${formatNumber(casetas)} folios totales`;
+}
 
-      dbEvidences = JSON.parse(saved);
+// Paso 1: Cambiar Tipo (CAJA vs CASETA)
+function setPagosTipo(tipo) {
+  pagosState.tipo = tipo;
+  pagosState.tarifaActiva = tipo === "CASETA" ? pagosState.tarifaCaseta : pagosState.tarifaCaja;
 
-    } catch(e) {
+  // Actualizar input de tarifa
+  const inpTarifa = document.getElementById("pagosInputTarifa");
+  if (inpTarifa) inpTarifa.value = pagosState.tarifaActiva;
 
-      dbEvidences = [];
-
-    }
-
+  // Actualizar badge de tarifa
+  const badge = document.getElementById("pagosTarifaBadge");
+  if (badge) {
+    badge.innerText = `$${pagosState.tarifaActiva.toFixed(2)} MXN / pieza`;
   }
 
-  getCompletedAssetIdsSet();
+  // Al cambiar tipo, inicializar sin ningún área seleccionada
+  pagosState.selectedAreas.clear();
 
-  updateSyncBadges();
+  updateTipoButtonsVisual();
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+
+  showToast(`🎯 Tipo cambiado a: ${tipo === "CASETA" ? "Casetas ($36.00)" : "Cajas ($60.00)"}`, "info", 2000);
+}
+
+function updateTipoButtonsVisual() {
+  const btnCaja = document.getElementById("btnPagosTipoCaja");
+  const btnCaseta = document.getElementById("btnPagosTipoCaseta");
+
+  if (pagosState.tipo === "CAJA") {
+    if (btnCaja) {
+      btnCaja.className = "p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-blue-600 bg-blue-50/90 shadow-md ring-2 ring-blue-500/20";
+    }
+    if (btnCaseta) {
+      btnCaseta.className = "p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50";
+    }
+  } else {
+    if (btnCaja) {
+      btnCaja.className = "p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50";
+    }
+    if (btnCaseta) {
+      btnCaseta.className = "p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-amber-600 bg-amber-50/90 shadow-md ring-2 ring-amber-500/20";
+    }
+  }
+}
+
+function toggleEditTarifa() {
+  const row = document.getElementById("pagosEditTarifaRow");
+  if (row) row.classList.toggle("hidden");
+}
+
+function onTarifaChanged() {
+  const inp = document.getElementById("pagosInputTarifa");
+  const val = parseFloat(inp?.value);
+  if (!isNaN(val) && val > 0) {
+    pagosState.tarifaActiva = val;
+    if (pagosState.tipo === "CASETA") pagosState.tarifaCaseta = val;
+    else pagosState.tarifaCaja = val;
+    
+    const badge = document.getElementById("pagosTarifaBadge");
+    if (badge) badge.innerText = `$${val.toFixed(2)} MXN / pieza`;
+
+    applyPagosFilter();
+    showToast(`💰 Tarifa actualizada a: $${val.toFixed(2)} MXN`, "success", 2000);
+  }
+}
+
+function resetDefaultTarifa() {
+  pagosState.tarifaCaja = 60.00;
+  pagosState.tarifaCaseta = 36.00;
+  pagosState.tarifaActiva = pagosState.tipo === "CASETA" ? 36.00 : 60.00;
+  
+  const inp = document.getElementById("pagosInputTarifa");
+  if (inp) inp.value = pagosState.tarifaActiva;
+
+  const badge = document.getElementById("pagosTarifaBadge");
+  if (badge) badge.innerText = `$${pagosState.tarifaActiva.toFixed(2)} MXN / pieza`;
+
+  applyPagosFilter();
+  showToast("Tarifa oficial restablecida.", "info", 2000);
+}
+
+// Obtener todas las áreas que tengan al menos 1 registro del tipo activo
+function getAvailableAreasForTipo(tipo) {
+  const records = state.records || [];
+  const areaCounts = {};
+  records.forEach(r => {
+    if (r.tipo === tipo) {
+      const a = (r.area_trabajo || "").trim().toUpperCase();
+      if (a) areaCounts[a] = (areaCounts[a] || 0) + 1;
+    }
+  });
+  return Object.keys(areaCounts).sort();
+}
+
+// Paso 2: Renderizar el Tablero de Áreas
+function renderAreasBoard() {
+  const grid = document.getElementById("pagosAreasGrid");
+  if (!grid) return;
+
+  const records = state.records || [];
+  const areaCounts = {};
+  records.forEach(r => {
+    if (r.tipo === pagosState.tipo) {
+      const a = (r.area_trabajo || "").trim().toUpperCase();
+      if (a) areaCounts[a] = (areaCounts[a] || 0) + 1;
+    }
+  });
+
+  const allAreas = Object.keys(areaCounts).sort();
+  grid.innerHTML = "";
+
+  allAreas.forEach(area => {
+    const count = areaCounts[area] || 0;
+    const isSelected = pagosState.selectedAreas.has(area);
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.onclick = () => togglePagosArea(area);
+
+    if (isSelected) {
+      btn.className = "flex items-center justify-between p-2.5 rounded-xl border-2 border-blue-600 bg-blue-50 text-blue-950 font-bold shadow-sm transition-all text-left text-xs";
+      btn.innerHTML = `
+        <div class="truncate mr-1">
+          <span class="block truncate">${area}</span>
+          <span class="text-[10px] text-blue-700 font-semibold">${formatNumber(count)} ${pagosState.tipo === "CASETA" ? "casetas" : "cajas"}</span>
+        </div>
+        <span class="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] shrink-0 font-black">✓</span>
+      `;
+    } else {
+      btn.className = "flex items-center justify-between p-2.5 rounded-xl border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition-all text-left text-xs";
+      btn.innerHTML = `
+        <div class="truncate mr-1">
+          <span class="block truncate">${area}</span>
+          <span class="text-[10px] text-slate-400 font-medium">${formatNumber(count)} ${pagosState.tipo === "CASETA" ? "casetas" : "cajas"}</span>
+        </div>
+        <span class="w-5 h-5 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-[10px] shrink-0 font-bold">+</span>
+      `;
+    }
+    grid.appendChild(btn);
+  });
+
+  updateAreasBoardHeader(allAreas.length);
+}
+
+function updateAreasBoardHeader(totalAreasCount) {
+  const lbl = document.getElementById("pagosAreasSelectedLabel");
+  const countBadge = document.getElementById("pagosAreasCountBadge");
+
+  const selCount = pagosState.selectedAreas.size;
+  if (countBadge) countBadge.innerText = `${selCount} / ${totalAreasCount}`;
+
+  if (lbl) {
+    if (selCount === totalAreasCount) {
+      lbl.innerText = "Todas las plazas seleccionadas (Proyecto Completo)";
+      lbl.className = "font-extrabold text-blue-700";
+    } else if (selCount === 0) {
+      lbl.innerText = "Ninguna plaza seleccionada (Selecciona una o varias plazas abajo para liquidar, o pulsa '✓ Todas')";
+      lbl.className = "font-bold text-amber-600";
+    } else if (selCount === 1) {
+      const singleArea = Array.from(pagosState.selectedAreas)[0];
+      lbl.innerText = `Solo 1 plaza: ${singleArea}`;
+      lbl.className = "font-extrabold text-amber-700";
+    } else {
+      const arr = Array.from(pagosState.selectedAreas);
+      if (arr.length <= 4) {
+        lbl.innerText = `Plazas conjuntas: ${arr.join(" + ")}`;
+      } else {
+        lbl.innerText = `${selCount} plazas seleccionadas conjuntamente`;
+      }
+      lbl.className = "font-extrabold text-emerald-700";
+    }
+  }
+}
+
+function togglePagosArea(area) {
+  if (pagosState.selectedAreas.has(area)) {
+    pagosState.selectedAreas.delete(area);
+  } else {
+    pagosState.selectedAreas.add(area);
+  }
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+  renderHistorialPagosTable();
+}
+
+function selectAllAreas() {
+  const all = getAvailableAreasForTipo(pagosState.tipo);
+  all.forEach(a => pagosState.selectedAreas.add(a));
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+  showToast("✓ Todas las áreas seleccionadas.", "info", 1500);
+}
+
+function deselectAllAreas() {
+  pagosState.selectedAreas.clear();
+  renderAreasBoard();
+  populatePagosContratistas();
+  populatePagosTecnicos();
+  applyPagosFilter();
+  showToast("✕ Tablero de áreas deseleccionado.", "info", 1500);
+}
 
 
+// Paso 3: Llenar Contratistas
+function populatePagosContratistas() {
+  const records = state.records || [];
+  const conSelect = document.getElementById("pagosFilterContratista");
+  if (!conSelect) return;
 
-  // 2. Consulta asíncrona a IndexedDB (almacena el lote completo sin límite de 5MB)
+  const currentVal = conSelect.value || pagosState.contratista || "TODOS";
+  const conSet = new Set();
 
-  try {
+  records.forEach(r => {
+    if (r.tipo === pagosState.tipo) {
+      const area = (r.area_trabajo || "").trim().toUpperCase();
+      // Filtrar si el área está en las seleccionadas (o si no hay ninguna seleccionada, todas)
+      if (pagosState.selectedAreas.size === 0 || pagosState.selectedAreas.has(area)) {
+        const c = (r.contratista_homologado || r.contratista || "").trim();
+        if (c && c !== "Directo") conSet.add(c);
+      }
+    }
+  });
 
-    const db = await openIndexedDB();
+  const sorted = Array.from(conSet).sort();
+  conSelect.innerHTML = `<option value="TODOS">🏢 Todos los Contratistas (${sorted.length} con trabajos)</option>`;
+  sorted.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.innerText = c;
+    conSelect.appendChild(opt);
+  });
 
-    if (db) {
+  if (currentVal && conSet.has(currentVal)) {
+    conSelect.value = currentVal;
+    pagosState.contratista = currentVal;
+  } else {
+    conSelect.value = "TODOS";
+    pagosState.contratista = "TODOS";
+  }
+}
 
-      const tx = db.transaction(IDB_CONFIG.storeName, "readonly");
+// Llenar Técnicos secundarios
+function populatePagosTecnicos() {
+  const records = state.records || [];
+  const tecSelect = document.getElementById("pagosFilterTecnico");
+  if (!tecSelect) return;
 
-      const store = tx.objectStore(IDB_CONFIG.storeName);
+  const currentVal = tecSelect.value || pagosState.tecnico || "TODOS";
+  const tecSet = new Set();
 
-      const req = store.get(IDB_CONFIG.key);
-
-      req.onsuccess = () => {
-
-        const result = req.result;
-
-        if (Array.isArray(result) && result.length >= dbEvidences.length) {
-
-          dbEvidences = result;
-
-          getCompletedAssetIdsSet();
-
-          updateSyncBadges();
-
-          renderSavedEvidences();
-
-          updateDailyGoalUI();
-
-          applyHierarchyFilter();
-
-          console.log(`[Storage] ${dbEvidences.length} evidencias cargadas y verificadas desde IndexedDB.`);
-
+  records.forEach(r => {
+    if (r.tipo === pagosState.tipo) {
+      const area = (r.area_trabajo || "").trim().toUpperCase();
+      if (pagosState.selectedAreas.size === 0 || pagosState.selectedAreas.has(area)) {
+        const c = (r.contratista_homologado || r.contratista || "").trim();
+        if (pagosState.contratista === "TODOS" || c === pagosState.contratista) {
+          const t = (r.tecnico_homologado || r.tecnico || "").trim();
+          if (t && t !== "Sin Técnico") tecSet.add(t);
         }
+      }
+    }
+  });
 
-      };
+  const sorted = Array.from(tecSet).sort();
+  tecSelect.innerHTML = `<option value="TODOS">👥 Todas las Cuadrillas (${sorted.length} técnicos)</option>`;
+  sorted.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.innerText = t;
+    tecSelect.appendChild(opt);
+  });
 
+  if (currentVal && tecSet.has(currentVal)) {
+    tecSelect.value = currentVal;
+  } else {
+    tecSelect.value = "TODOS";
+  }
+}
+
+// Rango de Fechas
+function onPagosPresetDateChange() {
+  const preset = document.getElementById("pagosFilterPresetDate")?.value || "TODO";
+  pagosState.presetDate = preset;
+  const startEl = document.getElementById("pagosDateStart");
+  const endEl = document.getElementById("pagosDateEnd");
+  const customRow = document.getElementById("pagosCustomDateRow");
+
+  if (!startEl || !endEl) return;
+
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+
+  if (preset === "TODO") {
+    startEl.value = "";
+    endEl.value = "";
+    if (customRow) customRow.classList.add("hidden");
+  } else if (preset === "HOY") {
+    startEl.value = todayStr;
+    endEl.value = todayStr;
+    if (customRow) customRow.classList.add("hidden");
+  } else if (preset === "AYER") {
+    const yest = new Date(today);
+    yest.setDate(yest.getDate() - 1);
+    const yStr = `${yest.getFullYear()}-${String(yest.getMonth() + 1).padStart(2, "0")}-${String(yest.getDate()).padStart(2, "0")}`;
+    startEl.value = yStr;
+    endEl.value = yStr;
+    if (customRow) customRow.classList.add("hidden");
+  } else if (preset === "ESTA_SEMANA") {
+    const curr = new Date(today);
+    const day = curr.getDay(); // 0 domingo, 1 lunes
+    const diff = curr.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(curr.setDate(diff));
+    const mStr = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+    startEl.value = mStr;
+    endEl.value = todayStr;
+    if (customRow) customRow.classList.add("hidden");
+  } else if (preset === "MES_ACTUAL") {
+    startEl.value = `${yyyy}-${mm}-01`;
+    endEl.value = todayStr;
+    if (customRow) customRow.classList.add("hidden");
+  } else if (preset === "PERSONALIZADO") {
+    if (customRow) customRow.classList.remove("hidden");
+  }
+
+  applyPagosFilter();
+  renderHistorialPagosTable();
+}
+
+// Filtro Principal
+function applyPagosFilter() {
+  const conSelect = document.getElementById("pagosFilterContratista");
+  if (conSelect) pagosState.contratista = conSelect.value;
+
+  const tecSelect = document.getElementById("pagosFilterTecnico");
+  if (tecSelect) pagosState.tecnico = tecSelect.value;
+
+  const dStart = document.getElementById("pagosDateStart")?.value || "";
+  const dEnd = document.getElementById("pagosDateEnd")?.value || "";
+  pagosState.dateStart = dStart;
+  pagosState.dateEnd = dEnd;
+
+  const allRecords = state.records || [];
+
+  pagosFilteredRecords = allRecords.filter(r => {
+    // 1. Tipo (CAJA o CASETA)
+    if (r.tipo !== pagosState.tipo) return false;
+
+    // 2. Tablero de Áreas (Conjunto)
+    const area = (r.area_trabajo || "").trim().toUpperCase();
+    if (pagosState.selectedAreas.size === 0) {
+      return false; // Si no hay áreas seleccionadas, mostrar 0 hasta que el usuario elija
+    }
+    if (!pagosState.selectedAreas.has(area)) {
+      return false;
     }
 
-  } catch(e) {
-
-    console.warn("IndexedDB read error:", e);
-
-  }
-
-}
-
-
-
-async function saveEvidencesToStorage() {
-
-  updateSyncBadges();
-
-
-
-  // 1. Guardar en IndexedDB (sin límite de 5MB, seguro para 30, 50 o más fotos)
-
-  try {
-
-    const db = await openIndexedDB();
-
-    if (db) {
-
-      const tx = db.transaction(IDB_CONFIG.storeName, "readwrite");
-
-      const store = tx.objectStore(IDB_CONFIG.storeName);
-
-      store.put(dbEvidences, IDB_CONFIG.key);
-
+    // 3. Contratista a Liquidar
+    if (pagosState.contratista !== "TODOS") {
+      const c = (r.contratista_homologado || r.contratista || "").trim();
+      if (c !== pagosState.contratista) return false;
     }
 
-  } catch (err) {
+    // 4. Técnico secundario
+    if (pagosState.tecnico !== "TODOS") {
+      const t = (r.tecnico_homologado || r.tecnico || "").trim();
+      if (t !== pagosState.tecnico) return false;
+    }
 
-    console.warn("Error guardando en IndexedDB:", err);
+    // 5. Rango de Fechas
+    const f = r.fecha_corte || r.fecha_captura || r.fecha || "";
+    if (dStart && f && f < dStart) return false;
+    if (dEnd && f && f > dEnd) return false;
 
-  }
+    return true;
+  });
 
-
-
-  // 2. Respaldo en localStorage con manejo seguro de QuotaExceededError
-
-  try {
-
-    localStorage.setItem("TELMEX_EVIDENCES_2026", JSON.stringify(dbEvidences));
-
-  } catch (err) {
-
-    console.warn("localStorage quota superada (normal con muchas fotos). Protegido en IndexedDB:", err);
-
-    try {
-
-      // Respaldo ligero sin base64 en localStorage en caso de saturación
-
-      const light = dbEvidences.map(ev => ({
-
-        ...ev,
-
-        foto_despues: ev.url_foto_despues || (ev.foto_despues ? "[GUARDADA_EN_INDEXEDDB]" : "")
-
-      }));
-
-      localStorage.setItem("TELMEX_EVIDENCES_2026_LIGHT", JSON.stringify(light));
-
-    } catch (e2) {}
-
-  }
-
+  pagosState.currentPage = 1;
+  updatePagosSummaryCards();
+  renderPagosSubtotalesAreas();
+  renderPagosModelosGrid();
+  renderPagosTable();
 }
 
+// Tarjetas KPI Financieras
+// Tarjetas KPI Financieras con Control de Pagos y Pendientes
+function updatePagosSummaryCards() {
+  const cantidadRealizadas = pagosFilteredRecords.length;
+  const tarifa = pagosState.tarifaActiva;
 
+  // Calcular piezas pagadas acumuladas para los filtros activos
+  let pagadasAcumuladas = 0;
+  if (pagosState.selectedAreas.size > 0) {
+    pagosState.selectedAreas.forEach(area => {
+      pagadasAcumuladas += getPiezasPagadasAcumuladas(pagosState.tipo, area, pagosState.contratista);
+    });
+  } else {
+    pagadasAcumuladas = getPiezasPagadasAcumuladas(pagosState.tipo, "TODAS", pagosState.contratista);
+  }
 
-function updateSyncBadges() {
+  const cantidadPendientes = Math.max(0, cantidadRealizadas - pagadasAcumuladas);
+  const montoPendiente = cantidadPendientes * tarifa;
+  const montoPagadoTotal = pagadasAcumuladas * tarifa;
 
-  const count = dbEvidences.length;
+  // Tarjeta 1: Saldo Pendiente por Liquidar
+  const mDineroEl = document.getElementById("pagosKpiMontoDinero");
+  if (mDineroEl) {
+    mDineroEl.innerText = formatMoney(montoPendiente);
+  }
 
-  const b1 = document.getElementById("syncBadge");
+  const fEl = document.getElementById("pagosKpiFormula");
+  if (fEl) {
+    const labelPieza = pagosState.tipo === "CASETA" ? "casetas" : "cajas";
+    fEl.innerText = `${formatNumber(cantidadPendientes)} ${labelPieza} pendientes x $${tarifa.toFixed(2)} MXN`;
+  }
 
-  const b2 = document.getElementById("navCount");
+  // Tarjeta 2: Número de Piezas Pendientes vs Hechas
+  const pCountEl = document.getElementById("pagosKpiCantidadPiezas");
+  if (pCountEl) pCountEl.innerText = formatNumber(cantidadPendientes);
 
-  if (b1) b1.innerText = count;
+  const pLabelEl = document.getElementById("pagosKpiPiezasLabel");
+  if (pLabelEl) {
+    pLabelEl.innerHTML = pagosState.tipo === "CASETA" ? "<span>📞</span> CASETAS POR LIQUIDAR" : "<span>📦</span> CAJAS POR LIQUIDAR";
+  }
 
-  if (b2) b2.innerText = count;
+  const pDescEl = document.getElementById("pagosKpiPiezasDesc");
+  if (pDescEl) {
+    pDescEl.innerText = `${formatNumber(cantidadRealizadas)} hechas en campo | ${formatNumber(pagadasAcumuladas)} pagadas`;
+  }
 
+  // Tarjeta 3: Total Pagado Histórico
+  const mPagadoEl = document.getElementById("pagosKpiMontoPagado");
+  if (mPagadoEl) {
+    mPagadoEl.innerText = formatMoney(montoPagadoTotal);
+  }
+
+  const pPagadasDescEl = document.getElementById("pagosKpiPiezasPagadasDesc");
+  if (pPagadasDescEl) {
+    pPagadasDescEl.innerText = `${formatNumber(pagadasAcumuladas)} piezas liquidadas históricamente`;
+  }
+
+  // Tarjeta 4: Contratista
+  const conTitleEl = document.getElementById("pagosKpiContratistaTitle");
+  if (conTitleEl) {
+    if (pagosState.contratista === "TODOS") {
+      conTitleEl.innerText = "Todos los Contratistas";
+    } else {
+      conTitleEl.innerText = pagosState.contratista;
+    }
+  }
+
+  const tecSet = new Set();
+  pagosFilteredRecords.forEach(r => {
+    const t = (r.tecnico_homologado || r.tecnico || "").trim();
+    if (t) tecSet.add(t);
+  });
+
+  const cuadCountEl = document.getElementById("pagosKpiCuadrillasCount");
+  if (cuadCountEl) {
+    cuadCountEl.innerText = `${tecSet.size} técnicos involucrados`;
+  }
 }
 
-
-
-function renderSavedEvidences() {
-
-  const container = document.getElementById("savedEvidencesList");
-
+// Desglose por Plaza / Área con Hechas, Pagadas y Saldo Pendiente
+function renderPagosSubtotalesAreas() {
+  const container = document.getElementById("pagosSubtotalesAreasContainer");
+  const tag = document.getElementById("pagosMatrizTotalTag");
   if (!container) return;
 
-  container.innerHTML = "";
-
-
-
-  if (dbEvidences.length === 0) {
-
-    container.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px;">No hay evidencias guardadas pendientes.</p>';
-
-    return;
-
-  }
-
-
-
-  dbEvidences.forEach((ev, idx) => {
-
-    const card = document.createElement("div");
-
-    card.className = "card";
-
-    card.style.marginBottom = "10px";
-
-    card.style.borderLeft = (ev.omitir_sync || ev.is_duplicate_linkaform) ? "4px solid #ef4444" : "4px solid var(--primary)";
-
-
-
-    const isManualEv = ev.is_manual === true || ev.is_fuera_catalogo === true || ev.existe_en_bd === "No" || String(ev.unique_id || "").includes("MANUAL") || String(ev.asset_id || "").includes("MANUAL");
-
-    const bdBadge = isManualEv 
-
-      ? '<span style="background:#fef3c7; color:#b45309; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold;">No en BD</span>'
-
-      : '<span style="background:#dcfce7; color:#15803d; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold;">En BD: Sí</span>';
-
-
-
-    let statusBadge = "";
-
-    if (ev.omitir_sync || ev.is_duplicate_linkaform) {
-
-      statusBadge = '<span style="background:#fee2e2; color:#b91c1c; padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:bold; margin-left:4px;">⚠️ Ya en Linkaform (Pausado)</span>';
-
+  const areaMap = {};
+  pagosFilteredRecords.forEach(r => {
+    const a = (r.area_trabajo || "").trim().toUpperCase() || "SIN ÁREA";
+    if (!areaMap[a]) {
+      areaMap[a] = { count: 0, tecnicos: new Set(), contratistas: new Set() };
     }
-
-
-
-    const fechaStr = ev.fecha_captura ? new Date(ev.fecha_captura).toLocaleTimeString() : "";
-
-
-
-    card.innerHTML = `
-
-      <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; font-size:0.9rem;">
-
-        <span>${ev.asset_id} (${ev.tipo_elemento}) ${bdBadge} ${statusBadge}</span>
-
-        <span style="color:var(--text-muted); font-size:0.75rem;">${fechaStr}</span>
-
-      </div>
-
-      <div style="font-size:0.8rem; color:var(--text-dark); margin-top:4px;">
-
-        📌 Estado: <strong>${ev.existencia}</strong> | Trabajo: <strong>${ev.proceso || 'IMAGEN'}</strong> | Viniles: <strong>${ev.num_viniles}</strong> | Oferta: <strong>${ev.oferta_colocada}</strong>
-
-      </div>
-
-      <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
-
-        📍 Área: ${ev.area_trabajo || 'N/A'} (${ev.estado || 'N/A'}) | GPS Foto: ${ev.gps_captura_lat ? `${Number(ev.gps_captura_lat).toFixed(5)}, ${Number(ev.gps_captura_lon).toFixed(5)}` : 'Sin GPS'}
-
-      </div>
-
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:8px; border-top:1px dashed #e2e8f0; gap:8px;">
-
-        ${ev.omitir_sync ? `
-
-          <button type="button" onclick="toggleOmitirSync(${idx})" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; padding:6px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer; font-weight:500;">
-
-            🔄 Reactivar Envío
-
-          </button>
-
-        ` : `
-
-          <button type="button" onclick="toggleOmitirSync(${idx})" style="background:#fff1f2; color:#e11d48; border:1px solid #fecdd3; padding:6px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer; font-weight:500;">
-
-            ⏸️ Pausar Envío
-
-          </button>
-
-        `}
-
-        <button type="button" onclick="deleteEvidencePrompt(${idx})" style="background:#fee2e2; color:#dc2626; border:1px solid #fca5a5; padding:6px 12px; border-radius:6px; font-size:0.8rem; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px;">
-
-          🗑️ Borrar del teléfono
-
-        </button>
-
-      </div>
-
-    `;
-
-
-
-    container.appendChild(card);
-
+    areaMap[a].count++;
+    const t = (r.tecnico_homologado || r.tecnico || "").trim();
+    if (t) areaMap[a].tecnicos.add(t);
+    const c = (r.contratista_homologado || r.contratista || "").trim();
+    if (c) areaMap[a].contratistas.add(c);
   });
 
-}
-
-
-
-function deleteEvidence(idx) {
-
-  if (idx < 0 || idx >= dbEvidences.length) return;
-
-  const removed = dbEvidences.splice(idx, 1)[0];
-
-  saveEvidencesToStorage();
-
-  renderSavedEvidences();
-
-  updateSyncBadges();
-
-  updateDailyGoalUI();
-
-  applyHierarchyFilter();
-
-  if (removed && removed.asset_id) {
-
-    showCustomAlert(`✅ La evidencia del activo <strong>${removed.asset_id}</strong> fue eliminada de este teléfono.`, "Evidencia Eliminada");
-
-  }
-
-}
-
-window.deleteEvidence = deleteEvidence;
-
-
-
-function deleteEvidencePrompt(idx) {
-
-  if (idx < 0 || idx >= dbEvidences.length) return;
-
-  const ev = dbEvidences[idx];
-
-  const idStr = ev.asset_id || "este activo";
-
-  showCustomConfirm(
-
-    `¿Deseas eliminar permanentemente la evidencia de <strong>${idStr}</strong> de este dispositivo?<br><br><small style="color:#64748b;">Esta acción liberará espacio de almacenamiento en el teléfono y no se intentará enviar.</small>`,
-
-    "Eliminar Evidencia",
-
-    () => deleteEvidence(idx),
-
-    null,
-
-    "🗑️ Sí, Eliminar",
-
-    "Cancelar",
-
-    "#dc2626"
-
-  );
-
-}
-
-window.deleteEvidencePrompt = deleteEvidencePrompt;
-
-
-
-function toggleOmitirSync(idx) {
-
-  if (idx < 0 || idx >= dbEvidences.length) return;
-
-  const ev = dbEvidences[idx];
-
-  ev.omitir_sync = !ev.omitir_sync;
-
-  saveEvidencesToStorage();
-
-  renderSavedEvidences();
-
-  if (ev.omitir_sync) {
-
-    showCustomAlert(`El activo <strong>${ev.asset_id}</strong> quedó pausado y no se enviará en el próximo lote.<br><br><small style="color:#64748b;">Permanecerá en este teléfono como respaldo.</small>`, "Envío Pausado");
-
-  } else {
-
-    showCustomAlert(`El activo <strong>${ev.asset_id}</strong> fue reactivado y se enviará en la próxima sincronización.`, "Envío Reactivado");
-
-  }
-
-}
-
-window.toggleOmitirSync = toggleOmitirSync;
-
-
-
-async function uploadImageToLinkaformCloud(b64DataUrl, fieldId, filename) {
-
-  if (!b64DataUrl || typeof b64DataUrl !== "string") return null;
-
-
-
-  // Si ya es una URL pública subida previamente (en un intento anterior), no volver a subir
-
-  if (b64DataUrl.startsWith("http://") || b64DataUrl.startsWith("https://")) {
-
-    return b64DataUrl;
-
-  }
-
-
-
-  // Hasta 2 intentos con pausa de recuperación en caso de intermitencia de red móvil en campo
-
-  for (let attempt = 1; attempt <= 2; attempt++) {
-
-    try {
-
-      const fetchRes = await fetch(b64DataUrl);
-
-      const blob = await fetchRes.blob();
-
-
-
-      const formData = new FormData();
-
-      formData.append("file", blob, filename);
-
-      formData.append("field_id", fieldId);
-
-      formData.append("form_id", "142786");
-
-      formData.append("is_image", "true");
-
-
-
-      const uploadRes = await fetch("https://app.linkaform.com/api/infosync/cloud_upload/", {
-
-        method: "POST",
-
-        body: formData
-
-      });
-
-
-
-      if (uploadRes.ok) {
-
-        const json = await uploadRes.json();
-
-        if (json && json.file) {
-
-          return json.file;
-
-        }
-
-      } else {
-
-        const errText = await uploadRes.text();
-
-        console.warn(`[cloud_upload attempt ${attempt}] HTTP ${uploadRes.status}: ${errText.substring(0, 100)}`);
-
-      }
-
-    } catch (e) {
-
-      console.warn(`[cloud_upload attempt ${attempt}] Error de red:`, e);
-
-    }
-
-    if (attempt < 2) {
-
-      await new Promise(r => setTimeout(r, 1200));
-
-    }
-
-  }
-
-  return null;
-
-}
-
-
-
-// Autenticación Segura con Linkaform JWT (Evita error 500 por usuario anónimo en backend)
-
-const LINKAFORM_API_KEY = "003ab07a66c6795f8d3fcca2a3b6f94a7f06258e";
-
-const LINKAFORM_USERNAME = "pahernandez@operacionpci.com.mx";
-
-let cachedLinkaformJwt = null;
-
-let jwtExpiryTime = 0;
-
-
-
-async function getLinkaformJwtToken() {
-
-  const now = Date.now();
-
-  if (cachedLinkaformJwt && now < jwtExpiryTime) {
-
-    return cachedLinkaformJwt;
-
-  }
-
-  try {
-
-    const saved = localStorage.getItem("LINKAFORM_JWT_TOKEN");
-
-    const exp = parseInt(localStorage.getItem("LINKAFORM_JWT_EXP") || "0", 10);
-
-    if (saved && now < exp) {
-
-      cachedLinkaformJwt = saved;
-
-      jwtExpiryTime = exp;
-
-      return saved;
-
-    }
-
-  } catch (e) {}
-
-
-
-  try {
-
-    const resp = await fetch("https://app.linkaform.com/api/infosync/user_admin/login/", {
-
-      method: "POST",
-
-      headers: { "Content-Type": "application/json" },
-
-      body: JSON.stringify({
-
-        username: LINKAFORM_USERNAME,
-
-        api_key: LINKAFORM_API_KEY
-
-      })
-
-    });
-
-    if (resp.ok) {
-
-      const data = await resp.json();
-
-      if (data && data.jwt) {
-
-        cachedLinkaformJwt = data.jwt;
-
-        jwtExpiryTime = now + (24 * 60 * 60 * 1000); // 24 horas
-
-        try {
-
-          localStorage.setItem("LINKAFORM_JWT_TOKEN", cachedLinkaformJwt);
-
-          localStorage.setItem("LINKAFORM_JWT_EXP", String(jwtExpiryTime));
-
-        } catch(e) {}
-
-        return cachedLinkaformJwt;
-
-      }
-
-    }
-
-  } catch (err) {
-
-    console.warn("[Linkaform Auth] Falló login Linkaform:", err);
-
-  }
-
-  return null;
-
-}
-
-
-
-let isSyncingToLinkaform = false;
-
-
-
-async function syncAllToLinkaform() {
-
-  if (isSyncingToLinkaform) {
-
-    alert("⏳ Ya hay un proceso de sincronización en curso. Por favor espera a que termine.");
-
-    return;
-
-  }
-
-
-
-  if (dbEvidences.length === 0) {
-
-    alert("No hay evidencias pendientes en el teléfono.");
-
-    return;
-
-  }
-
-
-
-  if (!navigator.onLine) {
-
-    updateOfflineStatus();
-
-    alert("⚠️ No se puede enviar porque el dispositivo está en Modo Offline. Intenta cuando tengas red de datos o Wi-Fi.");
-
-    return;
-
-  }
-
-
-
-  isSyncingToLinkaform = true;
-
-  const btn = document.getElementById("btnSyncLinkaform");
-
-  const total = dbEvidences.length;
-
-  if (btn) {
-
-    btn.disabled = true;
-
-    btn.style.opacity = "0.75";
-
-    btn.innerText = `⏳ Iniciando envío de ${total} evidencias...`;
-
-  }
-
-
-
-  // 0. Obtener Token JWT oficial de Linkaform para autenticación segura
-
-  const jwtToken = await getLinkaformJwtToken();
-
-
-
-  const LINKAFORM_API_URL = "https://app.linkaform.com/api/infosync/form_answer/";
-
-  const LINKAFORM_FIELDS = {
-
-    tipo: "6ad52fc6bc424ea79992eabe",
-
-    distrito_telefono: "6ad52fc6bc424ea79992eabf",
-
-    estado: "6ad52fc6bc424ea79992eac0",
-
-    area_trabajo: "6ad52fc6bc424ea79992eac1",
-
-    existe_en_bd: "6ad530403c0c04d9bb2555b2",
-
-    comentarios: "6ad4df593c0c04d9bb25556e",
-
-    id_unico: "6ab6f3a4c472baf119e176e7",
-
-    latitud: "6ab6f3a4c472baf119e176e8",
-
-    longitud: "6ab6f3a4c472baf119e176e9",
-
-    hay_caja_caseta: "6a99eb60a20e4f1d25581b71",
-
-    num_viniles: "6a99eb60a20e4f1d25581b72",
-
-    oferta_colocada: "6a99eb8af9c750d6db214c5d",
-
-    foto_antes: "6a99e764f9c750d6db214c54",
-
-    foto_despues: "6a99e764f9c750d6db214c55",
-
-    tipo_trabajo: "6ab9cdfec4fc804d8c8e088c",
-
-    modelo_caja_caseta: "6ab9d647dba7a0c191e6a0f6",
-
-    contratista: "6abe9357bef08742fcf94020",
-
-    tecnico: "6abe9357bef08742fcf94021",
-
-    version: "6adaa11601dfe84563e2253b"
-
-  };
-
-
-
-  let successCount = 0;
-
-  let sentFolios = [];
-
-  let remainingEvidences = [];
-
-  let duplicateAssetsDetected = [];
-
-  let lastErrorMessage = "";
-
-  let isNetworkFailure = false;
-
-
-
-  for (let i = 0; i < total; i++) {
-
-    const ev = dbEvidences[i];
-
-    const asset_id = String(ev.asset_id || "S/N");
-
-    const unique_id = String(ev.unique_id || asset_id);
-
-    if (isRestrictedDistrict(asset_id)) {
-      console.warn(`[Restricción Telmex] Distrito restringido detectado: ${asset_id}. Omitiendo envío.`);
-      continue;
-    }
-
-
-
-    // Si el activo fue pausado manualmente o marcado como duplicado previamente, omitir su envío y no bloquear el lote
-
-    if (ev.omitir_sync) {
-
-      console.log(`[Linkaform] Omitiendo ${asset_id} por estar pausado/duplicado.`);
-
-      remainingEvidences.push(ev);
-
-      continue;
-
-    }
-
-
-
-    if (btn) {
-
-      btn.innerText = `⏳ Subiendo ${i + 1} de ${total} (${asset_id})...`;
-
-    }
-
-
-
-    const normExist = String(ev.existencia || "").trim().toUpperCase();
-
-    const existencia_val = (normExist === "NO_EXISTE" || normExist === "NO" || normExist === "INEXISTENTE") ? "no" : "sí";
-
-    const rawOferta = String(ev.oferta_colocada || "120 MB");
-
-    let oferta_val = "120_mb";
-
-    if (rawOferta.includes("250")) oferta_val = "250_mb";
-
-    else if (rawOferta.includes("200")) oferta_val = "200_mb";
-
-    else oferta_val = "120_mb";
-
-    const proc_str = (ev.proceso || "IMAGEN").toLowerCase();
-
-    const tipo_trabajo_val = proc_str.includes("limpieza") ? "limpieza" : "imagen";
-
-    const num_viniles_val = String(ev.num_viniles !== undefined && ev.num_viniles !== null ? ev.num_viniles : 1);
-
-    const lat_val = ev.gps_captura_lat !== null && ev.gps_captura_lat !== undefined ? ev.gps_captura_lat : (ev.lat_original || 0);
-
-    const lon_val = ev.gps_captura_lon !== null && ev.gps_captura_lon !== undefined ? ev.gps_captura_lon : (ev.lon_original || 0);
-
-    const modelo_val = String(ev.modelo_tipo || (ev.tipo_elemento === "CASETA" ? "NORMAL" : "Tradicional Sencilla"));
-
-    const contratista_val = String(ev.contratista || userContratista || "N/A");
-
-    const tecnico_val = String(ev.tecnico || userTecnico || "N/A");
-
-    const version_val = String(ev.version_app || getAppVersionString() || CURRENT_APP_VERSION_IPHONE);
-
-
-
-    const isManual = ev.is_manual === true || ev.is_fuera_catalogo === true || ev.existe_en_bd === "No" || String(ev.unique_id || "").includes("MANUAL") || String(ev.asset_id || "").includes("MANUAL");
-
-    const existeEnBdVal = isManual ? "No" : "Sí";
-
-    const estadoVal = String(ev.estado || "").trim();
-
-    const areaTrabajoVal = String(ev.area_trabajo || ev.municipio || "").trim();
-
-
-
-    const answers = {
-
-      [LINKAFORM_FIELDS.tipo]: (ev.tipo_elemento || "CASETA").toUpperCase(),
-
-      [LINKAFORM_FIELDS.distrito_telefono]: asset_id,
-
-      [LINKAFORM_FIELDS.estado]: estadoVal,
-
-      [LINKAFORM_FIELDS.area_trabajo]: areaTrabajoVal,
-
-      [LINKAFORM_FIELDS.existe_en_bd]: existeEnBdVal,
-
-      [LINKAFORM_FIELDS.comentarios]: String(ev.comentarios || "Sin observaciones"),
-
-      [LINKAFORM_FIELDS.id_unico]: unique_id,
-
-      [LINKAFORM_FIELDS.latitud]: lat_val,
-
-      [LINKAFORM_FIELDS.longitud]: lon_val,
-
-      [LINKAFORM_FIELDS.hay_caja_caseta]: existencia_val,
-
-      [LINKAFORM_FIELDS.num_viniles]: num_viniles_val,
-
-      [LINKAFORM_FIELDS.oferta_colocada]: oferta_val,
-
-      [LINKAFORM_FIELDS.tipo_trabajo]: tipo_trabajo_val,
-
-      [LINKAFORM_FIELDS.modelo_caja_caseta]: modelo_val,
-
-      [LINKAFORM_FIELDS.contratista]: contratista_val,
-
-      [LINKAFORM_FIELDS.tecnico]: tecnico_val,
-
-      [LINKAFORM_FIELDS.version]: version_val,
-
-      "6adaa11601dfe84563e2253b": version_val
-
-    };
-
-
-
-    // Subir Foto DESPUÉS
-
-    let photoUploaded = false;
-
-    let urlDespues = ev.url_foto_despues || null;
-
-
-
-    if (urlDespues && (urlDespues.startsWith("http://") || urlDespues.startsWith("https://"))) {
-
-      photoUploaded = true;
-
-    } else if (ev.foto_despues) {
-
-      urlDespues = await uploadImageToLinkaformCloud(ev.foto_despues, LINKAFORM_FIELDS.foto_despues, `despues_${asset_id}.jpg`);
-
-      if (urlDespues) {
-
-        photoUploaded = true;
-
-        ev.url_foto_despues = urlDespues; // Guardar URL en el registro para no resubir en reintentos
-
-      }
-
-    }
-
-
-
-    if (!photoUploaded || !urlDespues) {
-
-      console.error(`[Linkaform] Falló la subida de foto para ${asset_id}. Se conserva en el teléfono para reintentar.`);
-
-      remainingEvidences.push(ev);
-
-      lastErrorMessage = `Error al subir la fotografía de ${asset_id} a Linkaform Cloud. Verifica tu conexión de datos.`;
-
-      continue;
-
-    }
-
-
-
-    answers[LINKAFORM_FIELDS.foto_despues] = [{
-
-      file_name: `despues_${asset_id}.jpg`,
-
-      file_url: urlDespues
-
-    }];
-
-    answers[LINKAFORM_FIELDS.foto_antes] = [{
-
-      file_name: `despues_${asset_id}.jpg`,
-
-      file_url: urlDespues
-
-    }];
-
-
-
-    const payload = {
-
-      form_id: 142786,
-
-      answers: answers
-
-    };
-
-
-
-    try {
-
-      console.log(`[POST Linkaform Payload ${i + 1}/${total}]`, payload);
-
-      const postHeaders = { "Content-Type": "application/json" };
-
-      if (jwtToken) {
-
-        postHeaders["Authorization"] = `Bearer ${jwtToken}`;
-
-      }
-
-
-
-      const response = await fetch(LINKAFORM_API_URL, {
-
-        method: "POST",
-
-        headers: postHeaders,
-
-        body: JSON.stringify(payload)
-
-      });
-
-
-
-      const resText = await response.text();
-
-      console.log(`[Linkaform Status ${response.status}]`, resText);
-
-
-
-      let resData = {};
-
-      try { resData = JSON.parse(resText); } catch(e) {}
-
-
-
-      // Extraer folio / id oficial de Linkaform
-
-      let folio = null;
-
-      if (resData && typeof resData === "object") {
-
-        if (resData.error || resData.errors || resData.status === "error" || resData.success === false) {
-
-          folio = null;
-
-        } else {
-
-          folio = resData.folio || 
-
-                  (resData.response && resData.response.folio) || 
-
-                  (resData.data && resData.data.folio) ||
-
-                  resData.id || 
-
-                  (resData.response && resData.response.id) || 
-
-                  (resData.data && resData.data.id) ||
-
-                  resData.answers_id;
-
-        }
-
-      }
-
-
-
-      const hasValidFolio = folio !== null && folio !== undefined && 
-
-                            String(folio).trim() !== "" && 
-
-                            String(folio).toUpperCase() !== "OK" && 
-
-                            String(folio).toUpperCase() !== "N/A" && 
-
-                            String(folio) !== "0";
-
-
-
-      // Linkaform responde HTTP 201 Created al registrar con éxito (o HTTP 200).
-
-      // Si Linkaform alguna vez responde con error 500 ('is_anonymous', 'traceback'), el registro YA se guardó en la base de datos de Linkaform
-
-      const lowerRes = (resText || "").toLowerCase();
-
-      const isInternalNotificationCrash = (response.status === 500 && (
-
-        lowerRes.includes("is_anonymous") || 
-
-        lowerRes.includes("anonymous") || 
-
-        lowerRes.includes("attribute") ||
-
-        lowerRes.includes("traceback")
-
-      ));
-
-
-
-      const isConfirmed = response.status === 201 || 
-
-                          response.status === 200 || 
-
-                          (response.ok && hasValidFolio) || 
-
-                          isInternalNotificationCrash;
-
-
-
-      // Detección precisa de rechazo por activo/distrito/teléfono duplicado en Linkaform
-
-      const isDuplicateInLinkaform = !isConfirmed && (
-
-        lowerRes.includes("ya existe") || 
-
-        lowerRes.includes("ya se encuentra") || 
-
-        lowerRes.includes("duplicad") || 
-
-        lowerRes.includes("duplicate") || 
-
-        lowerRes.includes("already exists") || 
-
-        lowerRes.includes("unique") || 
-
-        lowerRes.includes("no permite crear") ||
-
-        (response.status === 400 && (lowerRes.includes("6ad52fc6bc424ea79992eabf") || lowerRes.includes("distrito") || lowerRes.includes("telefono")))
-
-      );
-
-
-
-      if (isConfirmed) {
-
-        const confirmedFolio = hasValidFolio ? String(folio) : (resData.id ? String(resData.id) : `LF-${ev.asset_id}-${Date.now().toString().slice(-4)}`);
-
-        sentFolios.push(confirmedFolio);
-
-        markAssetCompletedPermanently(ev.asset_id, ev.unique_id);
-
-        successCount++;
-
-        if (isInternalNotificationCrash) {
-
-          console.warn(`[Linkaform] Registro confirmado y guardado en BD para ${ev.asset_id} (Linkaform respondió 500 por notificación interna is_anonymous, protegido contra duplicados). Folio asignado: ${confirmedFolio}`);
-
-        } else {
-
-          console.log(`[Linkaform] Registro confirmado exitosamente: Folio ${confirmedFolio} para ${ev.asset_id}`);
-
-        }
-
-      } else if (isDuplicateInLinkaform) {
-
-        console.warn(`[Linkaform] Activo ${ev.asset_id} rechazado por regla de duplicados de Linkaform. Se pausa para no bloquear el resto.`);
-
-        ev.is_duplicate_linkaform = true;
-
-        ev.omitir_sync = true;
-
-        duplicateAssetsDetected.push(ev);
-
-        markAssetCompletedPermanently(ev.asset_id, ev.unique_id);
-
-        remainingEvidences.push(ev);
-
-        lastErrorMessage = `El activo ${ev.asset_id} ya existe registrado en Linkaform.`;
-
-      } else {
-
-        const isVersionRejected = (response.status === 400 && (
-          lowerRes.includes("6adaa11601dfe84563e2253b") || 
-          lowerRes.includes("version") || 
-          lowerRes.includes("opción no válida") ||
-          lowerRes.includes("opcion no valida") ||
-          lowerRes.includes("invalid choice") ||
-          lowerRes.includes("choice")
-        ));
-
-        if (isVersionRejected) {
-          lastErrorMessage = "⚠️ La versión de tu aplicación ya no está autorizada en Linkaform. Por favor actualiza a la versión 10 (v10) para poder enviar tus evidencias.";
-        } else {
-          lastErrorMessage = `Respuesta Linkaform (HTTP ${response.status}): ${resText.substring(0, 100)}`;
-        }
-
-        console.warn(`[Linkaform] Falló registro para ${ev.asset_id}. Se conserva en el teléfono. Respuesta:`, resText);
-
-        remainingEvidences.push(ev);
-
-      }
-
-    } catch (e) {
-
-      console.error("Error al sincronizar con Linkaform", e);
-
-      remainingEvidences.push(ev);
-
-      isNetworkFailure = true;
-
-      forceOfflineState = true;
-
-      updateOfflineStatus(true);
-
-      lastErrorMessage = e.message || "Fallo de conexión";
-
-    }
-
-
-
-    // Pausa de 250ms entre registros para proteger la conexión móvil de saturación
-
-    if (i < total - 1) {
-
-      await new Promise(r => setTimeout(r, 250));
-
-    }
-
-  }
-
-
-
-  // Guardar en el teléfono: únicamente se conservan los registros que NO obtuvieron folio
-
-  dbEvidences = remainingEvidences;
-
-  await saveEvidencesToStorage();
-
-  renderSavedEvidences();
-
-  applyHierarchyFilter();
-
-
-
-  isSyncingToLinkaform = false;
-
-  if (btn) {
-
-    btn.disabled = false;
-
-    btn.style.opacity = "1";
-
-    btn.innerText = "🚀 Enviar Todo a Linkaform";
-
-  }
-
-
-
-  // Si se detectaron duplicados en Linkaform, advertir al técnico y ofrecer eliminar o conservar pausado
-
-  if (duplicateAssetsDetected.length > 0) {
-
-    const dupListStr = duplicateAssetsDetected.map(d => d.asset_id).join(", ");
-
-    const plural = duplicateAssetsDetected.length > 1;
-
-    showCustomConfirm(
-
-      `⚠️ <strong>Distrito o Teléfono Ya Registrado en Linkaform:</strong><br><br>` +
-
-      `El activo <strong>${dupListStr}</strong> ya se encuentra registrado previamente en Linkaform por otra cuadrilla o en un folio anterior.<br><br>` +
-
-      (successCount > 0 ? `✅ <strong>Los demás registros válidos (${successCount}) se enviaron y confirmaron con éxito.</strong><br><br>` : '') +
-
-      `<strong>¿Deseas eliminar ${plural ? 'estos registros' : 'este registro'} de este teléfono?</strong><br><br>` +
-
-      `• <strong>🗑️ Sí, Eliminar:</strong> Se borrará del teléfono para liberar espacio.<br>` +
-
-      `• <strong>📁 No, Conservar:</strong> Se quedará en este teléfono como respaldo de fotos, pero pausado para no bloquear futuros envíos.`,
-
-      "Activo Ya en Linkaform",
-
-      async () => {
-
-        const dupIds = new Set(duplicateAssetsDetected.map(d => d.asset_id));
-
-        dbEvidences = dbEvidences.filter(e => !dupIds.has(e.asset_id));
-
-        await saveEvidencesToStorage();
-
-        renderSavedEvidences();
-
-        updateSyncBadges();
-
-        updateDailyGoalUI();
-
-        applyHierarchyFilter();
-
-        showCustomAlert(`✅ ${plural ? 'Los registros duplicados fueron eliminados' : 'El registro duplicado fue eliminado'} de este teléfono.`, "Eliminado");
-
-      },
-
-      async () => {
-
-        await saveEvidencesToStorage();
-
-        renderSavedEvidences();
-
-        showCustomAlert(`ℹ️ Se conservaron en este teléfono pero quedaron pausados. Podrás borrarlos en cualquier momento desde la lista de evidencias.`, "Conservado");
-
-      },
-
-      "🗑️ Sí, Eliminar",
-
-      "📁 No, Conservar",
-
-      "#dc2626"
-
-    );
-
-  } else if (remainingEvidences.length > 0) {
-
-    if (successCount > 0) {
-
-      showCustomAlert(
-
-        `⚠️ <strong>Sincronización Parcial:</strong><br><br>` +
-
-        `✅ <strong>Subidos con Folio Confirmado:</strong> ${successCount} registro(s).<br>` +
-
-        `📱 <strong>Guardados en este Teléfono:</strong> ${remainingEvidences.length} registro(s) pendientes para volver a enviar.<br><br>` +
-
-        `<strong>Folios Generados:</strong><br><small style="word-break:break-all;">${sentFolios.slice(0, 5).join(", ")}${sentFolios.length > 5 ? ' y más...' : ''}</small><br><br>` +
-
-        `<strong>Detalle de red / respuesta:</strong><br><small>${lastErrorMessage || "Conexión móvil inestable en campo"}</small><br><br>` +
-
-        `<em>Tus registros pendientes están 100% seguros en el teléfono. Presiona nuevamente "Enviar Todo a Linkaform" para continuar.</em>`,
-
-        "Sincronización Parcial"
-
-      );
-
-    } else {
-
-      if (isNetworkFailure || !navigator.onLine || forceOfflineState) {
-
-        updateOfflineStatus(true);
-
-        showCustomAlert(
-
-          `⚠️ <strong>Modo Offline o Sin Conexión:</strong><br><br>` +
-
-          `No se pudo conectar con el servidor de Linkaform.<br><br>` +
-
-          `Tus <strong>${remainingEvidences.length} registros</strong> están 100% seguros guardados en este teléfono.<br><br>` +
-
-          `Intenta nuevamente cuando tengas señal de datos o Wi-Fi.`,
-
-          "Sin Conexión"
-
-        );
-
-      } else {
-
-        showCustomAlert(
-
-          `❌ <strong>No se pudo confirmar ningún registro en Linkaform:</strong><br><br>` +
-
-          `Los <strong>${remainingEvidences.length} registros</strong> se conservaron en el teléfono para que no se pierda nada.<br><br>` +
-
-          `<strong>Detalle del error:</strong><br><small>${lastErrorMessage || "Error desconocido"}</small>`,
-
-          "Error de Envío"
-
-        );
-
-      }
-
-    }
-
-  } else {
-
-    showCustomAlert(
-
-      `✅ <strong>¡Sincronización Exitosa al 100%!</strong><br><br>` +
-
-      `Se subieron y confirmaron los <strong>${successCount}</strong> registros exitosamente en Linkaform.<br><br>` +
-
-      `<strong>Folios Oficiales Generados:</strong><br><small style="word-break:break-all;">${sentFolios.join(", ")}</small>`,
-
-      "Sincronización Exitosa"
-
-    );
-
-  }
-
-}
-
-
-
-async function exportEvidencesWhatsApp() {
-
-  if (dbEvidences.length === 0) {
-
-    alert("No hay evidencias registradas para enviar por WhatsApp.");
-
-    return;
-
-  }
-
-
-
-  const filename = `lote_evidencias_telmex_${new Date().toISOString().slice(0,10)}_${Date.now()}.json`;
-
-  const jsonContent = JSON.stringify(dbEvidences, null, 2);
-
-  const file = new File([jsonContent], filename, { type: "application/json" });
-
-
-
-  // 1. Web Share API (Permite adjuntar el archivo JSON directo a WhatsApp en Android)
-
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-
-    try {
-
-      await navigator.share({
-
-        files: [file],
-
-        title: "Lote Evidencias Imagen Telmex 2026",
-
-        text: `Comparto lote de ${dbEvidences.length} evidencias de la campaña Imagen Telmex 2026.`
-
-      });
-
-      return;
-
-    } catch (e) {
-
-      console.log("Compartir cancelado o no soportado:", e);
-
-    }
-
-  }
-
-
-
-  // 2. Fallback a WhatsApp Deep Link + Descarga del archivo
-
-  const assetsList = dbEvidences.map(e => e.asset_id).slice(0, 5).join(", ");
-
-  const summaryText = `📦 *Lote Evidencias Imagen Telmex 2026*\n\n` +
-
-    `• Total registros: ${dbEvidences.length}\n` +
-
-    `• Fecha: ${new Date().toLocaleString()}\n` +
-
-    `• Casetas/Cajas: ${assetsList}${dbEvidences.length > 5 ? "..." : ""}\n\n` +
-
-    `📎 Se ha descargado el archivo JSON en tu teléfono para adjuntarlo a este chat.`;
-
-
-
-  exportEvidencesJSON();
-
-  const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(summaryText)}`;
-
-  window.open(whatsappUrl, "_system");
-
-}
-
-
-
-function exportEvidencesJSON() {
-
-  if (dbEvidences.length === 0) {
-
-    alert("No hay evidencias para exportar.");
-
-    return;
-
-  }
-
-
-
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dbEvidences, null, 2));
-
-  const downloadAnchor = document.createElement('a');
-
-  const filename = `lote_evidencias_telmex_${new Date().toISOString().slice(0,10)}_${Date.now()}.json`;
-
-  
-
-  downloadAnchor.setAttribute("href", dataStr);
-
-  downloadAnchor.setAttribute("download", filename);
-
-  document.body.appendChild(downloadAnchor);
-
-  downloadAnchor.click();
-
-  downloadAnchor.remove();
-
-}
-
-
-
-function clearEvidencesPrompt() {
-
-  if (confirm("¿Estás seguro de borrar las evidencias pendientes del lote en este teléfono? (Los activos completados seguirán excluidos para evitar duplicados)")) {
-
-    dbEvidences = [];
-
-    saveEvidencesToStorage();
-
-    renderSavedEvidences();
-
-    applyHierarchyFilter();
-
-    updateDailyGoalUI();
-
-  }
-
-}
-
-
-
-// ---------------------------------------------------------
-
-// MODAL DE CÁMARA EN TIEMPO REAL (WEBRTC STREAM CON FLASH / LINTERNA)
-
-// ---------------------------------------------------------
-
-let currentStream = null;
-
-let currentTargetPhotoType = null;
-
-let currentFacingMode = 'environment';
-
-let isTorchOn = false;
-
-let hasTorchCapability = false;
-
-
-
-function openCameraModal(type) {
-
-  currentTargetPhotoType = type;
-
-  document.getElementById("cameraModalTitle").innerText = `📷 Capturar Foto ${type.toUpperCase()}`;
-
-  document.getElementById("cameraModal").style.display = "flex";
-
-  startCameraStream();
-
-}
-
-
-
-async function detectTorchCapability(stream) {
-
-  hasTorchCapability = false;
-
-  if (!stream) return;
-
-  const track = stream.getVideoTracks()[0];
-
-  if (!track) return;
-
-  try {
-
-    if (track.getCapabilities) {
-
-      const caps = track.getCapabilities();
-
-      if (caps && caps.torch) {
-
-        hasTorchCapability = true;
-
-      }
-
-    }
-
-  } catch (e) {
-
-    console.log("Detección de capacidad torch:", e);
-
-  }
-
-}
-
-
-
-function updateTorchUI(torchApplied) {
-
-  const btn = document.getElementById("btnToggleFlash");
-
-  const txt = document.getElementById("btnToggleFlashText");
-
-  const icon = document.getElementById("flashIcon");
-
-  const overlay = document.getElementById("nightAssistOverlay");
-
-
-
-  if (!btn) return;
-
-
-
-  if (isTorchOn) {
-
-    btn.classList.add("torch-active");
-
-    if (txt) txt.innerText = torchApplied ? "Linterna: ENCENDIDA" : "Modo Noche: ENCENDIDO";
-
-    if (icon) icon.innerText = "⚡";
-
-    if (overlay && (!torchApplied || currentFacingMode === 'user')) {
-
-      overlay.style.display = "block";
-
-    } else if (overlay) {
-
-      overlay.style.display = "none";
-
-    }
-
-  } else {
-
-    btn.classList.remove("torch-active");
-
-    if (txt) txt.innerText = "Linterna: APAGADA";
-
-    if (icon) icon.innerText = "🔦";
-
-    if (overlay) overlay.style.display = "none";
-
-  }
-
-}
-
-
-
-function resetTorchState() {
-
-  isTorchOn = false;
-
-  updateTorchUI(false);
-
-}
-
-
-
-async function toggleFlash() {
-
-  if (!currentStream) return;
-
-  const track = currentStream.getVideoTracks()[0];
-
-  isTorchOn = !isTorchOn;
-
-
-
-  let torchApplied = false;
-
-  if (track && track.applyConstraints) {
-
-    try {
-
-      await track.applyConstraints({
-
-        advanced: [{ torch: isTorchOn }]
-
-      });
-
-      torchApplied = true;
-
-    } catch (err) {
-
-      console.warn("No fue posible aplicar torch por hardware (se usará asistencia visual):", err);
-
-    }
-
-  }
-
-
-
-  updateTorchUI(torchApplied);
-
-}
-
-
-
-function startCameraStream() {
-
-  if (currentStream) {
-
-    currentStream.getTracks().forEach(track => track.stop());
-
-  }
-
-
-
-  const constraints = {
-
-    video: {
-
-      facingMode: { ideal: currentFacingMode },
-
-      width: { ideal: 1920 },
-
-      height: { ideal: 1080 }
-
-    }
-
-  };
-
-
-
-  navigator.mediaDevices.getUserMedia(constraints)
-
-    .then(async stream => {
-
-      currentStream = stream;
-
-      const video = document.getElementById("cameraVideo");
-
-      video.srcObject = stream;
-
-      await detectTorchCapability(stream);
-
-      resetTorchState();
-
-    })
-
-    .catch(err => {
-
-      console.warn("getUserMedia no disponible o sin permiso, ejecutando fallback nativo:", err);
-
-      closeCameraModal();
-
-      const inputId = (currentTargetPhotoType === 'Antes') ? 'inputCamAntes' : 'inputCamDespues';
-
-      const inputEl = document.getElementById(inputId);
-
-      if (inputEl) inputEl.click();
-
-    });
-
-}
-
-
-
-function flipCamera() {
-
-  if (isTorchOn) {
-
-    resetTorchState();
-
-  }
-
-  currentFacingMode = (currentFacingMode === 'environment') ? 'user' : 'environment';
-
-  startCameraStream();
-
-}
-
-
-
-async function closeCameraModal() {
-
-  if (currentStream) {
-
-    if (isTorchOn) {
-
-      try {
-
-        const track = currentStream.getVideoTracks()[0];
-
-        if (track && track.applyConstraints) {
-
-          await track.applyConstraints({ advanced: [{ torch: false }] });
-
-        }
-
-      } catch (e) {}
-
-    }
-
-    currentStream.getTracks().forEach(track => track.stop());
-
-    currentStream = null;
-
-  }
-
-  resetTorchState();
-
-  document.getElementById("cameraModal").style.display = "none";
-
-}
-
-
-
-function takeSnapshot() {
-
-  const video = document.getElementById("cameraVideo");
-
-  if (!video || !video.videoWidth) {
-
-    alert("Esperando señal de la cámara...");
-
-    return;
-
-  }
-
-
-
-  const canvas = document.createElement("canvas");
-
-  const MAX_WIDTH = 1080;
-
-  const MAX_HEIGHT = 1080;
-
-  let width = video.videoWidth;
-
-  let height = video.videoHeight;
-
-
-
-  if (width > height) {
-
-    if (width > MAX_WIDTH) {
-
-      height *= MAX_WIDTH / width;
-
-      width = MAX_WIDTH;
-
-    }
-
-  } else {
-
-    if (height > MAX_HEIGHT) {
-
-      width *= MAX_HEIGHT / height;
-
-      height = MAX_HEIGHT;
-
-    }
-
-  }
-
-
-
-  canvas.width = width;
-
-  canvas.height = height;
-
-  const ctx = canvas.getContext("2d");
-
-  ctx.drawImage(video, 0, 0, width, height);
-
-
-
-  const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.68);
-
-
-
-  if (currentTargetPhotoType === 'Antes') {
-
-    photoAntesBase64 = compressedDataUrl;
-
-    document.getElementById("previewAntes").src = compressedDataUrl;
-
-    document.getElementById("previewAntes").style.display = "block";
-
-    document.getElementById("iconAntes").style.display = "none";
-
-    document.getElementById("labelAntes").innerText = "✔ Foto ANTES OK";
-
-  } else {
-
-    photoDespuesBase64 = compressedDataUrl;
-
-    document.getElementById("previewDespues").src = compressedDataUrl;
-
-    document.getElementById("previewDespues").style.display = "block";
-
-    document.getElementById("iconDespues").style.display = "none";
-
-    document.getElementById("labelDespues").innerText = "✔ Foto DESPUÉS OK";
-
-  }
-
-
-
-  closeCameraModal();
-
-}
-
-
-
-function forceAppUpdate() {
-
-  if (confirm("¿Deseas actualizar la aplicación a la versión v10 y limpiar la memoria caché?")) {
-
-    if ('serviceWorker' in navigator) {
-
-      navigator.serviceWorker.getRegistrations().then(regs => {
-
-        for (let r of regs) r.unregister();
-
-      });
-
-    }
-
-    if ('caches' in window) {
-
-      caches.keys().then(keys => {
-
-        for (let k of keys) caches.delete(k);
-
-      });
-
-    }
-
-    try {
-
-      localStorage.removeItem("LINKAFORM_JWT_TOKEN");
-
-      localStorage.removeItem("LINKAFORM_JWT_EXP");
-
-    } catch(e) {}
-
-    window.location.reload(true);
-
-  }
-
-}
-
-window.forceAppUpdate = forceAppUpdate;
-
-window.onElementTypeChange = onElementTypeChange;
-
-window.onFilterModeloChange = onFilterModeloChange;
-
-window.populateModelFilter = populateModelFilter;
-
-
-
-
-
-// =========================================================================
-
-// MÓDULO DE SINCRONIZACIÓN DINÁMICA DE BASE LINKAFORM (DESCUENTO DE COMPLETADAS)
-
-// =========================================================================
-
-
-
-function initCompletedAssetsSync() {
-
-  // Cargar lista remota de localStorage si existe
-
-  loadRemoteCompletedSetFromStorage();
-
-  updateSyncStatusUI();
-
-
-
-  // Auto-sincronizar al iniciar si hay internet y pasaron > 5 min desde la última sync
-  const lastSyncTs = parseInt(localStorage.getItem("TELMEX_REMOTE_COMPLETED_TS") || "0", 10);
-  const minutesSinceSync = (Date.now() - lastSyncTs) / (1000 * 60);
-
-  if (navigator.onLine && (minutesSinceSync > 5 || lastSyncTs === 0)) {
-    setTimeout(() => {
-      fetchCompletedAssets({ silent: true });
-    }, 1500);
-  }
-
-  // Sincronización proactiva periódica cada 8-10 minutos en segundo plano si está en línea
-  setInterval(() => {
-    if (navigator.onLine && !isSyncingCompletedAssets) {
-      const ts = parseInt(localStorage.getItem("TELMEX_REMOTE_COMPLETED_TS") || "0", 10);
-      if ((Date.now() - ts) / (1000 * 60) > 8) {
-        fetchCompletedAssets({ silent: true });
-      }
-    }
-  }, 60000);
-
-  // Sincronización proactiva al volver al primer plano (desbloqueo de iPhone / celular o cambio de pestaña)
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible" && navigator.onLine && !isSyncingCompletedAssets) {
-      const ts = parseInt(localStorage.getItem("TELMEX_REMOTE_COMPLETED_TS") || "0", 10);
-      if ((Date.now() - ts) / (1000 * 60) > 5) {
-        fetchCompletedAssets({ silent: true });
-      }
-    }
+  const areasSorted = Object.keys(areaMap).sort((a, b) => areaMap[b].count - areaMap[a].count);
+  const tarifa = pagosState.tarifaActiva;
+
+  let totalGeneralPendiente = 0;
+  let totalGeneralPagado = 0;
+
+  areasSorted.forEach(area => {
+    const hechas = areaMap[area].count;
+    const pagadas = getPiezasPagadasAcumuladas(pagosState.tipo, area, pagosState.contratista);
+    const pendientes = Math.max(0, hechas - pagadas);
+    totalGeneralPendiente += (pendientes * tarifa);
+    totalGeneralPagado += (pagadas * tarifa);
   });
 
-}
-
-
-
-function loadRemoteCompletedSetFromStorage() {
-
-  try {
-
-    const raw = localStorage.getItem("TELMEX_REMOTE_COMPLETED_SET");
-
-    if (raw) {
-
-      const arr = JSON.parse(raw);
-
-      if (Array.isArray(arr)) {
-
-        remoteCompletedSet = new Set(arr.map(id => String(id).trim().toUpperCase()));
-
-      }
-
-    }
-
-  } catch(e) {
-
-    console.warn("[Sync] Error leyendo remote completed set:", e);
-
+  if (tag) {
+    tag.innerText = `Saldo pendiente: ${formatMoney(totalGeneralPendiente)} | Ya pagado: ${formatMoney(totalGeneralPagado)}`;
   }
 
-}
-
-
-
-async function fetchCompletedAssets(options = {}) {
-
-  const silent = options.silent === true;
-
-  if (isSyncingCompletedAssets) return;
-
-  isSyncingCompletedAssets = true;
-
-
-
-  const btn = document.getElementById("btnSyncCompletedAssets");
-
-  const icon = document.getElementById("syncBtnIcon");
-
-  if (btn && icon) {
-
-    icon.style.display = "inline-block";
-
-    icon.style.animation = "spin 1s linear infinite";
-
-    btn.style.opacity = "0.7";
-
-    btn.disabled = true;
-
-  }
-
-
-
-  let success = false;
-
-  let data = null;
-
-
-
-  // 1. Intentar URL remota en vivo de GitHub Pages
-
-  try {
-
-    const liveUrl = `${COMPLETED_ASSETS_REMOTE_URL}?_=${Date.now()}`;
-
-    const resp = await fetch(liveUrl, { cache: "no-store" });
-
-    if (resp.ok) {
-
-      data = await resp.json();
-
-      success = true;
-
-      console.log(`[Sync] Descargados ${data.total_completed} activos desde GitHub Pages.`);
-
-    }
-
-  } catch(e) {
-
-    console.warn("[Sync] Fetch remoto falló, intentando fallback local:", e);
-
-  }
-
-
-
-  // 2. Fallback a archivo local relativo si el remoto falló
-
-  if (!success) {
-
-    try {
-
-      const localUrl = `${COMPLETED_ASSETS_LOCAL_URL}?_=${Date.now()}`;
-
-      const resp = await fetch(localUrl, { cache: "no-store" });
-
-      if (resp.ok) {
-
-        data = await resp.json();
-
-        success = true;
-
-        console.log(`[Sync] Descargados ${data.total_completed} activos desde archivo local.`);
-
-      }
-
-    } catch(e2) {
-
-      console.warn("[Sync] Fallback local falló:", e2);
-
-    }
-
-  }
-
-
-
-  if (success && data && Array.isArray(data.completed_ids)) {
-
-    const idList = data.completed_ids.map(id => String(id).trim().toUpperCase());
-
-    remoteCompletedSet = new Set(idList);
-
-
-
-    localStorage.setItem("TELMEX_REMOTE_COMPLETED_SET", JSON.stringify(idList));
-
-    localStorage.setItem("TELMEX_REMOTE_COMPLETED_TS", String(Date.now()));
-
-    localStorage.setItem("TELMEX_REMOTE_COMPLETED_TIME", data.updated_at_display || new Date().toLocaleString());
-
-    localStorage.setItem("TELMEX_REMOTE_COMPLETED_COUNT", String(data.total_completed || idList.length));
-
-
-
-    // Actualizar estado en memoria y en la interfaz
-
-    getCompletedAssetIdsSet();
-
-    updateSyncStatusUI();
-
-    updateCatalogCountBadge();
-
-    applyHierarchyFilter();
-
-
-
-    if (!silent) {
-
-      showCustomAlert(
-
-        `✅ <strong>Base Sincronizada con Éxito:</strong><br><br>` +
-
-        `Se han descontado <strong>${idList.length.toLocaleString()}</strong> activos ya ejecutados y reportados en Linkaform.<br><br>` +
-
-        `En el buscador y mapa solo verás los puntos <strong>pendientes por realizar</strong>.`,
-
-        "Base Actualizada"
-
-      );
-
-    }
-
-  } else {
-
-    if (!silent) {
-
-      const lastTime = localStorage.getItem("TELMEX_REMOTE_COMPLETED_TIME") || "Previa";
-
-      showCustomAlert(
-
-        `📶 <strong>Sin Conexión para Sincronizar:</strong><br><br>` +
-
-        `No fue posible conectar con el servidor de Linkaform en este momento.<br><br>` +
-
-        `Tu dispositivo sigue funcionando normalmente con la última base sincronizada del <strong>${lastTime}</strong>.`,
-
-        "Sincronización Offline"
-
-      );
-
-    }
-
-  }
-
-
-
-  if (btn && icon) {
-
-    icon.style.animation = "";
-
-    btn.style.opacity = "1";
-
-    btn.disabled = false;
-
-  }
-
-  isSyncingCompletedAssets = false;
-
-}
-
-
-
-function syncCompletedAssetsManual() {
-
-  fetchCompletedAssets({ silent: false });
-
-}
-
-window.syncCompletedAssetsManual = syncCompletedAssetsManual;
-
-
-
-function updateSyncStatusUI() {
-
-  const badge = document.getElementById("syncStatusBadge");
-
-  const text = document.getElementById("syncStatusText");
-
-  const lastTime = localStorage.getItem("TELMEX_REMOTE_COMPLETED_TIME");
-
-  const count = parseInt(localStorage.getItem("TELMEX_REMOTE_COMPLETED_COUNT") || "0", 10);
-
-
-
-  if (badge) {
-
-    if (count > 0) {
-
-      badge.innerText = "Al día";
-
-      badge.style.background = "#dcfce7";
-
-      badge.style.color = "#166534";
-
-    } else {
-
-      badge.innerText = "Pendiente";
-
-      badge.style.background = "#fef3c7";
-
-      badge.style.color = "#92400e";
-
-    }
-
-  }
-
-
-
-  if (text) {
-
-    if (lastTime && count > 0) {
-
-      text.innerText = `Corte: ${lastTime} • ${count.toLocaleString()} completadas descontadas`;
-
-    } else {
-
-      text.innerText = "Pulsa Actualizar para descontar trabajos de Linkaform";
-
-    }
-
-  }
-
-}
-
-
-
-
-
-// =========================================================
-
-// MAPA DE RECORRIDO INTERACTIVO: 35 MÁS CERCANAS
-
-// =========================================================
-
-let routeMapInstance = null;
-
-let routeMapMarkersGroup = null;
-
-let routeMapPolylineLayer = null;
-
-let routeMarkersMap = {};
-
-let isRouteLineVisible = true;
-
-let currentRouteMapFilter = "AUTO";
-
-let cachedRoute35Items = [];
-
-
-
-function openRouteMapModal() {
-  const modal = document.getElementById("routeMapModal");
-  if (modal) {
-    modal.style.display = "flex";
-  }
-
-  // Vibración táctil si el dispositivo la soporta
-  if (typeof navigator !== 'undefined' && navigator.vibrate) {
-    try { navigator.vibrate([40, 30, 40]); } catch (e) {}
-  }
-
-  // Sincronizar filtro con el tipo activo en la vista principal
-  const mainFilterVal = document.querySelector('input[name="filterElemento"]:checked')?.value || "TODOS";
-  currentRouteMapFilter = mainFilterVal;
-
-  syncRouteFilterButtons(currentRouteMapFilter);
-  renderRouteMap(currentRouteMapFilter, true);
-}
-
-function closeRouteMapModal() {
-  const modal = document.getElementById("routeMapModal");
-  if (modal) {
-    modal.style.display = "none";
-  }
-}
-
-function syncRouteFilterButtons(tipo) {
-  const ids = {
-    'TODOS': 'btnRouteFilterAll',
-    'CAJA': 'btnRouteFilterCajas',
-    'CASETA': 'btnRouteFilterCasetas'
-  };
-  ['btnRouteFilterAll', 'btnRouteFilterCajas', 'btnRouteFilterCasetas'].forEach(id => {
-    const btn = document.getElementById(id);
-    if (btn) btn.classList.remove('active');
-  });
-  const targetId = ids[tipo] || 'btnRouteFilterAll';
-  document.getElementById(targetId)?.classList.add('active');
-}
-
-function setRouteMapFilter(tipo) {
-  currentRouteMapFilter = tipo;
-  syncRouteFilterButtons(tipo);
-  renderRouteMap(tipo, false);
-}
-
-function renderRouteMap(filterType, useActiveSearchResults = false) {
-  let userLat = (currentGpsCoords && currentGpsCoords.lat) ? Number(currentGpsCoords.lat) : null;
-  let userLon = (currentGpsCoords && currentGpsCoords.lon) ? Number(currentGpsCoords.lon) : null;
-
-  // Si no tenemos GPS aún, solicitarlo inmediatamente
-  if (userLat === null || userLon === null) {
-    const subtitle = document.getElementById("routeMapSubtitle");
-    if (subtitle) subtitle.innerText = "📡 Solicitando ubicación GPS para calcular las 35 más cercanas...";
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          currentGpsCoords = {
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-            accuracy: pos.coords.accuracy
-          };
-          renderRouteMap(currentRouteMapFilter, useActiveSearchResults);
-        },
-        (err) => {
-          console.warn("[GPS] Falló geolocalización en mapa:", err);
-          // Fallback a coordenadas de respaldo del área o primer activo válido
-          const areaSelect = document.getElementById("filterArea")?.value;
-          let fallbackCoord = (areaSelect && typeof AREA_COORDINATES_MAP !== 'undefined' && AREA_COORDINATES_MAP[areaSelect]) ? AREA_COORDINATES_MAP[areaSelect] : null;
-          if (!fallbackCoord) {
-            const firstValid = (catalog || []).find(it => it.lat && it.lon && Number(it.lat) !== 0);
-            fallbackCoord = firstValid ? { lat: Number(firstValid.lat), lon: Number(firstValid.lon) } : { lat: 20.6736, lon: -103.3500 };
-          }
-          userLat = fallbackCoord.lat;
-          userLon = fallbackCoord.lon;
-          currentGpsCoords = { lat: userLat, lon: userLon, accuracy: 100 };
-          renderRouteMap(currentRouteMapFilter, useActiveSearchResults);
-        },
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 5000 }
-      );
-    }
-    return;
-  }
-
-  const completedIds = (typeof getCompletedAssetIdsSet === "function") ? getCompletedAssetIdsSet() : new Set();
-  const mode = document.querySelector('input[name="searchSelectionMode"]:checked')?.value || "AUTO";
-  const estadoVal = (mode === "MANUAL") ? (document.getElementById("filterEstado")?.value || "") : "";
-  const areaVal = (mode === "MANUAL") ? (document.getElementById("filterArea")?.value || "") : "";
-
-  let tipoTarget = filterType || "TODOS";
-  if (tipoTarget === "AUTO") {
-    const radio = document.querySelector('input[name="filterElemento"]:checked');
-    tipoTarget = radio ? radio.value : "TODOS";
-  }
-
-  const modelFilter = document.getElementById("filterModeloEspecifico")?.value || "TODOS";
-
-  // Determinar si el modelo seleccionado en el filtro aplica al tipo que se está mostrando en el mapa
-  let effectiveModelFilter = modelFilter;
-  if (modelFilter !== "TODOS") {
-    const isCajaModel = (typeof CAJA_MODELS !== 'undefined') && CAJA_MODELS.some(m => m.id === modelFilter || m.title === modelFilter || modelFilter.includes("Tradicional") || modelFilter.includes("Siecor") || modelFilter.includes("Krone") || modelFilter.includes("Desplazamiento") || modelFilter.includes("Envolvente"));
-    const isCasetaModel = (typeof CASETA_MODELS !== 'undefined') && CASETA_MODELS.some(m => m.id === modelFilter || modelFilter === "NORMAL" || modelFilter === "MINI" || modelFilter === "SEMICIRCULAR" || modelFilter.includes("REFORMA") || modelFilter.includes("CUICUILCO"));
-    if (tipoTarget === "CASETA" && isCajaModel) {
-      effectiveModelFilter = "TODOS";
-    } else if (tipoTarget === "CAJA" && isCasetaModel) {
-      effectiveModelFilter = "TODOS";
-    }
-  }
-
-  let top35 = [];
-
-  // Si se abre desde la vista principal y ya tenemos resultados activos que coinciden con el tipo
-  if (useActiveSearchResults && window.lastSearchResults && window.lastSearchResults.length > 0) {
-    const activeFirst = window.lastSearchResults[0];
-    const matchesTipo = (tipoTarget === "TODOS" || activeFirst.tipo === tipoTarget);
-    if (matchesTipo) {
-      top35 = window.lastSearchResults
-        .filter(it => it.lat != null && it.lon != null && !isNaN(Number(it.lat)) && !isNaN(Number(it.lon)) && Number(it.lat) !== 0 && Number(it.lon) !== 0)
-        .slice(0, 35)
-        .map(it => {
-          const iLat = Number(it.lat);
-          const iLon = Number(it.lon);
-          const dist = (it.dist_m != null && it.dist_m !== 99999999) ? it.dist_m : haversineDistance(userLat, userLon, iLat, iLon);
-          return { ...it, lat: iLat, lon: iLon, dist_m: dist };
-        });
-    }
-  }
-
-  // Si no se usaron resultados precargados (o el usuario cambió filtro dentro del modal)
-  if (!top35 || top35.length === 0) {
-    const candidates = [];
-    const catLen = (typeof catalog !== 'undefined' && Array.isArray(catalog)) ? catalog.length : 0;
-
-    for (let i = 0; i < catLen; i++) {
-      const item = catalog[i];
-      const itemId = String(item.id || "").trim().toUpperCase();
-      const itemUid = item.unique_id ? String(item.unique_id).trim().toUpperCase() : "";
-
-      // Omitir ya completadas en Linkaform
-      if (completedIds.has(itemId) || (itemUid && completedIds.has(itemUid))) continue;
-
-      // Filtro por tipo (CASETA / CAJA)
-      if (tipoTarget !== "TODOS" && item.tipo !== tipoTarget) continue;
-
-      // Filtro por modelo si aplica
-      if (effectiveModelFilter !== "TODOS" && typeof matchesModelFilter === "function") {
-        if (!matchesModelFilter(item.modelo_tipo, effectiveModelFilter, item.tipo)) continue;
-      }
-
-      // Filtro manual por Estado y Área si el usuario está en modo manual
-      if (mode === "MANUAL") {
-        if (estadoVal && item.estado !== estadoVal) continue;
-        if (areaVal && item.area_trabajo !== areaVal) continue;
-      }
-
-      // Coordenadas válidas
-      if (item.lat != null && item.lon != null && !isNaN(Number(item.lat)) && !isNaN(Number(item.lon))) {
-        const iLat = Number(item.lat);
-        const iLon = Number(item.lon);
-        if (iLat !== 0 && iLon !== 0) {
-          const dist = haversineDistance(userLat, userLon, iLat, iLon);
-          candidates.push({ ...item, lat: iLat, lon: iLon, dist_m: dist });
-        }
-      }
-    }
-
-    // Ordenar por distancia ascendente
-    candidates.sort((a, b) => a.dist_m - b.dist_m);
-    top35 = candidates.slice(0, 35);
-  }
-
-  cachedRoute35Items = top35;
-
-  // Actualizar indicadores de cabecera
-  const countBadge = document.getElementById("routeMapCountBadge");
-  const subtitleEl = document.getElementById("routeMapSubtitle");
-  const traySummary = document.getElementById("routeTraySummary");
-
-  const tipoLabel = tipoTarget === "CAJA" ? "Cajas" : (tipoTarget === "CASETA" ? "Casetas" : "Cajas y Casetas");
-  const modelLabel = (effectiveModelFilter && effectiveModelFilter !== "TODOS") ? ` (${effectiveModelFilter})` : "";
-  if (countBadge) countBadge.innerText = `${top35.length} ${tipoLabel}${modelLabel} más cercanas`;
-
-  if (subtitleEl) {
-    if (top35.length > 0) {
-      const minD = Math.round(top35[0].dist_m);
-      const maxD = Math.round(top35[top35.length - 1].dist_m);
-      const minStr = minD >= 1000 ? `${(minD/1000).toFixed(1)} km` : `${minD} m`;
-      const maxStr = maxD >= 1000 ? `${(maxD/1000).toFixed(1)} km` : `${maxD} m`;
-      subtitleEl.innerText = `Ruta organizada: ${top35.length} puntos${modelLabel} • de ${minStr} a ${maxStr} de distancia`;
-    } else {
-      subtitleEl.innerText = "No se encontraron activos pendientes con los filtros seleccionados.";
-    }
-  }
-
-  if (traySummary) traySummary.innerText = `${top35.length} activos en ruta`;
-
-  // Inicializar Leaflet si no existe
-  if (typeof L === 'undefined') {
-    console.error("[Leaflet] Librería Leaflet no disponible.");
-    return;
-  }
-
-  const mapContainer = document.getElementById('routeLeafletMap');
-  if (!mapContainer) return;
-
-  if (!routeMapInstance) {
-    routeMapInstance = L.map('routeLeafletMap', {
-      zoomControl: true,
-      attributionControl: false
-    });
-
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19
-    }).addTo(routeMapInstance);
-
-    routeMapMarkersGroup = L.featureGroup().addTo(routeMapInstance);
-    routeMapPolylineLayer = L.polyline([], {
-      color: '#0284c7',
-      weight: 3,
-      dashArray: '6, 8',
-      opacity: 0.8
-    }).addTo(routeMapInstance);
-  }
-
-  routeMapMarkersGroup.clearLayers();
-  routeMarkersMap = {};
-
-  // 1. Marcador de Mi Ubicación Actual
-  const userPinIcon = L.divIcon({
-    className: 'user-gps-marker',
-    html: `
-      <div style="position:relative; width:22px; height:22px;">
-        <div style="position:absolute; inset:-5px; border-radius:50%; background:rgba(2,132,199,0.35);" class="user-gps-pulse"></div>
-        <div style="width:22px; height:22px; border-radius:50%; background:#0284c7; border:3px solid white; box-shadow:0 2px 6px rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; color:white; font-size:11px;">📍</div>
-      </div>
-    `,
-    iconSize: [22, 22],
-    iconAnchor: [11, 11]
-  });
-
-  L.marker([userLat, userLon], { icon: userPinIcon }).addTo(routeMapMarkersGroup)
-    .bindPopup('<div style="font-size:0.85rem; font-weight:bold; color:#0284c7;">📍 Mi Posición Actual</div>');
-
-  const lineCoords = [[userLat, userLon]];
-  const trayList = document.getElementById("routeMapItemsList");
-  if (trayList) trayList.innerHTML = "";
-
-  // 2. Marcadores numerados del 1 al 35
-  top35.forEach((item, idx) => {
-    const num = idx + 1;
-    const isCaseta = (item.tipo === 'CASETA');
-    const pinBg = isCaseta ? '#f59e0b' : '#0284c7';
-    const typeIcon = isCaseta ? '📞' : '📦';
-    const distM = Math.round(item.dist_m);
-    const distLabel = distM >= 1000 ? `${(distM / 1000).toFixed(1)} km` : `${distM} m`;
-
-    const pinHtml = `
-      <div style="background:${pinBg}; color:white; font-weight:800; font-size:11px; width:28px; height:28px; border-radius:50% 50% 50% 0; transform:rotate(-45deg); display:flex; align-items:center; justify-content:center; box-shadow:0 3px 6px rgba(0,0,0,0.35); border:2px solid white;">
-        <span style="transform:rotate(45deg);">${num}</span>
+  if (areasSorted.length === 0) {
+    const isNoArea = pagosState.selectedAreas.size === 0;
+    container.innerHTML = `
+      <div class="text-center py-6 text-slate-400 text-xs">
+        ${isNoArea ? 'Selecciona una o más plazas en el tablero para ver el desglose por área, o pulsa "✓ Todas".' : 'No hay trabajos que coincidan con la combinación de filtros seleccionada.'}
       </div>
     `;
+    return;
+  }
 
-    const marker = L.marker([item.lat, item.lon], {
-      icon: L.divIcon({
-        className: 'route-num-pin',
-        html: pinHtml,
-        iconSize: [28, 28],
-        iconAnchor: [14, 28],
-        popupAnchor: [0, -28]
-      })
-    }).addTo(routeMapMarkersGroup);
+  let html = `
+    <table class="w-full text-left border-collapse text-xs">
+      <thead class="bg-slate-100 text-slate-700 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+        <tr>
+          <th class="p-2.5">Plaza / Área</th>
+          <th class="p-2.5 text-center">Hechas Campo</th>
+          <th class="p-2.5 text-center text-indigo-700">Ya Pagadas</th>
+          <th class="p-2.5 text-center text-emerald-800 font-black">Pendientes Pago</th>
+          <th class="p-2.5 text-right">Tarifa</th>
+          <th class="p-2.5 text-right font-black">Subtotal Pendiente ($)</th>
+          <th class="p-2.5 text-center">Cuadrillas</th>
+          <th class="p-2.5 text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+  `;
 
-    const popupHtml = `
-      <div style="font-family: inherit; font-size: 0.85rem; min-width: 200px;">
-        <div style="font-weight: 800; font-size: 0.95rem; color: #0f172a; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 6px;">
-          <span>#${num} • ${item.id}</span>
-          <span style="font-size: 0.72rem; padding: 2px 6px; border-radius: 4px; background: ${isCaseta ? '#fef3c7' : '#e0f2fe'}; color: ${isCaseta ? '#b45309' : '#0369a1'}; font-weight: bold;">${typeIcon} ${item.tipo}</span>
-        </div>
-        <div style="font-size: 0.8rem; color: #334155; margin-bottom: 3px;"><strong>Modelo:</strong> ${item.modelo_tipo || 'N/A'}</div>
-        <div style="font-size: 0.78rem; color: #64748b; margin-bottom: 4px;">📍 ${item.calle || 'S/N'}${item.colonia ? ', ' + item.colonia : ''}</div>
-        <div style="font-size: 0.8rem; font-weight: 700; color: #16a34a; margin-bottom: 8px;">📏 Distancia: A ${distLabel}</div>
-        <div style="display: flex; gap: 6px;">
-          <button onclick="selectAssetFromRouteMap('${item.id}')" style="flex: 1; background: #0284c7; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer;">🚀 Capturar</button>
-          <button onclick="openExternalNavigation(${item.lat}, ${item.lon})" style="background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; padding: 6px 8px; border-radius: 6px; font-size: 0.8rem; cursor: pointer;" title="Navegar con Google Maps">🧭 Ir</button>
-        </div>
-      </div>
-    `;
+  areasSorted.forEach(area => {
+    const data = areaMap[area];
+    const hechas = data.count;
+    const pagadas = getPiezasPagadasAcumuladas(pagosState.tipo, area, pagosState.contratista);
+    const pendientes = Math.max(0, hechas - pagadas);
+    const subtotalPendiente = pendientes * tarifa;
 
-    marker.bindPopup(popupHtml);
-    routeMarkersMap[item.id] = marker;
-    lineCoords.push([item.lat, item.lon]);
-
-    // Elemento en la lista del panel inferior
-    if (trayList) {
-      const card = document.createElement("div");
-      card.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 7px 10px; gap: 8px; font-size: 0.8rem; cursor: pointer; transition: background 0.15s ease;";
-      card.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1;">
-          <span style="background: ${pinBg}; color: white; font-weight: 800; font-size: 0.72rem; padding: 2px 6px; border-radius: 6px; flex-shrink: 0;">#${num}</span>
-          <div style="min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            <strong style="color: #0f172a;">${item.id}</strong>
-            <span style="color: #64748b; font-size: 0.74rem;"> (${typeIcon} ${item.modelo_tipo || item.tipo})</span>
-            <div style="font-size: 0.72rem; color: #64748b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">📍 ${item.calle || 'S/N'}, ${item.colonia || ''}</div>
+    html += `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="p-2.5 font-bold text-slate-900 flex items-center gap-1.5">
+          <span class="text-amber-500">📍</span> ${area}
+        </td>
+        <td class="p-2.5 text-center font-bold text-slate-700">
+          ${formatNumber(hechas)}
+        </td>
+        <td class="p-2.5 text-center font-bold text-indigo-700 bg-indigo-50/40">
+          ${formatNumber(pagadas)}
+        </td>
+        <td class="p-2.5 text-center font-black ${pendientes > 0 ? 'text-emerald-700 bg-emerald-50/60' : 'text-slate-400'}">
+          ${formatNumber(pendientes)}
+        </td>
+        <td class="p-2.5 text-right text-slate-600 font-semibold">
+          $${tarifa.toFixed(2)} MXN
+        </td>
+        <td class="p-2.5 text-right font-black ${pendientes > 0 ? 'text-emerald-700 text-sm' : 'text-slate-400'}">
+          ${formatMoney(subtotalPendiente)}
+        </td>
+        <td class="p-2.5 text-center text-slate-600">
+          ${data.tecnicos.size} técnicos
+        </td>
+        <td class="p-2.5 text-center">
+          <div class="flex items-center justify-center gap-1">
+            <button type="button" onclick="openRegistrarPagoModal('${area}')" class="px-2.5 py-1 text-[11px] font-black text-white bg-emerald-600 hover:bg-emerald-700 rounded-lg shadow-xs transition-colors flex items-center gap-1" title="Registrar pago para esta plaza">
+              <span>💳</span> Pagar
+            </button>
+            <button type="button" onclick="focusOnlyThisArea('${area}')" class="px-2 py-0.5 text-[10px] font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded border border-blue-200 transition-colors">
+              Filtrar
+            </button>
           </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
-          <span style="font-size: 0.75rem; font-weight: 700; color: #16a34a;">${distLabel}</span>
-          <button type="button" onclick="event.stopPropagation(); selectAssetFromRouteMap('${item.id}')" style="background: #0284c7; color: white; border: none; padding: 5px 10px; border-radius: 6px; font-size: 0.74rem; font-weight: 700; cursor: pointer;" title="Seleccionar para capturar">🚀</button>
-        </div>
-      `;
-      card.onclick = () => {
-        routeMapInstance.flyTo([item.lat, item.lon], 17);
-        marker.openPopup();
-      };
-      trayList.appendChild(card);
-    }
+        </td>
+      </tr>
+    `;
   });
 
-  // Trazar línea de recorrido
-  if (isRouteLineVisible) {
-    routeMapPolylineLayer.setLatLngs(lineCoords);
-  } else {
-    routeMapPolylineLayer.setLatLngs([]);
-  }
-
-  // Ajustar zoom para abarcar todo el recorrido
-  if (routeMapMarkersGroup.getLayers().length > 0) {
-    routeMapInstance.fitBounds(routeMapMarkersGroup.getBounds().pad(0.12));
-  }
-  
-  setTimeout(() => {
-    if (routeMapInstance) routeMapInstance.invalidateSize();
-  }, 250);
+  html += "</tbody></table>";
+  container.innerHTML = html;
 }
 
-function selectAssetFromRouteMap(assetId) {
+function renderPagosModelosGrid() {
+  const grid = document.getElementById("pagosModelosGrid");
+  const totalTag = document.getElementById("pagosModelosTotalTag");
+  if (!grid) return;
 
-  closeRouteMapModal();
+  const modelCounts = {};
+  pagosFilteredRecords.forEach(r => {
+    const m = (r.modelo || "Sencilla").trim();
+    modelCounts[m] = (modelCounts[m] || 0) + 1;
+  });
 
-  if (isRestrictedDistrict(assetId)) {
-    showCustomAlert(`🚫 El distrito ${assetId} está restringido por supervisión y no puede ser seleccionado.`, "Distrito Restringido");
+  const sortedModels = Object.keys(modelCounts).sort((a, b) => modelCounts[b] - modelCounts[a]);
+  const total = pagosFilteredRecords.length;
+
+  if (totalTag) {
+    totalTag.innerText = `${formatNumber(total)} piezas en ${sortedModels.length} modelos`;
+  }
+
+  grid.innerHTML = "";
+  if (sortedModels.length === 0) {
+    grid.innerHTML = '<div class="col-span-5 text-center text-slate-400 text-xs py-3">Sin modelos</div>';
     return;
   }
 
-  let found = null;
+  sortedModels.forEach(m => {
+    const c = modelCounts[m];
+    const pct = total > 0 ? ((c / total) * 100).toFixed(1) : 0;
 
-  if (typeof catalog !== 'undefined' && Array.isArray(catalog)) {
-
-    found = catalog.find(a => String(a.id).trim().toUpperCase() === String(assetId).trim().toUpperCase());
-
-  }
-
-  if (found) {
-
-    selectAsset(found);
-
-  } else {
-
-    alert("No se encontró el activo en el catálogo.");
-
-  }
-
+    const div = document.createElement("div");
+    div.className = "p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex flex-col justify-between";
+    div.innerHTML = `
+      <div class="flex items-start justify-between gap-1 mb-1">
+        <span class="font-bold text-slate-800 text-[11px] truncate" title="${m}">${m}</span>
+        <span class="text-[10px] font-bold text-blue-700 bg-blue-100 px-1.5 py-0.2 rounded">${pct}%</span>
+      </div>
+      <div class="flex items-baseline justify-between">
+        <span class="text-sm font-black text-slate-900">${formatNumber(c)}</span>
+        <span class="text-[10px] text-slate-500 font-semibold">${formatMoney(c * pagosState.tarifaActiva)}</span>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
 }
 
+// Renderizar Tabla Detallada con Miniaturas de Evidencias
+function renderPagosTable() {
+  const tbody = document.getElementById("pagosTableBody");
+  const counterInfo = document.getElementById("pagosTableCounterInfo");
+  const pagInfo = document.getElementById("pagosPaginationInfo");
+  const btnPrev = document.getElementById("btnPagosPrev");
+  const btnNext = document.getElementById("btnPagosNext");
 
+  if (!tbody) return;
 
-function openExternalNavigation(lat, lon) {
+  const total = pagosFilteredRecords.length;
 
-  window.open(`https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`, '_blank');
+  // Precalcular el estatus de pago de cada registro basado en FIFO (más antiguos primero)
+  const sortedRecords = [...pagosFilteredRecords].sort((a, b) => {
+    const fa = (a.fecha_corte || a.fecha_captura || a.fecha || "") + " " + (a.hora || "");
+    const fb = (b.fecha_corte || b.fecha_captura || b.fecha || "") + " " + (b.hora || "");
+    return fa.localeCompare(fb);
+  });
 
+  const recordPaidStatus = new Map();
+  const counterPerKey = {};
+
+  sortedRecords.forEach(r => {
+    const area = (r.area_trabajo || "").trim().toUpperCase();
+    const con = (r.contratista_homologado || r.contratista || "").trim();
+    const key = `${pagosState.tipo}|${area}|${con}`;
+
+    counterPerKey[key] = (counterPerKey[key] || 0) + 1;
+    const pagadas = getPiezasPagadasAcumuladas(pagosState.tipo, area, con);
+
+    const isPaid = counterPerKey[key] <= pagadas;
+    recordPaidStatus.set(r, isPaid);
+  });
+
+  let totalPagadosFiltrados = 0;
+  pagosFilteredRecords.forEach(r => {
+    if (recordPaidStatus.get(r)) totalPagadosFiltrados++;
+  });
+  const totalPendientesFiltrados = Math.max(0, total - totalPagadosFiltrados);
+
+  if (counterInfo) {
+    const conName = pagosState.contratista !== "TODOS" ? `para ${pagosState.contratista}` : "generales";
+    counterInfo.innerText = `Mostrando ${formatNumber(total)} trabajos ${conName} (${formatNumber(totalPendientesFiltrados)} por pagar: ${formatMoney(totalPendientesFiltrados * pagosState.tarifaActiva)} | ${formatNumber(totalPagadosFiltrados)} ya liquidados)`;
+  }
+
+  if (total === 0) {
+    const isNoArea = pagosState.selectedAreas.size === 0;
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="14" class="text-center py-12 text-slate-400">
+          <div class="text-3xl mb-2">${isNoArea ? '🗺️' : '🔍'}</div>
+          <div class="font-bold text-sm text-slate-700">${isNoArea ? 'Ninguna plaza seleccionada en el Paso 2' : 'No se encontraron trabajos con los filtros seleccionados'}</div>
+          <div class="text-xs text-slate-500 mt-1">${isNoArea ? 'Haz clic en una o varias plazas del tablero para consultar sus folios y calcular el pago, o pulsa "✓ Todas" para el costo total.' : 'Prueba seleccionando más áreas en el tablero o cambiando el contratista'}</div>
+        </td>
+      </tr>
+    `;
+    if (pagInfo) pagInfo.innerText = "Página 1 de 1";
+    if (btnPrev) btnPrev.disabled = true;
+    if (btnNext) btnNext.disabled = true;
+    return;
+  }
+
+  const totalPages = Math.ceil(total / pagosState.pageSize) || 1;
+  if (pagosState.currentPage > totalPages) pagosState.currentPage = totalPages;
+  if (pagosState.currentPage < 1) pagosState.currentPage = 1;
+
+  const startIdx = (pagosState.currentPage - 1) * pagosState.pageSize;
+  const endIdx = Math.min(startIdx + pagosState.pageSize, total);
+  const pageRecords = pagosFilteredRecords.slice(startIdx, endIdx);
+
+  const tarifa = pagosState.tarifaActiva;
+
+  let html = "";
+  pageRecords.forEach((r, idx) => {
+    const num = startIdx + idx + 1;
+    const folio = r.folio || "S/F";
+    const fecha = r.fecha_captura || r.fecha || "S/F";
+    const hora = r.hora || "";
+    const area = r.area_trabajo || "S/A";
+    const contratista = r.contratista_homologado || r.contratista || "S/C";
+    const tecnico = r.tecnico_homologado || r.tecnico || "Sin Técnico";
+    const tipo = r.tipo || "CAJA";
+    const modelo = r.modelo || "Sencilla";
+    const identificador = r.identificador || r.distrito || r.telefono || "S/D";
+    const comentarios = r.comentarios || "";
+    const foto = r.foto_evidencia || r.foto_despues || r.foto_antes || "";
+
+    const isPaid = recordPaidStatus.get(r);
+    const badgeEstatus = isPaid
+      ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">✅ Liquidado</span>'
+      : '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300">⏳ Por Pagar</span>';
+
+    const fotoHtml = foto ? `
+      <div class="flex items-center justify-center">
+        <img src="${foto}" 
+             alt="Evidencia" 
+             class="w-10 h-10 object-cover rounded-lg border border-slate-200 cursor-pointer hover:opacity-80 hover:scale-110 transition-transform shadow-xs"
+             loading="lazy"
+             onclick="openPaymentPhotoModal('${foto}', '${folio}', '${identificador}', '${area}', '${tecnico}', '${contratista}')">
+      </div>
+    ` : `
+      <span class="text-[10px] text-slate-300 italic block text-center">Sin foto</span>
+    `;
+
+    html += `
+      <tr class="${isPaid ? 'hover:bg-slate-50' : 'bg-amber-50/20 hover:bg-amber-50/60'} transition-colors">
+        <td class="p-2.5 text-center text-slate-400 font-medium">${num}</td>
+        <td class="p-2.5 font-mono text-[11px] font-bold text-slate-800">${folio}</td>
+        <td class="p-2.5 whitespace-nowrap text-slate-600">
+          <div>${fecha}</div>
+          <div class="text-[10px] text-slate-400 font-mono">${hora}</div>
+        </td>
+        <td class="p-2.5 font-bold text-slate-900">${area}</td>
+        <td class="p-2.5 font-bold text-amber-900">${contratista}</td>
+        <td class="p-2.5 text-slate-700">${tecnico}</td>
+        <td class="p-2.5 text-center">
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${tipo === 'CASETA' ? 'bg-amber-100 text-amber-800 border border-amber-300' : 'bg-blue-100 text-blue-800 border border-blue-300'}">
+            ${tipo}
+          </span>
+        </td>
+        <td class="p-2.5 font-medium text-slate-700">${modelo}</td>
+        <td class="p-2.5 font-mono text-[11px] font-semibold text-slate-900">${identificador}</td>
+        <td class="p-2.5 text-right font-medium text-slate-600">$${tarifa.toFixed(2)}</td>
+        <td class="p-2.5 text-right font-black ${isPaid ? 'text-slate-400' : 'text-emerald-700'}">$${tarifa.toFixed(2)}</td>
+        <td class="p-2.5 text-center">${badgeEstatus}</td>
+        <td class="p-2.5">${fotoHtml}</td>
+        <td class="p-2.5 text-slate-500 max-w-[150px] truncate" title="${comentarios}">
+          ${comentarios || "-"}
+        </td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+
+  if (pagInfo) {
+    pagInfo.innerText = `Página ${pagosState.currentPage} de ${totalPages} (Mostrando ${startIdx + 1}-${endIdx} de ${formatNumber(total)})`;
+  }
+  if (btnPrev) btnPrev.disabled = pagosState.currentPage <= 1;
+  if (btnNext) btnNext.disabled = pagosState.currentPage >= totalPages;
 }
 
+function changePagosPage(delta) {
+  const totalPages = Math.ceil(pagosFilteredRecords.length / pagosState.pageSize) || 1;
+  const newPage = pagosState.currentPage + delta;
+  if (newPage >= 1 && newPage <= totalPages) {
+    pagosState.currentPage = newPage;
+    renderPagosTable();
+    // Scroll suave a la tabla
+    document.getElementById("tab-pagos")?.scrollIntoView({ behavior: "smooth" });
+  }
+}
 
+// Modal para Visualizar Foto de Evidencia con Zoom Completo
+function openPaymentPhotoModal(url, folio, iden, area, tec, con) {
+  const modal = document.getElementById("paymentPhotoModal");
+  const img = document.getElementById("paymentPhotoImg");
+  const fEl = document.getElementById("paymentPhotoFolio");
+  const dEl = document.getElementById("paymentPhotoDetails");
+  const link = document.getElementById("paymentPhotoFullLink");
 
-function toggleRouteLine() {
+  if (!modal || !img) return;
 
-  isRouteLineVisible = !isRouteLineVisible;
+  img.src = url;
+  if (fEl) fEl.innerText = `Folio Linkaform: ${folio} (${iden})`;
+  if (dEl) dEl.innerText = `Plaza: ${area} | Contratista: ${con} | Técnico: ${tec}`;
+  if (link) link.href = url;
 
-  const btnTxt = document.getElementById('routeLineBtnText');
+  modal.classList.remove("hidden");
+}
 
-  if (btnTxt) btnTxt.innerText = isRouteLineVisible ? 'Línea: ON' : 'Línea: OFF';
+function closePaymentPhotoModal() {
+  const modal = document.getElementById("paymentPhotoModal");
+  if (modal) modal.classList.add("hidden");
+}
 
-  if (routeMapPolylineLayer && cachedRoute35Items) {
+// Exportar Liquidación Oficial a Excel (CSV)
+function exportPagosCSV() {
+  if (pagosFilteredRecords.length === 0) {
+    showToast("⚠️ No hay registros con los filtros actuales para exportar.", "warning", 3000);
+    return;
+  }
 
-    if (isRouteLineVisible && currentGpsCoords) {
+  showToast("📊 Generando archivo de liquidación para Excel...", "info", 2000);
 
-      const lineCoords = [[currentGpsCoords.lat, currentGpsCoords.lon], ...cachedRoute35Items.map(p => [p.lat, p.lon])];
+  const tarifa = pagosState.tarifaActiva;
+  const headers = [
+    "No",
+    "Folio Linkaform",
+    "Fecha Captura",
+    "Hora",
+    "Fecha Corte Contable",
+    "Tipo Activo",
+    "Plaza / Area",
+    "Empresa / Contratista",
+    "Tecnico en Sitio",
+    "Modelo Instalado",
+    "Distrito / Telefono",
+    "Tarifa Unitaria MXN",
+    "Importe a Pagar MXN",
+    "Oferta Colocada",
+    "Comentarios",
+    "URL Evidencia Fotografica"
+  ];
 
-      routeMapPolylineLayer.setLatLngs(lineCoords);
+  const rows = pagosFilteredRecords.map((r, i) => [
+    i + 1,
+    `"${(r.folio || '').replace(/"/g, '""')}"`,
+    `"${r.fecha_captura || ''}"`,
+    `"${r.hora || ''}"`,
+    `"${r.fecha_corte || ''}"`,
+    `"${r.tipo || ''}"`,
+    `"${(r.area_trabajo || '').replace(/"/g, '""')}"`,
+    `"${(r.contratista_homologado || r.contratista || '').replace(/"/g, '""')}"`,
+    `"${(r.tecnico_homologado || r.tecnico || '').replace(/"/g, '""')}"`,
+    `"${(r.modelo || '').replace(/"/g, '""')}"`,
+    `"${(r.identificador || '').replace(/"/g, '""')}"`,
+    tarifa.toFixed(2),
+    tarifa.toFixed(2),
+    `"${(r.oferta || '').replace(/"/g, '""')}"`,
+    `"${(r.comentarios || '').replace(/"/g, '""')}"`,
+    `"${(r.foto_evidencia || r.foto_despues || r.foto_antes || '').replace(/"/g, '""')}"`
+  ]);
 
+  const csvContent = "\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\r\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  
+  const conSafe = pagosState.contratista !== "TODOS" ? pagosState.contratista.replace(/\s+/g, '_') : 'General';
+  const tipoStr = pagosState.tipo;
+  const dateStr = getLocalDateStr();
+  
+  a.href = url;
+  a.download = `Liquidacion_${tipoStr}_${conSafe}_${dateStr}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  showToast(`✅ ¡Archivo de liquidación descargado exitosamente (${formatNumber(pagosFilteredRecords.length)} folios)!`, "success", 4000);
+}
+
+// Imprimir Carátula Oficial de Pago en PDF
+function printPagosSummary() {
+  if (pagosFilteredRecords.length === 0) {
+    showToast("⚠️ No hay registros filtrados para imprimir.", "warning", 3000);
+    return;
+  }
+
+  const tipo = pagosState.tipo;
+  const tarifa = pagosState.tarifaActiva;
+  const total = pagosFilteredRecords.length;
+  const totalDinero = total * tarifa;
+  const conName = pagosState.contratista !== "TODOS" ? pagosState.contratista : "TODOS LOS CONTRATISTAS";
+
+  function formatFechaMX(dateStr) {
+    if (!dateStr) return "";
+    const parts = dateStr.split("-");
+    if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    return dateStr;
+  }
+
+  const dStart = pagosState.dateStart || document.getElementById("pagosDateStart")?.value || "";
+  const dEnd = pagosState.dateEnd || document.getElementById("pagosDateEnd")?.value || "";
+  let periodoTexto = "Histórico Completo (Sin filtro de fechas)";
+  if (dStart && dEnd) {
+    if (dStart === dEnd) {
+      periodoTexto = formatFechaMX(dStart);
     } else {
+      periodoTexto = `Del ${formatFechaMX(dStart)} al ${formatFechaMX(dEnd)}`;
+    }
+  } else if (dStart) {
+    periodoTexto = `A partir del ${formatFechaMX(dStart)}`;
+  } else if (dEnd) {
+    periodoTexto = `Hasta el ${formatFechaMX(dEnd)}`;
+  }
+  
+  // Agrupar por áreas para la carátula
+  const areaCounts = {};
+  pagosFilteredRecords.forEach(r => {
+    const a = (r.area_trabajo || "").trim().toUpperCase() || "SIN ÁREA";
+    areaCounts[a] = (areaCounts[a] || 0) + 1;
+  });
 
-      routeMapPolylineLayer.setLatLngs([]);
+  const sortedAreas = Object.keys(areaCounts).sort((a, b) => areaCounts[b] - areaCounts[a]);
 
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Carátula de Liquidación Oficial - Imagen Telmex 2026</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 28px; color: #0f172a; margin: 0; }
+        .header { border-bottom: 3px solid #0055a5; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { color: #0055a5; font-size: 20px; margin: 0; font-weight: 900; }
+        .subtitle { font-size: 11px; color: #475569; margin-top: 4px; }
+        .box-info { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; margin-bottom: 20px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+        .box-item strong { display: block; font-size: 10px; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+        .box-item span { font-size: 13px; font-weight: bold; color: #0f172a; }
+        .kpi-row { display: flex; gap: 16px; margin-bottom: 24px; }
+        .kpi { flex: 1; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px; text-align: center; background: #fff; }
+        .kpi-num { font-size: 24px; font-weight: 900; color: #0055a5; }
+        .kpi-lbl { font-size: 10px; font-weight: 700; color: #475569; text-transform: uppercase; margin-top: 2px; }
+        .table-title { font-size: 12px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 30px; }
+        th, td { border: 1px solid #cbd5e1; padding: 8px 10px; text-align: left; }
+        th { background: #f1f5f9; font-weight: bold; color: #334155; }
+        .signatures { display: flex; justify-content: space-around; margin-top: 60px; page-break-inside: avoid; }
+        .sig-box { width: 220px; border-top: 1.5px solid #0f172a; text-align: center; padding-top: 8px; font-size: 11px; font-weight: bold; }
+        .sig-sub { font-size: 10px; color: #64748b; font-weight: normal; margin-top: 2px; }
+        @media print {
+          body { padding: 10px; }
+          .no-print { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <h1>ESTADO DE CUENTA Y CARÁTULA DE LIQUIDACIÓN OFICIAL</h1>
+          <div class="subtitle">Proyecto Imagen Telmex 2026 · Conciliación Oficial de Trabajos y Facturación</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-weight: 900; color: #0055a5; font-size: 14px;">TELMEX / PCI</div>
+          <div style="font-size: 10px; color: #64748b; margin-top: 2px;">Fecha Emisión: ${new Date().toLocaleDateString('es-MX')}</div>
+          <div style="font-size: 10px; font-weight: 800; color: #0055a5; margin-top: 2px;">Periodo: ${periodoTexto}</div>
+        </div>
+      </div>
+
+      <div class="box-info">
+        <div class="box-item">
+          <strong>Contratista a Liquidar:</strong>
+          <span>${conName}</span>
+        </div>
+        <div class="box-item">
+          <strong>Tipo de Activo:</strong>
+          <span>${tipo === 'CASETA' ? 'Casetas Públicas' : 'Cajas (Distritos)'}</span>
+        </div>
+        <div class="box-item">
+          <strong>Rango de Fechas:</strong>
+          <span style="color: #0055a5; font-size: 12px;">${periodoTexto}</span>
+        </div>
+        <div class="box-item">
+          <strong>Tarifa Autorizada:</strong>
+          <span>$${tarifa.toFixed(2)} MXN c/u</span>
+        </div>
+        <div class="box-item">
+          <strong>Plazas Agrupadas:</strong>
+          <span>${sortedAreas.length} Áreas Conjuntas</span>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi" style="border-color: #10b981; background: #f0fdf4;">
+          <div class="kpi-num" style="color: #059669;">${formatMoney(totalDinero)}</div>
+          <div class="kpi-lbl">Importe Total a Liquidar (MXN)</div>
+        </div>
+        <div class="kpi" style="border-color: #3b82f6; background: #eff6ff;">
+          <div class="kpi-num" style="color: #1d4ed8;">${formatNumber(total)}</div>
+          <div class="kpi-lbl">${tipo === 'CASETA' ? 'Casetas Validadas' : 'Cajas Validadas'}</div>
+        </div>
+        <div class="kpi" style="border-color: #f59e0b; background: #fffbeb;">
+          <div class="kpi-num" style="color: #d97706;">$${tarifa.toFixed(2)}</div>
+          <div class="kpi-lbl">Costo Unitario por Pieza</div>
+        </div>
+      </div>
+
+      <div class="table-title">Desglose de Facturación por Área Agrupada:</div>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Plaza / Área</th>
+            <th style="text-align: center;">Cantidad (${tipo === 'CASETA' ? 'Casetas' : 'Cajas'})</th>
+            <th style="text-align: right;">Tarifa Unitaria</th>
+            <th style="text-align: right;">Subtotal a Pagar</th>
+            <th style="text-align: center;">% Participación</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sortedAreas.map((a, idx) => {
+            const cnt = areaCounts[a];
+            const sub = cnt * tarifa;
+            const pct = ((cnt / total) * 100).toFixed(1);
+            return `
+              <tr>
+                <td style="text-align: center; color: #64748b;">${idx + 1}</td>
+                <td style="font-weight: bold;">${a}</td>
+                <td style="text-align: center; font-weight: bold;">${formatNumber(cnt)}</td>
+                <td style="text-align: right;">$${tarifa.toFixed(2)} MXN</td>
+                <td style="text-align: right; font-weight: bold; color: #059669;">${formatMoney(sub)}</td>
+                <td style="text-align: center;">${pct}%</td>
+              </tr>
+            `;
+          }).join('')}
+          <tr style="background: #f8fafc; font-weight: 900; font-size: 12px;">
+            <td colspan="2" style="text-align: right;">TOTAL GENERAL LIQUIDADO:</td>
+            <td style="text-align: center; color: #1d4ed8;">${formatNumber(total)}</td>
+            <td style="text-align: right;">-</td>
+            <td style="text-align: right; color: #059669; font-size: 13px;">${formatMoney(totalDinero)}</td>
+            <td style="text-align: center;">100%</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="signatures">
+        <div class="sig-box">
+          Autorizó Pago
+          <div class="sig-sub">Validación y Finanzas Telmex / PCI</div>
+        </div>
+        <div class="sig-box">
+          Recibió de Conformidad
+          <div class="sig-sub">${conName}</div>
+        </div>
+      </div>
+
+      <script>
+        window.onload = function() { window.print(); }
+      <\/script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
+function formatMoney(num) {
+  if (isNaN(num)) return "$0.00 MXN";
+  return new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(num);
+}
+
+
+// =========================================================
+// =========================================================
+// ACCESO CON NIP: MANDO GERENCIAL
+// =========================================================
+const GERENCIAL_NIP = "1970";
+
+function openGerencialModule() {
+  const isAuth = sessionStorage.getItem("GERENCIAL_AUTH_OK") === "true";
+  if (isAuth) {
+    switchTab("tab-gerencial");
+    if (typeof renderBossModule === "function") renderBossModule();
+  } else {
+    openGerencialNipModal();
+  }
+}
+
+function openGerencialNipModal() {
+  const modal = document.getElementById("gerencialNipModal");
+  const input = document.getElementById("gerencialNipInput");
+  const err = document.getElementById("gerencialNipErrorMsg");
+  if (err) err.classList.add("hidden");
+  if (input) input.value = "";
+  if (modal) modal.classList.remove("hidden");
+  setTimeout(() => { if (input) input.focus(); }, 150);
+}
+
+function closeGerencialNipModal() {
+  const modal = document.getElementById("gerencialNipModal");
+  if (modal) modal.classList.add("hidden");
+}
+
+function verifyGerencialNip() {
+  const input = document.getElementById("gerencialNipInput");
+  const err = document.getElementById("gerencialNipErrorMsg");
+  const entered = (input?.value || "").trim();
+
+  if (entered === GERENCIAL_NIP) {
+    sessionStorage.setItem("GERENCIAL_AUTH_OK", "true");
+    closeGerencialNipModal();
+    switchTab("tab-gerencial");
+    if (typeof renderBossModule === "function") renderBossModule();
+    showToast("Acceso autorizado", "success", 2000);
+  } else {
+    if (err) {
+      err.innerText = "NIP Incorrecto. Acceso denegado.";
+      err.classList.remove("hidden");
+    }
+    if (input) {
+      input.classList.add("border-rose-500");
+      input.select();
+      setTimeout(() => input.classList.remove("border-rose-500"), 1000);
+    }
+  }
+}
+
+function logoutGerencial() {
+  sessionStorage.removeItem("GERENCIAL_AUTH_OK");
+  switchTab("tab-materiales");
+  showToast("Sesión cerrada", "info", 2000);
+}
+
+
+// MÓDULO EXCLUSIVO DE MANDO GERENCIAL & RESUMEN OPERATIVO
+// =========================================================
+
+let bossState = {
+  contratista: "TODOS",
+  estado: "TODOS",
+  area: "TODOS",
+  tipo: "TODOS",
+  semaforo: "TODOS",
+  periodo: "all",
+  dateStart: "",
+  dateEnd: "",
+  searchPlaza: "",
+  activeSubTab: "plazas",
+  isInitialized: false,
+  charts: {}
+};
+
+function initBossModule() {
+  populateBossFilters();
+  applyBossFilters();
+  bossState.isInitialized = true;
+}
+
+function renderBossModule() {
+  if (!bossState.isInitialized) {
+    initBossModule();
+    return;
+  }
+  populateBossFilters(true); // preservar selección
+  applyBossFilters();
+}
+
+function populateBossFilters(preserveSelection = false) {
+  const records = state.records || [];
+
+  // 1. Contratistas
+  const conSelect = document.getElementById("bossFilterContratista");
+  if (conSelect) {
+    const curVal = preserveSelection ? (conSelect.value || bossState.contratista) : "TODOS";
+    const conSet = new Set();
+    records.forEach(r => {
+      const c = (r.contratista_homologado || r.contratista || "").trim();
+      if (c && c !== "Directo" && c !== "S/C") conSet.add(c);
+    });
+    const sortedCon = Array.from(conSet).sort();
+    conSelect.innerHTML = `<option value="TODOS">🏢 Todos los Contratistas (${sortedCon.length})</option>`;
+    sortedCon.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.innerText = c;
+      conSelect.appendChild(opt);
+    });
+    if (curVal && (curVal === "TODOS" || conSet.has(curVal))) {
+      conSelect.value = curVal;
+      bossState.contratista = curVal;
+    }
+  }
+
+  // 2. Estados
+  const edoSelect = document.getElementById("bossFilterEstado");
+  if (edoSelect) {
+    const curEdo = preserveSelection ? (edoSelect.value || bossState.estado) : "TODOS";
+    const edoSet = new Set();
+    if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
+      Object.keys(CATALOGO_METAS.estados).forEach(e => edoSet.add(e.trim().toUpperCase()));
+    }
+    records.forEach(r => {
+      if (r.estado) edoSet.add(r.estado.trim().toUpperCase());
+    });
+    const sortedEdo = Array.from(edoSet).filter(Boolean).sort();
+    edoSelect.innerHTML = `<option value="TODOS">🗺️ Todos los Estados (${sortedEdo.length})</option>`;
+    sortedEdo.forEach(e => {
+      const opt = document.createElement("option");
+      opt.value = e;
+      opt.innerText = e;
+      edoSelect.appendChild(opt);
+    });
+    if (curEdo && (curEdo === "TODOS" || edoSet.has(curEdo))) {
+      edoSelect.value = curEdo;
+      bossState.estado = curEdo;
+    }
+  }
+
+  // 3. Plazas / Áreas
+  updateBossAreaOptions(preserveSelection);
+}
+
+function updateBossAreaOptions(preserveSelection = false) {
+  const arSelect = document.getElementById("bossFilterArea");
+  if (!arSelect) return;
+
+  const curArea = preserveSelection ? (arSelect.value || bossState.area) : "TODOS";
+  const areaSet = new Set();
+  const selEdoNorm = bossState.estado !== "TODOS" ? normalizeAreaKey(bossState.estado) : null;
+
+  if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
+    for (let edo in CATALOGO_METAS.estados) {
+      const edoNorm = normalizeAreaKey(edo);
+      if (!selEdoNorm || edoNorm === selEdoNorm) {
+        Object.keys(CATALOGO_METAS.estados[edo]).forEach(ar => areaSet.add(ar.trim().toUpperCase()));
+      }
+    }
+  }
+
+  (state.records || []).forEach(r => {
+    const rEdoNorm = r.estado ? normalizeAreaKey(r.estado) : "";
+    if (!selEdoNorm || rEdoNorm === selEdoNorm) {
+      if (r.area_trabajo) areaSet.add(r.area_trabajo.trim().toUpperCase());
+    }
+  });
+
+  const sortedAr = Array.from(areaSet).filter(Boolean).sort();
+  arSelect.innerHTML = `<option value="TODOS">📍 Todas las Plazas (${sortedAr.length})</option>`;
+  sortedAr.forEach(a => {
+    const opt = document.createElement("option");
+    opt.value = a;
+    opt.innerText = a;
+    arSelect.appendChild(opt);
+  });
+
+  if (curArea && (curArea === "TODOS" || areaSet.has(curArea))) {
+    arSelect.value = curArea;
+    bossState.area = curArea;
+  } else {
+    arSelect.value = "TODOS";
+    bossState.area = "TODOS";
+  }
+}
+
+function onBossEstadoChange() {
+  const edoSelect = document.getElementById("bossFilterEstado");
+  bossState.estado = edoSelect ? edoSelect.value : "TODOS";
+  updateBossAreaOptions(false);
+  applyBossFilters();
+}
+
+function onBossPeriodoChange() {
+  const sel = document.getElementById("bossFilterPeriodo");
+  const row = document.getElementById("bossCustomDateRow");
+  const val = sel ? sel.value : "all";
+  bossState.periodo = val;
+
+  if (val === "custom") {
+    if (row) row.classList.remove("hidden");
+  } else {
+    if (row) row.classList.add("hidden");
+    const today = new Date();
+    if (val === "today") {
+      bossState.dateStart = getLocalDateStr(today);
+      bossState.dateEnd = getLocalDateStr(today);
+    } else if (val === "7days") {
+      const past = new Date(today);
+      past.setDate(today.getDate() - 7);
+      bossState.dateStart = getLocalDateStr(past);
+      bossState.dateEnd = getLocalDateStr(today);
+    } else if (val === "30days") {
+      const past = new Date(today);
+      past.setDate(today.getDate() - 30);
+      bossState.dateStart = getLocalDateStr(past);
+      bossState.dateEnd = getLocalDateStr(today);
+    } else {
+      bossState.dateStart = "";
+      bossState.dateEnd = "";
+    }
+  }
+  applyBossFilters();
+}
+
+function resetBossFilters() {
+  bossState.contratista = "TODOS";
+  bossState.estado = "TODOS";
+  bossState.area = "TODOS";
+  bossState.tipo = "TODOS";
+  bossState.semaforo = "TODOS";
+  bossState.periodo = "all";
+  bossState.dateStart = "";
+  bossState.dateEnd = "";
+  bossState.searchPlaza = "";
+
+  const c1 = document.getElementById("bossFilterContratista"); if (c1) c1.value = "TODOS";
+  const c2 = document.getElementById("bossFilterEstado"); if (c2) c2.value = "TODOS";
+  const c3 = document.getElementById("bossFilterArea"); if (c3) c3.value = "TODOS";
+  const c4 = document.getElementById("bossFilterTipo"); if (c4) c4.value = "TODOS";
+  const c5 = document.getElementById("bossFilterSemaforo"); if (c5) c5.value = "TODOS";
+  const c6 = document.getElementById("bossFilterPeriodo"); if (c6) c6.value = "all";
+  const c7 = document.getElementById("bossSearchPlaza"); if (c7) c7.value = "";
+  const row = document.getElementById("bossCustomDateRow"); if (row) row.classList.add("hidden");
+
+  updateBossAreaOptions(false);
+  applyBossFilters();
+  showToast("🔄 Filtros gerenciales restablecidos", "info", 1500);
+}
+
+function applyBossFilters() {
+  const c1 = document.getElementById("bossFilterContratista"); if (c1) bossState.contratista = c1.value;
+  const c2 = document.getElementById("bossFilterEstado"); if (c2) bossState.estado = c2.value;
+  const c3 = document.getElementById("bossFilterArea"); if (c3) bossState.area = c3.value;
+  const c4 = document.getElementById("bossFilterTipo"); if (c4) bossState.tipo = c4.value;
+  const c5 = document.getElementById("bossFilterSemaforo"); if (c5) bossState.semaforo = c5.value;
+  
+  if (bossState.periodo === "custom") {
+    const dS = document.getElementById("bossDateStart"); if (dS) bossState.dateStart = dS.value;
+    const dE = document.getElementById("bossDateEnd"); if (dE) bossState.dateEnd = dE.value;
+  }
+
+  const allRecords = state.records || [];
+  const selCon = bossState.contratista !== "TODOS" ? bossState.contratista.trim().toLowerCase() : null;
+  const selEdoNorm = bossState.estado !== "TODOS" ? normalizeAreaKey(bossState.estado) : null;
+  const selAreaNorm = bossState.area !== "TODOS" ? normalizeAreaKey(bossState.area) : null;
+  const selTipo = bossState.tipo !== "TODOS" ? bossState.tipo : null;
+
+  // Filtrar registros
+  const matchingRecords = [];
+  for (let i = 0; i < allRecords.length; i++) {
+    const r = allRecords[i];
+    
+    // Filtro Tipo
+    if (selTipo && r.tipo !== selTipo) continue;
+
+    // Filtro Contratista
+    if (selCon) {
+      const conName = (r.contratista_homologado || r.contratista || "").trim().toLowerCase();
+      if (!conName.includes(selCon)) continue;
     }
 
+    // Filtro Estado
+    if (selEdoNorm) {
+      const rEdoNorm = r.estado ? normalizeAreaKey(r.estado) : "";
+      if (rEdoNorm !== selEdoNorm) {
+        // Verificar si el estado coincide con el área o región de metas
+        if (!isRecordInArea(r, bossState.estado)) continue;
+      }
+    }
+
+    // Filtro Área
+    if (selAreaNorm) {
+      if (!isRecordInArea(r, bossState.area)) continue;
+    }
+
+    // Filtro Fechas
+    if (bossState.dateStart || bossState.dateEnd) {
+      const f = r.fecha || r.fecha_captura || "";
+      if (bossState.dateStart && f < bossState.dateStart) continue;
+      if (bossState.dateEnd && f > bossState.dateEnd) continue;
+    }
+
+    matchingRecords.push(r);
   }
 
+  // Actualizar contador
+  const countBadge = document.getElementById("bossFilterMatchCount");
+  if (countBadge) {
+    countBadge.innerText = `${formatNumber(matchingRecords.length)} registros filtrados de ${formatNumber(allRecords.length)}`;
+  }
+
+  // Calcular Metas y Cumplimiento
+  const targets = computeBossTargets();
+  renderBossKPIs(matchingRecords, targets);
+  renderBossPlazasTable(matchingRecords);
+  renderBossContractorsTable(matchingRecords);
+  renderBossCharts(matchingRecords);
 }
 
+function computeBossTargets() {
+  let metaCajas = 0;
+  let metaCasetas = 0;
+  let metaTotal = 0;
 
-
-function centerRouteMapOnUser() {
-
-  if (currentGpsCoords && currentGpsCoords.lat && routeMapInstance) {
-
-    routeMapInstance.flyTo([currentGpsCoords.lat, currentGpsCoords.lon], 16);
-
-  } else if (navigator.geolocation) {
-
-    navigator.geolocation.getCurrentPosition(pos => {
-
-      currentGpsCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-
-      if (routeMapInstance) routeMapInstance.flyTo([currentGpsCoords.lat, currentGpsCoords.lon], 16);
-
-    });
-
+  if (typeof CATALOGO_METAS === "undefined" || !CATALOGO_METAS.estados) {
+    return { cajas: 49829, casetas: 44919, total: 94748 };
   }
 
+  const selEdoNorm = bossState.estado !== "TODOS" ? normalizeAreaKey(bossState.estado) : null;
+  const selAreaNorm = bossState.area !== "TODOS" ? normalizeAreaKey(bossState.area) : null;
+
+  for (let edo in CATALOGO_METAS.estados) {
+    const edoNorm = normalizeAreaKey(edo);
+    if (!selEdoNorm || edoNorm === selEdoNorm) {
+      for (let ar in CATALOGO_METAS.estados[edo]) {
+        const arNorm = normalizeAreaKey(ar);
+        if (!selAreaNorm || arNorm === selAreaNorm) {
+          const m = CATALOGO_METAS.estados[edo][ar];
+          metaCajas += (m.cajas || 0);
+          metaCasetas += (m.casetas || 0);
+          metaTotal += (m.total || 0);
+        }
+      }
+    }
+  }
+
+  if (metaTotal === 0) {
+    metaTotal = CATALOGO_METAS.total_general || 94748;
+    metaCajas = CATALOGO_METAS.total_cajas || 49829;
+    metaCasetas = CATALOGO_METAS.total_casetas || 44919;
+  }
+
+  return { cajas: metaCajas, casetas: metaCasetas, total: metaTotal };
+}
+
+function renderBossKPIs(matchingRecords, targets) {
+  let cajasDone = 0;
+  let casetasDone = 0;
+  const contratistasSet = new Set();
+  const tecnicosSet = new Set();
+  const plazasActivasSet = new Set();
+
+  matchingRecords.forEach(r => {
+    if (r.tipo === "CASETA") casetasDone++;
+    else cajasDone++;
+
+    const con = (r.contratista_homologado || r.contratista || "").trim();
+    if (con && con !== "Directo" && con !== "S/C") contratistasSet.add(con);
+
+    const tec = (r.tecnico || "").trim();
+    if (tec && tec !== "N/A") tecnicosSet.add(tec);
+
+    const ar = (r.area_trabajo || "").trim().toUpperCase();
+    if (ar) plazasActivasSet.add(ar);
+  });
+
+  const totalDone = matchingRecords.length;
+  const totalMeta = targets.total;
+  const cajasMeta = targets.cajas;
+  const casetasMeta = targets.casetas;
+
+  const totalPct = totalMeta > 0 ? (totalDone / totalMeta) * 100 : 0;
+  const cajasPct = cajasMeta > 0 ? (cajasDone / cajasMeta) * 100 : 0;
+  const casetasPct = casetasMeta > 0 ? (casetasDone / casetasMeta) * 100 : 0;
+
+  const totalFaltante = Math.max(0, totalMeta - totalDone);
+  const cajasFaltante = Math.max(0, cajasMeta - cajasDone);
+  const casetasFaltante = Math.max(0, casetasMeta - casetasDone);
+
+  // KPI 1: Global
+  setTextSafe("bossKpiTotalDone", formatNumber(totalDone));
+  setTextSafe("bossKpiTotalMeta", formatNumber(totalMeta));
+  setTextSafe("bossKpiTotalPercent", `${totalPct.toFixed(1)}%`);
+  setTextSafe("bossKpiTotalFaltante", formatNumber(totalFaltante));
+  setBarSafe("bossKpiTotalBar", Math.min(100, totalPct), totalPct >= 70 ? "#16a34a" : totalPct >= 30 ? "#eab308" : "#0284c7");
+
+  // KPI 2: Cajas
+  setTextSafe("bossKpiCajasDone", formatNumber(cajasDone));
+  setTextSafe("bossKpiCajasMeta", formatNumber(cajasMeta));
+  setTextSafe("bossKpiCajasPercent", `${cajasPct.toFixed(1)}%`);
+  setTextSafe("bossKpiCajasFaltante", formatNumber(cajasFaltante));
+  setBarSafe("bossKpiCajasBar", Math.min(100, cajasPct), "#06b6d4");
+
+  // KPI 3: Casetas
+  setTextSafe("bossKpiCasetasDone", formatNumber(casetasDone));
+  setTextSafe("bossKpiCasetasMeta", formatNumber(casetasMeta));
+  setTextSafe("bossKpiCasetasPercent", `${casetasPct.toFixed(1)}%`);
+  setTextSafe("bossKpiCasetasFaltante", formatNumber(casetasFaltante));
+  setBarSafe("bossKpiCasetasBar", Math.min(100, casetasPct), "#6366f1");
+
+  // KPI 4: Fuerza Operativa
+  setTextSafe("bossKpiContratistasCount", formatNumber(contratistasSet.size));
+  setTextSafe("bossKpiTecnicosCount", formatNumber(tecnicosSet.size));
+  setTextSafe("bossKpiPlazasActivasCount", formatNumber(plazasActivasSet.size));
+}
+
+function setTextSafe(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.innerText = val;
+}
+
+function setBarSafe(id, pct, color) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.style.width = `${pct}%`;
+    if (color) el.style.backgroundColor = color;
+  }
+}
+
+function renderBossPlazasTable(matchingRecords) {
+  const tbody = document.getElementById("bossPlazasTableBody");
+  if (!tbody) return;
+
+  // 1. Agrupar registros por Plaza
+  const recordsByArea = {};
+  matchingRecords.forEach(r => {
+    const ar = (r.area_trabajo || "").trim().toUpperCase();
+    if (!recordsByArea[ar]) recordsByArea[ar] = { cajas: 0, casetas: 0, contratistas: new Set(), total: 0 };
+    if (r.tipo === "CASETA") recordsByArea[ar].casetas++;
+    else recordsByArea[ar].cajas++;
+    recordsByArea[ar].total++;
+
+    const con = (r.contratista_homologado || r.contratista || "").trim();
+    if (con && con !== "Directo" && con !== "S/C") recordsByArea[ar].contratistas.add(con);
+  });
+
+  // 2. Construir lista consolidada de Plazas con Metas
+  const rows = [];
+  const selEdoNorm = bossState.estado !== "TODOS" ? normalizeAreaKey(bossState.estado) : null;
+  const selAreaNorm = bossState.area !== "TODOS" ? normalizeAreaKey(bossState.area) : null;
+
+  if (typeof CATALOGO_METAS !== "undefined" && CATALOGO_METAS.estados) {
+    for (let edo in CATALOGO_METAS.estados) {
+      const edoNorm = normalizeAreaKey(edo);
+      if (!selEdoNorm || edoNorm === selEdoNorm) {
+        for (let ar in CATALOGO_METAS.estados[edo]) {
+          const arNorm = normalizeAreaKey(ar);
+          if (!selAreaNorm || arNorm === selAreaNorm) {
+            const meta = CATALOGO_METAS.estados[edo][ar];
+            
+            // Buscar datos hechos
+            let doneData = { cajas: 0, casetas: 0, contratistas: new Set(), total: 0 };
+            for (let recAr in recordsByArea) {
+              if (normalizeAreaKey(recAr) === arNorm || normalizeAreaKey(recAr) === edoNorm) {
+                const sub = recordsByArea[recAr];
+                doneData.cajas += sub.cajas;
+                doneData.casetas += sub.casetas;
+                doneData.total += sub.total;
+                sub.contratistas.forEach(c => doneData.contratistas.add(c));
+              }
+            }
+
+            const mTotal = meta.total || 0;
+            const pct = mTotal > 0 ? (doneData.total / mTotal) * 100 : 0;
+            const faltante = Math.max(0, mTotal - doneData.total);
+
+            // Semáforo
+            let semStatus = "critico";
+            let semBadge = `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">🔴 Crítico (&lt;30%)</span>`;
+            if (pct >= 70) {
+              semStatus = "avanzado";
+              semBadge = `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">🟢 Avanzado (${pct.toFixed(0)}%)</span>`;
+            } else if (pct >= 30) {
+              semStatus = "proceso";
+              semBadge = `<span class="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">🟡 En Proceso (${pct.toFixed(0)}%)</span>`;
+            }
+
+            rows.push({
+              estado: edo,
+              area: ar,
+              contratistas: Array.from(doneData.contratistas),
+              cajasDone: doneData.cajas,
+              cajasMeta: meta.cajas || 0,
+              casetasDone: doneData.casetas,
+              casetasMeta: meta.casetas || 0,
+              totalDone: doneData.total,
+              totalMeta: mTotal,
+              pct: pct,
+              semStatus: semStatus,
+              semBadge: semBadge,
+              faltante: faltante
+            });
+          }
+        }
+      }
+    }
+  }
+
+  // Guardar en caché para filtrado de texto rápido
+  bossState.cachedPlazasData = rows;
+  renderPlazasTableRows(rows);
+}
+
+function renderPlazasTableRows(rows) {
+  const tbody = document.getElementById("bossPlazasTableBody");
+  if (!tbody) return;
+
+  const search = (bossState.searchPlaza || "").trim().toLowerCase();
+  const selSem = bossState.semaforo;
+
+  // Filtrar
+  const filteredRows = rows.filter(r => {
+    if (selSem !== "TODOS" && r.semStatus !== selSem) return false;
+    if (search) {
+      const matchEdo = r.estado.toLowerCase().includes(search);
+      const matchAr = r.area.toLowerCase().includes(search);
+      const matchCon = r.contratistas.some(c => c.toLowerCase().includes(search));
+      if (!matchEdo && !matchAr && !matchCon) return false;
+    }
+    return true;
+  });
+
+  // Ordenar por volumen hecho (descendente)
+  filteredRows.sort((a, b) => b.totalDone - a.totalDone || b.pct - a.pct);
+
+  setTextSafe("bossPlazasTableCount", `${filteredRows.length} plazas mostradas`);
+
+  if (filteredRows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 font-semibold">No se encontraron plazas con los filtros seleccionados</td></tr>`;
+    return;
+  }
+
+  let html = "";
+  filteredRows.forEach((r, idx) => {
+    const bgRow = idx % 2 === 0 ? "bg-white" : "bg-slate-50/50";
+    const cPct = r.cajasMeta > 0 ? (r.cajasDone / r.cajasMeta * 100).toFixed(0) : 0;
+    const casPct = r.casetasMeta > 0 ? (r.casetasDone / r.casetasMeta * 100).toFixed(0) : 0;
+
+    let conBadges = `<span class="text-slate-400 italic text-[11px]">Sin asignación</span>`;
+    if (r.contratistas.length > 0) {
+      conBadges = r.contratistas.slice(0, 2).map(c => 
+        `<span class="inline-block bg-slate-100 text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded border border-slate-200 mr-1 mb-1 truncate max-w-[130px]" title="${c}">${c}</span>`
+      ).join("");
+      if (r.contratistas.length > 2) {
+        conBadges += `<span class="text-[10px] font-bold text-telmex" title="${r.contratistas.join(', ')}">+${r.contratistas.length - 2} más</span>`;
+      }
+    }
+
+    html += `
+      <tr class="${bgRow} hover:bg-sky-50/60 transition-colors">
+        <td class="p-2.5 font-bold text-slate-700 whitespace-nowrap">${r.estado}</td>
+        <td class="p-2.5 font-black text-slate-900 whitespace-nowrap">${r.area}</td>
+        <td class="p-2.5">${conBadges}</td>
+        <td class="p-2.5 text-center">
+          <div class="font-bold text-slate-800">${formatNumber(r.cajasDone)} <span class="text-slate-400 font-normal">/ ${formatNumber(r.cajasMeta)}</span></div>
+          <div class="text-[10px] font-semibold text-cyan-700">${cPct}%</div>
+        </td>
+        <td class="p-2.5 text-center">
+          <div class="font-bold text-slate-800">${formatNumber(r.casetasDone)} <span class="text-slate-400 font-normal">/ ${formatNumber(r.casetasMeta)}</span></div>
+          <div class="text-[10px] font-semibold text-indigo-700">${casPct}%</div>
+        </td>
+        <td class="p-2.5 text-center font-black text-slate-900">
+          <div>${formatNumber(r.totalDone)} <span class="text-slate-400 font-normal">/ ${formatNumber(r.totalMeta)}</span></div>
+        </td>
+        <td class="p-2.5 text-center">
+          <div class="font-black text-xs ${r.pct >= 70 ? 'text-emerald-700' : r.pct >= 30 ? 'text-amber-700' : 'text-slate-600'}">${r.pct.toFixed(1)}%</div>
+          <div class="w-16 mx-auto bg-slate-200 rounded-full h-1.5 overflow-hidden mt-1">
+            <div class="h-1.5 rounded-full ${r.pct >= 70 ? 'bg-emerald-500' : r.pct >= 30 ? 'bg-amber-500' : 'bg-telmex'}" style="width: ${Math.min(100, r.pct)}%"></div>
+          </div>
+        </td>
+        <td class="p-2.5 text-center whitespace-nowrap">${r.semBadge}</td>
+        <td class="p-2.5 text-right font-black text-slate-700 whitespace-nowrap">${formatNumber(r.faltante)} pzas</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+function filterBossPlazasTable() {
+  const inp = document.getElementById("bossSearchPlaza");
+  bossState.searchPlaza = inp ? inp.value : "";
+  renderPlazasTableRows(bossState.cachedPlazasData || []);
+}
+
+function renderBossContractorsTable(matchingRecords) {
+  const tbody = document.getElementById("bossContractorsTableBody");
+  if (!tbody) return;
+
+  const conMap = {};
+  const totalGlobal = matchingRecords.length || 1;
+
+  matchingRecords.forEach(r => {
+    let c = (r.contratista_homologado || r.contratista || "SIN ASIGNAR").trim();
+    if (!c) c = "SIN ASIGNAR";
+
+    if (!conMap[c]) {
+      conMap[c] = {
+        name: c,
+        cajas: 0,
+        casetas: 0,
+        total: 0,
+        plazas: new Set(),
+        tecnicos: new Set(),
+        fechas: new Set()
+      };
+    }
+
+    if (r.tipo === "CASETA") conMap[c].casetas++;
+    else conMap[c].cajas++;
+    conMap[c].total++;
+
+    if (r.area_trabajo) conMap[c].plazas.add(r.area_trabajo.trim().toUpperCase());
+    if (r.tecnico && r.tecnico !== "N/A") conMap[c].tecnicos.add(r.tecnico.trim());
+    if (r.fecha) conMap[c].fechas.add(r.fecha);
+  });
+
+  const list = Object.values(conMap);
+  list.sort((a, b) => b.total - a.total);
+
+  setTextSafe("bossContractorsTableCount", `${list.length} contratistas activos`);
+
+  if (list.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400 font-semibold">No se encontraron contratistas con los filtros seleccionados</td></tr>`;
+    return;
+  }
+
+  let html = "";
+  list.forEach((c, idx) => {
+    const bgRow = idx % 2 === 0 ? "bg-white" : "bg-slate-50/50";
+    const share = (c.total / totalGlobal * 100).toFixed(1);
+    const daysCount = Math.max(1, c.fechas.size);
+    const avgPerDay = (c.total / daysCount).toFixed(1);
+
+    // Estatus
+    let statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Activo</span>`;
+    if (c.total >= 1000) {
+      statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 border border-purple-200">Alto Volumen</span>`;
+    } else if (c.total >= 300) {
+      statusPill = `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200">Producción Media</span>`;
+    }
+
+    const plazasPreview = Array.from(c.plazas).slice(0, 3).join(", ") + (c.plazas.size > 3 ? ` (+${c.plazas.size - 3})` : "");
+
+    html += `
+      <tr class="${bgRow} hover:bg-sky-50/60 transition-colors">
+        <td class="p-2.5 text-center font-bold text-slate-400">#${idx + 1}</td>
+        <td class="p-2.5 font-black text-slate-900">${c.name}</td>
+        <td class="p-2.5 text-slate-600 text-xs" title="${Array.from(c.plazas).join(', ')}">
+          <span class="font-bold text-telmex">${c.plazas.size} plazas:</span> ${plazasPreview}
+        </td>
+        <td class="p-2.5 text-right font-bold text-cyan-700">${formatNumber(c.cajas)}</td>
+        <td class="p-2.5 text-right font-bold text-indigo-700">${formatNumber(c.casetas)}</td>
+        <td class="p-2.5 text-right font-black text-slate-900 text-sm">${formatNumber(c.total)}</td>
+        <td class="p-2.5 text-center font-bold text-slate-700">${share}%</td>
+        <td class="p-2.5 text-center">
+          <span class="bg-slate-100 text-slate-800 font-bold px-2 py-0.5 rounded-full text-xs">${c.tecnicos.size}</span>
+        </td>
+        <td class="p-2.5 text-right font-bold text-slate-700">${avgPerDay} / día</td>
+        <td class="p-2.5 text-center whitespace-nowrap">${statusPill}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+function renderBossCharts(matchingRecords) {
+  if (typeof Chart === "undefined") return;
+
+  // 1. Gráfica de Avance vs Objetivo (Top Plazas)
+  const ctxMetas = document.getElementById("chartBossAvanceMetas");
+  if (ctxMetas) {
+    if (state.charts['bossAvanceChart']) {
+      state.charts['bossAvanceChart'].destroy();
+    }
+
+    // Obtener top 8 plazas por meta
+    const plazasList = (bossState.cachedPlazasData || []).slice(0, 8);
+    const labels = plazasList.map(p => p.area);
+    const dataMetas = plazasList.map(p => p.totalMeta);
+    const dataReal = plazasList.map(p => p.totalDone);
+
+    state.charts['bossAvanceChart'] = new Chart(ctxMetas, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Meta Oficial Telmex",
+            data: dataMetas,
+            backgroundColor: "#cbd5e1",
+            borderRadius: 6
+          },
+          {
+            label: "Avance Realizado",
+            data: dataReal,
+            backgroundColor: "#0055a5",
+            borderRadius: 6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "top", labels: { font: { size: 10, weight: "bold" } } },
+          tooltip: {
+            callbacks: {
+              afterBody: (items) => {
+                const idx = items[0].dataIndex;
+                const pct = plazasList[idx] ? plazasList[idx].pct.toFixed(1) : 0;
+                return `Cumplimiento: ${pct}%`;
+              }
+            }
+          }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: "#f1f5f9" } },
+          x: { grid: { display: false } }
+        }
+      }
+    });
+  }
+
+  // 2. Gráfica por Contratista (Top 8)
+  const ctxCon = document.getElementById("chartBossContractors");
+  if (ctxCon) {
+    if (state.charts['bossContractorsChart']) {
+      state.charts['bossContractorsChart'].destroy();
+    }
+
+    const conMap = {};
+    matchingRecords.forEach(r => {
+      let c = (r.contratista_homologado || r.contratista || "S/A").trim();
+      if (!conMap[c]) conMap[c] = { cajas: 0, casetas: 0, total: 0 };
+      if (r.tipo === "CASETA") conMap[c].casetas++;
+      else conMap[c].cajas++;
+      conMap[c].total++;
+    });
+
+    const topCon = Object.entries(conMap).sort((a, b) => b[1].total - a[1].total).slice(0, 8);
+    const conLabels = topCon.map(x => x[0].length > 18 ? x[0].substring(0, 18) + "..." : x[0]);
+    const conCajas = topCon.map(x => x[1].cajas);
+    const conCasetas = topCon.map(x => x[1].casetas);
+
+    state.charts['bossContractorsChart'] = new Chart(ctxCon, {
+      type: "bar",
+      data: {
+        labels: conLabels,
+        datasets: [
+          {
+            label: "Cajas ($60)",
+            data: conCajas,
+            backgroundColor: "#06b6d4",
+            borderRadius: 6
+          },
+          {
+            label: "Casetas ($36)",
+            data: conCasetas,
+            backgroundColor: "#6366f1",
+            borderRadius: 6
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "top", labels: { font: { size: 10, weight: "bold" } } }
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false } },
+          y: { stacked: true, beginAtZero: true, grid: { color: "#f1f5f9" } }
+        }
+      }
+    });
+  }
+}
+
+function switchBossSubTab(subTabId) {
+  bossState.activeSubTab = subTabId;
+
+  // Botones
+  const btnP = document.getElementById("bossSubTabBtnPlazas");
+  const btnC = document.getElementById("bossSubTabBtnContratistas");
+  const btnG = document.getElementById("bossSubTabBtnGraficas");
+
+  [btnP, btnC, btnG].forEach(b => {
+    if (b) {
+      b.className = "px-4 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 border-b-2 border-transparent flex items-center gap-2";
+    }
+  });
+
+  // Paneles
+  const viewP = document.getElementById("bossSubTabPlazas");
+  const viewC = document.getElementById("bossSubTabContratistas");
+  const viewG = document.getElementById("bossSubTabGraficas");
+
+  if (viewP) viewP.classList.add("hidden");
+  if (viewC) viewC.classList.add("hidden");
+  if (viewG) viewG.classList.add("hidden");
+
+  if (subTabId === "plazas") {
+    if (btnP) btnP.className = "px-4 py-2.5 text-xs font-extrabold text-telmex border-b-2 border-telmex flex items-center gap-2";
+    if (viewP) viewP.classList.remove("hidden");
+  } else if (subTabId === "contratistas") {
+    if (btnC) btnC.className = "px-4 py-2.5 text-xs font-extrabold text-telmex border-b-2 border-telmex flex items-center gap-2";
+    if (viewC) viewC.classList.remove("hidden");
+  } else if (subTabId === "graficas") {
+    if (btnG) btnG.className = "px-4 py-2.5 text-xs font-extrabold text-telmex border-b-2 border-telmex flex items-center gap-2";
+    if (viewG) viewG.classList.remove("hidden");
+    setTimeout(() => {
+      if (state.charts['bossAvanceChart']) state.charts['bossAvanceChart'].resize();
+      if (state.charts['bossContractorsChart']) state.charts['bossContractorsChart'].resize();
+    }, 100);
+  }
+}
+
+function exportBossSummaryExcel() {
+  if (typeof XLSX === "undefined") {
+    showToast("⚠️ Librería Excel (XLSX) no disponible", "error");
+    return;
+  }
+
+  showToast("⏳ Generando libro de Excel ejecutivo...", "info", 2000);
+
+  const wb = XLSX.utils.book_new();
+
+  // Hoja 1: Avance por Plaza vs Objetivo
+  const plazasData = (bossState.cachedPlazasData || []).map(p => ({
+    "Estado": p.estado,
+    "Plaza / Área": p.area,
+    "Contratistas Asignados": p.contratistas.join(", "),
+    "Meta Cajas": p.cajasMeta,
+    "Cajas Hechas": p.cajasDone,
+    "% Avance Cajas": p.cajasMeta > 0 ? (p.cajasDone / p.cajasMeta * 100).toFixed(1) + "%" : "0%",
+    "Meta Casetas": p.casetasMeta,
+    "Casetas Hechas": p.casetasDone,
+    "% Avance Casetas": p.casetasMeta > 0 ? (p.casetasDone / p.casetasMeta * 100).toFixed(1) + "%" : "0%",
+    "Meta Total": p.totalMeta,
+    "Total Hecho": p.totalDone,
+    "% Cumplimiento Global": p.pct.toFixed(1) + "%",
+    "Faltante Meta (Pzas)": p.faltante,
+    "Estatus": p.pct >= 70 ? "Avanzado / Concluido" : p.pct >= 30 ? "En Proceso" : "Crítico / Rezago"
+  }));
+  const wsPlazas = XLSX.utils.json_to_sheet(plazasData);
+  XLSX.utils.book_append_sheet(wb, wsPlazas, "Avance vs Objetivo Plazas");
+
+  // Hoja 2: Rendimiento por Contratista
+  const allRecords = state.records || [];
+  const conMap = {};
+  allRecords.forEach(r => {
+    let c = (r.contratista_homologado || r.contratista || "S/A").trim();
+    if (!conMap[c]) conMap[c] = { name: c, cajas: 0, casetas: 0, total: 0, plazas: new Set(), tecnicos: new Set() };
+    if (r.tipo === "CASETA") conMap[c].casetas++;
+    else conMap[c].cajas++;
+    conMap[c].total++;
+    if (r.area_trabajo) conMap[c].plazas.add(r.area_trabajo);
+    if (r.tecnico) conMap[c].tecnicos.add(r.tecnico);
+  });
+  const conData = Object.values(conMap).sort((a,b) => b.total - a.total).map((c, idx) => ({
+    "Ranking": idx + 1,
+    "Empresa Contratista": c.name,
+    "Plazas Atendidas": c.plazas.size,
+    "Detalle de Plazas": Array.from(c.plazas).join(", "),
+    "Cajas Intervenidas ($60)": c.cajas,
+    "Casetas Intervenidas ($36)": c.casetas,
+    "Total Piezas": c.total,
+    "Técnicos Activos": c.tecnicos.size,
+    "% Aportación": (c.total / allRecords.length * 100).toFixed(1) + "%"
+  }));
+  const wsCon = XLSX.utils.json_to_sheet(conData);
+  XLSX.utils.book_append_sheet(wb, wsCon, "Ranking Contratistas");
+
+  const todayStr = getLocalDateStr(new Date());
+  XLSX.writeFile(wb, `Resumen_Operativo_Gerencial_Telmex_${todayStr}.xlsx`);
+  showToast("✅ Archivo de Excel gerencial descargado con éxito", "success", 3000);
+}
+
+function printBossSummary() {
+  const printWindow = window.open("", "_blank");
+  const todayStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
+  const totalDone = document.getElementById("bossKpiTotalDone")?.innerText || "0";
+  const totalMeta = document.getElementById("bossKpiTotalMeta")?.innerText || "0";
+  const totalPct = document.getElementById("bossKpiTotalPercent")?.innerText || "0%";
+  const cajasDone = document.getElementById("bossKpiCajasDone")?.innerText || "0";
+  const casetasDone = document.getElementById("bossKpiCasetasDone")?.innerText || "0";
+  const conCount = document.getElementById("bossKpiContratistasCount")?.innerText || "0";
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Resumen Operativo Gerencial - Telmex 2026</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 30px; color: #0f172a; font-size: 11px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #0055a5; padding-bottom: 12px; margin-bottom: 20px; }
+        .title { font-size: 18px; font-weight: 900; color: #0055a5; }
+        .subtitle { font-size: 11px; color: #64748b; margin-top: 2px; }
+        .kpis { display: flex; gap: 15px; margin-bottom: 20px; }
+        .kpi-card { flex: 1; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; background: #f8fafc; }
+        .kpi-label { font-size: 9px; font-weight: 800; color: #64748b; text-transform: uppercase; }
+        .kpi-val { font-size: 20px; font-weight: 900; color: #0f172a; margin-top: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 10px; }
+        th { background: #0055a5; color: white; padding: 6px; text-align: left; }
+        td { padding: 6px; border-bottom: 1px solid #e2e8f0; }
+        tr:nth-child(even) { background: #f8fafc; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <div class="title">IASA / PCI | PROYECTO IMAGEN TELMEX 2026</div>
+          <div class="subtitle">Tablero de Control Gerencial & Avance Operativo vs Metas</div>
+        </div>
+        <div style="text-align: right;">
+          <div><b>Fecha de Emisión:</b> ${todayStr}</div>
+          <div style="color: #64748b;">Filtros: Contratista [${bossState.contratista}], Estado [${bossState.estado}], Área [${bossState.area}]</div>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi-card">
+          <div class="kpi-label">Avance Global</div>
+          <div class="kpi-val">${totalDone} / ${totalMeta} (${totalPct})</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Cajas Realizadas</div>
+          <div class="kpi-val">${cajasDone}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Casetas Realizadas</div>
+          <div class="kpi-val">${casetasDone}</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Contratistas Activos</div>
+          <div class="kpi-val">${conCount}</div>
+        </div>
+      </div>
+
+      <h3>Avance vs Objetivo por Plaza y Estado:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Estado</th>
+            <th>Plaza</th>
+            <th>Contratistas</th>
+            <th style="text-align: right;">Cajas</th>
+            <th style="text-align: right;">Casetas</th>
+            <th style="text-align: right;">Total Hecho</th>
+            <th style="text-align: right;">Meta Total</th>
+            <th style="text-align: center;">% Cumplimiento</th>
+            <th style="text-align: right;">Faltante</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${(bossState.cachedPlazasData || []).slice(0, 30).map(p => `
+            <tr>
+              <td><b>${p.estado}</b></td>
+              <td>${p.area}</td>
+              <td>${p.contratistas.slice(0, 2).join(', ')}</td>
+              <td style="text-align: right;">${p.cajasDone} / ${p.cajasMeta}</td>
+              <td style="text-align: right;">${p.casetasDone} / ${p.casetasMeta}</td>
+              <td style="text-align: right; font-weight: bold;">${p.totalDone}</td>
+              <td style="text-align: right;">${p.totalMeta}</td>
+              <td style="text-align: center; font-weight: bold; color: ${p.pct >= 70 ? '#16a34a' : p.pct >= 30 ? '#d97706' : '#dc2626'};">${p.pct.toFixed(1)}%</td>
+              <td style="text-align: right;">${p.faltante}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+
+      <script>
+        window.onload = function() { window.print(); }
+      <\/script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
 }
 
