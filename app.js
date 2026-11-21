@@ -2129,6 +2129,14 @@ function switchTab(tabId) {
     }
   }
 
+  if (tabId === "tab-pagos-2") {
+    const isAuth = sessionStorage.getItem("PAGOS2_AUTH_OK") === "true";
+    if (!isAuth) {
+      openPagos2NipModal();
+      return;
+    }
+  }
+
   document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
   document.querySelectorAll(".tab-content").forEach(c => c.classList.add("hidden"));
 
@@ -2141,7 +2149,8 @@ function switchTab(tabId) {
     const onc = b.getAttribute("onclick") || "";
     return onc.includes(tabId) || 
            (tabId === "tab-gerencial" && (onc.includes("openGerencialModule") || onc.includes("tab-gerencial"))) ||
-           (tabId === "tab-pagos" && (onc.includes("openPagosModule") || onc.includes("tab-pagos")));
+           (tabId === "tab-pagos" && (onc.includes("openPagosModule") || onc.includes("tab-pagos"))) ||
+           (tabId === "tab-pagos-2" && (onc.includes("openPagos2Module") || onc.includes("tab-pagos-2")));
   });
   if (clickedBtn) clickedBtn.classList.add("active");
 
@@ -5634,3 +5643,1501 @@ function printBossSummary() {
   printWindow.document.close();
 }
 
+
+
+
+// =============================================================================
+// MÓDULO DE LIQUIDACIÓN Y VALIDACIÓN DE PAGOS 2 (DUPLICADO)
+// Tarifas Fijas Oficiales:
+//   - Casetas: $44.04 MXN / pieza
+//   - Cajas:   $73.46 MXN / pieza
+// NIP de Seguridad: 3579
+// =============================================================================
+
+let pagos2State = {
+  tipo: "CAJA",
+  tarifaCaja: 73.46,
+  tarifaCaseta: 44.04,
+  tarifaActiva: 73.46,
+  selectedAreas: new Set(),
+  contratista: "TODOS",
+  tecnico: "TODOS",
+  presetDate: "TODOS",
+  dateStart: "",
+  dateEnd: "",
+  currentPage: 1,
+  pageSize: 50
+};
+
+let pagos2FilteredRecords = [];
+
+function getPagos2Nip() {
+  const stored = localStorage.getItem("TELMEX_PAGOS2_NIP");
+  if (stored) return stored;
+  localStorage.setItem("TELMEX_PAGOS2_NIP", "3579");
+  return "3579";
+}
+
+function openPagos2Module() {
+  const isAuth = sessionStorage.getItem("PAGOS2_AUTH_OK") === "true";
+  if (isAuth) {
+    switchTab("tab-pagos-2");
+    initPagos2Module();
+  } else {
+    openPagos2NipModal();
+  }
+}
+
+function openPagos2NipModal() {
+  const modal = document.getElementById("nipModal2");
+  const input = document.getElementById("nipInput2");
+  const err = document.getElementById("nipErrorMsg2");
+  if (input) input.value = "";
+  if (err) { err.innerText = ""; err.classList.add("hidden"); }
+  if (modal) modal.classList.remove("hidden");
+  setTimeout(() => input?.focus(), 100);
+}
+
+function closeNipModal2() {
+  const modal = document.getElementById("nipModal2");
+  if (modal) modal.classList.add("hidden");
+}
+
+function verifyNip2() {
+  const input = document.getElementById("nipInput2");
+  const err = document.getElementById("nipErrorMsg2");
+  const entered = (input?.value || "").trim();
+  const correct = getPagos2Nip();
+
+  if (entered === correct) {
+    sessionStorage.setItem("PAGOS2_AUTH_OK", "true");
+    closeNipModal2();
+    switchTab("tab-pagos-2");
+    initPagos2Module();
+  } else {
+    if (err) {
+      err.innerText = "NIP incorrecto. Intenta de nuevo.";
+      err.classList.remove("hidden");
+    }
+    if (input) {
+      input.value = "";
+      input.focus();
+    }
+  }
+}
+
+function logoutPagos2() {
+  sessionStorage.removeItem("PAGOS2_AUTH_OK");
+  switchTab("tab-resumen");
+}
+
+function openChangeNipModal2() {
+  const modal = document.getElementById("changeNipModal2");
+  const err = document.getElementById("changeNipErrorMsg2");
+  if (err) { err.innerText = ""; err.classList.add("hidden"); }
+  const inpCurr = document.getElementById("inputCurrentNip2");
+  const inpNew = document.getElementById("inputNewNip2");
+  if (inpCurr) inpCurr.value = "";
+  if (inpNew) inpNew.value = "";
+  if (modal) modal.classList.remove("hidden");
+}
+
+function closeChangeNipModal2() {
+  const modal = document.getElementById("changeNipModal2");
+  if (modal) modal.classList.add("hidden");
+}
+
+function saveNewNip2() {
+  const currInput = document.getElementById("inputCurrentNip2")?.value.trim() || "";
+  const newInput = document.getElementById("inputNewNip2")?.value.trim() || "";
+  const err = document.getElementById("changeNipErrorMsg2");
+  const actualNip = getPagos2Nip();
+
+  if (currInput !== actualNip) {
+    if (err) {
+      err.innerText = "El NIP actual ingresado es incorrecto.";
+      err.classList.remove("hidden");
+    }
+    return;
+  }
+  if (!newInput || newInput.length < 4 || isNaN(newInput)) {
+    if (err) {
+      err.innerText = "El nuevo NIP debe tener entre 4 y 8 dígitos numéricos.";
+      err.classList.remove("hidden");
+    }
+    return;
+  }
+  localStorage.setItem("TELMEX_PAGOS2_NIP", newInput);
+  alert("NIP del Módulo 2 actualizado correctamente.");
+  closeChangeNipModal2();
+}
+
+const STORAGE_KEY_PAGOS2 = "TELMEX_HISTORIAL_PAGOS2_V1";
+
+function getPagos2Registrados() {
+  const fromGithub = (typeof window !== "undefined" && Array.isArray(window.TELMEX_HISTORIAL_PAGOS2))
+    ? window.TELMEX_HISTORIAL_PAGOS2
+    : [];
+
+  let fromLocal = [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_PAGOS2);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) fromLocal = parsed;
+    }
+  } catch (e) {
+    console.warn("Error leyendo STORAGE_KEY_PAGOS2:", e);
+  }
+
+  const map = new Map();
+  fromGithub.forEach(p => {
+    if (p && (p.folioPago || p.id)) {
+      const k = p.folioPago || p.id;
+      map.set(k, p);
+    }
+  });
+  fromLocal.forEach(p => {
+    if (p && (p.folioPago || p.id)) {
+      const k = p.folioPago || p.id;
+      map.set(k, p);
+    }
+  });
+
+  const merged = Array.from(map.values());
+  merged.sort((a, b) => {
+    const ta = new Date(a.fecha || a.timestamp || 0).getTime();
+    const tb = new Date(b.fecha || b.timestamp || 0).getTime();
+    return tb - ta;
+  });
+  return merged;
+}
+
+function savePagos2Registrados(list) {
+  try {
+    localStorage.setItem(STORAGE_KEY_PAGOS2, JSON.stringify(list));
+    window.TELMEX_HISTORIAL_PAGOS2 = list;
+  } catch (e) {
+    console.error("Error guardando pagos 2:", e);
+  }
+}
+
+function getPiezasPagadasAcumuladas2(tipo, area, contratista) {
+  const lista = getPagos2Registrados();
+  const areaNorm = (area || "").trim().toUpperCase();
+  const conNorm = (contratista || "").trim();
+
+  return lista
+    .filter(p => {
+      const matchTipo = (p.tipo || "CAJA").toUpperCase() === tipo.toUpperCase();
+      const matchArea = !areaNorm || areaNorm === "TODAS" || (p.area || "").trim().toUpperCase() === areaNorm;
+      const matchCon = !conNorm || conNorm === "TODOS" || (p.contratista || "").trim().toUpperCase() === conNorm.toUpperCase();
+      return matchTipo && matchArea && matchCon;
+    })
+    .reduce((sum, p) => sum + (parseInt(p.piezasPagadasHoy, 10) || 0), 0);
+}
+
+function openRegistrarPago2Modal(preselectedArea, preselectedContratista) {
+  const modal = document.getElementById("modalRegistrarPago2");
+  if (!modal) return;
+
+  const tipo = pagos2State.tipo;
+  const tarifa = pagos2State.tarifaActiva;
+
+  const badgeTipo = document.getElementById("modalPago2TipoBadge");
+  if (badgeTipo) {
+    badgeTipo.innerText = tipo === "CASETA" ? "📞 CASETA TELEFÓNICA" : "📦 CAJA DE DISTRITO";
+    badgeTipo.className = tipo === "CASETA"
+      ? "text-xs font-black px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300"
+      : "text-xs font-black px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 border border-blue-300";
+  }
+
+  const lblTarifa = document.getElementById("modalPago2TarifaLabel");
+  if (lblTarifa) lblTarifa.innerText = `$${tarifa.toFixed(2)} MXN / pieza`;
+
+  const inputFecha = document.getElementById("modalPago2Fecha");
+  if (inputFecha) {
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    inputFecha.value = `${yyyy}-${mm}-${dd}`;
+  }
+
+  const selArea = document.getElementById("modalPago2SelectArea");
+  if (selArea) {
+    const areas = getAvailableAreasForTipo(tipo);
+    selArea.innerHTML = '<option value="">-- Selecciona Área --</option>';
+    areas.forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a;
+      opt.innerText = a;
+      selArea.appendChild(opt);
+    });
+
+    if (preselectedArea) {
+      selArea.value = preselectedArea;
+    } else if (pagos2State.selectedAreas.size === 1) {
+      selArea.value = Array.from(pagos2State.selectedAreas)[0];
+    }
+  }
+
+  actualizarContratistasEnModal2(preselectedContratista);
+  onModalPago2AreaOrConChange();
+
+  modal.classList.remove("hidden");
+}
+
+function closeRegistrarPago2Modal() {
+  const modal = document.getElementById("modalRegistrarPago2");
+  if (modal) modal.classList.add("hidden");
+}
+
+function actualizarContratistasEnModal2(preselectedContratista) {
+  const tipo = pagos2State.tipo;
+  const selArea = document.getElementById("modalPago2SelectArea");
+  const selCon = document.getElementById("modalPago2SelectContratista");
+  if (!selCon) return;
+
+  const areaElegida = (selArea?.value || "").trim().toUpperCase();
+  const records = state.records || [];
+  const conSet = new Set();
+
+  records.forEach(r => {
+    if ((r.tipo || "CAJA").toUpperCase() === tipo) {
+      const a = (r.area_trabajo || "").trim().toUpperCase();
+      if (!areaElegida || a === areaElegida) {
+        const c = (r.contratista_homologado || r.contratista || "").trim();
+        if (c && c !== "SIN CONTRATISTA" && c !== "TODOS") conSet.add(c);
+      }
+    }
+  });
+
+  const sortedCons = Array.from(conSet).sort();
+  selCon.innerHTML = '<option value="">-- Selecciona Contratista --</option>';
+  sortedCons.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.innerText = c;
+    selCon.appendChild(opt);
+  });
+
+  if (preselectedContratista && conSet.has(preselectedContratista)) {
+    selCon.value = preselectedContratista;
+  } else if (pagos2State.contratista !== "TODOS" && conSet.has(pagos2State.contratista)) {
+    selCon.value = pagos2State.contratista;
+  }
+}
+
+function onModalPago2AreaOrConChange() {
+  const selArea = document.getElementById("modalPago2SelectArea");
+  const selCon = document.getElementById("modalPago2SelectContratista");
+  const tipo = pagos2State.tipo;
+  const area = selArea?.value || "";
+  const con = selCon?.value || "";
+
+  if (!area || !con) {
+    const rCount = document.getElementById("modalPago2RealizadasCount");
+    const pCount = document.getElementById("modalPago2PagadasPreviasCount");
+    const dCount = document.getElementById("modalPago2DisponiblesCount");
+    const iPiezas = document.getElementById("modalPago2InputPiezas");
+    const mCalc = document.getElementById("modalPago2MontoCalculado");
+    const remInfo = document.getElementById("modalPago2RemanenteInfo");
+    if (rCount) rCount.innerText = "0";
+    if (pCount) pCount.innerText = "0";
+    if (dCount) dCount.innerText = "0";
+    if (iPiezas) iPiezas.value = 0;
+    if (mCalc) mCalc.innerText = "$0.00 MXN";
+    if (remInfo) remInfo.innerText = "Selecciona área y contratista para calcular saldos.";
+    return;
+  }
+
+  const realizadas = getPiezasRealizadasTotal(tipo, area, con);
+  const pagadas = getPiezasPagadasAcumuladas2(tipo, area, con);
+  const disponibles = Math.max(0, realizadas - pagadas);
+
+  const rCount = document.getElementById("modalPago2RealizadasCount");
+  const pCount = document.getElementById("modalPago2PagadasPreviasCount");
+  const dCount = document.getElementById("modalPago2DisponiblesCount");
+  if (rCount) rCount.innerText = realizadas.toLocaleString();
+  if (pCount) pCount.innerText = pagadas.toLocaleString();
+  if (dCount) dCount.innerText = disponibles.toLocaleString();
+
+  const inputPiezas = document.getElementById("modalPago2InputPiezas");
+  if (inputPiezas) {
+    inputPiezas.value = disponibles;
+    inputPiezas.max = disponibles;
+  }
+
+  onModalPago2PiezasInput();
+}
+
+function onModalPago2PiezasInput() {
+  const inputPiezas = document.getElementById("modalPago2InputPiezas");
+  const disponiblesStr = document.getElementById("modalPago2DisponiblesCount")?.innerText || "0";
+  const disponibles = parseInt(disponiblesStr.replace(/,/g, ""), 10) || 0;
+  const tarifa = pagos2State.tarifaActiva;
+
+  let piezas = parseInt(inputPiezas?.value, 10) || 0;
+  if (piezas < 0) piezas = 0;
+
+  const monto = piezas * tarifa;
+  const mCalc = document.getElementById("modalPago2MontoCalculado");
+  if (mCalc) {
+    mCalc.innerText = `$${monto.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`;
+  }
+
+  const remanente = disponibles - piezas;
+  const infoEl = document.getElementById("modalPago2RemanenteInfo");
+  if (infoEl) {
+    if (remanente === 0) {
+      infoEl.innerText = "✅ Liquidación Completa: Saldo en 0 piezas pendientes.";
+      infoEl.className = "text-xs font-bold text-emerald-600";
+    } else if (remanente > 0) {
+      infoEl.innerText = `ℹ️ Pago Parcial: Quedarán ${remanente.toLocaleString()} piezas pendientes de pago.`;
+      infoEl.className = "text-xs font-bold text-amber-600";
+    } else {
+      infoEl.innerText = `⚠️ ATENCIÓN: Estás intentando pagar ${Math.abs(remanente)} piezas MÁS de las realizadas (${disponibles}).`;
+      infoEl.className = "text-xs font-bold text-rose-600";
+    }
+  }
+}
+
+function confirmarRegistroPago2() {
+  const selArea = document.getElementById("modalPago2SelectArea");
+  const selCon = document.getElementById("modalPago2SelectContratista");
+  const inputFecha = document.getElementById("modalPago2Fecha");
+  const inputPiezas = document.getElementById("modalPago2InputPiezas");
+  const inputFactura = document.getElementById("modalPago2Factura");
+  const selMetodo = document.getElementById("modalPago2Metodo");
+  const inputAutorizo = document.getElementById("modalPago2Autorizo");
+  const inputNotas = document.getElementById("modalPago2Notas");
+
+  const area = selArea?.value || "";
+  const con = selCon?.value || "";
+  const fecha = inputFecha?.value || "";
+  const piezas = parseInt(inputPiezas?.value, 10) || 0;
+  const tarifa = pagos2State.tarifaActiva;
+  const tipo = pagos2State.tipo;
+
+  if (!area) { alert("Por favor selecciona el Área."); selArea?.focus(); return; }
+  if (!con) { alert("Por favor selecciona el Contratista."); selCon?.focus(); return; }
+  if (!fecha) { alert("Por favor ingresa la Fecha de Pago."); inputFecha?.focus(); return; }
+  if (piezas <= 0) { alert("La cantidad de piezas a pagar debe ser mayor a 0."); inputPiezas?.focus(); return; }
+
+  const realizadas = getPiezasRealizadasTotal(tipo, area, con);
+  const pagadasPrevias = getPiezasPagadasAcumuladas2(tipo, area, con);
+  const disponibles = Math.max(0, realizadas - pagadasPrevias);
+
+  if (piezas > disponibles) {
+    const continuar = confirm(`⚠️ ADVERTENCIA DE SOBREPAGO:
+
+El contratista tiene únicamente ${disponibles} piezas disponibles para liquidar, pero estás capturando ${piezas}.
+
+¿Deseas autorizar y forzar el registro de este sobrepago?`);
+    if (!continuar) return;
+  }
+
+  const monto = piezas * tarifa;
+  const id = "PAG2-" + Date.now();
+  const folioPago = `PAG2-${tipo.substring(0, 3)}-${Date.now().toString().slice(-6)}`;
+
+  const nuevoPago = {
+    id,
+    folioPago,
+    modulo: 2,
+    tipo,
+    tarifa,
+    area,
+    contratista: con,
+    fecha,
+    piezasPagadasHoy: piezas,
+    montoPagado: monto,
+    factura: (inputFactura?.value || "").trim().toUpperCase(),
+    metodo: selMetodo?.value || "TRANSFERENCIA",
+    autorizo: (inputAutorizo?.value || "").trim().toUpperCase(),
+    notas: (inputNotas?.value || "").trim(),
+    timestamp: new Date().toISOString()
+  };
+
+  const lista = getPagos2Registrados();
+  lista.unshift(nuevoPago);
+  savePagos2Registrados(lista);
+
+  alert(`✅ Pago Registrado con Éxito (Módulo 2)
+Folio: ${folioPago}
+Contratista: ${con}
+Monto: $${monto.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN
+Piezas: ${piezas} ${tipo}`);
+
+  closeRegistrarPago2Modal();
+  applyPagos2Filter();
+}
+
+function eliminarRegistroPago2(idPago) {
+  const lista = getPagos2Registrados();
+  const item = lista.find(p => p.id === idPago);
+  if (!item) return;
+
+  const conf = confirm(`¿Estás segura de eliminar/anular el pago ${item.folioPago} por $${item.montoPagado.toLocaleString()} a ${item.contratista}?
+
+Las ${item.piezasPagadasHoy} piezas pagadas volverán a sumarse al saldo pendiente por pagar.`);
+  if (!conf) return;
+
+  const filtrados = lista.filter(p => p.id !== idPago);
+  savePagos2Registrados(filtrados);
+  applyPagos2Filter();
+}
+
+function toggleHistorialPagos2Section() {
+  const sec = document.getElementById("pagos2HistorialSection");
+  if (!sec) return;
+  sec.classList.toggle("hidden");
+  if (!sec.classList.contains("hidden")) {
+    renderHistorialPagos2Table();
+  }
+}
+
+function renderHistorialPagos2Table() {
+  const tbody = document.getElementById("pagos2HistorialTableBody");
+  const badgeTotal = document.getElementById("pagos2HistorialTotalBadge");
+  const badgeBtn = document.getElementById("pagos2HistorialBadgeCount");
+  if (!tbody) return;
+
+  const lista = getPagos2Registrados();
+  if (badgeTotal) badgeTotal.innerText = `${lista.length} pagos`;
+  if (badgeBtn) badgeBtn.innerText = `${lista.length} pagos registrados`;
+
+  if (lista.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-xs text-slate-400">No hay pagos registrados en la bitácora del Módulo 2 aún.</td></tr>`;
+    return;
+  }
+
+  let html = "";
+  lista.forEach(p => {
+    const tipoBadge = p.tipo === "CASETA"
+      ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">📞 Caseta</span>`
+      : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">📦 Caja</span>`;
+
+    html += `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="p-2.5 font-mono text-[11px] font-bold text-slate-900">${p.folioPago || p.id}</td>
+        <td class="p-2.5 text-xs text-slate-600">${p.fecha || "-"}</td>
+        <td class="p-2.5">${tipoBadge}</td>
+        <td class="p-2.5 font-bold text-xs text-slate-800">${p.area || "-"}</td>
+        <td class="p-2.5 font-bold text-xs text-slate-900">${p.contratista || "-"}</td>
+        <td class="p-2.5 text-right font-black text-xs text-slate-800">${parseInt(p.piezasPagadasHoy, 10).toLocaleString()}</td>
+        <td class="p-2.5 text-right font-black text-xs text-emerald-700">$${parseFloat(p.montoPagado).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+        <td class="p-2.5 text-center text-[11px] text-slate-500">${p.factura || "-"}</td>
+        <td class="p-2.5 text-center">
+          <div class="flex items-center justify-center gap-1">
+            <button type="button" onclick="imprimirComprobantePago2('${p.id}')" class="p-1 text-slate-500 hover:text-blue-600" title="Imprimir Comprobante">🖨️</button>
+            <button type="button" onclick="eliminarRegistroPago2('${p.id}')" class="p-1 text-slate-400 hover:text-rose-600" title="Eliminar / Anular Pago">🗑️</button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+  tbody.innerHTML = html;
+}
+
+function exportarBitacoraPagos2CSV() {
+  const lista = getPagos2Registrados();
+  if (lista.length === 0) { alert("No hay pagos registrados para exportar."); return; }
+
+  const headers = ["Folio Pago", "Fecha", "Tipo", "Área", "Contratista", "Piezas Pagadas", "Tarifa", "Monto Total", "Factura", "Método", "Autorizó", "Notas", "Timestamp"];
+  const rows = lista.map(p => [
+    `"${p.folioPago || p.id}"`,
+    `"${p.fecha || ''}"`,
+    `"${p.tipo || 'CAJA'}"`,
+    `"${p.area || ''}"`,
+    `"${p.contratista || ''}"`,
+    p.piezasPagadasHoy || 0,
+    p.tarifa || (p.tipo === "CASETA" ? 44.04 : 73.46),
+    p.montoPagado || 0,
+    `"${p.factura || ''}"`,
+    `"${p.metodo || ''}"`,
+    `"${p.autorizo || ''}"`,
+    `"${(p.notas || '').replace(/"/g, '""')}"`,
+    `"${p.timestamp || ''}"`
+  ]);
+
+  const csvContent = "﻿" + [headers.join(","), ...rows.map(r => r.join(","))].join("
+");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Bitacora_Pagos_Modulo2_${new Date().toISOString().split("T")[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function exportarRespaldoPagos2JSON() {
+  const lista = getPagos2Registrados();
+  const str = JSON.stringify(lista, null, 2);
+  const blob = new Blob([str], { type: "application/json;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Respaldo_Pagos_Modulo2_${Date.now()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function importarRespaldoPagos2JSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (!Array.isArray(parsed)) throw new Error("El archivo no es una lista válida.");
+      if (confirm(`Se encontraron ${parsed.length} registros en el archivo. ¿Deseas importarlos a la Bitácora de Pagos del Módulo 2?`)) {
+        savePagos2Registrados(parsed);
+        alert("Respaldo importado correctamente.");
+        applyPagos2Filter();
+      }
+    } catch (err) {
+      alert("Error al procesar el archivo JSON: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function imprimirComprobantePago2(idPago) {
+  const lista = getPagos2Registrados();
+  const p = lista.find(it => it.id === idPago);
+  if (!p) return;
+
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Comprobante de Pago - ${p.folioPago || p.id}</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 40px; color: #1e293b; }
+        .header { border-bottom: 2px solid #059669; padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .title { font-size: 20px; font-weight: bold; color: #059669; }
+        .folio { font-size: 14px; font-weight: bold; color: #64748b; }
+        .card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .label { font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: bold; }
+        .val { font-size: 14px; font-weight: bold; color: #0f172a; margin-top: 2px; }
+        .monto { font-size: 24px; font-weight: 900; color: #059669; }
+        .footer { margin-top: 40px; border-top: 1px solid #cbd5e1; padding-top: 20px; display: flex; justify-content: space-between; }
+        .firma { width: 45%; text-align: center; border-top: 1px solid #000; padding-top: 8px; font-size: 12px; font-weight: bold; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <div class="title">COMPROBANTE DE LIQUIDACIÓN DE TRABAJOS (MÓDULO 2)</div>
+          <div style="font-size: 12px; color: #64748b;">Campaña Imagen Telmex 2026 - Tarifas 44.04 / 73.46</div>
+        </div>
+        <div class="folio">FOLIO: ${p.folioPago || p.id}</div>
+      </div>
+      <div class="card">
+        <div class="grid">
+          <div><div class="label">Fecha de Liquidación:</div><div class="val">${p.fecha || "-"}</div></div>
+          <div><div class="label">Contratista:</div><div class="val">${p.contratista || "-"}</div></div>
+          <div><div class="label">Área Operativa:</div><div class="val">${p.area || "-"}</div></div>
+          <div><div class="label">Tipo de Activo:</div><div class="val">${p.tipo || "CAJA"}</div></div>
+          <div><div class="label">Piezas Liquidadas:</div><div class="val">${parseInt(p.piezasPagadasHoy, 10).toLocaleString()} unidades</div></div>
+          <div><div class="label">Tarifa Aplicada:</div><div class="val">$${parseFloat(p.tarifa).toFixed(2)} MXN / unidad</div></div>
+        </div>
+      </div>
+      <div class="card" style="text-align: center; background: #ecfdf5; border-color: #a7f3d0;">
+        <div class="label" style="color: #065f46;">MONTO TOTAL LIQUIDADO:</div>
+        <div class="monto">$${parseFloat(p.montoPagado).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN</div>
+      </div>
+      <div style="font-size: 11px; color: #64748b; margin-bottom: 40px;">
+        <strong>Factura / Referencia:</strong> ${p.factura || "S/F"} &nbsp;|&nbsp; 
+        <strong>Método de Pago:</strong> ${p.metodo || "TRANSFERENCIA"} &nbsp;|&nbsp;
+        <strong>Autorizó:</strong> ${p.autorizo || "DIRECCIÓN DE OPERACIONES"}
+      </div>
+      <div class="footer">
+        <div class="firma">Firma Contratista / Recibió</div>
+        <div class="firma">Autorización PCI Telecom / Finanzas</div>
+      </div>
+      <script>window.onload = function() { window.print(); };</script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+}
+
+function initPagos2Module() {
+  pagos2State.tarifaActiva = pagos2State.tipo === "CASETA" ? pagos2State.tarifaCaseta : pagos2State.tarifaCaja;
+  updateGlobalTipoCounters2();
+  updateTipoButtonsVisual2();
+
+  const badge = document.getElementById("pagos2TarifaBadge");
+  if (badge) badge.innerText = `$${pagos2State.tarifaActiva.toFixed(2)} MXN / pieza`;
+
+  pagos2State.selectedAreas.clear();
+  renderAreas2Board();
+  populatePagos2Contratistas();
+  populatePagos2Tecnicos();
+  applyPagos2Filter();
+}
+
+function updateGlobalTipoCounters2() {
+  const records = state.records || [];
+  let cajas = 0;
+  let casetas = 0;
+  records.forEach(r => {
+    const t = (r.tipo || "CAJA").toUpperCase();
+    if (t === "CASETA") casetas++;
+    else cajas++;
+  });
+  const cCajas = document.getElementById("pagos2CounterCajasTotal");
+  if (cCajas) cCajas.innerText = cajas.toLocaleString();
+  const cCasetas = document.getElementById("pagos2CounterCasetasTotal");
+  if (cCasetas) cCasetas.innerText = casetas.toLocaleString();
+}
+
+function setPagos2Tipo(tipo) {
+  pagos2State.tipo = tipo;
+  pagos2State.tarifaActiva = tipo === "CASETA" ? pagos2State.tarifaCaseta : pagos2State.tarifaCaja;
+
+  const inpTarifa = document.getElementById("pagos2InputTarifa");
+  if (inpTarifa) inpTarifa.value = pagos2State.tarifaActiva;
+
+  const badge = document.getElementById("pagos2TarifaBadge");
+  if (badge) badge.innerText = `$${pagos2State.tarifaActiva.toFixed(2)} MXN / pieza`;
+
+  updateTipoButtonsVisual2();
+  pagos2State.selectedAreas.clear();
+  renderAreas2Board();
+  populatePagos2Contratistas();
+  populatePagos2Tecnicos();
+  applyPagos2Filter();
+}
+
+function updateTipoButtonsVisual2() {
+  const btnCaja = document.getElementById("btnPagos2TipoCaja");
+  const btnCaseta = document.getElementById("btnPagos2TipoCaseta");
+  if (!btnCaja || !btnCaseta) return;
+
+  if (pagos2State.tipo === "CAJA") {
+    btnCaja.className = "p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-emerald-600 bg-emerald-50/80 shadow-md";
+    btnCaseta.className = "p-4 rounded-xl border-2 border-slate-200 bg-white hover:bg-slate-50 transition-all flex items-center justify-between text-left group";
+  } else {
+    btnCaseta.className = "p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-emerald-600 bg-emerald-50/80 shadow-md";
+    btnCaja.className = "p-4 rounded-xl border-2 border-slate-200 bg-white hover:bg-slate-50 transition-all flex items-center justify-between text-left group";
+  }
+}
+
+function toggleEditTarifa2() {
+  const row = document.getElementById("pagos2EditTarifaRow");
+  if (row) row.classList.toggle("hidden");
+}
+
+function onTarifaChanged2() {
+  const inp = document.getElementById("pagos2InputTarifa");
+  const val = parseFloat(inp?.value);
+  if (isNaN(val) || val < 0) return;
+
+  pagos2State.tarifaActiva = val;
+  if (pagos2State.tipo === "CASETA") pagos2State.tarifaCaseta = val;
+  else pagos2State.tarifaCaja = val;
+
+  const badge = document.getElementById("pagos2TarifaBadge");
+  if (badge) badge.innerText = `$${val.toFixed(2)} MXN / pieza`;
+
+  updatePagos2SummaryCards();
+  renderPagos2SubtotalesAreas();
+  renderPagos2Table();
+}
+
+function resetDefaultTarifa2() {
+  pagos2State.tarifaCaja = 73.46;
+  pagos2State.tarifaCaseta = 44.04;
+  pagos2State.tarifaActiva = pagos2State.tipo === "CASETA" ? 44.04 : 73.46;
+
+  const inp = document.getElementById("pagos2InputTarifa");
+  if (inp) inp.value = pagos2State.tarifaActiva;
+
+  const badge = document.getElementById("pagos2TarifaBadge");
+  if (badge) badge.innerText = `$${pagos2State.tarifaActiva.toFixed(2)} MXN / pieza`;
+
+  onTarifaChanged2();
+}
+
+function renderAreas2Board() {
+  const grid = document.getElementById("pagos2AreasGrid");
+  if (!grid) return;
+
+  const records = state.records || [];
+  const areaCounts = {};
+  records.forEach(r => {
+    if ((r.tipo || "CAJA").toUpperCase() === pagos2State.tipo) {
+      const a = (r.area_trabajo || "").trim().toUpperCase();
+      if (a) areaCounts[a] = (areaCounts[a] || 0) + 1;
+    }
+  });
+
+  const allAreas = Object.keys(areaCounts).sort();
+  grid.innerHTML = "";
+
+  allAreas.forEach(area => {
+    const count = areaCounts[area] || 0;
+    const isSelected = pagos2State.selectedAreas.has(area);
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.onclick = () => togglePagos2Area(area);
+
+    if (isSelected) {
+      btn.className = "p-2.5 rounded-xl border-2 border-emerald-600 bg-emerald-50 text-emerald-950 font-bold text-xs flex items-center justify-between shadow-sm transition-all";
+      btn.innerHTML = `
+        <span class="truncate flex items-center gap-1.5">
+          <span class="text-emerald-600 font-black">✓</span>
+          <span title="${area}">${area}</span>
+        </span>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-600 text-white">${count.toLocaleString()}</span>
+      `;
+    } else {
+      btn.className = "p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-semibold text-xs flex items-center justify-between transition-all";
+      btn.innerHTML = `
+        <span class="truncate" title="${area}">${area}</span>
+        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">${count.toLocaleString()}</span>
+      `;
+    }
+    grid.appendChild(btn);
+  });
+
+  updateAreasBoardHeader2(allAreas.length);
+}
+
+function updateAreasBoardHeader2(totalAreasCount) {
+  const lbl = document.getElementById("pagos2AreasSelectedLabel");
+  const countBadge = document.getElementById("pagos2AreasCountBadge");
+  const selCount = pagos2State.selectedAreas.size;
+
+  if (countBadge) {
+    countBadge.innerText = selCount === 0 ? "TODAS" : `${selCount} / ${totalAreasCount}`;
+  }
+  if (lbl) {
+    if (selCount === 0) {
+      lbl.innerText = "Todas las áreas seleccionadas (Total País)";
+    } else if (selCount === 1) {
+      const singleArea = Array.from(pagos2State.selectedAreas)[0];
+      lbl.innerText = `1 área activa: ${singleArea}`;
+    } else {
+      const arr = Array.from(pagos2State.selectedAreas);
+      lbl.innerText = `${selCount} áreas conjuntas: ${arr.slice(0, 3).join(", ")}${arr.length > 3 ? "..." : ""}`;
+    }
+  }
+}
+
+function togglePagos2Area(area) {
+  if (pagos2State.selectedAreas.has(area)) {
+    pagos2State.selectedAreas.delete(area);
+  } else {
+    pagos2State.selectedAreas.add(area);
+  }
+  renderAreas2Board();
+  populatePagos2Contratistas();
+  populatePagos2Tecnicos();
+  applyPagos2Filter();
+}
+
+function selectAllAreas2() {
+  const all = getAvailableAreasForTipo(pagos2State.tipo);
+  pagos2State.selectedAreas = new Set(all);
+  renderAreas2Board();
+  populatePagos2Contratistas();
+  populatePagos2Tecnicos();
+  applyPagos2Filter();
+}
+
+function deselectAllAreas2() {
+  pagos2State.selectedAreas.clear();
+  renderAreas2Board();
+  populatePagos2Contratistas();
+  populatePagos2Tecnicos();
+  applyPagos2Filter();
+}
+
+function populatePagos2Contratistas() {
+  const records = state.records || [];
+  const conSelect = document.getElementById("pagos2FilterContratista");
+  if (!conSelect) return;
+
+  const currentVal = conSelect.value || pagos2State.contratista || "TODOS";
+  const conSet = new Set();
+
+  records.forEach(r => {
+    if ((r.tipo || "CAJA").toUpperCase() === pagos2State.tipo) {
+      const area = (r.area_trabajo || "").trim().toUpperCase();
+      if (pagos2State.selectedAreas.size === 0 || pagos2State.selectedAreas.has(area)) {
+        const c = (r.contratista_homologado || r.contratista || "").trim();
+        if (c && c !== "SIN CONTRATISTA") conSet.add(c);
+      }
+    }
+  });
+
+  const sorted = Array.from(conSet).sort();
+  conSelect.innerHTML = '<option value="TODOS">-- Todos los Contratistas --</option>';
+  sorted.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.innerText = c;
+    conSelect.appendChild(opt);
+  });
+
+  if (conSet.has(currentVal)) {
+    conSelect.value = currentVal;
+    pagos2State.contratista = currentVal;
+  } else {
+    conSelect.value = "TODOS";
+    pagos2State.contratista = "TODOS";
+  }
+}
+
+function populatePagos2Tecnicos() {
+  const records = state.records || [];
+  const tecSelect = document.getElementById("pagos2FilterTecnico");
+  if (!tecSelect) return;
+
+  const currentVal = tecSelect.value || pagos2State.tecnico || "TODOS";
+  const tecSet = new Set();
+
+  records.forEach(r => {
+    if ((r.tipo || "CAJA").toUpperCase() === pagos2State.tipo) {
+      const area = (r.area_trabajo || "").trim().toUpperCase();
+      const c = (r.contratista_homologado || r.contratista || "").trim();
+      if (pagos2State.selectedAreas.size === 0 || pagos2State.selectedAreas.has(area)) {
+        if (pagos2State.contratista === "TODOS" || c === pagos2State.contratista) {
+          const t = (r.tecnico_homologado || r.tecnico || "").trim();
+          if (t && t !== "SIN TÉCNICO") tecSet.add(t);
+        }
+      }
+    }
+  });
+
+  const sorted = Array.from(tecSet).sort();
+  tecSelect.innerHTML = '<option value="TODOS">-- Todos los Técnicos --</option>';
+  sorted.forEach(t => {
+    const opt = document.createElement("option");
+    opt.value = t;
+    opt.innerText = t;
+    tecSelect.appendChild(opt);
+  });
+
+  if (tecSet.has(currentVal)) {
+    tecSelect.value = currentVal;
+    pagos2State.tecnico = currentVal;
+  } else {
+    tecSelect.value = "TODOS";
+    pagos2State.tecnico = "TODOS";
+  }
+}
+
+function onPagos2PresetDateChange() {
+  const preset = document.getElementById("pagos2FilterPresetDate")?.value || "TODOS";
+  pagos2State.presetDate = preset;
+  const startEl = document.getElementById("pagos2DateStart");
+  const endEl = document.getElementById("pagos2DateEnd");
+  const customRow = document.getElementById("pagos2CustomDateRow");
+
+  if (preset === "CUSTOM") {
+    if (customRow) customRow.classList.remove("hidden");
+    return;
+  }
+  if (customRow) customRow.classList.add("hidden");
+
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, "0");
+  const dd = String(today.getDate()).padStart(2, "0");
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+
+  if (preset === "TODOS") {
+    if (startEl) startEl.value = "";
+    if (endEl) endEl.value = "";
+    pagos2State.dateStart = "";
+    pagos2State.dateEnd = "";
+  } else if (preset === "HOY") {
+    if (startEl) startEl.value = todayStr;
+    if (endEl) endEl.value = todayStr;
+    pagos2State.dateStart = todayStr;
+    pagos2State.dateEnd = todayStr;
+  } else if (preset === "AYER") {
+    const yest = new Date(today);
+    yest.setDate(yest.getDate() - 1);
+    const yStr = `${yest.getFullYear()}-${String(yest.getMonth() + 1).padStart(2, "0")}-${String(yest.getDate()).padStart(2, "0")}`;
+    if (startEl) startEl.value = yStr;
+    if (endEl) endEl.value = yStr;
+    pagos2State.dateStart = yStr;
+    pagos2State.dateEnd = yStr;
+  } else if (preset === "ESTA_SEMANA") {
+    const curr = new Date(today);
+    const day = curr.getDay();
+    const diff = curr.getDate() - day + (day === 0 ? -6 : 1);
+    const monday = new Date(curr.setDate(diff));
+    const mStr = `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+    if (startEl) startEl.value = mStr;
+    if (endEl) endEl.value = todayStr;
+    pagos2State.dateStart = mStr;
+    pagos2State.dateEnd = todayStr;
+  } else if (preset === "ESTE_MES") {
+    const mStart = `${yyyy}-${mm}-01`;
+    if (startEl) startEl.value = mStart;
+    if (endEl) endEl.value = todayStr;
+    pagos2State.dateStart = mStart;
+    pagos2State.dateEnd = todayStr;
+  }
+  applyPagos2Filter();
+}
+
+function applyPagos2Filter() {
+  const conSelect = document.getElementById("pagos2FilterContratista");
+  if (conSelect) pagos2State.contratista = conSelect.value;
+
+  const tecSelect = document.getElementById("pagos2FilterTecnico");
+  if (tecSelect) pagos2State.tecnico = tecSelect.value;
+
+  const dStart = document.getElementById("pagos2DateStart")?.value || "";
+  const dEnd = document.getElementById("pagos2DateEnd")?.value || "";
+  pagos2State.dateStart = dStart;
+  pagos2State.dateEnd = dEnd;
+
+  const allRecords = state.records || [];
+  pagos2FilteredRecords = allRecords.filter(r => {
+    if ((r.tipo || "CAJA").toUpperCase() !== pagos2State.tipo) return false;
+
+    if (pagos2State.selectedAreas.size > 0) {
+      const area = (r.area_trabajo || "").trim().toUpperCase();
+      if (!pagos2State.selectedAreas.has(area)) return false;
+    }
+
+    if (pagos2State.contratista !== "TODOS") {
+      const c = (r.contratista_homologado || r.contratista || "").trim();
+      if (c !== pagos2State.contratista) return false;
+    }
+
+    if (pagos2State.tecnico !== "TODOS") {
+      const t = (r.tecnico_homologado || r.tecnico || "").trim();
+      if (t !== pagos2State.tecnico) return false;
+    }
+
+    const f = r.fecha_corte || r.fecha_captura || r.fecha || "";
+    if (pagos2State.dateStart && f < pagos2State.dateStart) return false;
+    if (pagos2State.dateEnd && f > pagos2State.dateEnd) return false;
+
+    return true;
+  });
+
+  pagos2State.currentPage = 1;
+  updatePagos2SummaryCards();
+  renderPagos2SubtotalesAreas();
+  renderPagos2ModelDistribution();
+  renderPagos2Table();
+  renderHistorialPagos2Table();
+}
+
+function updatePagos2SummaryCards() {
+  const cantidadRealizadas = pagos2FilteredRecords.length;
+  const tarifa = pagos2State.tarifaActiva;
+
+  let pagadasAcumuladas = 0;
+  if (pagos2State.selectedAreas.size > 0) {
+    pagos2State.selectedAreas.forEach(a => {
+      pagadasAcumuladas += getPiezasPagadasAcumuladas2(pagos2State.tipo, a, pagos2State.contratista);
+    });
+  } else {
+    pagadasAcumuladas = getPiezasPagadasAcumuladas2(pagos2State.tipo, "TODAS", pagos2State.contratista);
+  }
+
+  const cantidadPendientes = Math.max(0, cantidadRealizadas - pagadasAcumuladas);
+  const montoPendiente = cantidadPendientes * tarifa;
+  const montoPagadoTotal = pagadasAcumuladas * tarifa;
+
+  const mDineroEl = document.getElementById("pagos2KpiMontoDinero");
+  if (mDineroEl) {
+    mDineroEl.innerText = `$${montoPendiente.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`;
+  }
+
+  const fEl = document.getElementById("pagos2KpiFormula");
+  if (fEl) {
+    const labelPieza = pagos2State.tipo === "CASETA" ? "casetas" : "cajas";
+    fEl.innerText = `${cantidadPendientes.toLocaleString()} ${labelPieza} pendientes × $${tarifa.toFixed(2)} MXN`;
+  }
+
+  const pCountEl = document.getElementById("pagos2KpiCantidadPiezas");
+  if (pCountEl) pCountEl.innerText = cantidadPendientes.toLocaleString();
+
+  const pLabelEl = document.getElementById("pagos2KpiPiezasLabel");
+  if (pLabelEl) {
+    pLabelEl.innerText = pagos2State.tipo === "CASETA" ? "Casetas por Pagar" : "Cajas por Pagar";
+  }
+
+  const pDescEl = document.getElementById("pagos2KpiPiezasDesc");
+  if (pDescEl) {
+    pDescEl.innerText = `De ${cantidadRealizadas.toLocaleString()} piezas realizadas`;
+  }
+
+  const mPagadoEl = document.getElementById("pagos2KpiMontoPagado");
+  if (mPagadoEl) {
+    mPagadoEl.innerText = `$${montoPagadoTotal.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`;
+  }
+
+  const pPagadasDescEl = document.getElementById("pagos2KpiPiezasPagadasDesc");
+  if (pPagadasDescEl) {
+    pPagadasDescEl.innerText = `${pagadasAcumuladas.toLocaleString()} piezas ya liquidadas`;
+  }
+
+  const conTitleEl = document.getElementById("pagos2KpiContratistaTitle");
+  if (conTitleEl) {
+    conTitleEl.innerText = pagos2State.contratista === "TODOS" ? "Todos los Contratistas" : pagos2State.contratista;
+  }
+
+  const tecSet = new Set();
+  pagos2FilteredRecords.forEach(r => {
+    const t = (r.tecnico_homologado || r.tecnico || "").trim();
+    if (t && t !== "SIN TÉCNICO") tecSet.add(t);
+  });
+  const cuadCountEl = document.getElementById("pagos2KpiCuadrillasCount");
+  if (cuadCountEl) cuadCountEl.innerText = `${tecSet.size} técnicos activos`;
+}
+
+function renderPagos2SubtotalesAreas() {
+  const container = document.getElementById("pagos2SubtotalesAreasContainer");
+  const tag = document.getElementById("pagos2MatrizTotalTag");
+  if (!container) return;
+
+  const areaMap = {};
+  pagos2FilteredRecords.forEach(r => {
+    const a = (r.area_trabajo || "").trim().toUpperCase() || "SIN ÁREA";
+    if (!areaMap[a]) {
+      areaMap[a] = { count: 0, tecnicos: new Set(), contratistas: new Set() };
+    }
+    areaMap[a].count++;
+    const t = (r.tecnico_homologado || r.tecnico || "").trim();
+    if (t) areaMap[a].tecnicos.add(t);
+    const c = (r.contratista_homologado || r.contratista || "").trim();
+    if (c) areaMap[a].contratistas.add(c);
+  });
+
+  const areasSorted = Object.keys(areaMap).sort((a, b) => areaMap[b].count - areaMap[a].count);
+  const tarifa = pagos2State.tarifaActiva;
+
+  let totalGeneralPendiente = 0;
+  let totalGeneralPagado = 0;
+  areasSorted.forEach(area => {
+    const hechas = areaMap[area].count;
+    const pagadas = getPiezasPagadasAcumuladas2(pagos2State.tipo, area, pagos2State.contratista);
+    const pendientes = Math.max(0, hechas - pagadas);
+    totalGeneralPendiente += pendientes * tarifa;
+    totalGeneralPagado += pagadas * tarifa;
+  });
+
+  if (tag) {
+    tag.innerText = `Saldo Pendiente Total: $${totalGeneralPendiente.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} MXN`;
+  }
+
+  if (areasSorted.length === 0) {
+    container.innerHTML = `
+      <div class="col-span-full p-6 text-center text-xs text-slate-400 bg-slate-50 rounded-xl border border-dashed border-slate-200">
+        No hay registros que coincidan con los filtros seleccionados.
+      </div>
+    `;
+    return;
+  }
+
+  let html = `
+    <div class="col-span-full overflow-x-auto rounded-xl border border-slate-200 shadow-sm">
+      <table class="w-full text-left text-xs text-slate-700 bg-white">
+        <thead class="bg-slate-100 text-[11px] font-black uppercase text-slate-700 border-b border-slate-200 tracking-wider">
+          <tr>
+            <th class="p-3">Área de Trabajo</th>
+            <th class="p-3 text-center">Cuadrillas / Técnicos</th>
+            <th class="p-3 text-right">Realizadas</th>
+            <th class="p-3 text-right text-emerald-800">Pagadas</th>
+            <th class="p-3 text-right text-amber-800">Pendientes</th>
+            <th class="p-3 text-right text-slate-900">Monto Pendiente</th>
+            <th class="p-3 text-center">Acción</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+  `;
+
+  areasSorted.forEach(area => {
+    const data = areaMap[area];
+    const hechas = data.count;
+    const pagadas = getPiezasPagadasAcumuladas2(pagos2State.tipo, area, pagos2State.contratista);
+    const pendientes = Math.max(0, hechas - pagadas);
+    const subtotalPendiente = pendientes * tarifa;
+
+    const estatusPill = pendientes === 0
+      ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Liquidado ✓</span>`
+      : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800">${pendientes.toLocaleString()} pendientes</span>`;
+
+    html += `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="p-3 font-bold text-slate-900 flex items-center gap-2">
+          <span>📍</span>
+          <span>${area}</span>
+        </td>
+        <td class="p-3 text-center text-slate-500 font-semibold">
+          ${data.tecnicos.size} técnicos
+        </td>
+        <td class="p-3 text-right font-black text-slate-800">${hechas.toLocaleString()}</td>
+        <td class="p-3 text-right font-black text-emerald-700">${pagadas.toLocaleString()}</td>
+        <td class="p-3 text-right font-black text-amber-700">${estatusPill}</td>
+        <td class="p-3 text-right font-black text-slate-900 text-sm">
+          $${subtotalPendiente.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+        </td>
+        <td class="p-3 text-center">
+          <button type="button" onclick="openRegistrarPago2Modal('${area}', '${pagos2State.contratista !== 'TODOS' ? pagos2State.contratista : ''}')"
+                  class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg shadow-sm transition-all flex items-center gap-1 mx-auto">
+            <span>💳</span> Pagar
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `
+        </tbody>
+      </table>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+function renderPagos2ModelDistribution() {
+  const grid = document.getElementById("pagos2ModelosGrid");
+  const tag = document.getElementById("pagos2ModelosTotalTag");
+  if (!grid) return;
+
+  const modelCounts = {};
+  pagos2FilteredRecords.forEach(r => {
+    const m = (r.modelo || "Sencilla").trim();
+    modelCounts[m] = (modelCounts[m] || 0) + 1;
+  });
+
+  const total = pagos2FilteredRecords.length;
+  if (tag) tag.innerText = `${total.toLocaleString()} piezas`;
+
+  grid.innerHTML = "";
+  Object.keys(modelCounts).sort().forEach(m => {
+    const c = modelCounts[m];
+    const pct = total > 0 ? ((c / total) * 100).toFixed(1) : 0;
+    const div = document.createElement("div");
+    div.className = "p-3 rounded-xl border border-slate-200 bg-white shadow-sm flex flex-col justify-between";
+    div.innerHTML = `
+      <div class="flex items-center justify-between text-xs font-bold text-slate-700">
+        <span class="truncate" title="${m}">${m}</span>
+        <span class="text-emerald-700 font-black">${c.toLocaleString()}</span>
+      </div>
+      <div class="w-full bg-slate-100 rounded-full h-1.5 mt-2 overflow-hidden">
+        <div class="bg-emerald-600 h-1.5 rounded-full" style="width: ${pct}%"></div>
+      </div>
+      <div class="text-[10px] text-slate-400 mt-1 text-right font-semibold">${pct}%</div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function renderPagos2Table() {
+  const tbody = document.getElementById("pagos2TableBody");
+  const counterInfo = document.getElementById("pagos2TableCounterInfo");
+  const pagInfo = document.getElementById("pagos2PaginationInfo");
+  const btnPrev = document.getElementById("btnPagos2Prev");
+  const btnNext = document.getElementById("btnPagos2Next");
+  if (!tbody) return;
+
+  const total = pagos2FilteredRecords.length;
+
+  const sortedRecords = [...pagos2FilteredRecords].sort((a, b) => {
+    const fa = (a.fecha_corte || a.fecha_captura || a.fecha || "") + " " + (a.hora || "");
+    const fb = (b.fecha_corte || b.fecha_captura || b.fecha || "") + " " + (b.hora || "");
+    return fb.localeCompare(fa);
+  });
+
+  const recordPaidStatus = new Map();
+  const counterPerKey = {};
+  [...sortedRecords].reverse().forEach(r => {
+    const area = (r.area_trabajo || "").trim().toUpperCase();
+    const con = (r.contratista_homologado || r.contratista || "").trim();
+    const key = `${pagos2State.tipo}|${area}|${con}`;
+    if (!counterPerKey[key]) counterPerKey[key] = 0;
+    counterPerKey[key]++;
+
+    const pagadas = getPiezasPagadasAcumuladas2(pagos2State.tipo, area, con);
+    const isPaid = counterPerKey[key] <= pagadas;
+    recordPaidStatus.set(r, isPaid);
+  });
+
+  let totalPagadosFiltrados = 0;
+  recordPaidStatus.forEach(v => { if (v) totalPagadosFiltrados++; });
+  const totalPendientesFiltrados = Math.max(0, total - totalPagadosFiltrados);
+
+  if (counterInfo) {
+    const conName = pagos2State.contratista !== "TODOS" ? `para ${pagos2State.contratista}` : "en total";
+    counterInfo.innerText = `${total.toLocaleString()} registros (${totalPendientesFiltrados.toLocaleString()} pendientes, ${totalPagadosFiltrados.toLocaleString()} liquidados) ${conName}`;
+  }
+
+  if (total === 0) {
+    tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-xs text-slate-400">No se encontraron registros bajo los filtros actuales.</td></tr>`;
+    if (pagInfo) pagInfo.innerText = "0 de 0";
+    if (btnPrev) btnPrev.disabled = true;
+    if (btnNext) btnNext.disabled = true;
+    return;
+  }
+
+  const totalPages = Math.ceil(total / pagos2State.pageSize) || 1;
+  if (pagos2State.currentPage > totalPages) pagos2State.currentPage = totalPages;
+  if (pagos2State.currentPage < 1) pagos2State.currentPage = 1;
+
+  const startIdx = (pagos2State.currentPage - 1) * pagos2State.pageSize;
+  const endIdx = Math.min(startIdx + pagos2State.pageSize, total);
+  const pageRecords = sortedRecords.slice(startIdx, endIdx);
+
+  const tarifa = pagos2State.tarifaActiva;
+
+  let html = "";
+  pageRecords.forEach((r, idx) => {
+    const num = startIdx + idx + 1;
+    const folio = r.folio || "S/F";
+    const fecha = r.fecha_captura || r.fecha || "S/F";
+    const hora = r.hora || "";
+    const area = r.area_trabajo || "S/A";
+    const contratista = r.contratista_homologado || r.contratista || "S/C";
+    const tecnico = r.tecnico_homologado || r.tecnico || "Sin Técnico";
+    const tipo = r.tipo || "CAJA";
+    const modelo = r.modelo || "Sencilla";
+    const identificador = r.identificador || r.distrito || r.telefono || "S/D";
+    const comentarios = r.comentarios || "";
+    const foto = r.foto_evidencia || r.foto_despues || r.foto_antes || "";
+
+    const isPaid = recordPaidStatus.get(r);
+    const badgeEstatus = isPaid
+      ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300">✓ Liquidado</span>`
+      : `<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300">⏳ Pendiente</span>`;
+
+    const fotoHtml = foto ? `
+      <button type="button" onclick="openPaymentPhotoModal('${foto}', '${folio}', '${identificador}', '${area}', '${tecnico}', '${contratista}')"
+              class="w-9 h-9 rounded-lg overflow-hidden border border-slate-200 hover:border-emerald-500 transition-all shadow-sm">
+        <img src="${foto}" alt="Foto" class="w-full h-full object-cover">
+      </button>
+    ` : `<span class="text-slate-300 text-xs">Sin Foto</span>`;
+
+    html += `
+      <tr class="hover:bg-slate-50 transition-colors">
+        <td class="p-3 text-center text-xs font-bold text-slate-400">${num}</td>
+        <td class="p-3 font-mono text-xs font-bold text-slate-900">${folio}</td>
+        <td class="p-3 text-xs text-slate-600">
+          <div class="font-bold">${fecha}</div>
+          <div class="text-[10px] text-slate-400">${hora}</div>
+        </td>
+        <td class="p-3 font-bold text-xs text-slate-800">${area}</td>
+        <td class="p-3">
+          <div class="font-bold text-xs text-slate-900">${contratista}</div>
+          <div class="text-[11px] text-slate-500 font-semibold">${tecnico}</div>
+        </td>
+        <td class="p-3">
+          <div class="font-bold text-xs text-slate-900">${identificador}</div>
+          <div class="text-[10px] text-slate-500">${tipo} · ${modelo}</div>
+        </td>
+        <td class="p-3 text-center">${badgeEstatus}</td>
+        <td class="p-3 text-right font-black text-xs text-slate-900">
+          $${tarifa.toFixed(2)}
+        </td>
+        <td class="p-3 text-center">${fotoHtml}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+
+  if (pagInfo) pagInfo.innerText = `${startIdx + 1} - ${endIdx} de ${total.toLocaleString()}`;
+  if (btnPrev) btnPrev.disabled = pagos2State.currentPage <= 1;
+  if (btnNext) btnNext.disabled = pagos2State.currentPage >= totalPages;
+}
+
+function changePagos2Page(delta) {
+  const totalPages = Math.ceil(pagos2FilteredRecords.length / pagos2State.pageSize) || 1;
+  const newPage = pagos2State.currentPage + delta;
+  if (newPage >= 1 && newPage <= totalPages) {
+    pagos2State.currentPage = newPage;
+    renderPagos2Table();
+  }
+}
+
+function exportPagos2CSV() {
+  if (pagos2FilteredRecords.length === 0) {
+    alert("No hay registros para exportar con los filtros actuales.");
+    return;
+  }
+
+  const tarifa = pagos2State.tarifaActiva;
+  const headers = [
+    "No.",
+    "Folio",
+    "Fecha",
+    "Hora",
+    "Tipo",
+    "Área de Trabajo",
+    "Contratista",
+    "Técnico",
+    "Identificador / Distrito / Teléfono",
+    "Modelo",
+    "Tarifa (MXN)",
+    "Comentarios",
+    "URL Foto"
+  ];
+
+  const rows = pagos2FilteredRecords.map((r, i) => [
+    i + 1,
+    `"${r.folio || ''}"`,
+    `"${r.fecha_captura || r.fecha || ''}"`,
+    `"${r.hora || ''}"`,
+    `"${r.tipo || 'CAJA'}"`,
+    `"${r.area_trabajo || ''}"`,
+    `"${r.contratista_homologado || r.contratista || ''}"`,
+    `"${r.tecnico_homologado || r.tecnico || ''}"`,
+    `"${r.identificador || r.distrito || r.telefono || ''}"`,
+    `"${r.modelo || ''}"`,
+    tarifa,
+    `"${(r.comentarios || '').replace(/"/g, '""')}"`,
+    `"${r.foto_evidencia || r.foto_despues || r.foto_antes || ''}"`
+  ]);
+
+  const csvContent = "﻿" + [headers.join(","), ...rows.map(e => e.join(","))].join("
+");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  const conSafe = pagos2State.contratista !== "TODOS" ? pagos2State.contratista.replace(/\s+/g, "_") : "Todos";
+  const tipoStr = pagos2State.tipo;
+  const dateStr = getLocalDateStr();
+  a.download = `Pagos_Modulo2_${tipoStr}_${conSafe}_${dateStr}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function printPagos2Summary() {
+  if (pagos2FilteredRecords.length === 0) {
+    alert("No hay datos para generar el reporte de conciliación impreso.");
+    return;
+  }
+
+  const tipo = pagos2State.tipo;
+  const tarifa = pagos2State.tarifaActiva;
+  const total = pagos2FilteredRecords.length;
+  const totalDinero = total * tarifa;
+  const conName = pagos2State.contratista !== "TODOS" ? pagos2State.contratista : "TODOS LOS CONTRATISTAS";
+
+  const dStart = pagos2State.dateStart;
+  const dEnd = pagos2State.dateEnd;
+  let periodoTexto = "Histórico Completo (Sin filtro de fechas)";
+  if (dStart && dEnd) {
+    periodoTexto = `Del ${dStart} al ${dEnd}`;
+  } else if (dStart) {
+    periodoTexto = `A partir del ${dStart}`;
+  } else if (dEnd) {
+    periodoTexto = `Hasta el ${dEnd}`;
+  }
+
+  const areaCounts = {};
+  pagos2FilteredRecords.forEach(r => {
+    const a = (r.area_trabajo || "").trim().toUpperCase() || "SIN ÁREA";
+    areaCounts[a] = (areaCounts[a] || 0) + 1;
+  });
+  const sortedAreas = Object.keys(areaCounts).sort((a, b) => areaCounts[b] - areaCounts[a]);
+
+  const printWindow = window.open("", "_blank");
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Conciliación y Validación de Pagos (Módulo 2) - ${conName}</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; padding: 25px; color: #0f172a; }
+        .header { border-bottom: 3px solid #059669; padding-bottom: 15px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-start; }
+        .brand { font-size: 18px; font-weight: 900; color: #059669; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sub { font-size: 12px; color: #64748b; margin-top: 3px; }
+        .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .kpi-box { border: 1px solid #cbd5e1; border-radius: 10px; padding: 14px; background: #f8fafc; }
+        .kpi-label { font-size: 11px; text-transform: uppercase; font-weight: 800; color: #64748b; }
+        .kpi-val { font-size: 22px; font-weight: 900; margin-top: 4px; color: #0f172a; }
+        .kpi-val.green { color: #059669; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 11px; }
+        th { background: #f1f5f9; padding: 8px 10px; text-align: left; font-weight: 800; border-bottom: 2px solid #cbd5e1; }
+        td { padding: 8px 10px; border-bottom: 1px solid #e2e8f0; }
+        .footer { margin-top: 40px; padding-top: 15px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <div>
+          <div class="brand">REPORTE OFICIAL DE CONCILIACIÓN DE PAGOS (MÓDULO 2)</div>
+          <div class="sub">Campaña Nacional Imagen Telmex 2026 · Tarifas 44.04 / 73.46</div>
+          <div class="sub" style="font-weight: 700; color: #334155; margin-top: 5px;">
+            Contratista: ${conName} · Tipo: ${tipo === "CASETA" ? "CASETAS TELEFÓNICAS" : "CAJAS DE DISTRITO"}
+          </div>
+          <div class="sub">Periodo: ${periodoTexto}</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-weight: 800; font-size: 12px; color: #059669;">CONFIDENCIAL / FINANZAS</div>
+          <div style="font-size: 10px; color: #64748b; margin-top: 4px;">Emisión: ${new Date().toLocaleString()}</div>
+        </div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi-box">
+          <div class="kpi-label">Total Piezas a Liquidar</div>
+          <div class="kpi-val">${total.toLocaleString()} <span style="font-size: 13px; font-weight: 600; color: #64748b;">${tipo.toLowerCase()}s</span></div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-label">Tarifa Oficial</div>
+          <div class="kpi-val">$${tarifa.toFixed(2)} <span style="font-size: 12px; font-weight: 600; color: #64748b;">MXN / pieza</span></div>
+        </div>
+        <div class="kpi-box" style="background: #ecfdf5; border-color: #a7f3d0;">
+          <div class="kpi-label" style="color: #065f46;">Monto Total Facturable</div>
+          <div class="kpi-val green">$${totalDinero.toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span style="font-size: 12px; font-weight: 600;">MXN</span></div>
+        </div>
+      </div>
+      <div style="font-size: 12px; font-weight: 800; color: #334155; margin-top: 20px;">DESGLOSE POR ÁREA OPERATIVA</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Área de Trabajo</th>
+            <th style="text-align: right;">Piezas Validadas</th>
+            <th style="text-align: right;">Tarifa</th>
+            <th style="text-align: right;">Importe Total Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${sortedAreas.map(a => `
+            <tr>
+              <td><strong>${a}</strong></td>
+              <td style="text-align: right;">${areaCounts[a].toLocaleString()}</td>
+              <td style="text-align: right;">$${tarifa.toFixed(2)}</td>
+              <td style="text-align: right;"><strong>$${(areaCounts[a] * tarifa).toLocaleString("es-MX", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong></td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+      <div class="footer">
+        <div>Documento generado desde el Dashboard Ejecutivo PCI - Validación Módulo 2</div>
+        <div>Página 1 de 1</div>
+      </div>
+      <script>window.onload = function() { window.print(); };</script>
+    </body>
+    </html>
+  `);
+  printWindow.document.close();
+}

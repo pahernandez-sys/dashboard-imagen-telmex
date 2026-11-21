@@ -296,10 +296,15 @@
         <span>Mando Gerencial</span>
         <span style="font-size: 0.65rem; background: #0284c7; color: white; padding: 1px 7px; border-radius: 9999px; font-weight: 800;">DIRECCIÓN</span>
       </button>
-      <button type="button" id="tabBtnPagos" class="tab-btn ml-auto bg-amber-50 text-amber-900 border-b-2 border-amber-600 font-bold hover:bg-amber-100 transition-all flex items-center gap-1.5 shadow-sm" onclick="openPagosModule()">
+      <button type="button" id="tabBtnPagos" class="tab-btn bg-amber-50 text-amber-900 border-b-2 border-amber-600 font-bold hover:bg-amber-100 transition-all flex items-center gap-1.5 shadow-sm" onclick="openPagosModule()">
         <span>🔐</span>
-        <span>Validación y Pagos</span>
+        <span>Validación y Pagos 1</span>
         <span style="font-size: 0.65rem; background: #d97706; color: white; padding: 1px 6px; border-radius: 9999px;">NIP</span>
+      </button>
+      <button type="button" id="tabBtnPagos2" class="tab-btn ml-auto bg-emerald-50 text-emerald-900 border-b-2 border-emerald-600 font-bold hover:bg-emerald-100 transition-all flex items-center gap-1.5 shadow-sm" onclick="openPagos2Module()">
+        <span>🔐</span>
+        <span>Validación y Pagos 2</span>
+        <span style="font-size: 0.65rem; background: #059669; color: white; padding: 1px 6px; border-radius: 9999px;">NIP 3579</span>
       </button>
     </nav>
 
@@ -994,6 +999,443 @@
       </div>
 
     </section>
+
+      <!-- ==================== MÓDULO DE PAGOS 2 (DUPLICADO) ==================== -->
+    <section id="tab-pagos-2" class="tab-content hidden flex flex-col gap-6">
+      
+      <!-- Encabezado Ejecutivo del Módulo de Pagos -->
+      <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-900 text-white rounded-2xl p-5 card-shadow flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border border-emerald-500/30">
+        <div class="flex items-center gap-3.5">
+          <div class="p-3 bg-emerald-500/20 text-emerald-400 rounded-xl text-3xl border border-emerald-500/40 shadow-inner">
+            💰
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-lg font-black tracking-tight text-emerald-200">Módulo de Liquidación y Validación de Pagos 2</h2>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-slate-950 uppercase tracking-wider">Finanzas / Pagos 2 (Tarifas 44.04 / 73.46)</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-1">
+              Conciliación oficial de facturas: selecciona tipo (Cajas / Casetas), agrupa áreas conjuntas y liquida por contratista.
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+          <button type="button" onclick="openChangeNipModal2()" class="px-3.5 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-slate-700 flex items-center gap-1.5 transition-all">
+            <span>🔑</span>
+            <span>Cambiar NIP</span>
+          </button>
+          <button type="button" onclick="logoutPagos2()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow flex items-center gap-1.5 transition-all">
+            <span>🔒</span>
+            <span>Bloquear y Salir</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 1: Selector de Tipo de Activo y Tarifas Oficiales -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow flex flex-col gap-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div>
+            <span class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider block">Paso 1 de 4</span>
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span>🎯</span> Selecciona el Tipo de Activo a Liquidar:
+            </h3>
+          </div>
+          
+          <div class="flex items-center gap-2 text-xs text-slate-600 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200">
+            <span>Tarifa Activa:</span>
+            <span id="pagos2TarifaBadge" class="font-bold text-emerald-700">$73.46 MXN / pieza</span>
+            <button type="button" onclick="toggleEditTarifa2()" class="text-slate-400 hover:text-slate-600 ml-1" title="Editar tarifa si hubo variación">✏️</button>
+          </div>
+        </div>
+
+        <!-- Botones Prominentes Toggle Tipo -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Botón CAJAS -->
+          <button type="button" id="btnPagos2TipoCaja" onclick="setPagos2Tipo('CAJA')"
+                  class="p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-blue-600 bg-blue-50/80 shadow-md">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center text-2xl shadow">
+                📦
+              </div>
+              <div>
+                <span class="text-base font-black text-slate-900 block group-hover:text-blue-700 transition-colors">
+                  CAJAS (Distritos)
+                </span>
+                <span class="text-xs text-slate-500 block">Sencillas, Dobles, Siecor, Krone</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-extrabold text-blue-700 bg-blue-100 px-2.5 py-1 rounded-full border border-blue-300">
+                $73.46 MXN c/u
+              </span>
+              <span id="pagos2CounterCajasTotal" class="text-[11px] text-slate-400 block mt-1 font-semibold">Cargando...</span>
+            </div>
+          </button>
+
+          <!-- Botón CASETAS -->
+          <button type="button" id="btnPagos2TipoCaseta" onclick="setPagos2Tipo('CASETA')"
+                  class="p-4 rounded-xl border-2 transition-all flex items-center justify-between text-left group border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center text-2xl shadow-sm transition-colors">
+                📞
+              </div>
+              <div>
+                <span class="text-base font-black text-slate-900 block group-hover:text-amber-700 transition-colors">
+                  CASETAS PÚBLICAS
+                </span>
+                <span class="text-xs text-slate-500 block">Tradicionales, Inmuebles, Retiro</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <span class="text-xs font-extrabold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-full border border-slate-300">
+                $44.04 MXN c/u
+              </span>
+              <span id="pagos2CounterCasetasTotal" class="text-[11px] text-slate-400 block mt-1 font-semibold">Cargando...</span>
+            </div>
+          </button>
+        </div>
+
+        <!-- Input Oculto / Opcional para Editar Tarifa -->
+        <div id="pagos2EditTarifaRow" class="hidden flex items-center gap-3 p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900">
+          <span>⚙️ Tarifa personalizada para este cálculo:</span>
+          <div class="flex items-center gap-1 font-bold">
+            <span>$</span>
+            <input type="number" id="pagos2InputTarifa" value="60" step="0.5" min="1" onchange="onTarifaChanged2()"
+                   class="w-20 p-1.5 border border-amber-300 rounded-lg text-center bg-white font-bold text-slate-900">
+            <span>MXN por elemento</span>
+          </div>
+          <button type="button" onclick="resetDefaultTarifa2()" class="ml-auto text-amber-800 hover:underline font-semibold">
+            Restablecer Tarifa Oficial
+          </button>
+        </div>
+      </div>
+
+      <!-- PASO 2: Tablero Interactivo de Áreas (Selección Múltiple Conjunta) -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow flex flex-col gap-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+          <div>
+            <span class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider block">Paso 2 de 4</span>
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              <span>🗺️</span> Tablero de Áreas / Plazas (Selecciona una, varias o agrupadas):
+            </h3>
+            <p class="text-xs text-slate-500 mt-0.5">
+              Haz clic en cualquier área para incluirla o quitarla del pago. Permite liquidar plazas conjuntas (ej. Monterrey 1, 2 y 3 + Hermosillo).
+            </p>
+          </div>
+
+          <!-- Botones de Acción Rápida para el Tablero de Áreas -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" onclick="selectAllAreas2()" class="px-2.5 py-1.5 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors">
+              ✓ Todas
+            </button>
+            <button type="button" onclick="deselectAllAreas2()" class="px-2.5 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg border border-slate-200 transition-colors">
+              ✕ Limpiar
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Indicador de Áreas Seleccionadas -->
+        <div class="flex items-center justify-between text-xs bg-slate-50 px-3.5 py-2 rounded-xl border border-slate-200">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-700">Áreas en el pago conjunto:</span>
+            <span id="pagos2AreasSelectedLabel" class="font-extrabold text-blue-700">Todas las áreas seleccionadas</span>
+          </div>
+          <span id="pagos2AreasCountBadge" class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-600 text-white">0 / 0</span>
+        </div>
+
+        <!-- Rejilla de Chips de Áreas Clickeables -->
+        <div id="pagos2AreasGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 max-h-[280px] overflow-y-auto p-1">
+          <!-- Inyectado dinámicamente con badges de conteo y checkmarks -->
+        </div>
+      </div>
+
+      <!-- PASO 3 & 4: Selector de Contratista y Rango de Fechas -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow flex flex-col gap-4">
+        <div class="border-b border-slate-100 pb-3">
+          <span class="text-xs font-extrabold text-emerald-600 uppercase tracking-wider block">Paso 3 y 4</span>
+          <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+            <span>🏢</span> Contratista a Facturar y Período Contable:
+          </h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+          <!-- Contratista (Principal a Liquidar) -->
+          <div class="md:col-span-5 bg-amber-50/50 p-3 rounded-xl border border-amber-200">
+            <label class="block text-xs font-black text-amber-950 mb-1 flex items-center justify-between">
+              <span>🏢 Contratista / Socio Comercial a Liquidar:</span>
+              <span class="text-[9px] uppercase tracking-wider bg-amber-200 text-amber-900 px-1.5 py-0.5 rounded font-bold">A quien se paga</span>
+            </label>
+            <select id="pagos2FilterContratista" onchange="applyPagos2Filter()" class="w-full text-xs font-bold text-slate-900 bg-white border border-amber-400 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 outline-none shadow-sm">
+              <option value="TODOS">🏢 Todos los Contratistas (General)</option>
+            </select>
+          </div>
+
+          <!-- Período Rápido -->
+          <div class="md:col-span-3">
+            <label class="block text-xs font-bold text-slate-700 mb-1">📅 Período de Corte:</label>
+            <select id="pagos2FilterPresetDate" onchange="onPagos2PresetDateChange()" class="w-full text-xs font-semibold bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:bg-white outline-none">
+              <option value="TODO">♾️ Todo el Proyecto</option>
+              <option value="HOY">📅 Solo Hoy</option>
+              <option value="AYER">📅 Solo Ayer</option>
+              <option value="ESTA_SEMANA">📅 Esta Semana (Lunes a Domingo)</option>
+              <option value="MES_ACTUAL">📅 Mes Actual</option>
+              <option value="PERSONALIZADO">🛠️ Rango Personalizado...</option>
+            </select>
+          </div>
+
+          <!-- Filtro Secundario: Cuadrilla/Técnico -->
+          <div class="md:col-span-4">
+            <label class="block text-xs font-bold text-slate-700 mb-1">👥 Cuadrilla / Técnico (Opcional):</label>
+            <select id="pagos2FilterTecnico" onchange="applyPagos2Filter()" class="w-full text-xs font-semibold bg-slate-50 border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-amber-500 focus:bg-white outline-none">
+              <option value="TODOS">👥 Todas las Cuadrillas</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Rango Personalizado (Fechas manuales si elige personalizado) -->
+        <div id="pagos2CustomDateRow" class="hidden flex flex-wrap items-center gap-3 pt-3 border-t border-slate-100 text-xs">
+          <span class="font-bold text-slate-700">Fecha Desde:</span>
+          <input type="date" id="pagos2DateStart" onchange="applyPagos2Filter()" class="border border-slate-300 rounded-lg p-2 font-medium bg-slate-50">
+          <span class="font-bold text-slate-700">Fecha Hasta:</span>
+          <input type="date" id="pagos2DateEnd" onchange="applyPagos2Filter()" class="border border-slate-300 rounded-lg p-2 font-medium bg-slate-50">
+          <button type="button" onclick="applyPagos2Filter()" class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg shadow-sm">
+            🔍 Aplicar Rango
+          </button>
+        </div>
+      </div>
+
+      <!-- TARJETAS DE RESULTADOS FINANCIEROS (LIQUIDACIÓN MONETARIA EN TIEMPO REAL) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Tarjeta 1: SALDO PENDIENTE POR PAGAR ($ MXN) -->
+        <div class="bg-gradient-to-br from-emerald-600 to-emerald-800 text-white rounded-2xl p-5 card-shadow flex items-center justify-between border border-emerald-400/30">
+          <div>
+            <p class="text-[11px] font-black uppercase tracking-wider text-emerald-100 flex items-center gap-1">
+              <span>💵</span> SALDO PENDIENTE A LIQUIDAR
+            </p>
+            <h3 id="pagos2KpiMontoDinero" class="text-3xl font-black mt-1 text-white tracking-tight">$0.00</h3>
+            <p id="pagos2KpiFormula" class="text-xs text-emerald-100 font-semibold mt-1">0 piezas pendientes x $73.46 MXN</p>
+          </div>
+          <div class="p-3.5 bg-white/15 rounded-2xl text-3xl shadow-inner">
+            💰
+          </div>
+        </div>
+
+        <!-- Tarjeta 2: BALANCE DE TRABAJOS (HECHAS vs PAGADAS) -->
+        <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white rounded-2xl p-5 card-shadow flex items-center justify-between border border-blue-400/30">
+          <div>
+            <p id="pagos2KpiPiezasLabel" class="text-[11px] font-black uppercase tracking-wider text-blue-100 flex items-center gap-1">
+              <span>📦</span> PIEZAS PENDIENTES
+            </p>
+            <h3 id="pagos2KpiCantidadPiezas" class="text-3xl font-black mt-1 text-white">0</h3>
+            <p id="pagos2KpiPiezasDesc" class="text-xs text-blue-100 font-semibold mt-1">0 hechas en campo | 0 pagadas</p>
+          </div>
+          <div id="pagos2KpiPiezasIcon" class="p-3.5 bg-white/15 rounded-2xl text-3xl shadow-inner">
+            📦
+          </div>
+        </div>
+
+        <!-- Tarjeta 3: TOTAL HISTÓRICO LIQUIDADO ($ MXN) -->
+        <div class="bg-gradient-to-br from-indigo-700 to-indigo-950 text-white rounded-2xl p-5 card-shadow flex items-center justify-between border border-indigo-400/30">
+          <div>
+            <p class="text-[11px] font-black uppercase tracking-wider text-indigo-200 flex items-center gap-1">
+              <span>✅</span> TOTAL YA PAGADO HISTÓRICO
+            </p>
+            <h3 id="pagos2KpiMontoPagado" class="text-3xl font-black mt-1 text-indigo-100">$0.00</h3>
+            <p id="pagos2KpiPiezasPagadasDesc" class="text-xs text-indigo-200 font-semibold mt-1">0 piezas liquidadas</p>
+          </div>
+          <div class="p-3.5 bg-white/10 rounded-2xl text-3xl shadow-inner text-indigo-300">
+            💳
+          </div>
+        </div>
+
+        <!-- Tarjeta 4: Contratista / Cuadrillas & Botón de Acción -->
+        <div class="bg-gradient-to-br from-amber-600 to-amber-700 text-white rounded-2xl p-4 card-shadow flex flex-col justify-between border border-amber-400/30">
+          <div class="flex items-center justify-between">
+            <div>
+              <p id="pagos2KpiContratistaLabel" class="text-[11px] font-black uppercase tracking-wider text-amber-100 flex items-center gap-1">
+                <span>🏢</span> CONTRATISTA
+              </p>
+              <h3 id="pagos2KpiContratistaTitle" class="text-base font-black mt-0.5 text-white truncate max-w-[170px]">Todos</h3>
+              <p id="pagos2KpiCuadrillasCount" class="text-[11px] text-amber-100 font-semibold">0 técnicos involucrados</p>
+            </div>
+            <div class="p-2.5 bg-white/15 rounded-xl text-2xl shadow-inner">
+              🏢
+            </div>
+          </div>
+          <button type="button" onclick="openRegistrarPago2Modal()" class="mt-2 w-full py-1.5 bg-white hover:bg-amber-50 text-amber-950 font-black text-xs rounded-xl shadow flex items-center justify-center gap-1.5 transition-all">
+            <span>💳</span>
+            <span>Registrar Pago / Liquidar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- MATRIZ DE DESGLOSE POR PLAZA / ÁREA (SUBTOTALES DE FACTURA) -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+          <div class="flex items-center gap-2">
+            <span class="text-base">📊</span>
+            <h4 class="font-bold text-sm text-slate-900">Desglose de Facturación por Área Agrupada:</h4>
+          </div>
+          <span id="pagos2MatrizTotalTag" class="text-xs font-black text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+            $0.00 MXN en 0 plazas
+          </span>
+        </div>
+        
+        <div id="pagos2SubtotalesAreasContainer" class="overflow-x-auto">
+          <!-- Inyectado dinámicamente con tabla de subtotales por plaza -->
+        </div>
+      </div>
+
+
+      <!-- BITÁCORA HISTÓRICA DE PAGOS REGISTRADOS Y CONCILIACIONES (CONTROL ANTI-DUPLICIDAD) -->
+      <div id="pagos2HistorialSection" class="bg-white border-2 border-indigo-200 rounded-2xl p-5 card-shadow flex flex-col gap-3">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-indigo-100 pb-3">
+          <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-indigo-100 text-indigo-700 rounded-xl text-xl font-bold">📜</div>
+            <div>
+              <h4 class="font-black text-sm text-slate-900 flex items-center gap-2">
+                <span>Bitácora de Pagos Efectuados a Contratistas</span>
+                <span id="pagos2HistorialTotalBadge" class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">0 pagos registrados</span>
+              </h4>
+              <p class="text-xs text-slate-500 mt-0.5">
+                Historial de liquidaciones conciliadas. Cada pago registrado se descuenta de los trabajos en campo para evitar duplicar pagos en futuros cortes.
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <button type="button" onclick="publicarHistorial2EnGitHub()" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-amber-300 text-xs font-bold rounded-lg shadow-sm flex items-center gap-1 transition-colors border border-amber-400/40" title="Sincronizar y publicar la bitácora directamente en GitHub Pages">
+              <span>☁️</span> Publicar a GitHub
+            </button>
+            <button type="button" onclick="exportarBitacoraPagos2CSV()"  class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-sm flex items-center gap-1 transition-colors">
+              <span>📥</span> Exportar a Excel
+            </button>
+            <button type="button" onclick="exportarRespaldoPagos2JSON()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 flex items-center gap-1 transition-colors" title="Descargar copia de seguridad en JSON">
+              <span>💾</span> Respaldo
+            </button>
+            <label class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg border border-slate-300 flex items-center gap-1 cursor-pointer transition-colors" title="Restaurar copia de seguridad en JSON">
+              <span>📤</span> Restaurar
+              <input type="file" id="inputRestaurarPagos2JSON" accept=".json" class="hidden" onchange="importarRespaldoPagos2JSON(event)">
+            </label>
+          </div>
+        </div>
+
+        <!-- Tabla de la Bitácora -->
+        <div class="overflow-x-auto max-h-[350px] overflow-y-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-indigo-50 text-indigo-950 font-bold uppercase text-[10px] tracking-wider border-b border-indigo-200 sticky top-0 z-10">
+              <tr>
+                <th class="p-2.5">Folio Pago</th>
+                <th class="p-2.5">Fecha Pago</th>
+                <th class="p-2.5">Plaza / Área</th>
+                <th class="p-2.5">Contratista</th>
+                <th class="p-2.5 text-center">Tipo</th>
+                <th class="p-2.5 text-center font-extrabold text-blue-900">Piezas Pagadas</th>
+                <th class="p-2.5 text-right">Tarifa</th>
+                <th class="p-2.5 text-right font-black text-emerald-700">Monto Liquidado ($)</th>
+                <th class="p-2.5 text-center text-amber-800">Quedaron Pendientes</th>
+                <th class="p-2.5">Factura / Ref</th>
+                <th class="p-2.5">Autorizó / Notas</th>
+                <th class="p-2.5 text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="pagos2HistorialTableBody" class="divide-y divide-slate-100 font-medium">
+              <!-- Inyectado dinámicamente con pagos guardados -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- DESGLOSE POR MODELO COLOCADO -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-5 card-shadow flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <h4 class="font-bold text-xs text-slate-700 flex items-center gap-2">
+            <span>🏷️</span> Desglose por Modelo Físico Instalado:
+          </h4>
+          <span id="pagos2ModelosTotalTag" class="text-[11px] font-bold text-slate-500">0 piezas</span>
+        </div>
+        <div id="pagos2ModelosGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+          <!-- Inyectado dinámicamente -->
+        </div>
+      </div>
+
+      <!-- TABLA DETALLADA DE AUDITORÍA CON FOTO DE EVIDENCIA (CLICK PARA ZOOM) -->
+      <div class="bg-white border border-slate-200 rounded-2xl card-shadow overflow-hidden flex flex-col">
+        <!-- Barra superior de la tabla -->
+        <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h3 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+              <span>📋</span> Relación Detallada de Trabajos (Folio por Folio con Evidencia)
+            </h3>
+            <p id="pagos2TableCounterInfo" class="text-xs text-slate-500 mt-0.5">Mostrando 0 registros</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
+            <button type="button" onclick="openRegistrarPago2Modal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
+              <span>💳</span>
+              <span>Registrar Pago</span>
+            </button>
+            <button type="button" onclick="toggleHistorialPagos2Section()" id="btnToggleHistorialPagos2" class="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
+              <span>📜</span>
+              <span>Bitácora de Pagos (<span id="pagos2HistorialBadgeCount">0</span>)</span>
+            </button>
+            <button type="button" onclick="exportPagos2CSV()" class="px-3 py-2 bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
+              <span>📥</span>
+              <span>Exportar Trabajos (CSV)</span>
+            </button>
+            <button type="button" onclick="printPagos2Summary()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl shadow-sm flex items-center gap-1.5 transition-colors">
+              <span>🖨️</span>
+              <span>Imprimir Carátula</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabla Responsiva -->
+        <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead class="bg-slate-100 text-slate-700 font-bold sticky top-0 z-10 border-b border-slate-200 uppercase text-[10px] tracking-wider">
+              <tr>
+                <th class="p-2.5 text-center w-12">#</th>
+                <th class="p-2.5">Folio Linkaform</th>
+                <th class="p-2.5">Fecha / Hora</th>
+                <th class="p-2.5">Plaza / Área</th>
+                <th class="p-2.5">Contratista a Pagar</th>
+                <th class="p-2.5">Técnico en Sitio</th>
+                <th class="p-2.5 text-center">Tipo</th>
+                <th class="p-2.5">Modelo</th>
+                <th class="p-2.5">Distrito / Teléfono</th>
+                <th class="p-2.5 text-right">Tarifa</th>
+                <th class="p-2.5 text-right">Importe</th>
+                <th class="p-2.5 text-center">Estatus Pago</th>
+                <th class="p-2.5 text-center">Foto Evidencia</th>
+                <th class="p-2.5">Comentarios</th>
+              </tr>
+            </thead>
+            <tbody id="pagos2TableBody" class="divide-y divide-slate-100">
+              <!-- Inyectado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Paginación -->
+        <div class="p-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
+          <span id="pagos2PaginationInfo">Página 1 de 1</span>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="changePagos2Page(-1)" id="btnPagos2Prev" class="px-3 py-1 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 font-semibold disabled:opacity-40">
+              ◀ Anterior
+            </button>
+            <button type="button" onclick="changePagos2Page(1)" id="btnPagos2Next" class="px-3 py-1 bg-white border border-slate-300 rounded-lg hover:bg-slate-100 font-semibold disabled:opacity-40">
+              Siguiente ▶
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+
 
     <!-- ==================== PESTAÑA 6: MÓDULO EXCLUSIVO DE MANDO GERENCIAL & RESUMEN OPERATIVO ==================== -->
     <section id="tab-gerencial" class="tab-content hidden flex flex-col gap-6">
@@ -1703,5 +2145,197 @@
   <script src="data/sample_records.js?v=20261109_v17_tecnico"></script>
   <script src="data/historial_pagos.js?v=20261118_v1"></script>
   <script src="app.js?v=20261118_pagos_registro_v5"></script>
+
+  <!-- ==================== MODAL DE ACCESO CON NIP (PAGOS 2) ==================== -->
+  <div id="nipModal2" class="modal-overlay hidden" style="z-index: 99999;">
+    <div class="modal-container max-w-sm p-6 text-center animate-popIn">
+      <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-3 border border-emerald-300 shadow-inner">
+        🔐
+      </div>
+      <h3 class="text-base font-black text-slate-800 mb-1">Módulo de Validación de Pagos 2</h3>
+      <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+        Ingresa el NIP de seguridad autorizado (Tarifas: Casetas $44.04 / Cajas $73.46).
+      </p>
+      
+      <div class="mb-4">
+        <input type="password" id="nipInput2" maxlength="8" placeholder="••••" 
+               class="w-full text-center tracking-[0.5em] text-2xl font-black p-3 border-2 border-slate-300 rounded-xl focus:border-emerald-600 focus:ring-4 focus:ring-emerald-500/20 outline-none bg-slate-50"
+               onkeydown="if(event.key==='Enter') verifyNip2()">
+        <p id="nipErrorMsg2" class="text-xs font-bold text-rose-600 mt-2 hidden"></p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" onclick="closeNipModal2()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors">
+          Cancelar
+        </button>
+        <button type="button" onclick="verifyNip2()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition-colors">
+          Ingresar ➔
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL CAMBIO DE NIP (PAGOS 2) ==================== -->
+  <div id="changeNipModal2" class="modal-overlay hidden" style="z-index: 99999;">
+    <div class="modal-container max-w-sm p-6 text-center animate-popIn">
+      <div class="w-12 h-12 bg-slate-100 text-slate-700 rounded-xl flex items-center justify-center text-2xl mx-auto mb-2 border border-slate-300">
+        🔑
+      </div>
+      <h3 class="text-base font-black text-slate-800 mb-1">Cambiar NIP de Pagos 2</h3>
+      <p class="text-xs text-slate-500 mb-3">Define un nuevo código NIP de seguridad para el Módulo 2.</p>
+      
+      <div class="flex flex-col gap-2.5 mb-4 text-left">
+        <div>
+          <label class="text-[11px] font-bold text-slate-600">NIP Actual:</label>
+          <input type="password" id="inputCurrentNip2" maxlength="8" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-slate-50 font-bold">
+        </div>
+        <div>
+          <label class="text-[11px] font-bold text-slate-600">Nuevo NIP (4 a 8 dígitos):</label>
+          <input type="password" id="inputNewNip2" maxlength="8" class="w-full p-2 border border-slate-300 rounded-lg text-sm bg-slate-50 font-bold">
+        </div>
+        <p id="changeNipErrorMsg2" class="text-xs font-bold text-rose-600 hidden"></p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <button type="button" onclick="closeChangeNipModal2()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">Cancelar</button>
+        <button type="button" onclick="saveNewNip2()" class="w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md">Guardar NIP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL DE REGISTRO DE PAGO / LIQUIDACIÓN (MÓDULO 2) ==================== -->
+  <div id="modalRegistrarPago2" class="modal-overlay hidden" style="z-index: 99999;">
+    <div class="modal-container max-w-lg p-6 text-left animate-popIn bg-white rounded-2xl shadow-2xl border border-slate-200">
+      
+      <!-- Encabezado Modal -->
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl font-bold border border-emerald-300">
+            💳
+          </div>
+          <div>
+            <h3 class="text-base font-black text-slate-800">Registrar Pago a Contratista (Módulo 2)</h3>
+            <p class="text-xs text-slate-500">Tarifas Oficiales: Casetas $44.04 MXN | Cajas $73.46 MXN</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeRegistrarPago2Modal()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center font-bold">✕</button>
+      </div>
+
+      <!-- Formulario de Registro -->
+      <div class="flex flex-col gap-3.5 text-xs">
+        
+        <!-- Tipo de Activo Fijo y Fecha -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">Tipo de Activo:</label>
+            <div id="modalPago2TipoBadge" class="text-xs font-black px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 border border-slate-200 text-center">
+              BOX
+            </div>
+          </div>
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">Fecha de Liquidación / Pago:</label>
+            <input type="date" id="modalPago2Fecha" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800 bg-slate-50">
+          </div>
+        </div>
+
+        <!-- Área y Contratista -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">Área Operativa:</label>
+            <select id="modalPago2SelectArea" onchange="onModalPago2AreaOrConChange()" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800 bg-white">
+              <option value="">-- Selecciona Área --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">Contratista:</label>
+            <select id="modalPago2SelectContratista" onchange="onModalPago2AreaOrConChange()" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800 bg-white">
+              <option value="">-- Selecciona Contratista --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Saldos y Conciliación Automática -->
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 grid grid-cols-3 gap-2 text-center">
+          <div>
+            <span class="text-[10px] uppercase font-bold text-slate-500 block">Realizadas</span>
+            <span id="modalPago2RealizadasCount" class="text-sm font-black text-slate-900">0</span>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-emerald-600 block">Ya Pagadas</span>
+            <span id="modalPago2PagadasPreviasCount" class="text-sm font-black text-emerald-700">0</span>
+          </div>
+          <div>
+            <span class="text-[10px] uppercase font-bold text-amber-600 block">Pendientes</span>
+            <span id="modalPago2DisponiblesCount" class="text-sm font-black text-amber-700">0</span>
+          </div>
+        </div>
+
+        <!-- Cantidad a Pagar y Tarifa Aplicada -->
+        <div class="grid grid-cols-2 gap-3 items-end">
+          <div>
+            <label class="block text-slate-700 font-black mb-1">
+              Cantidad de Piezas a Liquidar:
+            </label>
+            <input type="number" id="modalPago2InputPiezas" min="1" step="1" oninput="onModalPago2PiezasInput()" 
+                   class="w-full p-2.5 border-2 border-emerald-600 rounded-lg font-black text-slate-900 text-sm bg-white">
+          </div>
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">Tarifa Aplicada:</label>
+            <div id="modalPago2TarifaLabel" class="w-full p-2.5 border border-slate-200 rounded-lg font-black text-slate-700 text-sm bg-slate-50 text-center">
+              $0.00 MXN / pieza
+            </div>
+          </div>
+        </div>
+
+        <!-- Importe Total Calculado -->
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
+          <span class="text-[11px] font-bold text-emerald-800 block uppercase">Monto Total a Pagar en esta Exhibición:</span>
+          <span id="modalPago2MontoCalculado" class="text-xl font-black text-emerald-800 block mt-0.5">$0.00 MXN</span>
+          <div id="modalPago2RemanenteInfo" class="text-[11px] font-bold text-slate-500 mt-1">
+            Selecciona área y contratista para calcular saldos.
+          </div>
+        </div>
+
+        <!-- Campos de Soporte Fiscal / Administrativo -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">No. Factura / Folio Fiscal:</label>
+            <input type="text" id="modalPago2Factura" placeholder="Ej: F-18492" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800">
+          </div>
+          <div>
+            <label class="block text-slate-500 font-bold mb-1">Método de Pago:</label>
+            <select id="modalPago2Metodo" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800 bg-white">
+              <option value="TRANSFERENCIA">Transferencia SPEI</option>
+              <option value="CHEQUE">Cheque</option>
+              <option value="EFECTIVO">Efectivo / Caja Chica</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-500 font-bold mb-1">Autorizado Por:</label>
+          <input type="text" id="modalPago2Autorizo" placeholder="Nombre de quien autoriza" class="w-full p-2 border border-slate-300 rounded-lg font-bold text-slate-800">
+        </div>
+
+        <div>
+          <label class="block text-slate-500 font-bold mb-1">Notas / Observaciones de la Liquidación:</label>
+          <textarea id="modalPago2Notas" rows="2" placeholder="Observaciones adicionales, deducciones, aclaraciones..." class="w-full p-2 border border-slate-300 rounded-lg text-xs"></textarea>
+        </div>
+
+      </div>
+
+      <!-- Acciones del Modal -->
+      <div class="grid grid-cols-2 gap-2 mt-5 pt-3 border-t border-slate-100">
+        <button type="button" onclick="closeRegistrarPago2Modal()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl">
+          Cancelar
+        </button>
+        <button type="button" onclick="confirmarRegistroPago2()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5">
+          <span>💾</span> Registrar y Liquidar Pago
+        </button>
+      </div>
+
+    </div>
+  </div>
+
 </body>
 </html>
