@@ -1,13 +1,13 @@
 /**
  * Datos Oficiales Sincronizados en Vivo desde Linkaform API
- * Sincronización: 2026-11-21 02:49:17
+ * Sincronización: 2026-11-21 03:09:12
  * Estado de corte: Reporte matutino cerrado al 20/11/2026 (22:00 hrs). La jornada de hoy se liberará a las 08:00 AM.
  * Trabajos de campo visibles: 30407 (Retenidos por corte: 67)
  * Movimientos de materiales visibles: 318 (Retenidos por corte: 1)
  */
 
 const LINKAFORM_CUTOFF_INFO = {
-  "now": "2026-11-21 02:48:57",
+  "now": "2026-11-21 03:08:52",
   "corte_oficial_hora": "22:00",
   "liberacion_matutina_hora": "08:00",
   "active_reporting_date": "2026-11-20",
